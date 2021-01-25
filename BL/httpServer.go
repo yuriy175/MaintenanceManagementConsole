@@ -3,6 +3,7 @@ package BL
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"../DAL"
 )
@@ -15,7 +16,8 @@ func HttpServer() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		devices := DAL.DalGetDeviceConnections()
 		for _, device := range devices {
-			fmt.Fprintln(w, "Number : %d name %s type %s", device.DeviceId, device.Name, device.Type)
+			fmt.Fprintf(w, "Number : %d name %s type %s time %s\n",
+				device.DeviceId, device.Name, device.Type, device.DateTime.Format(time.RFC3339))
 		}
 		fmt.Fprint(w, "Index Page")
 	})
