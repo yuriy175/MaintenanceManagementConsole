@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+/MessagesSender/.vs
+/MessagesSender/MessagesSender/bin
+/MessagesSender/MessagesSender/obj
