@@ -1,6 +1,7 @@
 ﻿using Atlas.Common.Core.Interfaces;
 using Atlas.Common.Impls;
 using MessagesSender.BL;
+using MessagesSender.BL.Remoting;
 using MessagesSender.Core.Interfaces;
 using MessagesSender.DAL;
 using Microsoft.Extensions.DependencyInjection;
@@ -82,6 +83,18 @@ namespace MessagesSender
                 typeof(SettingsEntityService));
 
             return services;
+        }
+
+        /// <summary>
+        /// Add remoting services.
+        /// </summary>
+        /// <param name="services">service collection.</param>
+        /// <returns>updated service collection.</returns>
+        public static IServiceCollection AddRemotingServices(this IServiceCollection services)
+        {
+            return services.AddSingleton(
+               typeof(IWorkqueueSender),
+               typeof(RabbitMQWorkqueueSender));
         }
     }
 }

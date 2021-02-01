@@ -32,6 +32,7 @@ namespace MessagesSender
                         .AddLoggerService("MsgSender")
                         .AddMQRemotingServices<MQCommunicationService>()
                         .AddEntityServices()
+                        .AddRemotingServices()
                         .AddSystemService());
 
         static void Configure(IServiceProvider services)
