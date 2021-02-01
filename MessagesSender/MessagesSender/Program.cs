@@ -16,13 +16,13 @@ namespace MessagesSender
         //    Console.WriteLine("Hello World!");
         //}
 
-        static Task Main(string[] args)
+        static void Main(string[] args)
         {
             using IHost host = CreateHostBuilder(args).Build();
 
             Configure(host.Services);
 
-            return host.RunAsync();
+            host.Run();
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) =>

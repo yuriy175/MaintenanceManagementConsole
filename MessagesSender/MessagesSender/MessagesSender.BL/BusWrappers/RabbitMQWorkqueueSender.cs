@@ -105,7 +105,7 @@ namespace MessagesSender.BL.Remoting
                 return Task.FromResult(false);
             }
 
-            IBasicProperties basicProperties = Channel.CreateBasicProperties();
+            IBasicProperties basicProperties = _channel.CreateBasicProperties();
             basicProperties.Persistent = false;
             var content = JsonConvert.SerializeObject(payload);
             var body = Encoding.UTF8.GetBytes(content);

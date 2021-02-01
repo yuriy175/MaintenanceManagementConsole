@@ -13,6 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+/ServerConsole/__debug_bin
 
 /MessagesSender/.vs
 /MessagesSender/MessagesSender/bin

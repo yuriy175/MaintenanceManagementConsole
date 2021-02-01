@@ -8,4 +8,5 @@ const (
 
 	RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
 	MQConnectionStateName    = "HwConnectionStateArrived"
+	MQInfoQueueName          = "SystemInfoQueue"
 )

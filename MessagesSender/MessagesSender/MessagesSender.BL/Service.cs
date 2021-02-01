@@ -11,6 +11,9 @@ using System.Net;
 using System.Linq;
 using System.Net.Sockets;
 using Atlas.Acquisitions.Common.Core;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System.Text;
 
 namespace MessagesSender.BL
 {
@@ -59,16 +62,19 @@ namespace MessagesSender.BL
             _logger.Information("Main service started");
         }
 
-        private async Task SubscribeMQRecevers()
+        private Task SubscribeMQRecevers()
         {
-            _mqService.Subscribe<MQCommands, int>(
+            return Task.Run(() =>
+            {
+                _mqService.Subscribe<MQCommands, int>(
                     (MQCommands.StudyInWork, async data => OnStudyInWorkAsync(data)));
 
-            _mqService.Subscribe<MQCommands, (int Id, string Name, string Type, DeviceConnectionState Connection)>(
-                    (MQCommands.HwConnectionStateArrived, state => OnConnectionStateArrivedAsync(state)));
+                _mqService.Subscribe<MQCommands, (int Id, string Name, string Type, DeviceConnectionState Connection)>(
+                        (MQCommands.HwConnectionStateArrived, state => OnConnectionStateArrivedAsync(state)));
 
-            _mqService.Subscribe<MQCommands, int>(
-                    (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
+                _mqService.Subscribe<MQCommands, int>(
+                        (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
+            });
         }
 
         private async Task GetEquipmentInfoAsync()
