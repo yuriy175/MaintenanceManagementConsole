@@ -1,4 +1,4 @@
-﻿using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
+using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using RabbitMQ.Client;
 using Serilog;
 using System;
@@ -8,6 +8,7 @@ using System.Text;
 using MessagesSender.Core.Interfaces;
 using Atlas.Common.Core.Interfaces;
 using System.Linq;
+using System.IO;
 
 namespace MessagesSender.BL.Remoting
 {
@@ -16,7 +17,7 @@ namespace MessagesSender.BL.Remoting
     /// </summary>
     public class RabbitMQWorkqueueSender : IWorkqueueSender
     {
-        protected const string RabbitMQConnectionStringName = "RabbitMQConnectionString";
+        protected const string RabbitMQConnectionStringName = "ConsoleRabbitMQConnectionString";
         protected const string ConnectionStringValuesSeparator = ";";
         protected const string ConnectionStringValueSeparator = "=";
         protected const string ConnectionStringServerName = "Server";
@@ -43,7 +44,12 @@ namespace MessagesSender.BL.Remoting
             _configurationService = configurationService;
             _logger = logger;
 
-            CreateAsync();
+			_configurationService.AddConfigFile(
+				Path.Combine(
+					Path.GetDirectoryName(
+						typeof(IWorkqueueSender).Assembly.Location), "consoleMQsettings.json"));
+
+			CreateAsync();
         }
 
         /// <summary>
@@ -132,10 +138,11 @@ namespace MessagesSender.BL.Remoting
 
         private IConnection CreateConnection(ConnectionFactory connectionFactory)
         {
-            CreateConnectionProps();
-            connectionFactory.HostName = _connectionProps?.HostName ?? "localhost";
-            connectionFactory.UserName = _connectionProps?.UserName ?? "guest";
-            connectionFactory.Password = _connectionProps?.Password ?? "guest";
+			//Server=medprom.ml;User=user;Password=medtex
+			CreateConnectionProps();
+			connectionFactory.HostName = _connectionProps?.HostName ?? "localhost";
+			connectionFactory.UserName = _connectionProps?.UserName ?? "guest";
+			connectionFactory.Password = _connectionProps?.Password ?? "guest";
 
             try
             {

@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	<LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,17 +26,48 @@
 
   <ItemGroup>
     <Reference Include="Atlas.Acquisitions.Common">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Acquisitions.Common.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Acquisitions.Common.dll</HintPath>
     </Reference>
     <Reference Include="Atlas.Crosscuttings">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Crosscuttings.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Crosscuttings.dll</HintPath>
     </Reference>
     <Reference Include="Atlas.Remoting">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.dll</HintPath>
     </Reference>
     <Reference Include="Atlas.Remoting.ST">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.ST.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.ST.dll</HintPath>
     </Reference>
   </ItemGroup>
 
+	<!--<ItemGroup>
+		<ContentWithTargetPath Include="Resources\srvsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>srvsettings.json</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+	<ItemGroup>
+		<ContentWithTargetPath Include="Resources\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>.\</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)Resources\**"
+			CopyToOutputDirectory="PreserveNewest"
+			LinkBase="\" />
+	</ItemGroup>
+	<ItemGroup>
+		<ContentWithTargetPath Include="Resources\*.*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath="Files\%(Filename)%(Extension)" />
+		</ContentWithTargetPath>
+	</ItemGroup>-->
+
+	<ItemGroup>
+		<ContentWithTargetPath
+		   Include="Resources\*.*"
+		   CopyToOutputDirectory="PreserveNewest"
+		   TargetPath=".\%(Filename)%(Extension)" />
+	</ItemGroup>
+	
 </Project>

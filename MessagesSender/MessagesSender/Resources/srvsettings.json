@@ -1,0 +1,3 @@
+{
+  "RabbitMQConnectionString": "Server=localhost;User=guest;Password=guest"
+}

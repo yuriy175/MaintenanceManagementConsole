@@ -1,0 +1,7 @@
+{
+  "ConnectionStrings": {
+    "ObservationConnection": "Server=localhost\\SQLEXPRESS;Database=observations;User Id = su; Password=medtex",
+    "SettingsConnection": "Server=localhost\\SQLEXPRESS;Database=settings;User Id = su; Password=medtex",
+    "UsersConnection": "Server=localhost\\SQLEXPRESS;Database=users;User Id = su; Password=medtex"
+  }
+}
