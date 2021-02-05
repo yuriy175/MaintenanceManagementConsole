@@ -16,9 +16,10 @@ func HttpServer() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		devices := DAL.DalGetDeviceConnections()
 		for _, device := range devices {
-			fmt.Fprintf(w, "Number : %d name %s type %s time %s\n",
-				device.DeviceId, device.Name, device.Type, device.DateTime.Format(time.RFC3339))
+			fmt.Fprintf(w, "time %s device : %d name : %s type : %s connection : %d\n",
+				device.DateTime.Format(time.RFC3339), device.DeviceId, device.DeviceName, device.DeviceType, device.DeviceConnection)
 		}
+
 		fmt.Fprint(w, "Index Page")
 	})
 	fmt.Println("Server is listening...")

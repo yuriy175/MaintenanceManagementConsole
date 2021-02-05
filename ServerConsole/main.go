@@ -12,10 +12,10 @@ import (
 func main() {
 
 	intCh := make(chan int)
-	devicesDalCh := make(chan *Models.DeviceConnection)
+	equipDalCh := make(chan *Models.EquipmentMessage)
 
-	go DAL.DalWorker(devicesDalCh)
-	go BL.RabbitMqReceiver(devicesDalCh)
+	go DAL.DalWorker(equipDalCh)
+	go BL.RabbitMqReceiver(equipDalCh)
 	go BL.HttpServer()
 
 	fmt.Println("Hello Go")
