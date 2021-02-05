@@ -56,7 +56,7 @@ func DalGetDeviceConnections() []Models.DeviceConnectionModel {
 	}
 	defer session.Close()
 
-	deviceCollection := session.DB(Models.DBName).C(Models.EquipmentTableName)
+	deviceCollection := session.DB(Models.DBName).C(Models.DeviceConnectionsTableName)
 
 	// критерий выборки
 	query := bson.M{}
