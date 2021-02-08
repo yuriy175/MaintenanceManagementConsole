@@ -19,7 +19,9 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 	}
 	defer session.Close()
 
-	deviceCollection := session.DB(Models.DBName).C(Models.DeviceConnectionsTableName)
+	db := session.DB(Models.DBName)
+	deviceCollection := db.C(Models.DeviceConnectionsTableName)
+	studiesCollection := db.C(Models.StudyInWorkTableName)
 
 	go func() { //c *mgo.Collection) {
 		for d := range equipDalCh {
@@ -41,6 +43,22 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					DeviceConnection: deviceConnection,
 				}
 				err = deviceCollection.Insert(model)
+			} else if d.MsgType == Models.MsgTypeStudyInWork {
+				studyId := d.Info["StudyId"].(float64)
+				studyDicomUid := d.Info["StudyDicomUid"].(string)
+				studyName := d.Info["StudyName"].(string)
+
+				model := &Models.StudyInWorkModel{
+					Id:            bson.NewObjectId(),
+					DateTime:      time.Now(),
+					EquipNumber:   d.EquipNumber,
+					EquipName:     d.EquipName,
+					EquipIP:       d.EquipIP,
+					StudyId:       studyId,
+					StudyDicomUid: studyDicomUid,
+					StudyName:     studyName,
+				}
+				err = studiesCollection.Insert(model)
 			}
 		}
 	}() //deviceCollection)
@@ -65,4 +83,22 @@ func DalGetDeviceConnections() []Models.DeviceConnectionModel {
 	deviceCollection.Find(query).All(&devices)
 
 	return devices
+}
+
+func DalGetStudiesInWork() []Models.StudyInWorkModel {
+	session, err := mgo.Dial(Models.MongoDBConnectionString)
+	if err != nil {
+		panic(err)
+	}
+	defer session.Close()
+
+	studiesCollection := session.DB(Models.DBName).C(Models.StudyInWorkTableName)
+
+	// критерий выборки
+	query := bson.M{}
+	// объект для сохранения результата
+	studies := []Models.StudyInWorkModel{}
+	studiesCollection.Find(query).All(&studies)
+
+	return studies
 }

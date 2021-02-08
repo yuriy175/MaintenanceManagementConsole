@@ -82,6 +82,10 @@ namespace MessagesSender
                 typeof(ISettingsEntityService),
                 typeof(SettingsEntityService));
 
+            services.AddSingleton(
+                typeof(IObservationsEntityService),
+                typeof(ObservationsEntityService));
+            
             return services;
         }
 

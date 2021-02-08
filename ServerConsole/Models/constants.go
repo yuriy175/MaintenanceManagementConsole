@@ -6,6 +6,7 @@ const (
 	DBName                     = "test"
 	EquipmentTableName         = "Equipment"
 	DeviceConnectionsTableName = "DeviceConnections"
+	StudyInWorkTableName       = "StudyInWork"
 
 	RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
 	MQConnectionStateName    = "HwConnectionStateArrived"

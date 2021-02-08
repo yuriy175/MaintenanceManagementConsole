@@ -15,6 +15,6 @@ namespace MessagesSender.Core.Interfaces
         /// Get equipment info.
         /// </summary>
         /// <returns>equipment info</returns>
-        Task<(string Name, string Number)> GetEquipmentInfo();
+        Task<(string Name, string Number)> GetEquipmentInfoAsync();
     }
 }

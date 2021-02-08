@@ -40,7 +40,7 @@ namespace MessagesSender.DAL
         /// Get equipment info.
         /// </summary>
         /// <returns>equipment info</returns>
-        public async Task<(string Name, string Number)> GetEquipmentInfo()
+        public async Task<(string Name, string Number)> GetEquipmentInfoAsync()
         {
             var dicomTags = new[] { "(0008,1090)", "(0018,1000)" };
             var dicomParams = await GetManyAction<EquipmentDicomParam>(

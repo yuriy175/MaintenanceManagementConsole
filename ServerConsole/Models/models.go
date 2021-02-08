@@ -17,3 +17,14 @@ type DeviceConnectionModel struct {
 	DeviceType       string
 	DeviceConnection float64
 }
+
+type StudyInWorkModel struct {
+	Id            bson.ObjectId `bson:"_id"`
+	DateTime      time.Time
+	EquipNumber   string
+	EquipName     string
+	EquipIP       string
+	StudyId       float64
+	StudyDicomUid string
+	StudyName     string
+}

@@ -20,6 +20,7 @@ namespace MessagesSender.BL
     public class Service : IService
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;
+        private readonly IObservationsEntityService _dbObservationsEntityService;        
         private readonly ILogger _logger;
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
@@ -38,16 +39,19 @@ namespace MessagesSender.BL
         /// public constructor
         /// </summary>
         /// <param name="dbSettingsEntityService">settings database connector</param>
+        /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
         /// <param name="mqService">MQ service</param>
         /// <param name="wqSender">work queue sender</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
+            IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
+            _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _mqService = mqService;
             _wqSender = wqSender;
@@ -79,7 +83,7 @@ namespace MessagesSender.BL
 
         private async Task GetEquipmentInfoAsync()
         {
-            _equipmentInfo = await _dbSettingsEntityService.GetEquipmentInfo();
+            _equipmentInfo = await _dbSettingsEntityService.GetEquipmentInfoAsync();
         }
 
         private async Task GetEquipmentIPAsync()
@@ -96,7 +100,15 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnStudyInWorkAsync(int studyId)
         {
-            _ = SendInfoAsync(MQCommands.StudyInWork, studyId);
+            var studyProps = await _dbObservationsEntityService.GetStudyInfoByIdAsync(studyId);
+            if (!studyProps.HasValue)
+            {
+                _logger.Error($"no study found for {studyId}");
+                return false;
+            }
+
+            _ = SendInfoAsync(MQCommands.StudyInWork,
+                new { studyProps.Value.StudyId, studyProps.Value.StudyDicomUid, studyProps.Value.StudyName });
             return true;
         }
 
