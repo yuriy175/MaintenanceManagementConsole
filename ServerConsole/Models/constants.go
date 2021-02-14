@@ -8,9 +8,12 @@ const (
 	DeviceConnectionsTableName = "DeviceConnections"
 	StudyInWorkTableName       = "StudyInWork"
 
-	RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
-	MQConnectionStateName    = "HwConnectionStateArrived"
-	MQInfoQueueName          = "SystemInfoQueue"
+	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
+	RabbitMQHost          = "localhost"
+	RabbitMQUser          = "guest"
+	RabbitMQPassword      = "guest"
+	MQConnectionStateName = "HwConnectionStateArrived"
+	MQInfoQueueName       = "SystemInfoQueue"
 
 	MsgTypeStudyInWork              = "StudyInWork"
 	MsgTypeNewImageCreated          = "NewImageCreated"

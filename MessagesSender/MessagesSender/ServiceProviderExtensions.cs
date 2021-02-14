@@ -98,7 +98,7 @@ namespace MessagesSender
         {
             return services.AddSingleton(
                typeof(IWorkqueueSender),
-               typeof(RabbitMQWorkqueueSender));
+               typeof(RabbitMQTTSender)); // RabbitMQWorkqueueSender));
         }
     }
 }

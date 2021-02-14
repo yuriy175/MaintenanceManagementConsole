@@ -12,7 +12,10 @@ import (
 func RabbitMqReceiver(equipDalCh chan *Models.EquipmentMessage) {
 	quitCh := make(chan int)
 
-	conn, err := amqp.Dial(Models.RabbitMQConnectionString)
+	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
+	rabbitMQConnectionString := fmt.Sprintf("amqp://%s:%s@%s:5672", Models.RabbitMQUser, Models.RabbitMQPassword, Models.RabbitMQHost)
+
+	conn, err := amqp.Dial(rabbitMQConnectionString)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
