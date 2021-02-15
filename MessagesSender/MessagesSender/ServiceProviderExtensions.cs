@@ -98,7 +98,11 @@ namespace MessagesSender
         {
             services.AddSingleton(
                typeof(IMqttSender),
-               typeof(RabbitMQTTSender)); 
+               typeof(RabbitMQTTSender));
+
+            services.AddSingleton(
+               typeof(IMqttReceiver),
+               typeof(RabbitMQTTReceiver));            
 
             return services.AddSingleton(
                typeof(IWorkqueueSender),

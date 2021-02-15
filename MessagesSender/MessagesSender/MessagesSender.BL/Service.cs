@@ -26,6 +26,7 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
+        private readonly IMqttReceiver _mqttReceiver;        
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -44,13 +45,16 @@ namespace MessagesSender.BL
         /// <param name="logger">logger</param>
         /// <param name="mqService">MQ service</param>
         /// <param name="wqSender">work queue sender</param>
+        /// <param name="mqttSender">mqtt sender</param>
+        /// <param name="mqttReceiver">mqtt receiver</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
-            IMqttSender mqttSender)
+            IMqttSender mqttSender,
+            IMqttReceiver mqttReceiver)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -58,6 +62,7 @@ namespace MessagesSender.BL
             _mqService = mqService;
             _wqSender = wqSender;
             _mqttSender = mqttSender;
+            _mqttReceiver = mqttReceiver;
 
             new Action[]
                 {
@@ -66,6 +71,7 @@ namespace MessagesSender.BL
                     {
                         await GetEquipmentInfoAsync();
                         await _mqttSender.CreateAsync(_equipmentInfo);
+                        await _mqttReceiver.CreateAsync(_equipmentInfo);
                         await OnServiceStateChangedAsync(true);
                     },
                     () => _ = GetEquipmentIPAsync(),

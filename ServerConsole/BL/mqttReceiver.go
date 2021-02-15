@@ -7,6 +7,7 @@ import (
 
 	"../Models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/google/uuid"
 )
 
 func MqttReceiver(topic string, equipDalCh chan *Models.EquipmentMessage) {
@@ -32,7 +33,7 @@ func MqttReceiver(topic string, equipDalCh chan *Models.EquipmentMessage) {
 	var port = 1883
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
-	opts.SetClientID("epo")
+	opts.SetClientID(uuid.New().String())
 	opts.SetUsername(Models.RabbitMQUser)
 	opts.SetPassword(Models.RabbitMQPassword)
 	opts.SetDefaultPublishHandler(messagePubHandler)
