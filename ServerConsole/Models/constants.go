@@ -15,6 +15,8 @@ const (
 	MQConnectionStateName = "HwConnectionStateArrived"
 	MQInfoQueueName       = "SystemInfoQueue"
 
+	MsgTypeInstanceOn               = "InstanceOn"
+	MsgTypeInstanceOff              = "InstanceOff"
 	MsgTypeStudyInWork              = "StudyInWork"
 	MsgTypeNewImageCreated          = "NewImageCreated"
 	MsgTypeHwConnectionStateArrived = "HwConnectionStateArrived"

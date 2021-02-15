@@ -59,7 +59,12 @@ func RabbitMqReceiver(equipDalCh chan *Models.EquipmentMessage) {
 
 			fmt.Printf("%+v\n", content)
 
-			equipDalCh <- &content
+			if content.MsgType == Models.MsgTypeInstanceOn || content.MsgType == Models.MsgTypeInstanceOff {
+				MqttReceiverFactory(equipDalCh, &content)
+			} else {
+				equipDalCh <- &content
+			}
+
 			d.Ack(false)
 		}
 	}()

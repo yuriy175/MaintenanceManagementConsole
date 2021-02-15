@@ -15,8 +15,8 @@ func main() {
 	equipDalCh := make(chan *Models.EquipmentMessage)
 
 	go DAL.DalWorker(equipDalCh)
-	// go BL.RabbitMqReceiver(equipDalCh)
-	go BL.MqttReceiver(equipDalCh)
+	go BL.RabbitMqReceiver(equipDalCh)
+	// go BL.MqttReceiver(equipDalCh)
 	go BL.HttpServer()
 
 	fmt.Println("Hello Go")

@@ -96,9 +96,13 @@ namespace MessagesSender
         /// <returns>updated service collection.</returns>
         public static IServiceCollection AddRemotingServices(this IServiceCollection services)
         {
+            services.AddSingleton(
+               typeof(IMqttSender),
+               typeof(RabbitMQTTSender)); 
+
             return services.AddSingleton(
                typeof(IWorkqueueSender),
-               typeof(RabbitMQTTSender)); // RabbitMQWorkqueueSender));
+               typeof(RabbitMQWorkqueueSender)); 
         }
     }
 }

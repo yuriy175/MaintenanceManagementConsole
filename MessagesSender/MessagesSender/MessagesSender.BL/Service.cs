@@ -14,16 +14,18 @@ using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.BL
 {
-    public class Service : IService
+    public class Service : IService, IDisposable
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;        
         private readonly ILogger _logger;
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
+        private readonly IMqttSender _mqttSender;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -32,7 +34,6 @@ namespace MessagesSender.BL
         {
             StudyInWork = 1,
             ConnectionState,
-
         }
 
         /// <summary>
@@ -48,22 +49,34 @@ namespace MessagesSender.BL
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IMQCommunicationService mqService,
-            IWorkqueueSender wqSender)
+            IWorkqueueSender wqSender,
+            IMqttSender mqttSender)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _mqService = mqService;
             _wqSender = wqSender;
+            _mqttSender = mqttSender;
 
             new Action[]
                 {
                     () => _ = SubscribeMQRecevers(),
-                    () => _ = GetEquipmentInfoAsync(),
+                    async () =>
+                    {
+                        await GetEquipmentInfoAsync();
+                        await _mqttSender.CreateAsync(_equipmentInfo);
+                        await OnServiceStateChangedAsync(true);
+                    },
                     () => _ = GetEquipmentIPAsync(),
                 }.RunTasksAsync();
 
             _logger.Information("Main service started");
+        }
+
+        public void Dispose()
+        {
+            OnServiceStateChangedAsync(false);
         }
 
         private Task SubscribeMQRecevers()
@@ -107,26 +120,40 @@ namespace MessagesSender.BL
                 return false;
             }
 
-            _ = SendInfoAsync(MQCommands.StudyInWork,
+            _ = SendInfoAsync(
+                _mqttSender,
+                MQCommands.StudyInWork,
                 new { studyProps.Value.StudyId, studyProps.Value.StudyDicomUid, studyProps.Value.StudyName });
+
             return true;
         }
 
         private async Task<bool> OnNewImageCreatedAsync(int imageId)
         {
-            _ = SendInfoAsync(MQCommands.NewImageCreated, imageId);
+            // _ = SendInfoAsync(_mqttSender, MQCommands.NewImageCreated, imageId);
             return true;
         }
 
         private async Task<bool> OnConnectionStateArrivedAsync(
             (int Id, string Name, string Type, DeviceConnectionState Connection) state)
         {
-            _ = SendInfoAsync(MQCommands.HwConnectionStateArrived, 
+            _ = SendInfoAsync(
+                _mqttSender,
+                MQCommands.HwConnectionStateArrived, 
                 new { state.Id, state.Name, state.Type, state.Connection });
             return true;
         }
 
-        private async Task SendInfoAsync<T>(MQCommands msgType, T info)
+        private async Task<bool> OnServiceStateChangedAsync(bool isOn)
+        {
+            _ = SendInfoAsync(
+                _wqSender,
+                isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
+                new { });
+            return true;
+        }
+
+        private async Task SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
         {
             if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
             {
@@ -134,7 +161,7 @@ namespace MessagesSender.BL
                 return;
             }
 
-            await _wqSender.SendAsync(
+            await sender.SendAsync(
                 new { 
                     _equipmentInfo.Number, 
                     _equipmentInfo.Name, 

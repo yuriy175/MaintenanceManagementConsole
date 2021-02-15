@@ -9,24 +9,16 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-/*var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	payload := msg.Payload()
-	fmt.Printf("Received message: %s from topic: %s\n", payload, msg.Topic())
-	content := Models.EquipmentMessage{}
-	json.Unmarshal([]byte(payload), &content)
-	equipDalCh <- &content
-}*/
-
-var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-	fmt.Println("Connected")
-}
-
-var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-	fmt.Printf("Connect lost: %v", err)
-}
-
-func MqttReceiver(equipDalCh chan *Models.EquipmentMessage) {
+func MqttReceiver(topic string, equipDalCh chan *Models.EquipmentMessage) {
 	quitCh := make(chan int)
+
+	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
+		fmt.Println("Connected")
+	}
+
+	var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
+		fmt.Printf("Connect lost: %v", err)
+	}
 
 	var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 		payload := msg.Payload()
@@ -53,7 +45,7 @@ func MqttReceiver(equipDalCh chan *Models.EquipmentMessage) {
 	}
 
 	go func() {
-		topic := "topic/test"
+		// topic := "topic/test"
 		token := client.Subscribe(topic, 1, nil)
 		token.Wait()
 		fmt.Printf("Subscribed to topic: %s", topic)
