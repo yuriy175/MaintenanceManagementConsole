@@ -2,29 +2,42 @@ package BL
 
 import (
 	"fmt"
+	"time"
 
 	"../Models"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-var mqttConnections = map[string]bool{}
+var mqttConnections = map[string]mqtt.Client{}
 
 func MqttReceiverFactory(equipDalCh chan *Models.EquipmentMessage, message *Models.EquipmentMessage) {
-	topic := fmt.Sprintf("%s/%s", message.EquipName, message.EquipNumber)
+	topicStorage := &TopicStorage{}
+	topics := topicStorage.getTopics()
 
-	if _, ok := mqttConnections[topic]; ok {
-		fmt.Println(topic + " already exists")
+	rootTopic := fmt.Sprintf("%s/%s", message.EquipName, message.EquipNumber)
+
+	if _, ok := mqttConnections[rootTopic]; ok {
+		fmt.Println(rootTopic + " already exists")
 		if message.MsgType == Models.MsgTypeInstanceOff {
-			delete(mqttConnections, topic)
-			fmt.Println(topic + " deleted")
+			mqttConnections[rootTopic].Disconnect(0)
+			delete(mqttConnections, rootTopic)
+			fmt.Println(rootTopic + " deleted")
 		}
 
 		return
 	}
 
 	if message.MsgType == Models.MsgTypeInstanceOn {
-		mqttConnections[topic] = true
-		go MqttReceiver(topic, equipDalCh)
+		//go MqttReceiver(topic, equipDalCh)
+		go func() {
+			mqttConnections[rootTopic] = MqttReceiver(rootTopic, topics, equipDalCh)
+			time.Sleep(time.Second * 5)
+			text := "epona hren"
+			commandTopic := rootTopic + "/command"
+			mqttConnections[rootTopic].Publish(commandTopic, 0, false, text)
+			fmt.Println(commandTopic + " " + text)
+		}()
 
-		fmt.Println(topic + " created")
+		fmt.Println(rootTopic + " created")
 	}
 }

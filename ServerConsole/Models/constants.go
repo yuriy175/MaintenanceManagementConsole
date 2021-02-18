@@ -9,9 +9,10 @@ const (
 	StudyInWorkTableName       = "StudyInWork"
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
-	RabbitMQHost          = "localhost"
-	RabbitMQUser          = "guest"
-	RabbitMQPassword      = "guest"
+	//"Server=mprom.ml;User=client1;Password=medtex"
+	RabbitMQHost          = "mprom.ml" // "localhost"
+	RabbitMQUser          = "client1"  // "guest"
+	RabbitMQPassword      = "medtex"   // "guest"
 	MQConnectionStateName = "HwConnectionStateArrived"
 	MQInfoQueueName       = "SystemInfoQueue"
 

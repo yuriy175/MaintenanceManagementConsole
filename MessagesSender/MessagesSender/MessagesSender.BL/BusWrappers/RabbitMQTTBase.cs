@@ -127,12 +127,12 @@ namespace MessagesSender.BL.Remoting
 
                 _mqttClient.UseConnectedHandler(e =>
                 {
-                    Console.WriteLine("Connected successfully with MQTT Brokers.");
+                    Console.WriteLine("Connected successfully with MQTT Brokers. " + connectionFactory.HostName);
                 });
 
                 _mqttClient.UseDisconnectedHandler(e =>
                 {
-                    Console.WriteLine("Disconnected from MQTT Brokers.");
+                    Console.WriteLine("Disconnected from MQTT Brokers." + connectionFactory.HostName);
                 });
 
                 /*

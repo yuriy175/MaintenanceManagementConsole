@@ -3,15 +3,14 @@ package BL
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"../Models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
 
-func MqttReceiver(topic string, equipDalCh chan *Models.EquipmentMessage) {
-	quitCh := make(chan int)
+func MqttReceiver(rootTopic string, subTopics []string, equipDalCh chan *Models.EquipmentMessage) mqtt.Client {
+	//quitCh := make(chan int)
 
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
 		fmt.Println("Connected")
@@ -47,19 +46,28 @@ func MqttReceiver(topic string, equipDalCh chan *Models.EquipmentMessage) {
 
 	go func() {
 		// topic := "topic/test"
-		token := client.Subscribe(topic, 1, nil)
+		// token := client.Subscribe(topic, 1, nil)
+		var topics = map[string]byte{}
+		topics[rootTopic] = 0
+		for _, value := range subTopics {
+			topics[rootTopic+value] = 0
+		}
+
+		token := client.SubscribeMultiple(topics, nil) // callback MessageHandler)
 		token.Wait()
-		fmt.Printf("Subscribed to topic: %s", topic)
+		fmt.Printf("Subscribed to topic: %s", rootTopic)
 	}()
+
+	return client
 	// sub(client)
 	// publish(client)
 
 	// client.Disconnect(250000)
 
-	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
+	// log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
 
-	<-quitCh
-	fmt.Println("DalWorker quitted")
+	// <-quitCh
+	//fmt.Println("DalWorker quitted")
 }
 
 /*func publish(client mqtt.Client) {

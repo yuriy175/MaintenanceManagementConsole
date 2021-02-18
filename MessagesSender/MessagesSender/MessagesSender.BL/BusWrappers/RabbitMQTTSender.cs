@@ -50,7 +50,7 @@ namespace MessagesSender.BL.Remoting
             {
                 var content = JsonConvert.SerializeObject(payload);
                 var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
-                    .WithTopic(Topic)
+                    .WithTopic(Topic+@"/study")
                     .WithPayload(Encoding.UTF8.GetBytes(content)) // "messa")) // payload)
                     .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
                     .WithRetainFlag(false) // retainFlag)
@@ -64,6 +64,50 @@ namespace MessagesSender.BL.Remoting
         }
 
         protected override string GetTopic((string Name, string Number) equipInfo)
-            => $"{equipInfo.Name}/{equipInfo.Number}";         
-    }
+            => $"{equipInfo.Name}/{equipInfo.Number}";
+
+		protected override async Task<IManagedMqttClient> CreateConnection(ConnectionFactory connectionFactory)
+		{
+			try
+			{
+				var client = await base.CreateConnection(connectionFactory);
+				if (client == null)
+				{
+					return null;
+				}
+
+				Client.UseApplicationMessageReceivedHandler(e =>
+				{
+					try
+					{
+						string topic = e.ApplicationMessage.Topic;
+
+						if (string.IsNullOrWhiteSpace(topic) == false)
+						{
+							string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+							Console.WriteLine($"Topic: {topic}. Message Received: {payload}");
+						}
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine(ex.Message, ex);
+					}
+				});
+
+				await Client.SubscribeAsync(new TopicFilterBuilder()
+					.WithTopic("KRT/12RTGPD3535" + "/command")
+					.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
+					.Build());
+			}
+			catch (Exception ex)
+			{
+				using (Client) ;
+
+				// _logger.Error(ex, $"MQ connection error: { connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); ;
+				return null;
+			}
+
+			return null;
+		}
+	}
 }
