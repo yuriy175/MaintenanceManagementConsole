@@ -79,7 +79,7 @@ namespace MessagesSender.BL.Remoting
 
             await CreateConnection(new ConnectionFactory());
             Created = _mqttClient != null;
-            _topic = $"{equipInfo.Name}/{equipInfo.Number}";
+            _topic = GetTopic(equipInfo);
 
             return Created;
         }
