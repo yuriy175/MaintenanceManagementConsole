@@ -1,4 +1,4 @@
-﻿using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
+using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using RabbitMQ.Client;
 using Serilog;
 using System;
@@ -13,13 +13,14 @@ namespace MessagesSender.Core.Interfaces
     /// </summary>
     public interface IMQSenderBase : IDisposable
     {
-        /// <summary>
-        /// sends a message
-        /// </summary>
-        /// <typeparam name="T">entity type</typeparam>
-        /// <param name="payload">entity</param>
-        /// <returns>result</returns>
-        Task<bool> SendAsync<T>(T payload);
+		/// <summary>
+		/// sends a message
+		/// </summary>
+		/// <typeparam name="TMsg">message type</typeparam>
+		/// <typeparam name="T">entity type</typeparam>
+		/// <param name="payload">entity</param>
+		/// <returns>result</returns>
+		Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload);
     }
 
     /// <summary>

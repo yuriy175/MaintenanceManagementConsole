@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
@@ -168,7 +168,8 @@ namespace MessagesSender.BL
             }
 
             await sender.SendAsync(
-                new { 
+				msgType,
+				new { 
                     _equipmentInfo.Number, 
                     _equipmentInfo.Name, 
                     ipAddress = _ipAddress?.ToString(),

@@ -94,14 +94,15 @@ namespace MessagesSender.BL.Remoting
             return Created;
         }
 
-        /// <summary>
-        /// sends a message
-        /// </summary>
-        /// <typeparam name="T">entity type</typeparam>
-        /// <param name="payload">entity</param>
-        /// <returns>result</returns>
-        public Task<bool> SendAsync<T>(T payload)
-        {
+		/// <summary>
+		/// sends a message
+		/// </summary>
+		/// <typeparam name="TMsg">message type</typeparam>
+		/// <typeparam name="T">entity type</typeparam>
+		/// <param name="payload">entity</param>
+		/// <returns>result</returns>
+		public Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
+		{
             if (!Created)
             {
                 return Task.FromResult(false);

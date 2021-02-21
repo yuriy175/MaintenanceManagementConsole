@@ -14,14 +14,22 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using MessagesSender.BL.BusWrappers.Helpers;
+using System.Collections.Generic;
 
 namespace MessagesSender.BL.Remoting
 {
-    /// <summary>
-    /// RabbitMQ mqtt sender class
-    /// </summary>
-    public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
-    {
+	/// <summary>
+	/// RabbitMQ mqtt sender class
+	/// </summary>
+	public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
+	{
+		private readonly ILogger _logger;
+		private readonly Dictionary<string, string> _topicMap = new Dictionary<string, string>
+		{
+			{ MQCommands.StudyInWork.ToString(), "/study"},
+			{ MQCommands.HwConnectionStateArrived.ToString(), "/generator/state"},
+		};
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RabbitMQBase"/> class.
         /// </summary>
@@ -31,26 +39,34 @@ namespace MessagesSender.BL.Remoting
             IConfigurationService configurationService,
             ILogger logger) : base(configurationService, logger)
         {
-        }
+			_logger = logger;
 
-        /// <summary>
-        /// sends a message
-        /// </summary>
-        /// <typeparam name="T">entity type</typeparam>
-        /// <param name="payload">entity</param>
-        /// <returns>result</returns>
-        public Task<bool> SendAsync<T>(T payload)
+		}
+
+		/// <summary>
+		/// sends a message
+		/// </summary>
+		/// <typeparam name="TMsg">message type</typeparam>
+		/// <typeparam name="T">entity type</typeparam>
+		/// <param name="payload">entity</param>
+		/// <returns>result</returns>
+		public Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
         {
             if (!Created)
             {
                 return Task.FromResult(false);
             }
+			var msgTypeKey = msgType.ToString();
+			var topic = _topicMap.ContainsKey(msgTypeKey) ? _topicMap[msgTypeKey] : string.Empty;
+			if (string.IsNullOrEmpty(topic))
+			{
+			}
 
             _ = Task.Run(async () =>
             {
                 var content = JsonConvert.SerializeObject(payload);
                 var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
-                    .WithTopic(Topic+@"/study")
+                    .WithTopic($"{Topic} + {topic}")
                     .WithPayload(Encoding.UTF8.GetBytes(content)) // "messa")) // payload)
                     .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
                     .WithRetainFlag(false) // retainFlag)
