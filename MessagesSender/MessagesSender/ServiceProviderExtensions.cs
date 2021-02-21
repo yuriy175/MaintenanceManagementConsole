@@ -17,13 +17,16 @@ namespace MessagesSender
     public static class ServiceProviderExtensions
     {
         /// <summary>
-        /// Add journal service.
+        /// Add application services.
         /// </summary>
         /// <param name="services">service collection.</param>
         /// <returns>updated service collection.</returns>
-        public static IServiceCollection AddSystemService(this IServiceCollection services)
+        public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
-
+            services.AddSingleton(
+               typeof(IHardwareStateService),
+               typeof(HardwareStateService));
+            
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));

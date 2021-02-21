@@ -33,7 +33,7 @@ namespace MessagesSender
                         .AddMQRemotingServices<MQCommunicationService>()
                         .AddEntityServices()
                         .AddRemotingServices()
-                        .AddSystemService());
+                        .AddAppServices());
 
         static void Configure(IServiceProvider services)
         {

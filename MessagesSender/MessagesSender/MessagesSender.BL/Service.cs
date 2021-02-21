@@ -15,6 +15,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using MessagesSender.Core.Model;
+using Atlas.Acquisitions.Common.Core.Model;
 
 namespace MessagesSender.BL
 {
@@ -26,7 +27,8 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
-        private readonly IMqttReceiver _mqttReceiver;        
+        private readonly IMqttReceiver _mqttReceiver;
+        private readonly IHardwareStateService _hwStateService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -47,6 +49,7 @@ namespace MessagesSender.BL
         /// <param name="wqSender">work queue sender</param>
         /// <param name="mqttSender">mqtt sender</param>
         /// <param name="mqttReceiver">mqtt receiver</param>
+        /// <param name="hwStateService">hardware state service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
@@ -54,7 +57,8 @@ namespace MessagesSender.BL
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
             IMqttSender mqttSender,
-            IMqttReceiver mqttReceiver)
+            IMqttReceiver mqttReceiver,
+            IHardwareStateService hwStateService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -63,6 +67,7 @@ namespace MessagesSender.BL
             _wqSender = wqSender;
             _mqttSender = mqttSender;
             _mqttReceiver = mqttReceiver;
+            _hwStateService = hwStateService;
 
             new Action[]
                 {
@@ -92,8 +97,19 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, int>(
                     (MQCommands.StudyInWork, async data => OnStudyInWorkAsync(data)));
 
-                _mqService.Subscribe<MQCommands, (int Id, string Name, string Type, DeviceConnectionState Connection)>(
-                        (MQCommands.HwConnectionStateArrived, state => OnConnectionStateArrivedAsync(state)));
+                // _mqService.Subscribe<MQCommands, (int Id, string Name, string Type, DeviceConnectionState Connection)>(
+                //        (MQCommands.HwConnectionStateArrived, state => OnConnectionStateArrivedAsync(state)));
+                _mqService.Subscribe<MQCommands, (int Id, GeneratorState State)>(
+                    (MQCommands.GeneratorStateArrived, state => OnGeneratorState(state)));
+
+                _mqService.Subscribe<MQCommands, (int Id, StandState State)>(
+                    (MQCommands.StandStateArrived, state => OnStandState(state)));
+
+                _mqService.Subscribe<MQCommands, (int Id, CollimatorState State)>(
+                    (MQCommands.CollimatorStateArrived, state => OnCollimatorState(state)));
+
+                //_mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
+                //    (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
                 _mqService.Subscribe<MQCommands, int>(
                         (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
@@ -176,6 +192,33 @@ namespace MessagesSender.BL
                     msgType = msgType.ToString(),
                     info,
                 });
+        }
+
+        private void OnStandState((int Id, StandState State) state)
+        {
+            var standState = _hwStateService.GetStandState(state.State);
+            if (standState != null)
+            {
+                _ = SendInfoAsync( _mqttSender, MQCommands.StandStateArrived, standState);
+            }
+        }
+
+        private void OnGeneratorState((int Id, GeneratorState State) state)
+        {
+            var standState = _hwStateService.GetGeneratorState(state.State);
+            if (standState != null)
+            {
+                _ = SendInfoAsync(_mqttSender, MQCommands.GeneratorStateArrived, standState);
+            }
+        }
+
+        private void OnCollimatorState((int Id, CollimatorState State) state)
+        {
+            var standState = _hwStateService.GetCollimatorState(state.State);
+            if (standState != null)
+            {
+                _ = SendInfoAsync(_mqttSender, MQCommands.CollimatorStateArrived, standState);
+            }
         }
     }
 }

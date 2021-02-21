@@ -23,11 +23,15 @@ namespace MessagesSender.BL.Remoting
 	/// </summary>
 	public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
 	{
+		private const string CommandSubTopic = "/command";
+
 		private readonly ILogger _logger;
 		private readonly Dictionary<string, string> _topicMap = new Dictionary<string, string>
 		{
 			{ MQCommands.StudyInWork.ToString(), "/study"},
-			{ MQCommands.HwConnectionStateArrived.ToString(), "/generator/state"},
+			{ MQCommands.GeneratorStateArrived.ToString(), "/generator/state"},
+			{ MQCommands.StandStateArrived.ToString(), "/stand/state"},
+			{ MQCommands.CollimatorStateArrived.ToString(), "/collimator/state"},
 		};
 
         /// <summary>
@@ -67,7 +71,7 @@ namespace MessagesSender.BL.Remoting
                 var content = JsonConvert.SerializeObject(payload);
                 var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
                     .WithTopic($"{Topic} + {topic}")
-                    .WithPayload(Encoding.UTF8.GetBytes(content)) // "messa")) // payload)
+                    .WithPayload(Encoding.UTF8.GetBytes(content))
                     .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
                     .WithRetainFlag(false) // retainFlag)
                     .Build());
@@ -111,7 +115,7 @@ namespace MessagesSender.BL.Remoting
 				});
 
 				await Client.SubscribeAsync(new TopicFilterBuilder()
-					.WithTopic("KRT/12RTGPD3535" + "/command")
+					.WithTopic(Topic + CommandSubTopic)
 					.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
 					.Build());
 			}

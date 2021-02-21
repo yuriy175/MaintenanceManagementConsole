@@ -3,6 +3,7 @@
 	"/study",
     	"/stand/state",
 	"/generator/state",
+	"/detector/state",
 	"/hdd"
 	]
 }
