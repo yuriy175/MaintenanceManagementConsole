@@ -14,10 +14,11 @@ func main() {
 	intCh := make(chan int)
 	equipDalCh := make(chan *Models.EquipmentMessage)
 
+	mqttReceiverService := &BL.MqttReceiverService{}
 	go DAL.DalWorker(equipDalCh)
-	go BL.RabbitMqReceiver(equipDalCh)
+	go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh)
 	// go BL.MqttReceiver(equipDalCh)
-	go BL.HttpServer()
+	go BL.HttpServer(mqttReceiverService)
 
 	fmt.Println("Hello Go")
 	<-intCh

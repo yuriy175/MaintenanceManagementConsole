@@ -8,7 +8,7 @@ import (
 	"../DAL"
 )
 
-func HttpServer() {
+func HttpServer(mqttReceiverService *MqttReceiverService) {
 
 	/*http.HandleFunc("/contact", func(w http.ResponseWriter, r *http.Request){
 	    fmt.Fprint(w, "Contact Page")
@@ -34,11 +34,7 @@ func HttpServer() {
 	})
 
 	http.HandleFunc("/commands/", func(w http.ResponseWriter, r *http.Request) {
-		devices := DAL.DalGetStudiesInWork()
-		for _, study := range devices {
-			fmt.Fprintf(w, "time %s study : %d dicom : %s name : %s\n",
-				study.DateTime.Format(time.RFC3339), study.StudyId, study.StudyDicomUid, study.StudyName)
-		}
+		mqttReceiverService.SendCommand("KRT/HOMEPC", "runTV")
 
 		fmt.Fprint(w, "Index Page")
 	})

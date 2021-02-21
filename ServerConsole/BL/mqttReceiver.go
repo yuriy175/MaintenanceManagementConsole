@@ -9,7 +9,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func MqttReceiver(rootTopic string, subTopics []string, equipDalCh chan *Models.EquipmentMessage) mqtt.Client {
+type MqttClient struct {
+	Client mqtt.Client
+	Topic  string
+}
+
+func CreateMqttClient(rootTopic string, subTopics []string, equipDalCh chan *Models.EquipmentMessage) *MqttClient {
 	//quitCh := make(chan int)
 
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -45,8 +50,6 @@ func MqttReceiver(rootTopic string, subTopics []string, equipDalCh chan *Models.
 	}
 
 	go func() {
-		// topic := "topic/test"
-		// token := client.Subscribe(topic, 1, nil)
 		var topics = map[string]byte{}
 		topics[rootTopic] = 0
 		for _, value := range subTopics {
@@ -58,31 +61,15 @@ func MqttReceiver(rootTopic string, subTopics []string, equipDalCh chan *Models.
 		fmt.Printf("Subscribed to topic: %s", rootTopic)
 	}()
 
-	return client
-	// sub(client)
-	// publish(client)
-
-	// client.Disconnect(250000)
-
-	// log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
-
-	// <-quitCh
-	//fmt.Println("DalWorker quitted")
+	return &MqttClient{client, rootTopic}
 }
 
-/*func publish(client mqtt.Client) {
-	num := 5
-	for i := 0; i < num; i++ {
-		text := fmt.Sprintf("Message %d qwerty", i)
-		token := client.Publish("topic/test", 0, false, text)
-		token.Wait()
-		time.Sleep(time.Second * 5)
-	}
+func (client *MqttClient) Disconnect() {
+	client.Client.Disconnect(0)
 }
 
-func sub(client mqtt.Client) {
-	topic := "topic/test"
-	token := client.Subscribe(topic, 1, nil)
-	token.Wait()
-	fmt.Printf("Subscribed to topic: %s", topic)
-}*/
+func (client *MqttClient) SendCommand(command string) {
+	commandTopic := client.Topic + "/command"
+	client.Client.Publish(commandTopic, 0, false, command)
+	fmt.Println(commandTopic + " " + command)
+}

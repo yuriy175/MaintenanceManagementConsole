@@ -9,7 +9,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func RabbitMqReceiver(equipDalCh chan *Models.EquipmentMessage) {
+func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan *Models.EquipmentMessage) {
 	quitCh := make(chan int)
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
@@ -60,7 +60,7 @@ func RabbitMqReceiver(equipDalCh chan *Models.EquipmentMessage) {
 			fmt.Printf("%+v\n", content)
 
 			if content.MsgType == Models.MsgTypeInstanceOn || content.MsgType == Models.MsgTypeInstanceOff {
-				MqttReceiverFactory(equipDalCh, &content)
+				mqttReceiverService.UpdateMqtt(equipDalCh, &content)
 			} else {
 				equipDalCh <- &content
 			}
