@@ -7,6 +7,7 @@ const (
 	EquipmentTableName         = "Equipment"
 	DeviceConnectionsTableName = "DeviceConnections"
 	StudyInWorkTableName       = "StudyInWork"
+	HddDrivesInfoTableName     = "HddDrivesInfo"
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
 	//"Server=mprom.ml;User=client1;Password=medtex"
@@ -21,4 +22,5 @@ const (
 	MsgTypeStudyInWork              = "StudyInWork"
 	MsgTypeNewImageCreated          = "NewImageCreated"
 	MsgTypeHwConnectionStateArrived = "HwConnectionStateArrived"
+	MsgTypeHddDrivesInfo            = "HddDrivesInfo"
 )

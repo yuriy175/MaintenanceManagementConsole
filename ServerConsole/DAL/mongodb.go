@@ -13,10 +13,7 @@ import (
 func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 	quitCh := make(chan int)
 
-	session, err := mgo.Dial(Models.MongoDBConnectionString)
-	if err != nil {
-		panic(err)
-	}
+	session := dalCreateSession()
 	defer session.Close()
 
 	db := session.DB(Models.DBName)
@@ -42,7 +39,7 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					DeviceType:       deviceType,
 					DeviceConnection: deviceConnection,
 				}
-				err = deviceCollection.Insert(model)
+				deviceCollection.Insert(model)
 			} else if d.MsgType == Models.MsgTypeStudyInWork {
 				studyId := d.Info["StudyId"].(float64)
 				studyDicomUid := d.Info["StudyDicomUid"].(string)
@@ -58,7 +55,23 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					StudyDicomUid: studyDicomUid,
 					StudyName:     studyName,
 				}
-				err = studiesCollection.Insert(model)
+				studiesCollection.Insert(model)
+			} else if d.MsgType == Models.MsgTypeHddDrivesInfo {
+				/*hddName := d.Info["HddName"].(string)
+				hddTotalSpace := d.Info["TotalSize"].(float64)
+				hddFreeSpace := d.Info["FreeSize"].(float64)
+
+				model := &Models.HddDrivesInfoModel{
+					Id:            bson.NewObjectId(),
+					DateTime:      time.Now(),
+					EquipNumber:   d.EquipNumber,
+					EquipName:     d.EquipName,
+					EquipIP:       d.EquipIP,
+					HddName:       hddName,
+					HddTotalSpace: hddTotalSpace,
+					HddFreeSpace:  hddFreeSpace,
+				}
+				studiesCollection.Insert(model)*/
 			}
 		}
 	}() //deviceCollection)
@@ -68,10 +81,7 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 }
 
 func DalGetDeviceConnections() []Models.DeviceConnectionModel {
-	session, err := mgo.Dial(Models.MongoDBConnectionString)
-	if err != nil {
-		panic(err)
-	}
+	session := dalCreateSession()
 	defer session.Close()
 
 	deviceCollection := session.DB(Models.DBName).C(Models.DeviceConnectionsTableName)
@@ -86,10 +96,7 @@ func DalGetDeviceConnections() []Models.DeviceConnectionModel {
 }
 
 func DalGetStudiesInWork() []Models.StudyInWorkModel {
-	session, err := mgo.Dial(Models.MongoDBConnectionString)
-	if err != nil {
-		panic(err)
-	}
+	session := dalCreateSession()
 	defer session.Close()
 
 	studiesCollection := session.DB(Models.DBName).C(Models.StudyInWorkTableName)
@@ -101,4 +108,28 @@ func DalGetStudiesInWork() []Models.StudyInWorkModel {
 	studiesCollection.Find(query).All(&studies)
 
 	return studies
+}
+
+func DalGetHddDrivesInfo() []Models.HddDrivesInfoModel {
+	session := dalCreateSession()
+	defer session.Close()
+
+	drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+
+	// критерий выборки
+	query := bson.M{}
+	// объект для сохранения результата
+	drives := []Models.HddDrivesInfoModel{}
+	drivesCollection.Find(query).All(&drives)
+
+	return drives
+}
+
+func dalCreateSession() *mgo.Session {
+	session, err := mgo.Dial(Models.MongoDBConnectionString)
+	if err != nil {
+		panic(err)
+	}
+
+	return session
 }

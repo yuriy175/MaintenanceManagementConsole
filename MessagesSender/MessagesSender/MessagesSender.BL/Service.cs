@@ -27,8 +27,9 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
-        private readonly IMqttReceiver _mqttReceiver;
         private readonly IHardwareStateService _hwStateService;
+        private readonly IHddWatchService _hddWatchService;
+        private readonly IDicomStateService _dicomStateService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -48,8 +49,9 @@ namespace MessagesSender.BL
         /// <param name="mqService">MQ service</param>
         /// <param name="wqSender">work queue sender</param>
         /// <param name="mqttSender">mqtt sender</param>
-        /// <param name="mqttReceiver">mqtt receiver</param>
         /// <param name="hwStateService">hardware state service</param>
+        /// <param name="hddWatchService">hdd watch service</param>
+        /// <param name="dicomStateService">dicom state service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
@@ -57,8 +59,9 @@ namespace MessagesSender.BL
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
             IMqttSender mqttSender,
-            IMqttReceiver mqttReceiver,
-            IHardwareStateService hwStateService)
+            IHardwareStateService hwStateService,
+            IHddWatchService hddWatchService,
+            IDicomStateService dicomStateService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -66,8 +69,9 @@ namespace MessagesSender.BL
             _mqService = mqService;
             _wqSender = wqSender;
             _mqttSender = mqttSender;
-            _mqttReceiver = mqttReceiver;
             _hwStateService = hwStateService;
+            _hddWatchService = hddWatchService;
+            _dicomStateService = dicomStateService;
 
             new Action[]
                 {
@@ -76,8 +80,8 @@ namespace MessagesSender.BL
                     {
                         await GetEquipmentInfoAsync();
                         await _mqttSender.CreateAsync(_equipmentInfo);
-                        await _mqttReceiver.CreateAsync(_equipmentInfo);
                         await OnServiceStateChangedAsync(true);
+                        await OnHddStateChangedAsync();
                     },
                     () => _ = GetEquipmentIPAsync(),
                 }.RunTasksAsync();
@@ -87,7 +91,7 @@ namespace MessagesSender.BL
 
         public void Dispose()
         {
-            OnServiceStateChangedAsync(false);
+            _ = OnServiceStateChangedAsync(false).Result;
         }
 
         private Task SubscribeMQRecevers()
@@ -168,7 +172,7 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnServiceStateChangedAsync(bool isOn)
         {
-            _ = SendInfoAsync(
+            await SendInfoAsync(
                 _wqSender,
                 isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
                 new { });
@@ -218,6 +222,15 @@ namespace MessagesSender.BL
             if (standState != null)
             {
                 _ = SendInfoAsync(_mqttSender, MQCommands.CollimatorStateArrived, standState);
+            }
+        }
+
+        private async Task OnHddStateChangedAsync()
+        {
+            var hddDrives = await _hddWatchService.GetDriveInfosAsync();
+            if (hddDrives != null)
+            {
+                _ = SendInfoAsync(_mqttSender, MQMessages.HddDrivesInfo, hddDrives);
             }
         }
     }

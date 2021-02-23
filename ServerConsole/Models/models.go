@@ -28,3 +28,14 @@ type StudyInWorkModel struct {
 	StudyDicomUid string
 	StudyName     string
 }
+
+type HddDrivesInfoModel struct {
+	Id            bson.ObjectId `bson:"_id"`
+	DateTime      time.Time
+	EquipNumber   string
+	EquipName     string
+	EquipIP       string
+	HddName       string
+	HddTotalSpace float64
+	HddFreeSpace  float64
+}

@@ -18,11 +18,11 @@ func CreateMqttClient(rootTopic string, subTopics []string, equipDalCh chan *Mod
 	//quitCh := make(chan int)
 
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-		fmt.Println("Connected")
+		fmt.Println("Connected " + rootTopic)
 	}
 
 	var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-		fmt.Printf("Connect lost: %v", err)
+		fmt.Printf("Connect lost: %s %v", rootTopic, err)
 	}
 
 	var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {

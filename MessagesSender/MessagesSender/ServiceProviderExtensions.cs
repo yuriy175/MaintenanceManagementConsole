@@ -26,7 +26,15 @@ namespace MessagesSender
             services.AddSingleton(
                typeof(IHardwareStateService),
                typeof(HardwareStateService));
-            
+
+            services.AddSingleton(
+               typeof(IHddWatchService),
+               typeof(HddWatchService));
+
+            services.AddSingleton(
+               typeof(IDicomStateService),
+               typeof(DicomStateService));
+
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));
@@ -101,11 +109,7 @@ namespace MessagesSender
         {
             services.AddSingleton(
                typeof(IMqttSender),
-               typeof(RabbitMQTTSender));
-
-            services.AddSingleton(
-               typeof(IMqttReceiver),
-               typeof(RabbitMQTTReceiver));            
+               typeof(RabbitMQTTSender));    
 
             return services.AddSingleton(
                typeof(IWorkqueueSender),

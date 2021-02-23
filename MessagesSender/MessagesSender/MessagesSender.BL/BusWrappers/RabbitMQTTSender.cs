@@ -15,6 +15,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using MessagesSender.BL.BusWrappers.Helpers;
 using System.Collections.Generic;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.BL.Remoting
 {
@@ -24,6 +25,7 @@ namespace MessagesSender.BL.Remoting
 	public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
 	{
 		private const string CommandSubTopic = "/command";
+		private const int ConnectWaitingAttempts = 5;
 
 		private readonly ILogger _logger;
 		private readonly Dictionary<string, string> _topicMap = new Dictionary<string, string>
@@ -32,6 +34,8 @@ namespace MessagesSender.BL.Remoting
 			{ MQCommands.GeneratorStateArrived.ToString(), "/generator/state"},
 			{ MQCommands.StandStateArrived.ToString(), "/stand/state"},
 			{ MQCommands.CollimatorStateArrived.ToString(), "/collimator/state"},
+			// { MQCommands.CollimatorStateArrived.ToString(), "/detector/state"},
+			{ MQMessages.HddDrivesInfo.ToString(), "/hdd"},
 		};
 
         /// <summary>
@@ -54,23 +58,26 @@ namespace MessagesSender.BL.Remoting
 		/// <typeparam name="T">entity type</typeparam>
 		/// <param name="payload">entity</param>
 		/// <returns>result</returns>
-		public Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
+		public async Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
         {
             if (!Created)
             {
-                return Task.FromResult(false);
+                return false;
             }
 			var msgTypeKey = msgType.ToString();
-			var topic = _topicMap.ContainsKey(msgTypeKey) ? _topicMap[msgTypeKey] : string.Empty;
-			if (string.IsNullOrEmpty(topic))
+			var subtopic = _topicMap.ContainsKey(msgTypeKey) ? _topicMap[msgTypeKey] : string.Empty;
+			if (string.IsNullOrEmpty(subtopic))
 			{
+				return false;
 			}
 
-            _ = Task.Run(async () =>
+			await CheckConnectedAsync();
+
+			_ = Task.Run(async () =>
             {
                 var content = JsonConvert.SerializeObject(payload);
                 var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
-                    .WithTopic($"{Topic} + {topic}")
+                    .WithTopic($"{Topic}{subtopic}")
                     .WithPayload(Encoding.UTF8.GetBytes(content))
                     .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
                     .WithRetainFlag(false) // retainFlag)
@@ -80,7 +87,7 @@ namespace MessagesSender.BL.Remoting
                 var tt = res;
             });
 
-            return Task.FromResult(true);
+            return true;
         }
 
         protected override string GetTopic((string Name, string Number) equipInfo)
@@ -128,6 +135,16 @@ namespace MessagesSender.BL.Remoting
 			}
 
 			return null;
+		}
+
+		private async Task CheckConnectedAsync()
+		{
+			int attempts = 0;
+			while (!Client.IsConnected && attempts++ < ConnectWaitingAttempts)
+			{
+				Console.WriteLine($"Sent to not connected {Topic}");
+				await Task.Delay(Client.Options.ConnectionCheckInterval);
+			}
 		}
 	}
 }

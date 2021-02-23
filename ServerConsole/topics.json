@@ -1,9 +1,12 @@
 {
   "Topics":[
 	"/study",
-    	"/stand/state",
+    "/stand/state",
 	"/generator/state",
 	"/detector/state",
+	"/collimator/state",
+	"/dosimeter/state",
+	"/dicom",
 	"/hdd"
 	]
 }
