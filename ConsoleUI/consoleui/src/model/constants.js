@@ -1,1 +1,1 @@
-//export const ServiceAddress = 'http://localhost:51975';
+export const EquipsServiceAddress = 'http://localhost:8181';

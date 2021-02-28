@@ -13,7 +13,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
-import MainInfoComponent from './MainInfoComponent';
+import MainToolBar from './MainToolBar';
+import MainInfoComponent from '../MainInfoComponent';
 
 const drawerWidth = 240;
 const mainMenu = ['Обзор', 'Карта', 'Журнал событий', 'История'];
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
   content: {
+    marginTop: 64, // `${drawerWidth}px`,
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing(3),
@@ -54,6 +56,7 @@ export default function MainComponent() {
   return (
     <div className={classes.root}>
       <CssBaseline />
+      <MainToolBar></MainToolBar>
       <Drawer
         className={classes.drawer}
         variant="permanent"

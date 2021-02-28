@@ -45,3 +45,16 @@ func (*MqttReceiverService) SendCommand(equipment string, command string) {
 
 	return
 }
+
+func (*MqttReceiverService) GetConnectionNames() []string {
+	// return []string{"first", "second"}
+	keys := make([]string, len(mqttConnections))
+
+	i := 0
+	for k := range mqttConnections {
+		keys[i] = k
+		i++
+	}
+
+	return keys
+}

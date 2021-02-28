@@ -1,19 +1,16 @@
 package BL
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
-	"../DAL"
+	"../Models"
 )
 
 func HttpServer(mqttReceiverService *MqttReceiverService) {
 
-	/*http.HandleFunc("/contact", func(w http.ResponseWriter, r *http.Request){
-	    fmt.Fprint(w, "Contact Page")
-	})*/
-	http.HandleFunc("/devices/", func(w http.ResponseWriter, r *http.Request) {
+	/*http.HandleFunc("/devices/", func(w http.ResponseWriter, r *http.Request) {
 		devices := DAL.DalGetDeviceConnections()
 		for _, device := range devices {
 			fmt.Fprintf(w, "time %s device : %d name : %s type : %s connection : %d\n",
@@ -37,8 +34,20 @@ func HttpServer(mqttReceiverService *MqttReceiverService) {
 		mqttReceiverService.SendCommand("KRT/HOMEPC", "runTV")
 
 		fmt.Fprint(w, "Index Page")
+	})*/
+	//
+
+	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+		equips := mqttReceiverService.GetConnectionNames()
+		json.NewEncoder(w).Encode(equips)
 	})
 
-	fmt.Println("Server is listening...")
-	http.ListenAndServe("localhost:8181", nil)
+	address := Models.HttpServerAddress
+	fmt.Println("http server is listening... " + address)
+	http.ListenAndServe(address, nil)
 }

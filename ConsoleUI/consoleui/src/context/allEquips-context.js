@@ -3,11 +3,17 @@ import React, { useReducer, createContext } from 'react';
 export const AllEquipsContext = createContext();
 
 const initialState = {
-  equips: [],
+  equips: null,
 };
 
 function reducer(state, action) {
   switch (action.type) {
+    case 'SETEQUIPS': {
+      return {
+        ...state,
+        equips: action.payload
+      };
+    }    
     case 'ADDEQUIP': {
       return {
         ...state,

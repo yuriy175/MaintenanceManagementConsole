@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import MainComponent from './components/MainComponent';
+import MainComponent from './components/mainComponents/MainComponent';
 import './App.css';
 
 function App() {
