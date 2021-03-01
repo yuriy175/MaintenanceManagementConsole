@@ -11,6 +11,7 @@ import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 
 import * as EquipWorker from '../../workers/equipWorker'
+import * as WebSocket from '../../workers/webSocket'
 
 const drawerWidth = 240;
 
@@ -53,7 +54,7 @@ export default function MainToolBar() {
 
           const equips = await EquipWorker.GetAllEquips();
           allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
-          if(equips?.length === 0)     
+          if(!equips || equips?.length === 0)     
           {
             return;
           }

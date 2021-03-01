@@ -19,6 +19,7 @@ func main() {
 	go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh)
 	// go BL.MqttReceiver(equipDalCh)
 	go BL.HttpServer(mqttReceiverService)
+	go BL.WebServer()
 
 	fmt.Println("Hello Go")
 	<-intCh
