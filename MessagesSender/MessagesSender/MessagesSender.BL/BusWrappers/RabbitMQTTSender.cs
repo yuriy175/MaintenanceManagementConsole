@@ -25,6 +25,7 @@ namespace MessagesSender.BL.Remoting
 	public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
 	{
 		private const string CommandSubTopic = "/command";
+
 		private const int ConnectWaitingAttempts = 5;
 
 		private readonly ILogger _logger;
@@ -38,17 +39,16 @@ namespace MessagesSender.BL.Remoting
 			{ MQMessages.HddDrivesInfo.ToString(), "/hdd"},
 		};
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RabbitMQBase"/> class.
-        /// </summary>
-        /// <param name="configurationService">configuration service</param>
-        /// <param name="logger">logger</param>
-        public RabbitMQTTSender(
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RabbitMQBase"/> class.
+		/// </summary>
+		/// <param name="configurationService">configuration service</param>
+		/// <param name="logger">logger</param>
+		public RabbitMQTTSender(
             IConfigurationService configurationService,
             ILogger logger) : base(configurationService, logger)
         {
 			_logger = logger;
-
 		}
 
 		/// <summary>
@@ -90,7 +90,9 @@ namespace MessagesSender.BL.Remoting
             return true;
         }
 
-        protected override string GetTopic((string Name, string Number) equipInfo)
+		public Action<string> OnCommandArrived { get; set; } = command => { };
+
+		protected override string GetTopic((string Name, string Number) equipInfo)
             => $"{equipInfo.Name}/{equipInfo.Number}";
 
 		protected override async Task<IManagedMqttClient> CreateConnection(ConnectionFactory connectionFactory)
@@ -111,8 +113,9 @@ namespace MessagesSender.BL.Remoting
 
 						if (string.IsNullOrWhiteSpace(topic) == false)
 						{
-							string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-							Console.WriteLine($"Topic: {topic}. Message Received: {payload}");
+							string command = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+							OnCommandArrived(command);
+							Console.WriteLine($"Topic: {topic}. Message Received: {command}");
 						}
 					}
 					catch (Exception ex)

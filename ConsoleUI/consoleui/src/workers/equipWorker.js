@@ -21,3 +21,11 @@ export async function GetAllEquips() {
         return response.data;
     });
 };
+
+export async function Activate(equipInfo) {
+    return await HandlerWrapper('Activate', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController +
+            '/Activate?equipInfo=' + equipInfo);
+        return response.data;
+    });
+};

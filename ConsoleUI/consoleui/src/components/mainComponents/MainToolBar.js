@@ -8,6 +8,8 @@ import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 
 import { AllEquipsContext } from '../../context/allEquips-context';
+import { CurrentEquipContext } from '../../context/currentEquip-context';
+
 import * as EquipWorker from '../../workers/equipWorker'
 
 const drawerWidth = 240;
@@ -32,6 +34,7 @@ export default function MainToolBar() {
 
   const classes = useStyles();
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [currEquip, setCurrEquip] = React.useState('none');
 
   const handleEquipsChange = (event) => {
@@ -49,7 +52,15 @@ export default function MainToolBar() {
           }
 
           const equips = await EquipWorker.GetAllEquips();
-          allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });        
+          allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
+          if(equips?.length === 0)     
+          {
+            return;
+          }
+
+          const equipInfo = equips[0];
+          await EquipWorker.Activate(equipInfo);
+          currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo });   
       })();
   }, [allEquipsState.equips]);
 
@@ -61,7 +72,7 @@ export default function MainToolBar() {
             </Typography>
             <FormControl className={classes.formControl}>
               <NativeSelect
-                value={currEquip}
+                value={currEquipState}
                 onChange={handleEquipsChange}
                 name="equips"
                 className={classes.selectEmpty}

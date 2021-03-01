@@ -24,12 +24,8 @@ namespace MessagesSender.BL
         private readonly ISettingsEntityService _dbSettingsEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;        
         private readonly ILogger _logger;
+        private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
-        private readonly IWorkqueueSender _wqSender;
-        private readonly IMqttSender _mqttSender;
-        private readonly IHardwareStateService _hwStateService;
-        private readonly IHddWatchService _hddWatchService;
-        private readonly IDicomStateService _dicomStateService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -46,44 +42,29 @@ namespace MessagesSender.BL
         /// <param name="dbSettingsEntityService">settings database connector</param>
         /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
+        /// <param name="sendingService">sending service</param>
         /// <param name="mqService">MQ service</param>
-        /// <param name="wqSender">work queue sender</param>
-        /// <param name="mqttSender">mqtt sender</param>
-        /// <param name="hwStateService">hardware state service</param>
-        /// <param name="hddWatchService">hdd watch service</param>
-        /// <param name="dicomStateService">dicom state service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
-            IMQCommunicationService mqService,
-            IWorkqueueSender wqSender,
-            IMqttSender mqttSender,
-            IHardwareStateService hwStateService,
-            IHddWatchService hddWatchService,
-            IDicomStateService dicomStateService)
+            ISendingService sendingService,
+            IMQCommunicationService mqService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
+            _sendingService = sendingService;
             _mqService = mqService;
-            _wqSender = wqSender;
-            _mqttSender = mqttSender;
-            _hwStateService = hwStateService;
-            _hddWatchService = hddWatchService;
-            _dicomStateService = dicomStateService;
 
             new Action[]
                 {
                     () => _ = SubscribeMQRecevers(),
                     async () =>
                     {
-                        await GetEquipmentInfoAsync();
-                        await _mqttSender.CreateAsync(_equipmentInfo);
+                        await _sendingService.CreateAsync();
                         await OnServiceStateChangedAsync(true);
-                        await OnHddStateChangedAsync();
-                    },
-                    () => _ = GetEquipmentIPAsync(),
+                    }
                 }.RunTasksAsync();
 
             _logger.Information("Main service started");
@@ -103,6 +84,7 @@ namespace MessagesSender.BL
 
                 // _mqService.Subscribe<MQCommands, (int Id, string Name, string Type, DeviceConnectionState Connection)>(
                 //        (MQCommands.HwConnectionStateArrived, state => OnConnectionStateArrivedAsync(state)));
+                /*
                 _mqService.Subscribe<MQCommands, (int Id, GeneratorState State)>(
                     (MQCommands.GeneratorStateArrived, state => OnGeneratorState(state)));
 
@@ -111,6 +93,7 @@ namespace MessagesSender.BL
 
                 _mqService.Subscribe<MQCommands, (int Id, CollimatorState State)>(
                     (MQCommands.CollimatorStateArrived, state => OnCollimatorState(state)));
+                    */
 
                 //_mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                 //    (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
@@ -118,23 +101,6 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, int>(
                         (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
             });
-        }
-
-        private async Task GetEquipmentInfoAsync()
-        {
-            _equipmentInfo = await _dbSettingsEntityService.GetEquipmentInfoAsync();
-        }
-
-        private async Task GetEquipmentIPAsync()
-        {
-            if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
-            {
-                return;
-            }
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-            _ipAddress = host
-               .AddressList
-               .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
         }
 
         private async Task<bool> OnStudyInWorkAsync(int studyId)
@@ -146,12 +112,9 @@ namespace MessagesSender.BL
                 return false;
             }
 
-            _ = SendInfoAsync(
-                _mqttSender,
+            return await _sendingService.SendInfoToMqttAsync(
                 MQCommands.StudyInWork,
                 new { studyProps.Value.StudyId, studyProps.Value.StudyDicomUid, studyProps.Value.StudyName });
-
-            return true;
         }
 
         private async Task<bool> OnNewImageCreatedAsync(int imageId)
@@ -163,42 +126,19 @@ namespace MessagesSender.BL
         private async Task<bool> OnConnectionStateArrivedAsync(
             (int Id, string Name, string Type, DeviceConnectionState Connection) state)
         {
-            _ = SendInfoAsync(
-                _mqttSender,
+            return await _sendingService.SendInfoToMqttAsync(
                 MQCommands.HwConnectionStateArrived, 
                 new { state.Id, state.Name, state.Type, state.Connection });
-            return true;
         }
 
         private async Task<bool> OnServiceStateChangedAsync(bool isOn)
         {
-            await SendInfoAsync(
-                _wqSender,
+            return await _sendingService.SendInfoToWorkQueueAsync(
                 isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
                 new { });
-            return true;
         }
 
-        private async Task SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
-        {
-            if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
-            {
-                _logger.Error($"wrong equipment props {_equipmentInfo.Number} {_equipmentInfo.Name}");
-                return;
-            }
-
-            await sender.SendAsync(
-				msgType,
-				new { 
-                    _equipmentInfo.Number, 
-                    _equipmentInfo.Name, 
-                    ipAddress = _ipAddress?.ToString(),
-                    msgType = msgType.ToString(),
-                    info,
-                });
-        }
-
-        private void OnStandState((int Id, StandState State) state)
+        /*private void OnStandState((int Id, StandState State) state)
         {
             var standState = _hwStateService.GetStandState(state.State);
             if (standState != null)
@@ -223,15 +163,6 @@ namespace MessagesSender.BL
             {
                 _ = SendInfoAsync(_mqttSender, MQCommands.CollimatorStateArrived, standState);
             }
-        }
-
-        private async Task OnHddStateChangedAsync()
-        {
-            var hddDrives = await _hddWatchService.GetDriveInfosAsync();
-            if (hddDrives != null)
-            {
-                _ = SendInfoAsync(_mqttSender, MQMessages.HddDrivesInfo, hddDrives);
-            }
-        }
+        }*/
     }
 }

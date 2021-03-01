@@ -3,6 +3,7 @@ package BL
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"../Models"
@@ -36,6 +37,23 @@ func HttpServer(mqttReceiverService *MqttReceiverService) {
 		fmt.Fprint(w, "Index Page")
 	})*/
 	//
+
+	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		equipInfos, ok := r.URL.Query()["equipInfo"]
+
+		if !ok || len(equipInfos[0]) < 1 {
+			log.Println("Url Param 'equipInfo' is missing")
+			return
+		}
+		equipInfo := equipInfos[0]
+
+		mqttReceiverService.SendCommand(equipInfo, "activate")
+		log.Println("Url Param 'key' is: " + string(equipInfo))
+	})
 
 	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin

@@ -24,6 +24,14 @@ namespace MessagesSender
         public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
             services.AddSingleton(
+               typeof(ICommandService),
+               typeof(CommandService));
+
+            services.AddSingleton(
+               typeof(ISendingService),
+               typeof(SendingService));
+            
+            services.AddSingleton(
                typeof(IHardwareStateService),
                typeof(HardwareStateService));
 

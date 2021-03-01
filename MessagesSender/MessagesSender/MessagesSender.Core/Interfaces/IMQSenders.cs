@@ -35,6 +35,8 @@ namespace MessagesSender.Core.Interfaces
     /// </summary>
     public interface IMqttSender : IMQSenderBase
     {
+        Action<string> OnCommandArrived { get; set; }
+
         /// <summary>
         /// creates sender
         /// </summary>

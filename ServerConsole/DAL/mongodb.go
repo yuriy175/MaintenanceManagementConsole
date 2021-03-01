@@ -1,8 +1,8 @@
 package DAL
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -16,14 +16,14 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 	session := dalCreateSession()
 	defer session.Close()
 
-	db := session.DB(Models.DBName)
-	deviceCollection := db.C(Models.DeviceConnectionsTableName)
-	studiesCollection := db.C(Models.StudyInWorkTableName)
+	// db := session.DB(Models.DBName)
+	// deviceCollection := db.C(Models.DeviceConnectionsTableName)
+	// studiesCollection := db.C(Models.StudyInWorkTableName)
 
 	go func() { //c *mgo.Collection) {
 		for d := range equipDalCh {
 			if d.MsgType == Models.MsgTypeHwConnectionStateArrived {
-				deviceId := d.Info["Id"].(float64)
+				/*deviceId := d.Info["Id"].(float64)
 				deviceName := d.Info["Name"].(string)
 				deviceType := d.Info["Type"].(string)
 				deviceConnection := d.Info["Connection"].(float64)
@@ -39,9 +39,9 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					DeviceType:       deviceType,
 					DeviceConnection: deviceConnection,
 				}
-				deviceCollection.Insert(model)
+				deviceCollection.Insert(model)*/
 			} else if d.MsgType == Models.MsgTypeStudyInWork {
-				studyId := d.Info["StudyId"].(float64)
+				/*studyId := d.Info["StudyId"].(float64)
 				studyDicomUid := d.Info["StudyDicomUid"].(string)
 				studyName := d.Info["StudyName"].(string)
 
@@ -55,8 +55,14 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					StudyDicomUid: studyDicomUid,
 					StudyName:     studyName,
 				}
-				studiesCollection.Insert(model)
+				studiesCollection.Insert(model)*/
 			} else if d.MsgType == Models.MsgTypeHddDrivesInfo {
+				var params []Models.HddDrivesInfoMessage
+				json.Unmarshal(d.Info, &params)
+
+				i := 0
+				i++
+
 				/*hddName := d.Info["HddName"].(string)
 				hddTotalSpace := d.Info["TotalSize"].(float64)
 				hddFreeSpace := d.Info["FreeSize"].(float64)
