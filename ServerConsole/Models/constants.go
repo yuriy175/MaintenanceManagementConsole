@@ -24,4 +24,6 @@ const (
 	MsgTypeNewImageCreated          = "NewImageCreated"
 	MsgTypeHwConnectionStateArrived = "HwConnectionStateArrived"
 	MsgTypeHddDrivesInfo            = "HddDrivesInfo"
+
+	CommonTopicPath = "Subscribe"
 )

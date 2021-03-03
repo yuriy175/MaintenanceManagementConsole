@@ -28,7 +28,6 @@ namespace MessagesSender.BL
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
         private readonly IHardwareStateService _hwStateService;
-        private readonly ICommandService _commandService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -42,27 +41,20 @@ namespace MessagesSender.BL
         /// <param name="mqService">MQ service</param>
         /// <param name="wqSender">work queue sender</param>
         /// <param name="mqttSender">mqtt sender</param>
-        /// <param name="commandService">command service</param>
         public SendingService(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
-            IMqttSender mqttSender,
-            ICommandService commandService)
+            IMqttSender mqttSender)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _mqService = mqService;
             _wqSender = wqSender;
-            _mqttSender = mqttSender;
-            _commandService = commandService;
-
-            _mqttSender.OnCommandArrived = OnCommandArrived;
-
-            
+            _mqttSender = mqttSender;            
 
             _logger.Information("Main service started");
         }
@@ -96,7 +88,21 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> SendInfoToWorkQueueAsync<TMsgType, T>(TMsgType msgType, T info)
         {
-            return await SendInfoAsync(_wqSender, msgType, info);
+			if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
+			{
+				_logger.Error($"wrong equipment props {_equipmentInfo.Number} {_equipmentInfo.Name}");
+				return false;
+			}
+
+			return await SendInfoAsync(_wqSender, msgType,
+				new
+				{
+					_equipmentInfo.Number,
+					_equipmentInfo.Name,
+					ipAddress = _ipAddress?.ToString(),
+					msgType = msgType.ToString(),
+					info,
+				});
         }
 
         /// <summary>
@@ -111,25 +117,32 @@ namespace MessagesSender.BL
         {
             return await SendInfoAsync(_mqttSender, msgType, info);
         }
-        
-        private async Task<bool> SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
-        {
-            if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
-            {
-                _logger.Error($"wrong equipment props {_equipmentInfo.Number} {_equipmentInfo.Name}");
-                return false;
-            }
 
-            return await sender.SendAsync(
+		/// <summary>
+		/// sends info to common mqtt
+		/// </summary>
+		/// <typeparam name="T">info type</typeparam>
+		/// <param name="msgType">info type</param>
+		/// <param name="info">info</param>
+		/// <returns>result</returns>
+		public async Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info)
+		{
+			return await _mqttSender.SendCommonAsync(msgType, info);
+		}
+
+		private async Task<bool> SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
+        {
+			return await sender.SendAsync(
 				msgType,
-				new { 
+				info);
+				/*new { 
                     _equipmentInfo.Number, 
                     _equipmentInfo.Name, 
                     ipAddress = _ipAddress?.ToString(),
                     msgType = msgType.ToString(),
                     info,
-                });
-        }
+                });*/
+		}
 
         private async Task GetEquipmentInfoAsync()
         {
@@ -146,15 +159,6 @@ namespace MessagesSender.BL
             _ipAddress = host
                .AddressList
                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-        }
-
-        private async void OnCommandArrived(string command)
-        {
-            var commandResult = await _commandService.OnCommandArrivedAsync(command);
-            if (commandResult != null)
-            {
-                await SendInfoToMqttAsync(commandResult.Value.MsgType, commandResult.Value.Info);
-            }
         }
     }
 }

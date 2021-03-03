@@ -24,19 +24,22 @@ namespace MessagesSender.BL.Remoting
 	/// </summary>
 	public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
 	{
+		private const string CommonTopic = "Subscribe";
 		private const string CommandSubTopic = "/command";
 
 		private const int ConnectWaitingAttempts = 5;
 
 		private readonly ILogger _logger;
+		private readonly IEventPublisher _eventPublisher;
+
 		private readonly Dictionary<string, string> _topicMap = new Dictionary<string, string>
 		{
 			{ MQCommands.StudyInWork.ToString(), "/study"},
 			{ MQCommands.GeneratorStateArrived.ToString(), "/generator/state"},
 			{ MQCommands.StandStateArrived.ToString(), "/stand/state"},
 			{ MQCommands.CollimatorStateArrived.ToString(), "/collimator/state"},
-			// { MQCommands.CollimatorStateArrived.ToString(), "/detector/state"},
-			{ MQMessages.HddDrivesInfo.ToString(), "/hdd"},
+			{ MQCommands.DetectorStateArrived.ToString(), "/detector/state"},
+			{ MQMessages.HddDrivesInfo.ToString(), "/arm/hdd"},
 		};
 
 		/// <summary>
@@ -44,11 +47,14 @@ namespace MessagesSender.BL.Remoting
 		/// </summary>
 		/// <param name="configurationService">configuration service</param>
 		/// <param name="logger">logger</param>
+		/// <param name="eventPublisher">event publisher service</param>
 		public RabbitMQTTSender(
             IConfigurationService configurationService,
-            ILogger logger) : base(configurationService, logger)
+            ILogger logger,
+			IEventPublisher eventPublisher) : base(configurationService, logger)
         {
 			_logger = logger;
+			_eventPublisher = eventPublisher;
 		}
 
 		/// <summary>
@@ -71,26 +77,37 @@ namespace MessagesSender.BL.Remoting
 				return false;
 			}
 
-			await CheckConnectedAsync();
+			var content = JsonConvert.SerializeObject(payload);
 
-			_ = Task.Run(async () =>
-            {
-                var content = JsonConvert.SerializeObject(payload);
-                var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
-                    .WithTopic($"{Topic}{subtopic}")
-                    .WithPayload(Encoding.UTF8.GetBytes(content))
-                    .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
-                    .WithRetainFlag(false) // retainFlag)
-                    .Build());
-
-                Console.WriteLine($"Sent from SendAsync. {Topic} {res.ReasonCode} {content}");
-                var tt = res;
-            });
-
-            return true;
+			return await SendAsync(msgType, payload, $"{Topic}{subtopic}", content);
         }
 
-		public Action<string> OnCommandArrived { get; set; } = command => { };
+		/// <summary>
+		/// sends a message to a common mqtt
+		/// </summary>
+		/// <typeparam name="T">entity type</typeparam>
+		/// <param name="payload">entity</param>
+		/// <returns>result</returns>
+		public async Task<bool> SendCommonAsync<T>(MQMessages msgType, T payload)
+		{
+			if (!Created)
+			{
+				return false;
+			}
+
+			var content = string.Empty;
+			if (msgType.IsStateMQMessage())
+			{
+				content = "{\""+ Topic +"\" : " + (msgType == MQMessages.InstanceOff ? "\"off\"" : "\"on\"") + "}";
+			}
+			else
+			{
+				content = JsonConvert.SerializeObject(payload);
+			}
+
+			return await SendAsync(msgType, payload, CommonTopic, content);
+		}
+
 
 		protected override string GetTopic((string Name, string Number) equipInfo)
             => $"{equipInfo.Name}/{equipInfo.Number}";
@@ -114,7 +131,7 @@ namespace MessagesSender.BL.Remoting
 						if (string.IsNullOrWhiteSpace(topic) == false)
 						{
 							string command = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-							OnCommandArrived(command);
+							_eventPublisher.MqttCommandArrived(command);
 							Console.WriteLine($"Topic: {topic}. Message Received: {command}");
 						}
 					}
@@ -148,6 +165,26 @@ namespace MessagesSender.BL.Remoting
 				Console.WriteLine($"Sent to not connected {Topic}");
 				await Task.Delay(Client.Options.ConnectionCheckInterval);
 			}
+		}
+
+		private async Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload, string topic, string content)
+		{
+			await CheckConnectedAsync();
+
+			_ = Task.Run(async () =>
+			{
+				var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
+					.WithTopic(topic)
+					.WithPayload(Encoding.UTF8.GetBytes(content))
+					.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
+					.WithRetainFlag(false) // retainFlag)
+					.Build());
+
+				Console.WriteLine($"Sent from SendAsync. {topic} {res.ReasonCode} {content}");
+				var tt = res;
+			});
+
+			return true;
 		}
 	}
 }

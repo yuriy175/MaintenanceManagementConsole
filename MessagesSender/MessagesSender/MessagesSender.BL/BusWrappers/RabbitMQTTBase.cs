@@ -135,32 +135,7 @@ namespace MessagesSender.BL.Remoting
                 {
                     Console.WriteLine("Disconnected from MQTT Brokers." + connectionFactory.HostName);
                 });
-
-                /*
-                _mqttClient.UseApplicationMessageReceivedHandler(e =>
-                {
-                    try
-                    {
-                        string topic = e.ApplicationMessage.Topic;
-
-                        if (string.IsNullOrWhiteSpace(topic) == false)
-                        {
-                            string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                            Console.WriteLine($"Topic: {topic}. Message Received: {payload}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message, ex);
-                    }
-                });
-
-                await _mqttClient.SubscribeAsync(new TopicFilterBuilder()
-    .WithTopic(Topic)
-    .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
-    .Build());
-                
-                
+				                
                 /*var options = new ManagedMqttClientOptionsBuilder()
                        .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
                        .WithClientOptions(new MqttClientOptionsBuilder()

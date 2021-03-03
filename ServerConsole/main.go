@@ -15,6 +15,8 @@ func main() {
 	equipDalCh := make(chan *Models.EquipmentMessage)
 
 	mqttReceiverService := &BL.MqttReceiverService{}
+	mqttReceiverService.CreateCommonConnection(equipDalCh)
+
 	go DAL.DalWorker(equipDalCh)
 	go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh)
 	// go BL.MqttReceiver(equipDalCh)

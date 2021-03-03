@@ -1,4 +1,4 @@
-﻿using Atlas.Common.Core.Interfaces;
+using Atlas.Common.Core.Interfaces;
 using Atlas.Remoting.Helpers;
 using Atlas.Remoting.Impls;
 using MessagesSender.Core.Interfaces;
@@ -11,11 +11,6 @@ namespace MessagesSender
 {
     class Program
     {
-        //static void Main(string[] args)
-        //{
-        //    Console.WriteLine("Hello World!");
-        //}
-
         static void Main(string[] args)
         {
             using IHost host = CreateHostBuilder(args).Build();

@@ -1,4 +1,4 @@
-﻿using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Acquisitions.Common.Core.Model;
 using MessagesSender.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -12,11 +12,5 @@ namespace MessagesSender.Core.Interfaces
     /// </summary>
     public interface ICommandService
     {
-        /// <summary>
-        /// command handler
-        /// </summary>
-        /// <param name="command">command</param>
-        /// <returns>result</returns>
-        Task<(string MsgType, object Info)?> OnCommandArrivedAsync(string command);
     }
 }

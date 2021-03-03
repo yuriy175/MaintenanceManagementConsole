@@ -10,11 +10,16 @@ import (
 )
 
 type MqttClient struct {
-	Client mqtt.Client
-	Topic  string
+	Client      mqtt.Client
+	Topic       string
+	IsEquipment bool
 }
 
-func CreateMqttClient(rootTopic string, subTopics []string, equipDalCh chan *Models.EquipmentMessage) *MqttClient {
+func CreateMqttClient(
+	rootTopic string,
+	subTopics []string,
+	equipDalCh chan *Models.EquipmentMessage,
+	mqttReceiverService *MqttReceiverService) *MqttClient {
 	//quitCh := make(chan int)
 
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -27,10 +32,27 @@ func CreateMqttClient(rootTopic string, subTopics []string, equipDalCh chan *Mod
 
 	var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 		payload := msg.Payload()
-		fmt.Printf("Received message: %s from topic: %s\n", payload, msg.Topic())
-		content := Models.EquipmentMessage{}
-		json.Unmarshal([]byte(payload), &content)
-		equipDalCh <- &content
+		topic := msg.Topic()
+		fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
+		if topic == Models.CommonTopicPath {
+			var content = map[string]string{}
+			json.Unmarshal([]byte(payload), &content)
+
+			newRootTopic := ""
+			data := ""
+			for k, d := range content {
+				newRootTopic = k
+				data = d
+			}
+			if data == "on" {
+			}
+
+			mqttReceiverService.UpdateMqtt(newRootTopic, equipDalCh)
+		} else {
+			content := Models.EquipmentMessage{}
+			json.Unmarshal([]byte(payload), &content)
+			equipDalCh <- &content
+		}
 	}
 
 	var broker = Models.RabbitMQHost
@@ -61,7 +83,7 @@ func CreateMqttClient(rootTopic string, subTopics []string, equipDalCh chan *Mod
 		fmt.Printf("Subscribed to topic: %s", rootTopic)
 	}()
 
-	return &MqttClient{client, rootTopic}
+	return &MqttClient{client, rootTopic, rootTopic != Models.CommonTopicPath}
 }
 
 func (client *MqttClient) Disconnect() {

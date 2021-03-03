@@ -1,4 +1,4 @@
-﻿using Atlas.Common.Core.Interfaces;
+using Atlas.Common.Core.Interfaces;
 using Atlas.Common.Impls;
 using MessagesSender.BL;
 using MessagesSender.BL.Remoting;
@@ -23,7 +23,11 @@ namespace MessagesSender
         /// <returns>updated service collection.</returns>
         public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
-            services.AddSingleton(
+			services.AddSingleton(
+			   typeof(IEventPublisher),
+			   typeof(EventPublisher));
+
+			services.AddSingleton(
                typeof(ICommandService),
                typeof(CommandService));
 

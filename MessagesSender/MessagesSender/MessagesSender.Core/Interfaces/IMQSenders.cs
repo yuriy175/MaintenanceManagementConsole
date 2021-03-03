@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.Core.Interfaces
 {
@@ -35,13 +36,19 @@ namespace MessagesSender.Core.Interfaces
     /// </summary>
     public interface IMqttSender : IMQSenderBase
     {
-        Action<string> OnCommandArrived { get; set; }
-
         /// <summary>
         /// creates sender
         /// </summary>
         /// <param name="equipInfo">equipment info</param>
         /// <returns>result</returns>
         Task<bool> CreateAsync((string Name, string Number) equipInfo);
-    }
+
+		/// <summary>
+		/// sends a message to a common mqtt
+		/// </summary>
+		/// <typeparam name="T">entity type</typeparam>
+		/// <param name="payload">entity</param>
+		/// <returns>result</returns>
+		Task<bool> SendCommonAsync<T>(MQMessages msgType, T payload);
+	}
 }

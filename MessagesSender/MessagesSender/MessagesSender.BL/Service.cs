@@ -26,8 +26,9 @@ namespace MessagesSender.BL
         private readonly ILogger _logger;
         private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
+		private readonly ICommandService _commandService;
 
-        private IPAddress _ipAddress = null;
+		private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
 
         private enum MessageType
@@ -36,28 +37,31 @@ namespace MessagesSender.BL
             ConnectionState,
         }
 
-        /// <summary>
-        /// public constructor
-        /// </summary>
-        /// <param name="dbSettingsEntityService">settings database connector</param>
-        /// <param name="dbObservationsEntityService">observations database connector</param>
-        /// <param name="logger">logger</param>
-        /// <param name="sendingService">sending service</param>
-        /// <param name="mqService">MQ service</param>
-        public Service(
+		/// <summary>
+		/// public constructor
+		/// </summary>
+		/// <param name="dbSettingsEntityService">settings database connector</param>
+		/// <param name="dbObservationsEntityService">observations database connector</param>
+		/// <param name="logger">logger</param>
+		/// <param name="sendingService">sending service</param>
+		/// <param name="mqService">MQ service</param>
+		/// <param name="commandService">command service</param>
+		public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             ISendingService sendingService,
-            IMQCommunicationService mqService)
+            IMQCommunicationService mqService,
+			ICommandService commandService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _sendingService = sendingService;
             _mqService = mqService;
+			_commandService = commandService;
 
-            new Action[]
+			new Action[]
                 {
                     () => _ = SubscribeMQRecevers(),
                     async () =>
@@ -133,10 +137,13 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnServiceStateChangedAsync(bool isOn)
         {
-            return await _sendingService.SendInfoToWorkQueueAsync(
-                isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
-                new { });
-        }
+			//return await _sendingService.SendInfoToWorkQueueAsync(
+			//   isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
+			//   new { });
+			return await _sendingService.SendInfoToCommonMqttAsync(
+			   isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
+			   new { });
+		}
 
         /*private void OnStandState((int Id, StandState State) state)
         {

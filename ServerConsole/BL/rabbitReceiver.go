@@ -60,7 +60,8 @@ func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan 
 			fmt.Printf("%+v\n", content)
 
 			if content.MsgType == Models.MsgTypeInstanceOn || content.MsgType == Models.MsgTypeInstanceOff {
-				mqttReceiverService.UpdateMqtt(equipDalCh, &content)
+				//rootTopic := fmt.Sprintf("%s/%s", content.EquipName, content.EquipNumber)
+				//mqttReceiverService.UpdateMqtt(equipDalCh, rootTopic)
 			} else {
 				equipDalCh <- &content
 			}

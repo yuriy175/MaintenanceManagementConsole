@@ -1,4 +1,5 @@
-﻿using System;
+using MessagesSender.Core.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,10 +31,19 @@ namespace MessagesSender.Core.Interfaces
         /// <returns>result</returns>
         Task<bool> SendInfoToMqttAsync<TMsgType, T>(TMsgType msgType, T info);
 
-        /// <summary>
-        /// creates service
-        /// </summary>
-        /// <returns>result</returns>
-        Task<bool> CreateAsync();
+		/// <summary>
+		/// sends info to common mqtt
+		/// </summary>
+		/// <typeparam name="T">info type</typeparam>
+		/// <param name="msgType">info type</param>
+		/// <param name="info">info</param>
+		/// <returns>result</returns>
+		Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info);
+
+		/// <summary>
+		/// creates service
+		/// </summary>
+		/// <returns>result</returns>
+		Task<bool> CreateAsync();
     }
 }
