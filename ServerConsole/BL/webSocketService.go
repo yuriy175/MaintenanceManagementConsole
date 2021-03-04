@@ -1,45 +1,48 @@
 package BL
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
-	"github.com/gorilla/websocket"
+	"../Models"
 )
 
 type WebSocketService struct {
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
+var webSocketConnections = map[string]*WebSock{}
 
-func WebServer() {
-	http.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
-		upgrader.CheckOrigin = func(r *http.Request) bool { return true }
-		conn, err := upgrader.Upgrade(w, r, nil)
+func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
+	http.HandleFunc(Models.WebSocketQueryString, func(w http.ResponseWriter, r *http.Request) {
+		uids, ok := r.URL.Query()["uid"]
+
+		if !ok || len(uids[0]) < 1 {
+			log.Println("Url Param 'uid' is missing")
+			return
+		}
+		uid := uids[0]
+		webSocketConnections[uid] = CreateWebSock(w, r, uid)
+
+		/*msgType, msg, err := webSocketConnections[uid].Conn.ReadMessage()
 		if err != nil {
-			log.Panicf("create web socket: %s", err)
-		}
-
-		for {
-			// Read message from browser
-			msgType, msg, err := conn.ReadMessage()
-			if err != nil {
-				return
-			}
-
-			// Print the message to the console
-			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-			// Write message back to browser
-			if err = conn.WriteMessage(msgType, msg); err != nil {
-				return
-			}
-		}
+			fmt.Printf("sent: %s %d\n", string(msg), msgType)
+		}*/
 	})
+
+	go func() {
+		for d := range equipWebSockCh {
+			for _, v := range webSocketConnections {
+				if strings.Contains(d.Topic, "hdd") {
+					b, err := json.Marshal(d)
+					if err = v.Conn.WriteMessage(1, b); err != nil {
+						// return
+					}
+				}
+			}
+		}
+	}()
 
 	http.ListenAndServe(":8080", nil)
 }

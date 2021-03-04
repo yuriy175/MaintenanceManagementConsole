@@ -8,8 +8,8 @@ import Typography from '@material-ui/core/Typography';
 
 import {useCardsStyles} from './CommonCard'
 
-export default function HddCard() {
-  console.log(`! render HddCard`);
+export default function DicomCard() {
+  console.log(`! render DicomCard`);
 
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
@@ -18,13 +18,13 @@ export default function HddCard() {
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
-          {bull}Диски
+          {bull}DICOM
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Органоавтоматика
+          Соединение с PACS
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Состояние
+          PACS IP
         </Typography>
       </CardContent>
     </Card>

@@ -11,7 +11,8 @@ import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 
 import * as EquipWorker from '../../workers/equipWorker'
-import * as WebSocket from '../../workers/webSocket'
+// import * as WebSocket from '../../workers/webSocket'
+import { useWebSocket } from '../../workers/useWebSocket'
 
 const drawerWidth = 240;
 
@@ -28,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     color: "white",
   },
+  optionStyle:{
+    backgroundColor: "#3f51b5",
+  }
 }));
 
 export default function MainToolBar() {
@@ -36,15 +40,21 @@ export default function MainToolBar() {
   const classes = useStyles();
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
-  const [currEquip, setCurrEquip] = React.useState('none');
+  const [currEquip, setCurrEquip] = useState('none');
 
-  const handleEquipsChange = (event) => {
+  const handleEquipsChange = async (event) => {
     const select = event.target;
     const val = select.options[select.selectedIndex].value;
 
-    setCurrEquip(val);
+    await onEquipChanged(val);
   };
 
+  const onEquipChanged = async equipInfo =>
+  {
+    await EquipWorker.Activate(equipInfo);
+    currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
+  }
+  
   useEffect(() => {
       (async () => {
           if(allEquipsState.equips !== null)
@@ -60,10 +70,15 @@ export default function MainToolBar() {
           }
 
           const equipInfo = equips[0];
-          await EquipWorker.Activate(equipInfo);
-          currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo });   
+          onEquipChanged(equipInfo);
       })();
   }, [allEquipsState.equips]);
+
+
+  const webSocket = useWebSocket(
+    {
+    }
+  );
 
 
   return (    
@@ -73,21 +88,16 @@ export default function MainToolBar() {
             </Typography>
             <FormControl className={classes.formControl}>
               <NativeSelect
-                value={currEquipState}
+                value={currEquipState.equipInfo}
                 onChange={handleEquipsChange}
                 name="equips"
                 className={classes.selectEmpty}
                 variant="outlined"
               >
                 {allEquipsState.equips?.map((i, ind) => (
-                    <option key={ind.toString()} value={i}>{i}</option>
+                    <option key={ind.toString()} value={i} className={classes.optionStyle}>{i}</option>
                     ))
                 }
-
-                {/* <option value="">None</option>
-                <option value={10}>Ten</option>
-                <option value={20}>Twenty</option>
-                <option value={30}>Thirty</option> */}
               </NativeSelect>
             </FormControl>
         </Toolbar>

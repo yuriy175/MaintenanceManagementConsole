@@ -39,3 +39,8 @@ type HddDrivesInfoModel struct {
 	HddTotalSpace float64
 	HddFreeSpace  float64
 }
+
+type RawMqttMessage struct {
+	Topic string
+	Data  string
+}

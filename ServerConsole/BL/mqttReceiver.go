@@ -19,6 +19,7 @@ func CreateMqttClient(
 	rootTopic string,
 	subTopics []string,
 	equipDalCh chan *Models.EquipmentMessage,
+	equipWebSockCh chan *Models.RawMqttMessage,
 	mqttReceiverService *MqttReceiverService) *MqttClient {
 	//quitCh := make(chan int)
 
@@ -44,14 +45,16 @@ func CreateMqttClient(
 				newRootTopic = k
 				data = d
 			}
-			if data == "on" {
-			}
 
-			mqttReceiverService.UpdateMqtt(newRootTopic, equipDalCh)
+			mqttReceiverService.UpdateMqtt(newRootTopic, data == "off", equipDalCh, equipWebSockCh)
 		} else {
-			content := Models.EquipmentMessage{}
-			json.Unmarshal([]byte(payload), &content)
-			equipDalCh <- &content
+			//content := Models.EquipmentMessage{}
+			//json.Unmarshal([]byte(payload), &content)
+			// equipDalCh <- &content
+			rawMsg := Models.RawMqttMessage{topic, string(payload)}
+			//json.Unmarshal([]byte(payload), &content)
+			// equipDalCh <- &content
+			equipWebSockCh <- &rawMsg
 		}
 	}
 

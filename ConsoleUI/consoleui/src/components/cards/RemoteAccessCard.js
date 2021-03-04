@@ -8,8 +8,8 @@ import Typography from '@material-ui/core/Typography';
 
 import {useCardsStyles} from './CommonCard'
 
-export default function HddCard() {
-  console.log(`! render HddCard`);
+export default function RemoteAccessCard() {
+  console.log(`! render RemoteAccessCard`);
 
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
@@ -18,13 +18,10 @@ export default function HddCard() {
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
-          {bull}Диски
+          {bull}Удаленный доступ
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Органоавтоматика
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Состояние
+          Запустить TeamViewer
         </Typography>
       </CardContent>
     </Card>

@@ -25,5 +25,6 @@ const (
 	MsgTypeHwConnectionStateArrived = "HwConnectionStateArrived"
 	MsgTypeHddDrivesInfo            = "HddDrivesInfo"
 
-	CommonTopicPath = "Subscribe"
+	CommonTopicPath      = "Subscribe"
+	WebSocketQueryString = "/websocket"
 )

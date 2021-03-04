@@ -3,6 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import DetectorCard from './cards/DetectorCard'
 import GeneratorCard from './cards/GeneratorCard'
 import HddCard from './cards/HddCard'
+import OrganAutoCard from './cards/OrganAutoCard'
+import EquipImageCard from './cards/EquipImageCard'
+import DicomCard from './cards/DicomCard'
+import RemoteAccessCard from './cards/RemoteAccessCard'
+import StandCard from './cards/StandCard'
 
 const useStyles = makeStyles((theme) => ({
 }));
@@ -14,9 +19,14 @@ export default function SummaryComponent(props) {
 
   return (
     <div>
+        <EquipImageCard></EquipImageCard>
         <GeneratorCard></GeneratorCard>
         <DetectorCard></DetectorCard>
+        <StandCard></StandCard>
         <HddCard></HddCard>
+        <OrganAutoCard></OrganAutoCard>
+        <RemoteAccessCard></RemoteAccessCard>
+        <DicomCard></DicomCard>
     </div>
   );
 }

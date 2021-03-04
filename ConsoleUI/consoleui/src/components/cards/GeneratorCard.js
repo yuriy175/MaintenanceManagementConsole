@@ -9,6 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import {useCardsStyles} from './CommonCard'
 
 export default function GeneratorCard() {
+  console.log(`! render GeneratorCard`);
+
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
@@ -17,9 +19,6 @@ export default function GeneratorCard() {
       <CardContent>
         <Typography variant="h5" component="h2">
           {bull}Генератор
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Органоавтоматика
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
           Состояние

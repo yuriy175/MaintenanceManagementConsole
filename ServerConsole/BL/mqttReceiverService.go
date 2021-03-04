@@ -11,13 +11,13 @@ type MqttReceiverService struct {
 
 var mqttConnections = map[string]*MqttClient{}
 
-func (service *MqttReceiverService) UpdateMqtt(rootTopic string, equipDalCh chan *Models.EquipmentMessage) {
+func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
 	topicStorage := &TopicStorage{}
 	topics := topicStorage.getTopics()
 
-	/*if client, ok := mqttConnections[rootTopic]; ok {
+	if client, ok := mqttConnections[rootTopic]; ok {
 		fmt.Println(rootTopic + " already exists")
-		if message.MsgType == Models.MsgTypeInstanceOff {
+		if isOff {
 			go client.Disconnect()
 			delete(mqttConnections, rootTopic)
 			fmt.Println(rootTopic + " deleted")
@@ -26,23 +26,17 @@ func (service *MqttReceiverService) UpdateMqtt(rootTopic string, equipDalCh chan
 		return
 	}
 
-	if message.MsgType == Models.MsgTypeInstanceOn {
-		//go MqttReceiver(topic, equipDalCh)
+	if !isOff {
 		go func() {
-			mqttConnections[rootTopic] = CreateMqttClient(rootTopic, topics, equipDalCh)
+			mqttConnections[rootTopic] = CreateMqttClient(rootTopic, topics, equipDalCh, equipWebSockCh, service)
 		}()
 
 		fmt.Println(rootTopic + " created")
-	}*/
-	go func() {
-		mqttConnections[rootTopic] = CreateMqttClient(rootTopic, topics, equipDalCh, service)
-	}()
-
-	fmt.Println(rootTopic + " created")
+	}
 }
 
-func (service *MqttReceiverService) CreateCommonConnection(equipDalCh chan *Models.EquipmentMessage) {
-	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, service)
+func (service *MqttReceiverService) CreateCommonConnection(equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, equipWebSockCh, service)
 	return
 }
 

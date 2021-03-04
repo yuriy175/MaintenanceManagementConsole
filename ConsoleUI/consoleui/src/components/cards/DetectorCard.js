@@ -9,6 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import {useCardsStyles} from './CommonCard'
 
 export default function DetectorCard() {
+  console.log(`! render DetectorCard`);
+
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
