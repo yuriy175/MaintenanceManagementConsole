@@ -39,7 +39,7 @@ namespace MessagesSender.BL.Remoting
 			{ MQCommands.StandStateArrived.ToString(), "/stand/state"},
 			{ MQCommands.CollimatorStateArrived.ToString(), "/collimator/state"},
 			{ MQCommands.DetectorStateArrived.ToString(), "/detector/state"},
-			{ MQMessages.HddDrivesInfo.ToString(), "/arm/hdd"},
+			{ MQMessages.HddDrivesInfo.ToString(), "/ARM/Hardware/HDD"},
 		};
 
 		/// <summary>

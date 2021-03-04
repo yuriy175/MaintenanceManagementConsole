@@ -21,7 +21,7 @@ type EquipmentMessage struct {
 }
 
 type HddDrivesInfoMessage struct {
-	HddName       string  `json:"Name"`
+	HddName       string  `json:"Letter"`
 	HddTotalSpace float64 `json:"TotalSize"`
 	HddFreeSpace  float64 `json:"FreeSize"`
 }

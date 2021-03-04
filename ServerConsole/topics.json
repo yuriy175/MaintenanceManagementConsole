@@ -7,6 +7,6 @@
 	"/collimator/state",
 	"/dosimeter/state",
 	"/dicom",
-	"/arm/hdd"
+	"/ARM/Hardware/HDD"
 	]
 }

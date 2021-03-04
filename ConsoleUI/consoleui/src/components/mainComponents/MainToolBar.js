@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   optionStyle:{
     backgroundColor: "#3f51b5",
+    color:"black",
   }
 }));
 

@@ -31,7 +31,7 @@ export function useWebSocket(props) {
                 console.log("Server: " + e.data + "\n");
                 const data = JSON.parse(e.data);
         
-                if(data?.Topic.includes('hdd'))
+                if(data?.Topic.includes('HDD'))
                 {
                     const hdds = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETHDDS', payload: hdds }); 

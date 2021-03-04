@@ -48,7 +48,7 @@ namespace MessagesSender.BL
                 .Where(d => d.IsReady)
                 .Select(d => new VolumeInfo
                 {
-                    Name = d.Name,
+                    Letter = d.Name,
                     FreeSize = (long)(d.TotalFreeSpace / Megabyte),
                     TotalSize = (long)(d.TotalSize / Megabyte),
                 }).ToArray();

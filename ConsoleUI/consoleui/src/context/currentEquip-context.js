@@ -10,7 +10,7 @@ const initialState = {
   dosimeter:{},
   stand:{},
   dicom:{},
-  hdd:{}
+  hdd:[]
 };
 
 function reducer(state, action) {
@@ -21,6 +21,13 @@ function reducer(state, action) {
         equipInfo: action.payload
       };
     }
+    case 'SETHDDS': {
+      return {
+        ...state,
+        hdd: action.payload
+      };
+    }
+    
     default:
       throw new Error();
   }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,7 +12,7 @@ namespace MessagesSender.Core.Model
         /// <summary>
         /// volume name 
         /// </summary>
-        public string Name { get; set; }
+        public string Letter { get; set; }
 
         /// <summary>
         /// volume free size
