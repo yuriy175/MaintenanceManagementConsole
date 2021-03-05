@@ -31,10 +31,20 @@ export function useWebSocket(props) {
                 console.log("Server: " + e.data + "\n");
                 const data = JSON.parse(e.data);
         
-                if(data?.Topic.includes('HDD'))
+                if(data?.Topic.includes('/ARM/Hardware/HDD'))
                 {
                     const hdds = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETHDDS', payload: hdds }); 
+                }
+                else if(data?.Topic.includes('/ARM/Hardware/Memory'))
+                {
+                    const hdds = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETMEMORY', payload: hdds }); 
+                }
+                else if(data?.Topic.includes('/organauto'))
+                {
+                    const hdds = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETORGANAUTO', payload: hdds }); 
                 }
             };
         }

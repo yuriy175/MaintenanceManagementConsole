@@ -10,7 +10,7 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 
 export default function SystemCard() {
-  console.log(`! render HddCard`);
+  console.log(`! render SystemCard`);
 
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const classes = useCardsStyles();
@@ -20,20 +20,20 @@ export default function SystemCard() {
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
-          {bull}Диски
-        </Typography>
-        {currEquipState.hdd?.map((i, ind) => (
-                    // <option key={ind.toString()} value={i} className={classes.optionStyle}>{i}</option>
-                    <Typography key={ind.toString()} className={classes.pos} color="textSecondary">
-                      Letter: {i.Letter} FreeSize: {i.FreeSize} TotalSize: {i.TotalSize}
-                    </Typography>
-                    ))
-                }
-        <Typography className={classes.pos} color="textSecondary">
-          Органоавтоматика
+          {bull}CPU
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Состояние
+          Модель {currEquipState.сзг?.Model} 
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Загрузка {currEquipState.memory?.CPU_Load}
+        </Typography>
+
+        <Typography variant="h5" component="h2">
+          {bull}Память
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Всего {currEquipState.memory?.TotalSize} Доступно {currEquipState.memory?.AvailableSize}
         </Typography>
       </CardContent>
     </Card>

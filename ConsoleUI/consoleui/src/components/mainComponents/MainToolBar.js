@@ -52,6 +52,7 @@ export default function MainToolBar() {
 
   const onEquipChanged = async equipInfo =>
   {
+    currEquipDispatch({ type: 'RESET', payload: true });
     await EquipWorker.Activate(equipInfo);
     currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
   }

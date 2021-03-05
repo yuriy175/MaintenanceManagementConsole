@@ -10,11 +10,17 @@ const initialState = {
   dosimeter:{},
   stand:{},
   dicom:{},
-  hdd:[]
+  hdd:[],
+  memory:{},
+  cpu:{},
+  organAuto:{},
 };
 
 function reducer(state, action) {
-  switch (action.type) {
+  switch (action.type) {    
+    case 'RESET': {
+      return initialState;
+    }
     case 'SETEQUIPINFO': {
       return {
         ...state,
@@ -27,7 +33,18 @@ function reducer(state, action) {
         hdd: action.payload
       };
     }
-    
+    case 'SETMEMORY': {
+      return {
+        ...state,
+        memory: action.payload
+      };
+    }
+    case 'SETORGANAUTO': {
+      return {
+        ...state,
+        organAuto: action.payload
+      };
+    }
     default:
       throw new Error();
   }

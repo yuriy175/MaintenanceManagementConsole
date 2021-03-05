@@ -65,15 +65,16 @@ namespace MessagesSender.BL
             var hddDrives = await GetDriveInfosAsync();
             if (hddDrives != null)
             {
-                _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
+                _ = _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
             }
 
             await Task.Yield();
 
             var ramInfo = await GetRamInfoAsync();
-            if (ramInfo != null)
+            if (ramInfo.HasValue)
             {
-                _sendingService.SendInfoToMqttAsync(MQMessages.MemoryInfo, ramInfo);
+                _ = _sendingService.SendInfoToMqttAsync(MQMessages.MemoryInfo,
+                    new { ramInfo.Value.AvailableSize, ramInfo.Value.TotalSize });
             }
 
             return false;
@@ -108,7 +109,7 @@ namespace MessagesSender.BL
                 var gcMemoryInfo = GC.GetGCMemoryInfo();
 
                 var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-                return ((long)(gcMemoryInfo.TotalAvailableMemoryBytes / Megabyte), (long)(ramCounter.NextValue() / Megabyte));
+                return ((long)(gcMemoryInfo.TotalAvailableMemoryBytes / Megabyte), (long)(ramCounter.NextValue()));
             }
             catch (Exception ex)
             {

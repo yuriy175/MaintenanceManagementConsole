@@ -20,15 +20,21 @@ export default function SummaryComponent(props) {
 
   return (
     <div>
+      <div>
         <EquipImageCard></EquipImageCard>
+        <SystemCard></SystemCard>
+        <HddCard></HddCard>
+      </div>
+      <div>
+        <OrganAutoCard></OrganAutoCard>
         <GeneratorCard></GeneratorCard>
         <DetectorCard></DetectorCard>
         <StandCard></StandCard>
-        <SystemCard></SystemCard>
-        <HddCard></HddCard>
-        <OrganAutoCard></OrganAutoCard>
+      </div>
+      <div>
         <RemoteAccessCard></RemoteAccessCard>
         <DicomCard></DicomCard>
+      </div>
     </div>
   );
 }

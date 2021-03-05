@@ -18,17 +18,18 @@ export default function HddCard() {
 
   return (
     <Card className={classes.root}>
-      <CardContent>
-        <Typography variant="h5" component="h2">
-          {bull}Диски
-        </Typography>
+      <CardContent>        
         {currEquipState.hdd?.map((i, ind) => (
-                    // <option key={ind.toString()} value={i} className={classes.optionStyle}>{i}</option>
-                    <Typography key={ind.toString()} className={classes.pos} color="textSecondary">
-                      Letter: {i.Letter} FreeSize: {i.FreeSize} TotalSize: {i.TotalSize}
-                    </Typography>
-                    ))
-                }
+          <div key={ind.toString()} >
+            <Typography variant="h5" component="h2">
+              {bull}Диск {i.Letter}
+            </Typography>
+            <Typography className={classes.pos} color="textSecondary">
+              Свободно: {i.FreeSize} Всего: {i.TotalSize}
+            </Typography>
+          </div>
+          ))
+        }
       </CardContent>
     </Card>
   );
