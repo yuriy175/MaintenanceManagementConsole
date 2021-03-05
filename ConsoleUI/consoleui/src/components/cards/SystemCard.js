@@ -23,10 +23,10 @@ export default function SystemCard() {
           {bull}CPU
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Модель {currEquipState.сзг?.Model} 
+          {currEquipState.cpu?.Model} 
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Загрузка {currEquipState.memory?.CPU_Load}
+          Загрузка - {currEquipState.cpu?.CPU_Load}%
         </Typography>
 
         <Typography variant="h5" component="h2">

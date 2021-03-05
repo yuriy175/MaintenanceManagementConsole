@@ -27,7 +27,6 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
-        private readonly IHardwareStateService _hwStateService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);

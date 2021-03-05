@@ -39,12 +39,31 @@ function reducer(state, action) {
         memory: action.payload
       };
     }
+    case 'SETCPU': {
+      return {
+        ...state,
+        cpu: action.payload
+      };
+    }
     case 'SETORGANAUTO': {
       return {
         ...state,
         organAuto: action.payload
       };
     }
+    case 'SETGENERATOR': {
+      return {
+        ...state,
+        generator: action.payload
+      };
+    }
+    case 'SETDETECTOR': {
+      return {
+        ...state,
+        detectors: action.payload
+      };
+    }
+
     default:
       throw new Error();
   }

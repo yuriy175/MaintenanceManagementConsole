@@ -41,10 +41,25 @@ export function useWebSocket(props) {
                     const hdds = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETMEMORY', payload: hdds }); 
                 }
+                else if(data?.Topic.includes('/ARM/Hardware/Processor'))
+                {
+                    const hdds = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETCPU', payload: hdds }); 
+                }                
                 else if(data?.Topic.includes('/organauto'))
                 {
                     const hdds = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETORGANAUTO', payload: hdds }); 
+                }
+                else if(data?.Topic.includes('/generator'))
+                {
+                    const hdds = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETGENERATOR', payload: hdds }); 
+                }
+                else if(data?.Topic.includes('/detector'))
+                {
+                    const hdds = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETDETECTOR', payload: hdds }); 
                 }
             };
         }

@@ -44,6 +44,16 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 					if err = v.Conn.WriteMessage(1, b); err != nil {
 						// return
 					}
+				} else if strings.Contains(d.Topic, "/generator/state") {
+					b, err := json.Marshal(d)
+					if err = v.Conn.WriteMessage(1, b); err != nil {
+						// return
+					}
+				} else if strings.Contains(d.Topic, "/detector/state") {
+					b, err := json.Marshal(d)
+					if err = v.Conn.WriteMessage(1, b); err != nil {
+						// return
+					}
 				}
 			}
 		}

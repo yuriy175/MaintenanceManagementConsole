@@ -19,6 +19,9 @@ using Atlas.Acquisitions.Common.Core.Model;
 
 namespace MessagesSender.BL
 {
+    /// <summary>
+    /// hardware state service
+    /// </summary>
     public class HardwareStateService : IHardwareStateService
     {
         private const int StandConnectedValue = 4;
@@ -30,11 +33,6 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
-
-        private ConnectionStates _standState = ConnectionStates.Disconnected;
-        private ConnectionStates _generatorState = ConnectionStates.Disconnected;
-        private ConnectionStates _collimatorState = ConnectionStates.Disconnected;
-        private ConnectionStates _detectorState = ConnectionStates.Disconnected;
 
         private bool _isActivated = false;
 
@@ -64,33 +62,6 @@ namespace MessagesSender.BL
             _logger.Information("HardwareStateService started");
         }
 
-        private object GetStandState(StandState state) =>
-            GetHardwareState(state?.State, StandConnectedValue, ref _standState);
-
-        private object GetGeneratorState(GeneratorState state) =>
-            GetHardwareState(state?.State, GeneratorConnectedValue, ref _generatorState);
-
-        private object GetCollimatorState(CollimatorState state) =>
-            GetHardwareState((int?)state?.State, CollimatorConnectedValue, ref _collimatorState);
-
-        private object GetHardwareState(int? state, int hwConnectedValue, ref ConnectionStates hwConnectionStates)
-        {
-            var connectionState = ConnectionStates.Disconnected;
-            if (state.HasValue)
-            {
-                connectionState = state.Value <= hwConnectedValue ?
-                    ConnectionStates.Disconnected : ConnectionStates.Connected;
-            }
-
-            if (connectionState != _standState)
-            {
-                hwConnectionStates = connectionState;
-                return new { State = _standState };
-            }
-
-            return null;
-        }
-
         private Task SubscribeMQRecevers()
         {
             return Task.Run(() =>
@@ -111,36 +82,65 @@ namespace MessagesSender.BL
 
         private void OnStandState((int Id, StandState State) state)
         {
-            var standState = GetStandState(state.State);
-            if (standState != null)
+            if (!_isActivated || !CanSendStandState(state.State))
             {
-                _sendingService.SendInfoToMqttAsync(MQCommands.StandStateArrived, standState);
+                return;
             }
+
+            if (state.State.State.HasValue)
+            {
+                state.State.State = (int)(state.State.State.Value <= GeneratorConnectedValue ?
+                    ConnectionStates.Disconnected : ConnectionStates.Connected);
+            }
+
+            _sendingService.SendInfoToMqttAsync(
+                MQCommands.StandStateArrived,
+                new { state.Id, state.State });
         }
 
         private void OnGeneratorState((int Id, GeneratorState State) state)
         {
-            var standState = GetGeneratorState(state.State);
-            if (standState != null)
+            if (!_isActivated || !CanSendGeneratorState(state.State))
             {
-                _sendingService.SendInfoToMqttAsync(MQCommands.GeneratorStateArrived, standState);
+                return;
             }
+
+            if (state.State.State.HasValue)
+            {
+                state.State.State = (int)(state.State.State.Value <= GeneratorConnectedValue ?
+                    ConnectionStates.Disconnected : ConnectionStates.Connected);
+            }
+
+            _sendingService.SendInfoToMqttAsync(
+                MQCommands.GeneratorStateArrived, 
+                new { state.Id, state.State });
         }
 
         private void OnCollimatorState((int Id, CollimatorState State) state)
         {
-            var standState = GetCollimatorState(state.State);
-            if (standState != null)
+            if (!_isActivated || !CanSendCollimatorStandState(state.State))
             {
-                _sendingService.SendInfoToMqttAsync(MQCommands.CollimatorStateArrived, standState);
+                return;
             }
+
+            if (state.State.State.HasValue)
+            {
+                state.State.State = (uint)(state.State.State.Value <= GeneratorConnectedValue ?
+                    ConnectionStates.Disconnected : ConnectionStates.Connected);
+            }
+
+            _sendingService.SendInfoToMqttAsync(
+                MQCommands.CollimatorStateArrived,
+                new { state.Id, state.State });
         }
 
         private void OnDetectorStateChanged((int DetectorId, string DetectorName, DetectorState State) state)
         {
             if (_isActivated)
             {
-                _sendingService.SendInfoToMqttAsync(MQCommands.DetectorStateArrived, state);
+                _sendingService.SendInfoToMqttAsync(
+                    MQCommands.DetectorStateArrived,
+                    new { state.DetectorId, state.DetectorName, state.State.State });
             }
         }
 
@@ -154,5 +154,30 @@ namespace MessagesSender.BL
             _isActivated = true;
             return true;
         }
+
+        private bool CanSendGeneratorState(GeneratorState state) =>
+            state != null && (
+                state.State.HasValue ||
+                state.Error != null ||
+                state.Kv.HasValue ||
+                state.Mas.HasValue ||
+                state.Workstation.HasValue ||
+                state.HeatStatus.HasValue ||
+                state.PedalPressed.HasValue
+            );
+
+        private bool CanSendStandState(StandState state) =>
+            state != null && (
+                state.State.HasValue ||
+                state.Error != null ||
+                state.RasterState.HasValue ||
+                state.Position_Current.HasValue
+            );
+
+        private bool CanSendCollimatorStandState(CollimatorState state) =>
+            state != null && (
+                state.State.HasValue ||
+                !string.IsNullOrEmpty(state.FilterPresentation)
+            );
     }
 }

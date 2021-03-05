@@ -29,6 +29,7 @@ namespace MessagesSender.BL
 		private readonly ICommandService _commandService;
         private readonly ISystemWatchService _systemWatchService;
         private readonly IStudyingWatchService _studyingWatchService;
+        private readonly IHardwareStateService _hwStateService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -50,6 +51,7 @@ namespace MessagesSender.BL
         /// <param name="commandService">command service</param>
         /// <param name="systemWatchService">system watch service</param>
         /// <param name="studyingWatchService">studying watch service</param>
+        /// <param name="hwStateService">hardware state service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
@@ -58,7 +60,8 @@ namespace MessagesSender.BL
             IMQCommunicationService mqService,
 			ICommandService commandService,
             ISystemWatchService systemWatchService,
-            IStudyingWatchService studyingWatchService)
+            IStudyingWatchService studyingWatchService,
+            IHardwareStateService hwStateService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -68,6 +71,7 @@ namespace MessagesSender.BL
 			_commandService = commandService;
             _systemWatchService = systemWatchService;
             _studyingWatchService = studyingWatchService;
+            _hwStateService = hwStateService;
 
             new Action[]
                 {
