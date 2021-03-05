@@ -9,5 +9,7 @@ namespace MessagesSender.Core.Model
         InstanceOn = 5000,
         InstanceOff,
         HddDrivesInfo,
+        CPUInfo,
+        MemoryInfo,
     }
 }

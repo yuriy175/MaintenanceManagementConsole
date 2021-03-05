@@ -34,7 +34,7 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 	go func() {
 		for d := range equipWebSockCh {
 			for _, v := range webSocketConnections {
-				if strings.Contains(d.Topic, "HDD") {
+				if strings.Contains(d.Topic, "ARM/Hardware") {
 					b, err := json.Marshal(d)
 					if err = v.Conn.WriteMessage(1, b); err != nil {
 						// return

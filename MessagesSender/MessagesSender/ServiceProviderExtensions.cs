@@ -40,13 +40,17 @@ namespace MessagesSender
                typeof(HardwareStateService));
 
             services.AddSingleton(
-               typeof(IHddWatchService),
-               typeof(HddWatchService));
+               typeof(ISystemWatchService),
+               typeof(SystemWatchService));
 
             services.AddSingleton(
                typeof(IDicomStateService),
                typeof(DicomStateService));
 
+            services.AddSingleton(
+               typeof(IStudyingWatchService),
+               typeof(StudyingWatchService));
+            
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));

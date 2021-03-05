@@ -6,5 +6,14 @@ namespace MessagesSender.Core.Interfaces
     {
         void MqttCommandArrived(string command);
         void RegisterMqttCommandArrivedEvent(Action<string> handler);
+
+        void ActivateCommandArrived();
+        void RegisterActivateCommandArrivedEvent(Action handler);
+
+        void DeactivateCommandArrived();
+        void RegisterDeactivateCommandArrivedEvent(Action handler);
+
+        void RunTVCommandArrived();
+        void RegisterRunTVCommandArrivedEvent(Action handler);
     }
 }

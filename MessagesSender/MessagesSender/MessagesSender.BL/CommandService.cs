@@ -24,14 +24,13 @@ namespace MessagesSender.BL
     public class CommandService : ICommandService
     {
         private const string ActivateCommandName = "activate";
+		private const string DeactivateCommandName = "deactivate";
 		private const string RunTemViewerCommandName = "runTV";
 
 		private readonly ILogger _logger;
-        private readonly IHddWatchService _hddWatchService;
 		private readonly IEventPublisher _eventPublisher;
-		private readonly ISendingService _sendingService;
 
-		private readonly Dictionary<string, Func<Task<bool>>> _commandMap = new Dictionary<string, Func<Task<bool>>>
+		private readonly Dictionary<string, Action> _commandMap = new Dictionary<string, Action>
         {
         };
 
@@ -39,24 +38,19 @@ namespace MessagesSender.BL
 		/// public constructor
 		/// </summary>
 		/// <param name="logger">logger</param>
-		/// <param name="hddWatchService">hdd watch service</param>
 		/// <param name="eventPublisher">event publisher service</param>
-		/// <param name="sendingService">sending service</param>
 		public CommandService(
             ILogger logger,
-            IHddWatchService hddWatchService,
-			IEventPublisher eventPublisher,
-			ISendingService sendingService)
+			IEventPublisher eventPublisher)
         {
             _logger = logger;
-            _hddWatchService = hddWatchService;
-			_sendingService = sendingService;
 			_eventPublisher = eventPublisher;
 
-			_commandMap = new Dictionary<string, Func<Task<bool>>>
+			_commandMap = new Dictionary<string, Action>
             {
-                { ActivateCommandName, async () => await OnActivateCommandAsync()},
-				{ RunTemViewerCommandName, async () => await OnRunTVCommandAsync()},				
+                { ActivateCommandName, () => OnActivateCommand()},
+				{ DeactivateCommandName, () => OnDeactivateCommand()},
+				{ RunTemViewerCommandName, () => OnRunTVCommandAsync()},				
 			};
 
 			_eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
@@ -68,7 +62,8 @@ namespace MessagesSender.BL
 		{
 			try
 			{
-				return _commandMap[command]();
+				_commandMap[command]();
+				return Task.FromResult(true);
 			}
 			catch (Exception ex)
 			{
@@ -82,20 +77,19 @@ namespace MessagesSender.BL
         /// activate command handler
         /// </summary>
         /// <returns>result</returns>
-        public async Task<bool> OnActivateCommandAsync()
+        private void OnActivateCommand()
         {
-            var hddDrives = await _hddWatchService.GetDriveInfosAsync();
-            if (hddDrives != null)
-            {
-				_sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
-            }
-
-            return false;
+			_eventPublisher.ActivateCommandArrived();			
         }
 
-		private async Task<bool> OnRunTVCommandAsync()
+		private void OnDeactivateCommand()
 		{
-			return true;
+			_eventPublisher.DeactivateCommandArrived();
+		}
+
+		private void OnRunTVCommandAsync()
+		{
+			_eventPublisher.RunTVCommandArrived();
 		}
 	}
 }

@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 
-export default function HddCard() {
+export default function SystemCard() {
   console.log(`! render HddCard`);
 
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
@@ -29,6 +29,12 @@ export default function HddCard() {
                     </Typography>
                     ))
                 }
+        <Typography className={classes.pos} color="textSecondary">
+          Органоавтоматика
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Состояние
+        </Typography>
       </CardContent>
     </Card>
   );

@@ -27,8 +27,10 @@ namespace MessagesSender.BL
         private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
 		private readonly ICommandService _commandService;
+        private readonly ISystemWatchService _systemWatchService;
+        private readonly IStudyingWatchService _studyingWatchService;
 
-		private IPAddress _ipAddress = null;
+        private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
 
         private enum MessageType
@@ -37,22 +39,26 @@ namespace MessagesSender.BL
             ConnectionState,
         }
 
-		/// <summary>
-		/// public constructor
-		/// </summary>
-		/// <param name="dbSettingsEntityService">settings database connector</param>
-		/// <param name="dbObservationsEntityService">observations database connector</param>
-		/// <param name="logger">logger</param>
-		/// <param name="sendingService">sending service</param>
-		/// <param name="mqService">MQ service</param>
-		/// <param name="commandService">command service</param>
-		public Service(
+        /// <summary>
+        /// public constructor
+        /// </summary>
+        /// <param name="dbSettingsEntityService">settings database connector</param>
+        /// <param name="dbObservationsEntityService">observations database connector</param>
+        /// <param name="logger">logger</param>
+        /// <param name="sendingService">sending service</param>
+        /// <param name="mqService">MQ service</param>
+        /// <param name="commandService">command service</param>
+        /// <param name="systemWatchService">system watch service</param>
+        /// <param name="studyingWatchService">studying watch service</param>
+        public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             ISendingService sendingService,
             IMQCommunicationService mqService,
-			ICommandService commandService)
+			ICommandService commandService,
+            ISystemWatchService systemWatchService,
+            IStudyingWatchService studyingWatchService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -60,8 +66,10 @@ namespace MessagesSender.BL
             _sendingService = sendingService;
             _mqService = mqService;
 			_commandService = commandService;
+            _systemWatchService = systemWatchService;
+            _studyingWatchService = studyingWatchService;
 
-			new Action[]
+            new Action[]
                 {
                     () => _ = SubscribeMQRecevers(),
                     async () =>
@@ -81,50 +89,7 @@ namespace MessagesSender.BL
 
         private Task SubscribeMQRecevers()
         {
-            return Task.Run(() =>
-            {
-                _mqService.Subscribe<MQCommands, int>(
-                    (MQCommands.StudyInWork, async data => OnStudyInWorkAsync(data)));
-
-                // _mqService.Subscribe<MQCommands, (int Id, string Name, string Type, DeviceConnectionState Connection)>(
-                //        (MQCommands.HwConnectionStateArrived, state => OnConnectionStateArrivedAsync(state)));
-                /*
-                _mqService.Subscribe<MQCommands, (int Id, GeneratorState State)>(
-                    (MQCommands.GeneratorStateArrived, state => OnGeneratorState(state)));
-
-                _mqService.Subscribe<MQCommands, (int Id, StandState State)>(
-                    (MQCommands.StandStateArrived, state => OnStandState(state)));
-
-                _mqService.Subscribe<MQCommands, (int Id, CollimatorState State)>(
-                    (MQCommands.CollimatorStateArrived, state => OnCollimatorState(state)));
-                    */
-
-                //_mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
-                //    (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
-
-                _mqService.Subscribe<MQCommands, int>(
-                        (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
-            });
-        }
-
-        private async Task<bool> OnStudyInWorkAsync(int studyId)
-        {
-            var studyProps = await _dbObservationsEntityService.GetStudyInfoByIdAsync(studyId);
-            if (!studyProps.HasValue)
-            {
-                _logger.Error($"no study found for {studyId}");
-                return false;
-            }
-
-            return await _sendingService.SendInfoToMqttAsync(
-                MQCommands.StudyInWork,
-                new { studyProps.Value.StudyId, studyProps.Value.StudyDicomUid, studyProps.Value.StudyName });
-        }
-
-        private async Task<bool> OnNewImageCreatedAsync(int imageId)
-        {
-            // _ = SendInfoAsync(_mqttSender, MQCommands.NewImageCreated, imageId);
-            return true;
+            return Task.Run(() =>{});
         }
 
         private async Task<bool> OnConnectionStateArrivedAsync(
@@ -145,31 +110,5 @@ namespace MessagesSender.BL
 			   new { });
 		}
 
-        /*private void OnStandState((int Id, StandState State) state)
-        {
-            var standState = _hwStateService.GetStandState(state.State);
-            if (standState != null)
-            {
-                _ = SendInfoAsync( _mqttSender, MQCommands.StandStateArrived, standState);
-            }
-        }
-
-        private void OnGeneratorState((int Id, GeneratorState State) state)
-        {
-            var standState = _hwStateService.GetGeneratorState(state.State);
-            if (standState != null)
-            {
-                _ = SendInfoAsync(_mqttSender, MQCommands.GeneratorStateArrived, standState);
-            }
-        }
-
-        private void OnCollimatorState((int Id, CollimatorState State) state)
-        {
-            var standState = _hwStateService.GetCollimatorState(state.State);
-            if (standState != null)
-            {
-                _ = SendInfoAsync(_mqttSender, MQCommands.CollimatorStateArrived, standState);
-            }
-        }*/
     }
 }

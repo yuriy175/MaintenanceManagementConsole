@@ -8,14 +8,9 @@ using System.Threading.Tasks;
 namespace MessagesSender.Core.Interfaces
 {
     /// <summary>
-    /// hdd watch service interface
+    /// system watch service interface
     /// </summary>
-    public interface IHddWatchService
+    public interface ISystemWatchService
     {
-        /// <summary>
-        /// gets hdd drives info
-        /// </summary>
-        /// <returns>drives info</returns>
-        Task<IEnumerable<VolumeInfo>> GetDriveInfosAsync();
     }
 }

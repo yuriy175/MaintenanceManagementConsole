@@ -40,6 +40,10 @@ namespace MessagesSender.BL.Remoting
 			{ MQCommands.CollimatorStateArrived.ToString(), "/collimator/state"},
 			{ MQCommands.DetectorStateArrived.ToString(), "/detector/state"},
 			{ MQMessages.HddDrivesInfo.ToString(), "/ARM/Hardware/HDD"},
+			{ MQMessages.CPUInfo.ToString(), "/ARM/Hardware/Processor"},
+			{ MQMessages.MemoryInfo.ToString(), "/ARM/Hardware/Memory"},
+			{ MQCommands.SetOrganAuto.ToString(), "/organauto"},
+			//{ MQCommands.Dosi.ToString(), "/dosimeter/state"},
 		};
 
 		/// <summary>

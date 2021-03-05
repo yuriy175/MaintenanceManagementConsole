@@ -7,6 +7,9 @@
 	"/collimator/state",
 	"/dosimeter/state",
 	"/dicom",
-	"/ARM/Hardware/HDD"
+	"/ARM/Hardware/HDD",
+	"/ARM/Hardware/Processor",
+	"/ARM/Hardware/Memory",
+	"/organauto"
 	]
 }
