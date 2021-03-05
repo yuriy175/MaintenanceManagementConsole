@@ -110,7 +110,8 @@ namespace MessagesSender.BL.Remoting
 
             IBasicProperties basicProperties = _channel.CreateBasicProperties();
             basicProperties.Persistent = false;
-            var content = JsonConvert.SerializeObject(payload);
+            var content = JsonConvert.SerializeObject(payload,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var body = Encoding.UTF8.GetBytes(content);
 
             _channel.BasicPublish(exchange: "",

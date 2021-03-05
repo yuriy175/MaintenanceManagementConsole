@@ -89,7 +89,7 @@ namespace MessagesSender.BL
 
             if (state.State.State.HasValue)
             {
-                state.State.State = (int)(state.State.State.Value <= GeneratorConnectedValue ?
+                state.State.State = (int)(state.State.State.Value < StandConnectedValue ?
                     ConnectionStates.Disconnected : ConnectionStates.Connected);
             }
 
@@ -107,7 +107,7 @@ namespace MessagesSender.BL
 
             if (state.State.State.HasValue)
             {
-                state.State.State = (int)(state.State.State.Value <= GeneratorConnectedValue ?
+                state.State.State = (int)(state.State.State.Value < GeneratorConnectedValue ?
                     ConnectionStates.Disconnected : ConnectionStates.Connected);
             }
 
@@ -125,7 +125,7 @@ namespace MessagesSender.BL
 
             if (state.State.State.HasValue)
             {
-                state.State.State = (uint)(state.State.State.Value <= GeneratorConnectedValue ?
+                state.State.State = (uint)(state.State.State.Value < CollimatorConnectedValue ?
                     ConnectionStates.Disconnected : ConnectionStates.Connected);
             }
 

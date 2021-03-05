@@ -54,13 +54,31 @@ function reducer(state, action) {
     case 'SETGENERATOR': {
       return {
         ...state,
-        generator: action.payload
+        generator: {Id: action.payload.Id, State: {...state.generator.State, ...action.payload.State}}
       };
     }
     case 'SETDETECTOR': {
       return {
         ...state,
-        detectors: action.payload
+        detectors: [action.payload]
+      };
+    }
+    case 'SETSTAND': {
+      return {
+        ...state,
+        stand: {Id: action.payload.Id, State: {...state.stand.State, ...action.payload.State}}
+      };
+    }
+    case 'SETDOSIMETER': {
+      return {
+        ...state,
+        dosimeter: {Id: action.payload.Id, State: {...state.dosimeter.State, ...action.payload.State}}
+      };
+    }
+    case 'SETCOLLIMATOR': {
+      return {
+        ...state,
+        collimator: action.payload
       };
     }
 

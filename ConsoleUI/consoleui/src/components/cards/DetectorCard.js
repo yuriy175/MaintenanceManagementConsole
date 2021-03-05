@@ -22,9 +22,17 @@ export default function DetectorCard() {
         <Typography variant="h5" component="h2">
           {bull}Детекторы
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Состояние
-        </Typography>
+        {currEquipState.detectors?.map((i, ind) => (
+          <div key={ind.toString()} >
+            <Typography variant="h6" component="h2">
+              {bull}{i.DetectorName} 
+            </Typography>
+            <Typography className={classes.pos} color="textSecondary">
+              Состояние - {i.State !== 2? "Не готов" : "Готов"}
+            </Typography>
+          </div>
+          ))
+        }        
       </CardContent>
     </Card>
   );

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"../Models"
 )
@@ -34,7 +33,17 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 	go func() {
 		for d := range equipWebSockCh {
 			for _, v := range webSocketConnections {
-				if strings.Contains(d.Topic, "ARM/Hardware") {
+				// if strings.Contains(d.Topic, "/stand/state") {
+				// 	b, err := json.Marshal(d)
+				// 	if err = v.Conn.WriteMessage(1, b); err != nil {
+				// 		// return
+				// 	}
+				// }
+				b, err := json.Marshal(d)
+				if err = v.Conn.WriteMessage(1, b); err != nil {
+					// return
+				}
+				/*if strings.Contains(d.Topic, "ARM/Hardware") {
 					b, err := json.Marshal(d)
 					if err = v.Conn.WriteMessage(1, b); err != nil {
 						// return
@@ -54,7 +63,7 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 					if err = v.Conn.WriteMessage(1, b); err != nil {
 						// return
 					}
-				}
+				}*/
 			}
 		}
 	}()

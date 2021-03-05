@@ -81,7 +81,8 @@ namespace MessagesSender.BL.Remoting
 				return false;
 			}
 
-			var content = JsonConvert.SerializeObject(payload);
+			var content = JsonConvert.SerializeObject(payload,
+				new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
 			return await SendAsync(msgType, payload, $"{Topic}{subtopic}", content);
         }
@@ -106,7 +107,8 @@ namespace MessagesSender.BL.Remoting
 			}
 			else
 			{
-				content = JsonConvert.SerializeObject(payload);
+				content = JsonConvert.SerializeObject(payload,
+					new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 			}
 
 			return await SendAsync(msgType, payload, CommonTopic, content);

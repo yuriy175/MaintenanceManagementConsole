@@ -23,7 +23,25 @@ export default function GeneratorCard() {
           {bull}Генератор
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Лог. р. м. - {currEquipState.generator?.State?.Workstation}%
+          Состояние - {currEquipState.generator?.State?.State < 1? "Не готов" : "Готов"} 
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Ток - {currEquipState.generator?.State?.Mas} мАс
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Напряжение - {currEquipState.generator?.State?.Kv} кВ
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Логическое. р. м. - {currEquipState.generator?.State?.Workstation}
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Нагрев - {currEquipState.generator?.State?.HeatStatus}
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Педаль - {currEquipState.generator?.State?.PedalPressed}
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          Ошибки - {currEquipState.generator?.State?.ErrorDescriptions?.length}
         </Typography>
       </CardContent>
     </Card>

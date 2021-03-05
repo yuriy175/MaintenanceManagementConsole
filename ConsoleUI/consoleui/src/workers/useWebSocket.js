@@ -33,33 +33,48 @@ export function useWebSocket(props) {
         
                 if(data?.Topic.includes('/ARM/Hardware/HDD'))
                 {
-                    const hdds = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETHDDS', payload: hdds }); 
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETHDDS', payload: values }); 
                 }
                 else if(data?.Topic.includes('/ARM/Hardware/Memory'))
                 {
-                    const hdds = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETMEMORY', payload: hdds }); 
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETMEMORY', payload: values }); 
                 }
                 else if(data?.Topic.includes('/ARM/Hardware/Processor'))
                 {
-                    const hdds = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETCPU', payload: hdds }); 
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETCPU', payload: values }); 
                 }                
                 else if(data?.Topic.includes('/organauto'))
                 {
-                    const hdds = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETORGANAUTO', payload: hdds }); 
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETORGANAUTO', payload: values }); 
+                }                
+                else if(data?.Topic.includes('/stand'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETSTAND', payload: values }); 
                 }
                 else if(data?.Topic.includes('/generator'))
                 {
-                    const hdds = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETGENERATOR', payload: hdds }); 
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETGENERATOR', payload: values }); 
                 }
                 else if(data?.Topic.includes('/detector'))
                 {
-                    const hdds = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETDETECTOR', payload: hdds }); 
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETDETECTOR', payload: values }); 
+                }
+                else if(data?.Topic.includes('/dosimeter'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETDOSIMETER', payload: values }); 
+                }
+                else if(data?.Topic.includes('/collimator'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETCOLLIMATOR', payload: values }); 
                 }
             };
         }
