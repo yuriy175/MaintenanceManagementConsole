@@ -77,6 +77,15 @@ namespace MessagesSender.BL
                     new { ramInfo.Value.AvailableSize, ramInfo.Value.TotalSize });
             }
 
+            await Task.Yield();
+
+            var cpuInfo = await GetCpuInfoAsync();
+            if (ramInfo.HasValue)
+            {
+                _ = _sendingService.SendInfoToMqttAsync(MQMessages.CPUInfo,
+                    new { cpuInfo.Value.Model, cpuInfo.Value.CPU_Load });
+            }
+
             return false;
         }
 
@@ -96,11 +105,25 @@ namespace MessagesSender.BL
                 }).ToArray();
         }
 
+        private async Task<(string Model, long CPU_Load)?> GetCpuInfoAsync()
+        {
+            try
+            {
+                var total_cpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
+                var idle_cpu = new PerformanceCounter("Process", "% Processor Time", "Idle");
+                float load = total_cpu.NextValue();
+                float idle = idle_cpu.NextValue();
+                System.Threading.Thread.Sleep(500); //This avoid that answer always 0
+                load = (total_cpu.NextValue() - idle_cpu.NextValue()) / Environment.ProcessorCount;
 
-        //var total_cpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
-        //float t = total_cpu.NextValue();
-        //System.Threading.Thread.Sleep(1000); //This avoid that answer always 0
-        //t = (int)total_cpu.NextValue();
+                return (string.Empty, (long)load);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "GetRamInfoAsync error");
+                return (string.Empty, 0);
+            }
+        }        
 
         private async Task<(long TotalSize, long AvailableSize)?> GetRamInfoAsync()
         {
