@@ -3,8 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useCardsStyles = makeStyles({
   root: {
-    minWidth: 275,
-    maxWidth: 345,
+    width: "100%",//275,
+    //maxWidth: 345,
     marginBottom: 12,
     marginRight: 12,
   },

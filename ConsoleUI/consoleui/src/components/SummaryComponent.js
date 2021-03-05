@@ -11,6 +11,13 @@ import RemoteAccessCard from './cards/RemoteAccessCard'
 import StandCard from './cards/StandCard'
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display:"flex"
+  },
+  column:{
+    width: "30%",
+    marginRight: "12px",
+  }
 }));
 
 export default function SummaryComponent(props) {
@@ -19,19 +26,19 @@ export default function SummaryComponent(props) {
   const classes = useStyles();
 
   return (
-    <div>
-      <div>
+    <div className={classes.root}>
+      <div className={classes.column}>
         <EquipImageCard></EquipImageCard>
         <SystemCard></SystemCard>
         <HddCard></HddCard>
       </div>
-      <div>
+      <div className={classes.column}>
         <OrganAutoCard></OrganAutoCard>
         <GeneratorCard></GeneratorCard>
         <DetectorCard></DetectorCard>
         <StandCard></StandCard>
       </div>
-      <div>
+      <div className={classes.column}>
         <RemoteAccessCard></RemoteAccessCard>
         <DicomCard></DicomCard>
       </div>
