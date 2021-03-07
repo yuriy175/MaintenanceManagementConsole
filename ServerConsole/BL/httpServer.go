@@ -9,7 +9,7 @@ import (
 	"../Models"
 )
 
-func HttpServer(mqttReceiverService *MqttReceiverService) {
+func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebSocketService) {
 
 	/*http.HandleFunc("/devices/", func(w http.ResponseWriter, r *http.Request) {
 		devices := DAL.DalGetDeviceConnections()
@@ -17,22 +17,6 @@ func HttpServer(mqttReceiverService *MqttReceiverService) {
 			fmt.Fprintf(w, "time %s device : %d name : %s type : %s connection : %d\n",
 				device.DateTime.Format(time.RFC3339), device.DeviceId, device.DeviceName, device.DeviceType, device.DeviceConnection)
 		}
-
-		fmt.Fprint(w, "Index Page")
-	})
-
-	http.HandleFunc("/studies/", func(w http.ResponseWriter, r *http.Request) {
-		devices := DAL.DalGetStudiesInWork()
-		for _, study := range devices {
-			fmt.Fprintf(w, "time %s study : %d dicom : %s name : %s\n",
-				study.DateTime.Format(time.RFC3339), study.StudyId, study.StudyDicomUid, study.StudyName)
-		}
-
-		fmt.Fprint(w, "Index Page")
-	})
-
-	http.HandleFunc("/commands/", func(w http.ResponseWriter, r *http.Request) {
-		mqttReceiverService.SendCommand("KRT/HOMEPC", "runTV")
 
 		fmt.Fprint(w, "Index Page")
 	})*/
@@ -43,16 +27,41 @@ func HttpServer(mqttReceiverService *MqttReceiverService) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		equipInfos, ok := r.URL.Query()["equipInfo"]
+		queryString := r.URL.Query()
 
-		if !ok || len(equipInfos[0]) < 1 {
-			log.Println("Url Param 'equipInfo' is missing")
+		sessionUids, ok := queryString["sessionUid"]
+
+		if !ok || len(sessionUids[0]) < 1 {
+			log.Println("Url Param 'sessionUid' is missing")
 			return
 		}
-		equipInfo := equipInfos[0]
+		sessionUid := sessionUids[0]
 
-		mqttReceiverService.SendCommand(equipInfo, "activate")
-		log.Println("Url Param 'key' is: " + string(equipInfo))
+		activatedEquipInfos, ok := queryString["activatedEquipInfo"]
+
+		if !ok || len(activatedEquipInfos[0]) < 1 {
+			log.Println("Url Param 'activatedEquipInfo' is missing")
+			return
+		}
+		activatedEquipInfo := activatedEquipInfos[0]
+
+		deactivatedEquipInfos, ok := queryString["deactivatedEquipInfo"]
+
+		if !ok {
+			log.Println("Url Param 'deactivatedEquipInfo' is missing")
+			return
+		}
+		deactivatedEquipInfo := ""
+		if len(deactivatedEquipInfos[0]) > 0 {
+			deactivatedEquipInfo = deactivatedEquipInfos[0]
+		}
+
+		log.Println("Url is: %s %s %s", sessionUid, activatedEquipInfo, deactivatedEquipInfo)
+		if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo {
+			mqttReceiverService.SendCommand(deactivatedEquipInfo, "deactivate")
+		}
+		webSocketService.Activate(sessionUid, activatedEquipInfo, deactivatedEquipInfo)
+		mqttReceiverService.SendCommand(activatedEquipInfo, "activate")
 	})
 
 	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {

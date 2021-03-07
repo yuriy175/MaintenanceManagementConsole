@@ -12,6 +12,7 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 
 import * as EquipWorker from '../../workers/equipWorker'
 // import * as WebSocket from '../../workers/webSocket'
+import {sessionUid} from '../../utilities/utils'
 import { useWebSocket } from '../../workers/useWebSocket'
 
 const drawerWidth = 240;
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MainToolBar() {
-  console.log(`! render MainToolBar`);
+  console.log(`! render MainToolBar ` + sessionUid);
 
   const classes = useStyles();
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
@@ -53,7 +54,7 @@ export default function MainToolBar() {
   const onEquipChanged = async equipInfo =>
   {
     currEquipDispatch({ type: 'RESET', payload: true });
-    await EquipWorker.Activate(equipInfo);
+    await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
     currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
   }
   

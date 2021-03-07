@@ -2,6 +2,8 @@ import axios from 'axios';
 import { EquipsServiceAddress } from '../model/constants'
 import {HandlerWrapper, GetJsonHeader} from './commonWorker'
 
+import {sessionUid} from '../utilities/utils'
+
 const EquipsController = '/equips';
 
 /*export async function GetStudyList(filter) {
@@ -22,10 +24,12 @@ export async function GetAllEquips() {
     });
 };
 
-export async function Activate(equipInfo) {
+export async function Activate(activatedEquipInfo, deactivatedEquipInfo) {
     return await HandlerWrapper('Activate', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController +
-            '/Activate?equipInfo=' + equipInfo);
+            '/Activate?sessionUid=' + sessionUid+
+            '&activatedEquipInfo=' + activatedEquipInfo+
+            '&deactivatedEquipInfo=' + deactivatedEquipInfo);
         return response.data;
     });
 };

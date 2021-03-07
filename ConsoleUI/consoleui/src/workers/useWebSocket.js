@@ -2,21 +2,16 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
 
-const generateSessionUid = function () { // Public Domain/MIT
-    var d = new Date().getTime();//Timestamp
-    var r = Math.random() * 1000;//random number between 0 and 1000
-    var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-    return `${d}_${r}`;
-}
+import {sessionUid} from '../utilities/utils'
 
 export function useWebSocket(props) {
-    console.log(`useWebSocket`);
+    console.log(`useWebSocket `+sessionUid);
 
     const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
     const [connection, setConnection] = useState(null);
     
     useEffect(() => {
-        const socket = new WebSocket(WebSocketAddress + "/websocket?uid=" + generateSessionUid());
+        const socket = new WebSocket(WebSocketAddress + "/websocket?uid=" + sessionUid);
         setConnection(socket);
     }, []);
 

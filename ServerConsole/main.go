@@ -16,13 +16,15 @@ func main() {
 	equipWebSockCh := make(chan *Models.RawMqttMessage)
 
 	mqttReceiverService := &BL.MqttReceiverService{}
+	webSocketService := &BL.WebSocketService{}
 	mqttReceiverService.CreateCommonConnection(equipDalCh, equipWebSockCh)
 
 	go DAL.DalWorker(equipDalCh)
 	go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh, equipWebSockCh)
 	// go BL.MqttReceiver(equipDalCh)
-	go BL.HttpServer(mqttReceiverService)
+
 	go BL.WebServer(equipWebSockCh)
+	go BL.HttpServer(mqttReceiverService, webSocketService)
 
 	fmt.Println("Hello Go")
 	<-intCh
