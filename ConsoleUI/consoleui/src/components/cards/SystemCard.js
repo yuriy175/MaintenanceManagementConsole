@@ -33,7 +33,7 @@ export default function SystemCard() {
           {bull}Память
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Всего {currEquipState.memory?.TotalSize} Доступно {currEquipState.memory?.AvailableSize}
+          Всего {currEquipState.memory?.TotalSize}Мб, Доступно {currEquipState.memory?.AvailableSize}Мб
         </Typography>
       </CardContent>
     </Card>

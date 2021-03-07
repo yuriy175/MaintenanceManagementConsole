@@ -1,5 +1,7 @@
 using Atlas.Common.Core.Interfaces;
 using Atlas.Common.Impls;
+using Atlas.Remoting.Core.Interfaces;
+using Atlas.Remoting.Impls;
 using MessagesSender.BL;
 using MessagesSender.BL.Remoting;
 using MessagesSender.Core.Interfaces;
@@ -123,6 +125,10 @@ namespace MessagesSender
         /// <returns>updated service collection.</returns>
         public static IServiceCollection AddRemotingServices(this IServiceCollection services)
         {
+            services.AddSingleton(
+               typeof(IWebClientService),
+               typeof(WebClientService));
+            
             services.AddSingleton(
                typeof(IMqttSender),
                typeof(RabbitMQTTSender));    

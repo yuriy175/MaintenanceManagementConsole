@@ -16,6 +16,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using MessagesSender.Core.Model;
 using Atlas.Acquisitions.Common.Core.Model;
+using System.Collections.Generic;
 
 namespace MessagesSender.BL
 {
@@ -24,6 +25,9 @@ namespace MessagesSender.BL
     /// </summary>
     public class HardwareStateService : IHardwareStateService
     {
+        private const int GeneratorId = 1;
+        private const int StandId = 1;
+
         private const int StandConnectedValue = 4;
         private const int GeneratorConnectedValue = 4;
         private const int CollimatorConnectedValue = 2;
@@ -31,6 +35,7 @@ namespace MessagesSender.BL
 
         private readonly ILogger _logger;
         private readonly IMQCommunicationService _mqService;
+        private readonly IWebClientService _webClientService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
 
@@ -41,11 +46,13 @@ namespace MessagesSender.BL
         /// </summary>
         /// <param name="logger">logger</param>
         /// <param name="mqService">MQ service</param>
+        /// <param name="webClientService">web client service</param>
         /// <param name="eventPublisher">event publisher service</param>
         /// <param name="sendingService">sending service</param>
         public HardwareStateService(
             ILogger logger,
             IMQCommunicationService mqService,
+            IWebClientService webClientService,
             IEventPublisher eventPublisher,
             ISendingService sendingService)
         {
@@ -53,6 +60,7 @@ namespace MessagesSender.BL
             _mqService = mqService;
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
+            _webClientService = webClientService;
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
@@ -152,6 +160,36 @@ namespace MessagesSender.BL
         private async Task<bool> OnActivateArrivedAsync()
         {
             _isActivated = true;
+
+            var generatorState = await _webClientService.SendAsync<GeneratorState>(
+                "Exposition", 
+                "RequestGeneratorState", 
+                new Dictionary<string, string> { });
+
+            if (CanSendGeneratorState(generatorState))
+            {
+                OnGeneratorState((GeneratorId, generatorState));
+            }
+
+            await Task.Yield();
+
+            var standState = await _webClientService.SendAsync<StandState>(
+                "Exposition",
+                "RequestStandState",
+                new Dictionary<string, string> { });
+
+            if (CanSendStandState(standState))
+            {
+                OnStandState((StandId, standState));
+            }
+
+            await Task.Yield();
+
+            var result = await _webClientService.SendAsync<bool>(
+                "Detectors",
+                "RequestDetectorState",
+                new Dictionary<string, string> { });
+
             return true;
         }
 

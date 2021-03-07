@@ -25,7 +25,7 @@ export default function HddCard() {
               {bull}Диск {i.Letter}
             </Typography>
             <Typography className={classes.pos} color="textSecondary">
-              Свободно: {i.FreeSize} Всего: {i.TotalSize}
+              Свободно: {i.FreeSize}Гб, Всего: {i.TotalSize}Гб
             </Typography>
           </div>
           ))

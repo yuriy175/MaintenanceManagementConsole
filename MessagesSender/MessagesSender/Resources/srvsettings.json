@@ -1,3 +1,8 @@
 {
+  "journal": "http://127.0.0.1:5002/",
+  "Exposition": "http://127.0.0.1:5007/",
+  "Dosimeter": "http://127.0.0.1:5007/",
+  "Detectors": "http://127.0.0.1:5007/",
+  "Verify": "http://127.0.0.1:5001/",
   "RabbitMQConnectionString": "Server=localhost;User=guest;Password=guest"
 }
