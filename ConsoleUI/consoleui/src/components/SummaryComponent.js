@@ -9,6 +9,8 @@ import EquipImageCard from './cards/EquipImageCard'
 import DicomCard from './cards/DicomCard'
 import RemoteAccessCard from './cards/RemoteAccessCard'
 import StandCard from './cards/StandCard'
+import DosimeterCard from './cards/DosimeterCard'
+import SoftwareCard from './cards/SoftwareCard'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,10 +39,12 @@ export default function SummaryComponent(props) {
         <GeneratorCard></GeneratorCard>
         <DetectorCard></DetectorCard>
         <StandCard></StandCard>
+        <DosimeterCard></DosimeterCard>
       </div>
       <div className={classes.column}>
         <RemoteAccessCard></RemoteAccessCard>
         <DicomCard></DicomCard>
+        <SoftwareCard></SoftwareCard>
       </div>
     </div>
   );

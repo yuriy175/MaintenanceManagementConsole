@@ -85,6 +85,9 @@ namespace MessagesSender.BL
 
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
+
+                _mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
+                            (MQCommands.ProcessDoseArrived, state => OnDosimeterState(state)));
             });
         }
 
@@ -142,6 +145,24 @@ namespace MessagesSender.BL
                 new { state.Id, state.State });
         }
 
+        private void OnDosimeterState((int Id, DosimeterState State) state)
+        {
+            if (!_isActivated)
+            {
+                return;
+            }
+
+            if (state.State.State.HasValue)
+            {
+                state.State.State = (uint)(state.State.State.Value < DosimeterConnectedValue ?
+                    ConnectionStates.Disconnected : ConnectionStates.Connected);
+            }
+
+            _sendingService.SendInfoToMqttAsync(
+                MQCommands.ProcessDoseArrived,
+                new { state.Id, state.State });
+        }
+
         private void OnDetectorStateChanged((int DetectorId, string DetectorName, DetectorState State) state)
         {
             if (_isActivated)
@@ -162,8 +183,8 @@ namespace MessagesSender.BL
             _isActivated = true;
 
             var generatorState = await _webClientService.SendAsync<GeneratorState>(
-                "Exposition", 
-                "RequestGeneratorState", 
+                "Exposition",
+                "RequestGeneratorState",
                 new Dictionary<string, string> { });
 
             if (CanSendGeneratorState(generatorState))
@@ -189,6 +210,13 @@ namespace MessagesSender.BL
                 "Detectors",
                 "RequestDetectorState",
                 new Dictionary<string, string> { });
+
+            await Task.Yield();
+
+            result = await _webClientService.SendAsync<bool>(
+                "Dosimeter",
+                "RequestDose",
+                new Dictionary<string, string> { { "dosimeterId", "1"} });
 
             return true;
         }

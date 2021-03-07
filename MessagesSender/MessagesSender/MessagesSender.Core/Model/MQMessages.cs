@@ -11,5 +11,7 @@ namespace MessagesSender.Core.Model
         HddDrivesInfo,
         CPUInfo,
         MemoryInfo,
+        DicomInfo,
+        SoftwareInfo,
     }
 }

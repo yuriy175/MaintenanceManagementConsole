@@ -34,6 +34,8 @@ namespace MessagesSender.BL
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
 
+        private readonly PerformanceCounter _totalCpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
+        private readonly PerformanceCounter _idleCpu = new PerformanceCounter("Process", "% Processor Time", "Idle");
         /// <summary>
         /// public constructor
         /// </summary>
@@ -109,14 +111,17 @@ namespace MessagesSender.BL
         {
             try
             {
-                var total_cpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
-                var idle_cpu = new PerformanceCounter("Process", "% Processor Time", "Idle");
-                float load = total_cpu.NextValue();
-                float idle = idle_cpu.NextValue();
-                System.Threading.Thread.Sleep(500); //This avoid that answer always 0
-                load = (total_cpu.NextValue() - idle_cpu.NextValue()) / Environment.ProcessorCount;
+                await Task.Yield();
+                float prevLoad = _totalCpu.NextValue();
+                float prevIdle = _idleCpu.NextValue();
+                System.Threading.Thread.Sleep(1000); //This avoid that answer always 0
+                float load = _totalCpu.NextValue();
+                float idle = _idleCpu.NextValue();
+                var diff = (load - idle) / Environment.ProcessorCount;
 
-                return (string.Empty, (long)load);
+                Console.WriteLine("total "+ load + " idle" + idle + " cpu load " + diff);
+
+                return (string.Empty, (long)diff);
             }
             catch (Exception ex)
             {

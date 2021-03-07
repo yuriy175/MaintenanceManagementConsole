@@ -43,7 +43,9 @@ namespace MessagesSender.BL.Remoting
 			{ MQMessages.CPUInfo.ToString(), "/ARM/Hardware/Processor"},
 			{ MQMessages.MemoryInfo.ToString(), "/ARM/Hardware/Memory"},
 			{ MQCommands.SetOrganAuto.ToString(), "/organauto"},
-			//{ MQCommands.Dosi.ToString(), "/dosimeter/state"},
+			{ MQCommands.ProcessDoseArrived.ToString(), "/dosimeter/state"},
+			{ MQMessages.DicomInfo.ToString(), "/dicom"},
+			{ MQMessages.SoftwareInfo.ToString(), "/ARM/Software"},
 		};
 
 		/// <summary>
