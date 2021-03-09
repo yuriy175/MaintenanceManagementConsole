@@ -18,8 +18,9 @@ const EquipsController = '/equips';
 
 export async function GetAllEquips() {
     return await HandlerWrapper('GetAllEquips', async () => {
-        const response = await axios.get(EquipsServiceAddress + EquipsController +
-            '/GetAllEquips');
+        const path = EquipsServiceAddress + EquipsController + '/GetAllEquips';
+        console.log(path);
+        const response = await axios.get(path);
         return response.data;
     });
 };

@@ -1,7 +1,7 @@
 package Models
 
 const (
-	HttpServerAddress          = "localhost:8181"
+	HttpServerAddress          = ":8181" // "localhost:8181"
 	AppTasksNumber             = 2
 	MongoDBConnectionString    = "mongodb://127.0.0.1"
 	DBName                     = "test"
