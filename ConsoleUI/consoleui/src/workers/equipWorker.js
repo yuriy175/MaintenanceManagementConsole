@@ -34,3 +34,13 @@ export async function Activate(activatedEquipInfo, deactivatedEquipInfo) {
         return response.data;
     });
 };
+
+export async function SearchEquip(equipType, startDate, endDate) {
+    return await HandlerWrapper('SearchEquip', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController +
+            '/SearchEquip?equipType=' + equipType+
+            '&startDate=' + startDate+
+            '&endDate=' + endDate);
+        return response.data;
+    });
+};

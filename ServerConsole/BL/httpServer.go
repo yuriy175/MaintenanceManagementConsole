@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"../DAL"
 	"../Models"
 )
 
@@ -72,6 +73,51 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 		w.Header().Set("Content-Type", "application/json")
 		equips := mqttReceiverService.GetConnectionNames()
 		json.NewEncoder(w).Encode(equips)
+	})
+
+	//(currEquip, startDate, endDate);
+	http.HandleFunc("/equips/SearchEquip", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+		queryString := r.URL.Query()
+
+		equipTypes, ok := queryString["equipType"]
+
+		if !ok || len(equipTypes[0]) < 1 {
+			log.Println("Url Param 'equipType' is missing")
+			return
+		}
+		equipType := equipTypes[0]
+
+		startDates, ok := queryString["startDate"]
+
+		if !ok || len(startDates[0]) < 1 {
+			log.Println("Url Param 'startDate' is missing")
+			return
+		}
+		startDate := startDates[0]
+
+		endDates, ok := queryString["endDate"]
+
+		if !ok {
+			log.Println("Url Param 'endDate' is missing")
+			return
+		}
+		endDate := endDates[0]
+
+		// t, err := time.Parse("2006-01-02", endDate)
+
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+		// fmt.Println(t)
+		organAutos := DAL.DalGetOrganAutoInfo()
+
+		log.Println("Url is: %s %s %s", equipType, startDate, endDate)
+		json.NewEncoder(w).Encode(organAutos)
 	})
 
 	address := Models.HttpServerAddress

@@ -44,3 +44,14 @@ type RawMqttMessage struct {
 	Topic string
 	Data  string
 }
+
+type OrganAutoInfoModel struct {
+	Id           bson.ObjectId `bson:"_id"`
+	DateTime     time.Time
+	EquipName    string
+	OrganAuto    string
+	Projection   string
+	Direction    string
+	AgeGroupId   float64
+	Constitution float64
+}

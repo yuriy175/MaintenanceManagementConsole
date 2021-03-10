@@ -12,6 +12,9 @@ export default function MainInfoComponent(props) {
   return (
     <div>
       {props.Index === 0 ? <SummaryComponent></SummaryComponent> : <></>}
+      {props.Index === 1 ? <MapComponent></MapComponent> : <></>}
+      {props.Index === 2 ? <EventsComponent></EventsComponent> : <></>}
+      {props.Index === 3 ? <HistoryComponent></HistoryComponent> : <></>}
     </div>
   );
 }

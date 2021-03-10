@@ -5,4 +5,10 @@ const generateSessionUid = function () { // Public Domain/MIT
     return `${d}_${r}`;
 }
 
+const leadZero = (val) => val < 10 ? '0' + val : val;
+export function getUSFullDate(date)
+{
+    return date.getFullYear() + "-" + leadZero(date.getMonth() + 1) + "-"+ leadZero(date.getDate());
+}
+
 export const sessionUid = generateSessionUid();

@@ -131,6 +131,39 @@ func DalGetHddDrivesInfo() []Models.HddDrivesInfoModel {
 	return drives
 }
 
+func DalGetOrganAutoInfo() []Models.OrganAutoInfoModel {
+	session := dalCreateSession()
+	defer session.Close()
+
+	organAutos := []Models.OrganAutoInfoModel{
+		Models.OrganAutoInfoModel{
+			EquipName:    "krt",
+			OrganAuto:    "нога",
+			Projection:   "кривая",
+			Direction:    "задняя",
+			AgeGroupId:   4,
+			Constitution: 2,
+		},
+		Models.OrganAutoInfoModel{
+			EquipName:    "krt",
+			OrganAuto:    "рука",
+			Projection:   "левая",
+			Direction:    "задняя",
+			AgeGroupId:   4,
+			Constitution: 2,
+		},
+	}
+	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+
+	// // критерий выборки
+	// query := bson.M{}
+	// // объект для сохранения результата
+	// drives := []Models.HddDrivesInfoModel{}
+	// drivesCollection.Find(query).All(&drives)
+
+	return organAutos
+}
+
 func dalCreateSession() *mgo.Session {
 	session, err := mgo.Dial(Models.MongoDBConnectionString)
 	if err != nil {

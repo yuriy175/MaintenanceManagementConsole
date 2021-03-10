@@ -6,3 +6,5 @@
 export const EquipsServiceAddress = window.EquipsServiceAddress;
 export const WebSocketAddress = window.WebSocketAddress;
 
+export const SearchPeriod = 7;
+
