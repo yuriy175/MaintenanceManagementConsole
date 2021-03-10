@@ -51,10 +51,10 @@ type OrganAutoInfoModel struct {
 	DateTime     time.Time
 	EquipName    string
 	State        float64
-	OrganAuto    string
+	Name         string
 	Projection   string
 	Direction    string
-	AgeGroupId   float64
+	AgeId        float64
 	Constitution float64
 }
 

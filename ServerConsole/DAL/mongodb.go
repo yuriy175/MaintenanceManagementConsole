@@ -22,6 +22,7 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 	db := session.DB(Models.DBName)
 	// deviceCollection := db.C(Models.DeviceConnectionsTableName)
 	studiesCollection := db.C(Models.StudyInWorkTableName)
+	organAutoCollection := db.C(Models.OrganAutoTableName)
 
 	go func() { //c *mgo.Collection) {
 		for d := range equipDalCh {
@@ -44,19 +45,6 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				}
 				deviceCollection.Insert(model)
 			} else */if strings.Contains(d.Topic, "/study") {
-				/*studyId := d.Info["StudyId"].(float64)
-				studyDicomUid := d.Info["StudyDicomUid"].(string)
-				studyName := d.Info["StudyName"].(string)
-				*/
-				// model := &Models.StudyInWorkModel{
-				// 	Id:            bson.NewObjectId(),
-				// 	DateTime:      time.Now(),
-				// 	EquipName:     d.EquipName,
-				// 	StudyId:       studyId,
-				// 	StudyDicomUid: studyDicomUid,
-				// 	StudyName:     studyName,
-				// 	State:         2,
-				// }
 				model := Models.StudyInWorkModel{}
 				json.Unmarshal([]byte(d.Data), &model)
 				model.Id = bson.NewObjectId()
@@ -64,7 +52,16 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
 				model.State = 2
 				studiesCollection.Insert(model)
-			} /*else if d.MsgType == Models.MsgTypeHddDrivesInfo {
+			} else if strings.Contains(d.Topic, "/organauto") {
+				model := Models.OrganAutoInfoModel{}
+				json.Unmarshal([]byte(d.Data), &model)
+				model.Id = bson.NewObjectId()
+				model.DateTime = time.Now()
+				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
+				//model.State = 2
+				organAutoCollection.Insert(model)
+			}
+			/*else if d.MsgType == Models.MsgTypeHddDrivesInfo {
 				var params []Models.HddDrivesInfoMessage
 				json.Unmarshal(d.Info, &params)
 
@@ -109,17 +106,25 @@ func GetDeviceConnections() []Models.DeviceConnectionModel {
 	return devices
 }
 
-func GetStudiesInWork() []Models.StudyInWorkModel {
+func GetStudiesInWork(startDate time.Time, endDate time.Time) []Models.StudyInWorkModel {
 	session := dalCreateSession()
 	defer session.Close()
 
 	studiesCollection := session.DB(Models.DBName).C(Models.StudyInWorkTableName)
 
 	// критерий выборки
-	query := bson.M{}
+	query := bson.M{
+		"datetime": bson.M{
+			"$gt": startDate,
+			"$lt": endDate,
+		},
+	}
 	// объект для сохранения результата
 	studies := []Models.StudyInWorkModel{}
-	studiesCollection.Find(query).All(&studies)
+	err := studiesCollection.Find(query).All(&studies)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	/*studies := []Models.StudyInWorkModel{
 		Models.StudyInWorkModel{
@@ -141,7 +146,7 @@ func GetStudiesInWork() []Models.StudyInWorkModel {
 	return studies
 }
 
-func GetSystemInfo() []Models.SystemInfoModel {
+func GetSystemInfo(startDate time.Time, endDate time.Time) []Models.SystemInfoModel {
 	session := dalCreateSession()
 	defer session.Close()
 
@@ -180,11 +185,11 @@ func GetSystemInfo() []Models.SystemInfoModel {
 	return sysInfo
 }
 
-func GetOrganAutoInfo() []Models.OrganAutoInfoModel {
+func GetOrganAutoInfo(startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel {
 	session := dalCreateSession()
 	defer session.Close()
 
-	organAutos := []Models.OrganAutoInfoModel{
+	/*organAutos := []Models.OrganAutoInfoModel{
 		Models.OrganAutoInfoModel{
 			EquipName:    "krt",
 			State:        0,
@@ -203,19 +208,20 @@ func GetOrganAutoInfo() []Models.OrganAutoInfoModel {
 			AgeGroupId:   4,
 			Constitution: 2,
 		},
-	}
+	}*/
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+	organAutoCollection := session.DB(Models.DBName).C(Models.OrganAutoTableName)
 
-	// // критерий выборки
-	// query := bson.M{}
-	// // объект для сохранения результата
-	// drives := []Models.HddDrivesInfoModel{}
-	// drivesCollection.Find(query).All(&drives)
+	// критерий выборки
+	query := bson.M{}
+	// объект для сохранения результата
+	organAutos := []Models.OrganAutoInfoModel{}
+	organAutoCollection.Find(query).All(&organAutos)
 
 	return organAutos
 }
 
-func GetGeneratorInfo() []Models.GeneratorInfoModel {
+func GetGeneratorInfo(startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel {
 	session := dalCreateSession()
 	defer session.Close()
 

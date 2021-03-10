@@ -125,17 +125,20 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 }
 
 func SendSearchResults(w http.ResponseWriter, equipType string, startDate time.Time, endDate time.Time) {
+
+	endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 0, time.UTC)
+
 	if equipType == "SystemInfo" {
-		sysInfo := DAL.GetSystemInfo()
+		sysInfo := DAL.GetSystemInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(sysInfo)
 	} else if equipType == "OrganAutos" {
-		organAutos := DAL.GetOrganAutoInfo()
+		organAutos := DAL.GetOrganAutoInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(organAutos)
 	} else if equipType == "Generators" {
-		genInfo := DAL.GetGeneratorInfo()
+		genInfo := DAL.GetGeneratorInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(genInfo)
 	} else if equipType == "Studies" {
-		studies := DAL.GetStudiesInWork()
+		studies := DAL.GetStudiesInWork(startDate, endDate)
 		json.NewEncoder(w).Encode(studies)
 	}
 }

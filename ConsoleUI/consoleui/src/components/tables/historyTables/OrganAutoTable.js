@@ -11,12 +11,11 @@ import TableRow from '@material-ui/core/TableRow';
 
 const columns = [
   { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
-  { id: 'State', label: 'Состояние', minWidth: 100 },
   { id: 'DateTime', label: 'Время', minWidth: 100 },
-  { id: 'OrganAuto', label: 'Название', minWidth: 100 },
+  { id: 'Name', label: 'Название', minWidth: 100 },
   { id: 'Projection', label: 'Проекция', minWidth: 100 },
   { id: 'Direction', label: 'Направление', minWidth: 100 },
-  { id: 'AgeGroupId', label: 'Возр. группа', minWidth: 100 },
+  { id: 'AgeId', label: 'Возр. группа', minWidth: 100 },
   { id: 'Constitution', label: 'Телосложение', minWidth: 100 },  
 ];
 

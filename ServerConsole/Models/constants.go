@@ -8,7 +8,12 @@ const (
 	EquipmentTableName         = "Equipment"
 	DeviceConnectionsTableName = "DeviceConnections"
 	StudyInWorkTableName       = "StudyInWork"
-	HddDrivesInfoTableName     = "HddDrivesInfo"
+	SystemInfoTableName        = "SystemInfo"
+	OrganAutoTableName         = "OrganAuto"
+	GeneratorInfoTableName     = "GeneratorInfo"
+	StandInfoTableName         = "StandInfo"
+	DetectorInfoTableName      = "DetectorInfo"
+	DosimeterInfoTableName     = "DosimeterInfo"
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
 	//"Server=mprom.ml;User=client1;Password=medtex"
