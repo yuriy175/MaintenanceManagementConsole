@@ -25,3 +25,8 @@ type HddDrivesInfoMessage struct {
 	HddTotalSpace float64 `json:"TotalSize"`
 	HddFreeSpace  float64 `json:"FreeSize"`
 }
+
+type GeneratorInfoViewModel struct {
+	Id    float64
+	State GeneratorInfoModel
+}

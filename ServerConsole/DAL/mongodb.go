@@ -23,6 +23,8 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 	// deviceCollection := db.C(Models.DeviceConnectionsTableName)
 	studiesCollection := db.C(Models.StudyInWorkTableName)
 	organAutoCollection := db.C(Models.OrganAutoTableName)
+	genInfoCollection := db.C(Models.GeneratorInfoTableName)
+	sysInfoCollection := db.C(Models.SystemInfoTableName)
 
 	go func() { //c *mgo.Collection) {
 		for d := range equipDalCh {
@@ -51,6 +53,7 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				model.DateTime = time.Now()
 				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
 				model.State = 2
+
 				studiesCollection.Insert(model)
 			} else if strings.Contains(d.Topic, "/organauto") {
 				model := Models.OrganAutoInfoModel{}
@@ -58,8 +61,24 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				model.Id = bson.NewObjectId()
 				model.DateTime = time.Now()
 				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
-				//model.State = 2
+
 				organAutoCollection.Insert(model)
+			} else if strings.Contains(d.Topic, "/generator/state") {
+				viewmodel := Models.GeneratorInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+				viewmodel.State.Id = bson.NewObjectId()
+				viewmodel.State.DateTime = time.Now()
+				viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				genInfoCollection.Insert(viewmodel.State)
+			} else if strings.Contains(d.Topic, "/ARM/Hardware") {
+				model := Models.SystemInfoModel{}
+				json.Unmarshal([]byte(d.Data), &model)
+				model.Id = bson.NewObjectId()
+				model.DateTime = time.Now()
+				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				sysInfoCollection.Insert(model)
 			}
 			/*else if d.MsgType == Models.MsgTypeHddDrivesInfo {
 				var params []Models.HddDrivesInfoMessage
@@ -151,36 +170,42 @@ func GetSystemInfo(startDate time.Time, endDate time.Time) []Models.SystemInfoMo
 	defer session.Close()
 
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
 
 	// // критерий выборки
-	// query := bson.M{}
-	// // объект для сохранения результата
-	// drives := []Models.HddDrivesInfoModel{}
-	// drivesCollection.Find(query).All(&drives)
-
-	sysInfo := []Models.SystemInfoModel{
-		Models.SystemInfoModel{
-			EquipName:     "krt",
-			State:         1,
-			CPULoad:       32,
-			TotalMemory:   16,
-			FreeMemory:    8,
-			HddName:       "C:/",
-			HddTotalSpace: 1000,
-			HddFreeSpace:  333,
-		},
-		Models.SystemInfoModel{
-			EquipName:     "krt",
-			State:         1,
-			HddName:       "D:/",
-			HddTotalSpace: 500,
-			HddFreeSpace:  443,
-		},
-		Models.SystemInfoModel{
-			EquipName: "krt",
-			CPULoad:   45,
+	query := bson.M{
+		"datetime": bson.M{
+			"$gt": startDate,
+			"$lt": endDate,
 		},
 	}
+	// // объект для сохранения результата
+	sysInfo := []Models.SystemInfoModel{}
+	sysInfoCollection.Find(query).All(&sysInfo)
+
+	// sysInfo := []Models.SystemInfoModel{
+	// 	Models.SystemInfoModel{
+	// 		EquipName:     "krt",
+	// 		State:         1,
+	// 		CPULoad:       32,
+	// 		TotalMemory:   16,
+	// 		FreeMemory:    8,
+	// 		HddName:       "C:/",
+	// 		HddTotalSpace: 1000,
+	// 		HddFreeSpace:  333,
+	// 	},
+	// 	Models.SystemInfoModel{
+	// 		EquipName:     "krt",
+	// 		State:         1,
+	// 		HddName:       "D:/",
+	// 		HddTotalSpace: 500,
+	// 		HddFreeSpace:  443,
+	// 	},
+	// 	Models.SystemInfoModel{
+	// 		EquipName: "krt",
+	// 		CPULoad:   45,
+	// 	},
+	// }
 
 	return sysInfo
 }
@@ -213,7 +238,12 @@ func GetOrganAutoInfo(startDate time.Time, endDate time.Time) []Models.OrganAuto
 	organAutoCollection := session.DB(Models.DBName).C(Models.OrganAutoTableName)
 
 	// критерий выборки
-	query := bson.M{}
+	query := bson.M{
+		"datetime": bson.M{
+			"$gt": startDate,
+			"$lt": endDate,
+		},
+	}
 	// объект для сохранения результата
 	organAutos := []Models.OrganAutoInfoModel{}
 	organAutoCollection.Find(query).All(&organAutos)
@@ -226,36 +256,42 @@ func GetGeneratorInfo(startDate time.Time, endDate time.Time) []Models.Generator
 	defer session.Close()
 
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+	genInfoCollection := session.DB(Models.DBName).C(Models.GeneratorInfoTableName)
 
 	// // критерий выборки
-	// query := bson.M{}
-	// // объект для сохранения результата
-	// drives := []Models.HddDrivesInfoModel{}
-	// drivesCollection.Find(query).All(&drives)
-
-	genInfo := []Models.GeneratorInfoModel{
-		Models.GeneratorInfoModel{
-			EquipName:   "krt",
-			State:       0,
-			Errors:      "все умерло",
-			Workstation: 1,
-			Heat:        1,
-			Current:     10,
-			Voltage:     66,
-		},
-		Models.GeneratorInfoModel{
-			EquipName:   "krt",
-			State:       1,
-			Workstation: 2,
-			Heat:        2,
-			Current:     5,
-			Voltage:     106,
-		},
-		Models.GeneratorInfoModel{
-			EquipName: "krt",
-			Voltage:   107,
+	query := bson.M{
+		"datetime": bson.M{
+			"$gt": startDate,
+			"$lt": endDate,
 		},
 	}
+	// // объект для сохранения результата
+	genInfo := []Models.GeneratorInfoModel{}
+	genInfoCollection.Find(query).All(&genInfo)
+
+	// genInfo := []Models.GeneratorInfoModel{
+	// 	Models.GeneratorInfoModel{
+	// 		EquipName:   "krt",
+	// 		State:       0,
+	// 		Errors:      "все умерло",
+	// 		Workstation: 1,
+	// 		Heat:        1,
+	// 		Current:     10,
+	// 		Voltage:     66,
+	// 	},
+	// 	Models.GeneratorInfoModel{
+	// 		EquipName:   "krt",
+	// 		State:       1,
+	// 		Workstation: 2,
+	// 		Heat:        2,
+	// 		Current:     5,
+	// 		Voltage:     106,
+	// 	},
+	// 	Models.GeneratorInfoModel{
+	// 		EquipName: "krt",
+	// 		Voltage:   107,
+	// 	},
+	// }
 
 	return genInfo
 }

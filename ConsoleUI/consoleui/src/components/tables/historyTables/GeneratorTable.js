@@ -14,10 +14,10 @@ const columns = [
   { id: 'State', label: 'Состояние', minWidth: 100 },
   { id: 'DateTime', label: 'Время', minWidth: 100 },
   { id: 'Workstation', label: 'Раб. место', minWidth: 100 },
-  { id: 'Heat', label: 'Нагрев', minWidth: 100 },
+  { id: 'HeatStatus', label: 'Нагрев', minWidth: 100 },
   { id: 'Errors', label: 'Ошибки', minWidth: 100 },
-  { id: 'Current', label: 'Ток', minWidth: 100 },
-  { id: 'Voltage', label: 'Напряжение', minWidth: 100 },  
+  { id: 'Mas', label: 'Ток', minWidth: 100 },
+  { id: 'Kv', label: 'Напряжение', minWidth: 100 },  
 ];
 
 const useStyles = makeStyles({

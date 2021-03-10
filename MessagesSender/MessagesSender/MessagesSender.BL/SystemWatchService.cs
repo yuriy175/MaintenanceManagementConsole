@@ -76,7 +76,7 @@ namespace MessagesSender.BL
             if (ramInfo.HasValue)
             {
                 _ = _sendingService.SendInfoToMqttAsync(MQMessages.MemoryInfo,
-                    new { ramInfo.Value.AvailableSize, ramInfo.Value.TotalSize });
+                    new { ramInfo.Value.AvailableSize, TotalMemory = ramInfo.Value.TotalSize });
             }
 
             await Task.Yield();

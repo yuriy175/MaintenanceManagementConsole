@@ -33,9 +33,9 @@ type SystemInfoModel struct {
 	DateTime      time.Time
 	EquipName     string
 	State         float64
-	CPULoad       float64
+	CPU_Load      float64
 	TotalMemory   float64
-	FreeMemory    float64
+	AvailableSize float64
 	HddName       string
 	HddTotalSpace float64
 	HddFreeSpace  float64
@@ -63,9 +63,9 @@ type GeneratorInfoModel struct {
 	DateTime    time.Time
 	EquipName   string
 	State       float64
-	Errors      string
+	Errors      []string
 	Workstation float64
-	Heat        float64
-	Current     float64
-	Voltage     float64
+	HeatStatus  float64
+	Mas         float64
+	Kv          float64
 }
