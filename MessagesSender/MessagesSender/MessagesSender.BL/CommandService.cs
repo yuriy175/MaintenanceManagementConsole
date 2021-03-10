@@ -25,7 +25,8 @@ namespace MessagesSender.BL
     {
         private const string ActivateCommandName = "activate";
 		private const string DeactivateCommandName = "deactivate";
-		private const string RunTemViewerCommandName = "runTV";
+		private const string RunTeamViewerCommandName = "runTV";
+		private const string ReconnectCommandName = "reconnect";
 
 		private readonly ILogger _logger;
 		private readonly IEventPublisher _eventPublisher;
@@ -50,7 +51,8 @@ namespace MessagesSender.BL
             {
                 { ActivateCommandName, () => OnActivateCommand()},
 				{ DeactivateCommandName, () => OnDeactivateCommand()},
-				{ RunTemViewerCommandName, () => OnRunTVCommandAsync()},				
+				{ RunTeamViewerCommandName, () => OnRunTVCommandAsync()},
+				{ ReconnectCommandName, () => OnReconnectCommand()},
 			};
 
 			_eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
@@ -90,6 +92,11 @@ namespace MessagesSender.BL
 		private void OnRunTVCommandAsync()
 		{
 			_eventPublisher.RunTVCommandArrived();
+		}
+
+		private void OnReconnectCommand()
+		{
+			_eventPublisher.ReconnectCommandArrived();
 		}
 	}
 }

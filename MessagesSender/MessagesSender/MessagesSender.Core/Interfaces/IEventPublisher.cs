@@ -15,5 +15,8 @@ namespace MessagesSender.Core.Interfaces
 
         void RunTVCommandArrived();
         void RegisterRunTVCommandArrivedEvent(Action handler);
+
+        void ReconnectCommandArrived();
+        void RegisterReconnectCommandArrivedEvent(Action handler);
     }
 }

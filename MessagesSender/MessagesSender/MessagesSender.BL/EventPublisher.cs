@@ -7,7 +7,7 @@ namespace MessagesSender.BL
 {
     public class EventPublisher : IEventPublisher
     {
-        enum EventTypes { CommandArrived, Activate, Deactivate, RunTV }
+        enum EventTypes { CommandArrived, Activate, Deactivate, RunTV, Reconnect }
 
         private readonly Dictionary<EventTypes, List<Delegate>> _eventHandlers =
             Array.ConvertAll((int[])Enum.GetValues(typeof(EventTypes)), Convert.ToInt32)
@@ -51,6 +51,16 @@ namespace MessagesSender.BL
         public void RegisterRunTVCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.RunTV].Add(handler);
+        }
+
+        public void ReconnectCommandArrived()
+        {
+            _eventHandlers[EventTypes.Reconnect].ForEach(h => (h as Action)());
+        }
+
+        public void RegisterReconnectCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.Reconnect].Add(handler);
         }
     }
 }

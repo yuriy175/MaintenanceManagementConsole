@@ -35,13 +35,24 @@ func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equ
 	}
 }
 
-func (service *MqttReceiverService) CreateCommonConnection(equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+func (service *MqttReceiverService) CreateCommonConnections(equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
 	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, equipWebSockCh, service)
+	mqttConnections[Models.BroadcastCommandsTopic] = CreateMqttClient(Models.BroadcastCommandsTopic, []string{}, equipDalCh, equipWebSockCh, service)
 	return
 }
 
 func (*MqttReceiverService) SendCommand(equipment string, command string) {
 	if client, ok := mqttConnections[equipment]; ok {
+		go client.SendCommand(command)
+	}
+
+	return
+}
+
+//BroadcastCommandsTopic
+
+func (*MqttReceiverService) SendBroadcastCommand(command string) {
+	if client, ok := mqttConnections[Models.BroadcastCommandsTopic]; ok {
 		go client.SendCommand(command)
 	}
 

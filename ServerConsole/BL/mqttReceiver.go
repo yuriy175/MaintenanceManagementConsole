@@ -86,7 +86,7 @@ func CreateMqttClient(
 		fmt.Printf("Subscribed to topic: %s", rootTopic)
 	}()
 
-	return &MqttClient{client, rootTopic, rootTopic != Models.CommonTopicPath}
+	return &MqttClient{client, rootTopic, IsEquipTopic(rootTopic)}
 }
 
 func (client *MqttClient) Disconnect() {
@@ -96,5 +96,9 @@ func (client *MqttClient) Disconnect() {
 func (client *MqttClient) SendCommand(command string) {
 	commandTopic := client.Topic + "/command"
 	client.Client.Publish(commandTopic, 0, false, command)
-	fmt.Println(commandTopic + " " + command)
+	fmt.Println("Sent command " + commandTopic + " " + command)
+}
+
+func IsEquipTopic(rootTopic string) bool {
+	return rootTopic != Models.CommonTopicPath && rootTopic != Models.BroadcastCommandsTopic
 }

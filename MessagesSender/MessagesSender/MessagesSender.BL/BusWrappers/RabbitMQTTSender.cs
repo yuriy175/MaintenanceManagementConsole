@@ -26,6 +26,7 @@ namespace MessagesSender.BL.Remoting
 	{
 		private const string CommonTopic = "Subscribe";
 		private const string CommandSubTopic = "/command";
+		private const string BroadcastCommandsTopic = "Broadcast/command";
 
 		private const int ConnectWaitingAttempts = 5;
 
@@ -150,6 +151,7 @@ namespace MessagesSender.BL.Remoting
 				});
 
 				await Client.SubscribeAsync(new TopicFilterBuilder()
+					.WithTopic(BroadcastCommandsTopic)
 					.WithTopic(Topic + CommandSubTopic)
 					.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
 					.Build());

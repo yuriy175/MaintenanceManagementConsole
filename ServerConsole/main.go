@@ -17,7 +17,7 @@ func main() {
 
 	mqttReceiverService := &BL.MqttReceiverService{}
 	webSocketService := &BL.WebSocketService{}
-	mqttReceiverService.CreateCommonConnection(equipDalCh, equipWebSockCh)
+	mqttReceiverService.CreateCommonConnections(equipDalCh, equipWebSockCh)
 
 	go DAL.DalWorker(equipDalCh)
 	go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh, equipWebSockCh)
@@ -26,7 +26,9 @@ func main() {
 	go BL.WebServer(equipWebSockCh)
 	go BL.HttpServer(mqttReceiverService, webSocketService)
 
-	fmt.Println("Hello Go")
+	//mqttReceiverService.SendBroadcastCommand("reconnect")
+
+	fmt.Println("App Go started")
 	<-intCh
 	fmt.Println("app quitted")
 }

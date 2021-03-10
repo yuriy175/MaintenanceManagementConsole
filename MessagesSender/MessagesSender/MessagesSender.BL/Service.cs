@@ -22,14 +22,15 @@ namespace MessagesSender.BL
     public class Service : IService, IDisposable
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;
-        private readonly IObservationsEntityService _dbObservationsEntityService;        
+        private readonly IObservationsEntityService _dbObservationsEntityService;
         private readonly ILogger _logger;
         private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
-		private readonly ICommandService _commandService;
+        private readonly ICommandService _commandService;
         private readonly ISystemWatchService _systemWatchService;
         private readonly IStudyingWatchService _studyingWatchService;
         private readonly IHardwareStateService _hwStateService;
+        private readonly IEventPublisher _eventPublisher;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -46,6 +47,7 @@ namespace MessagesSender.BL
         /// <param name="dbSettingsEntityService">settings database connector</param>
         /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
+        /// <param name="eventPublisher">event publisher service</param>
         /// <param name="sendingService">sending service</param>
         /// <param name="mqService">MQ service</param>
         /// <param name="commandService">command service</param>
@@ -56,9 +58,10 @@ namespace MessagesSender.BL
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
+            IEventPublisher eventPublisher,
             ISendingService sendingService,
             IMQCommunicationService mqService,
-			ICommandService commandService,
+            ICommandService commandService,
             ISystemWatchService systemWatchService,
             IStudyingWatchService studyingWatchService,
             IHardwareStateService hwStateService)
@@ -68,10 +71,11 @@ namespace MessagesSender.BL
             _logger = logger;
             _sendingService = sendingService;
             _mqService = mqService;
-			_commandService = commandService;
+            _commandService = commandService;
             _systemWatchService = systemWatchService;
             _studyingWatchService = studyingWatchService;
             _hwStateService = hwStateService;
+            _eventPublisher = eventPublisher;
 
             new Action[]
                 {
@@ -80,7 +84,8 @@ namespace MessagesSender.BL
                     {
                         await _sendingService.CreateAsync();
                         await OnServiceStateChangedAsync(true);
-                    }
+                    },
+                    () => _eventPublisher.RegisterReconnectCommandArrivedEvent(() => OnReconnectArrivedAsync())
                 }.RunTasksAsync();
 
             _logger.Information("Main service started");
@@ -93,26 +98,30 @@ namespace MessagesSender.BL
 
         private Task SubscribeMQRecevers()
         {
-            return Task.Run(() =>{});
+            return Task.Run(() => { });
         }
 
         private async Task<bool> OnConnectionStateArrivedAsync(
             (int Id, string Name, string Type, DeviceConnectionState Connection) state)
         {
             return await _sendingService.SendInfoToMqttAsync(
-                MQCommands.HwConnectionStateArrived, 
+                MQCommands.HwConnectionStateArrived,
                 new { state.Id, state.Name, state.Type, state.Connection });
         }
 
         private async Task<bool> OnServiceStateChangedAsync(bool isOn)
         {
-			//return await _sendingService.SendInfoToWorkQueueAsync(
-			//   isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
-			//   new { });
-			return await _sendingService.SendInfoToCommonMqttAsync(
-			   isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
-			   new { });
-		}
+            //return await _sendingService.SendInfoToWorkQueueAsync(
+            //   isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
+            //   new { });
+            return await _sendingService.SendInfoToCommonMqttAsync(
+               isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
+               new { });
+        }
 
+        private async Task<bool> OnReconnectArrivedAsync()
+        {
+            return await OnServiceStateChangedAsync(true);
+        }
     }
 }
