@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"../DAL"
 	"../Models"
@@ -85,7 +86,6 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 		queryString := r.URL.Query()
 
 		equipTypes, ok := queryString["equipType"]
-
 		if !ok || len(equipTypes[0]) < 1 {
 			log.Println("Url Param 'equipType' is missing")
 			return
@@ -93,34 +93,49 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 		equipType := equipTypes[0]
 
 		startDates, ok := queryString["startDate"]
-
 		if !ok || len(startDates[0]) < 1 {
 			log.Println("Url Param 'startDate' is missing")
 			return
 		}
-		startDate := startDates[0]
 
 		endDates, ok := queryString["endDate"]
-
 		if !ok {
 			log.Println("Url Param 'endDate' is missing")
 			return
 		}
-		endDate := endDates[0]
 
-		// t, err := time.Parse("2006-01-02", endDate)
+		startDate, err := time.Parse("2006-01-02", startDates[0])
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
-		// fmt.Println(t)
-		organAutos := DAL.DalGetOrganAutoInfo()
+		endDate, err2 := time.Parse("2006-01-02", endDates[0])
+		if err2 != nil {
+			fmt.Println(err)
+		}
 
 		log.Println("Url is: %s %s %s", equipType, startDate, endDate)
-		json.NewEncoder(w).Encode(organAutos)
+
+		SendSearchResults(w, equipType, startDate, endDate)
 	})
 
 	address := Models.HttpServerAddress
 	fmt.Println("http server is listening... " + address)
 	http.ListenAndServe(address, nil)
+}
+
+func SendSearchResults(w http.ResponseWriter, equipType string, startDate time.Time, endDate time.Time) {
+	if equipType == "SystemInfo" {
+		sysInfo := DAL.GetSystemInfo()
+		json.NewEncoder(w).Encode(sysInfo)
+	} else if equipType == "OrganAutos" {
+		organAutos := DAL.GetOrganAutoInfo()
+		json.NewEncoder(w).Encode(organAutos)
+	} else if equipType == "Generators" {
+		genInfo := DAL.GetGeneratorInfo()
+		json.NewEncoder(w).Encode(genInfo)
+	} else if equipType == "Studies" {
+		studies := DAL.GetStudiesInWork()
+		json.NewEncoder(w).Encode(studies)
+	}
 }

@@ -10,14 +10,14 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
 const columns = [
-  { id: 'name', label: 'Комплекс', minWidth: 170 },
-  { id: 'state', label: 'Состояние', minWidth: 100 },
-  { id: 'time', label: 'Время', minWidth: 100 },
-  { id: 'workstation', label: 'Раб. место', minWidth: 100 },
-  { id: 'heat', label: 'Нагрев', minWidth: 100 },
-  { id: 'errors', label: 'Ошибки', minWidth: 100 },
-  { id: 'current', label: 'Ток', minWidth: 100 },
-  { id: 'voltage', label: 'Напряжение', minWidth: 100 },  
+  { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
+  { id: 'State', label: 'Состояние', minWidth: 100 },
+  { id: 'DateTime', label: 'Время', minWidth: 100 },
+  { id: 'Workstation', label: 'Раб. место', minWidth: 100 },
+  { id: 'Heat', label: 'Нагрев', minWidth: 100 },
+  { id: 'Errors', label: 'Ошибки', minWidth: 100 },
+  { id: 'Current', label: 'Ток', minWidth: 100 },
+  { id: 'Voltage', label: 'Напряжение', minWidth: 100 },  
 ];
 
 const useStyles = makeStyles({
@@ -45,6 +45,7 @@ export default function GeneratorTable(props) {
     setPage(0);
   };
 
+  const rows = props.data;
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
@@ -63,7 +64,7 @@ export default function GeneratorTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                   {columns.map((column) => {
@@ -76,14 +77,14 @@ export default function GeneratorTable(props) {
                   })}
                 </TableRow>
               );
-            })} */}
+            })} 
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={props?.rows?.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}

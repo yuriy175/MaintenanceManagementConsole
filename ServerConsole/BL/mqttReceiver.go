@@ -18,7 +18,7 @@ type MqttClient struct {
 func CreateMqttClient(
 	rootTopic string,
 	subTopics []string,
-	equipDalCh chan *Models.EquipmentMessage,
+	equipDalCh chan *Models.RawMqttMessage,
 	equipWebSockCh chan *Models.RawMqttMessage,
 	mqttReceiverService *MqttReceiverService) *MqttClient {
 	//quitCh := make(chan int)
@@ -53,7 +53,7 @@ func CreateMqttClient(
 			// equipDalCh <- &content
 			rawMsg := Models.RawMqttMessage{topic, string(payload)}
 			//json.Unmarshal([]byte(payload), &content)
-			// equipDalCh <- &content
+			equipDalCh <- &rawMsg
 			equipWebSockCh <- &rawMsg
 		}
 	}

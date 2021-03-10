@@ -1,7 +1,6 @@
 package BL
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -9,7 +8,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
 	quitCh := make(chan int)
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
@@ -51,7 +50,10 @@ func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan 
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	go func() {
+	if msgs == nil {
+
+	}
+	/*go func() {
 		for d := range msgs {
 			log.Printf(" [x] %s", d.Body)
 			content := Models.EquipmentMessage{}
@@ -68,7 +70,7 @@ func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan 
 
 			d.Ack(false)
 		}
-	}()
+	}()*/
 
 	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
 

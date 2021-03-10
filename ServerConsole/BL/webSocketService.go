@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"../Models"
+	"../Utils"
 )
 
 type WebSocketService struct {
@@ -40,8 +40,8 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 		for d := range equipWebSockCh {
 
 			//find equipment name of a new message
-			topicParts := strings.Split(d.Topic, "/")
-			activatedEquipInfo := strings.Join([]string{topicParts[0], topicParts[1]}, "/")
+			//topicParts := strings.Split(d.Topic, "/")
+			activatedEquipInfo := Utils.GetEquipFromTopic(d.Topic) //strings.Join([]string{topicParts[0], topicParts[1]}, "/")
 
 			//find all sessions activated this equipment
 			if sessionUids, ok := topicConnections[activatedEquipInfo]; ok {

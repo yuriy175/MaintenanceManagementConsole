@@ -11,7 +11,7 @@ type MqttReceiverService struct {
 
 var mqttConnections = map[string]*MqttClient{}
 
-func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
 	topicStorage := &TopicStorage{}
 	topics := topicStorage.getTopics()
 
@@ -35,7 +35,7 @@ func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equ
 	}
 }
 
-func (service *MqttReceiverService) CreateCommonConnections(equipDalCh chan *Models.EquipmentMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+func (service *MqttReceiverService) CreateCommonConnections(equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
 	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, equipWebSockCh, service)
 	mqttConnections[Models.BroadcastCommandsTopic] = CreateMqttClient(Models.BroadcastCommandsTopic, []string{}, equipDalCh, equipWebSockCh, service)
 	return

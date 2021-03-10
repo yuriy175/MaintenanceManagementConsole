@@ -10,14 +10,14 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
 const columns = [
-  { id: 'name', label: 'Комплекс', minWidth: 170 },
-  { id: 'state', label: 'Состояние', minWidth: 100 },
-  { id: 'time', label: 'Время', minWidth: 100 },
-  { id: 'organauto', label: 'Название', minWidth: 100 },
-  { id: 'projection', label: 'Проекция', minWidth: 100 },
-  { id: 'direction', label: 'Направление', minWidth: 100 },
-  { id: 'age', label: 'Возр. группа', minWidth: 100 },
-  { id: 'constitution', label: 'Телосложение', minWidth: 100 },  
+  { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
+  { id: 'State', label: 'Состояние', minWidth: 100 },
+  { id: 'DateTime', label: 'Время', minWidth: 100 },
+  { id: 'OrganAuto', label: 'Название', minWidth: 100 },
+  { id: 'Projection', label: 'Проекция', minWidth: 100 },
+  { id: 'Direction', label: 'Направление', minWidth: 100 },
+  { id: 'AgeGroupId', label: 'Возр. группа', minWidth: 100 },
+  { id: 'Constitution', label: 'Телосложение', minWidth: 100 },  
 ];
 
 const useStyles = makeStyles({
@@ -45,6 +45,7 @@ export default function OrganAutoTable(props) {
     setPage(0);
   };
 
+  const rows = props.data;
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
@@ -63,7 +64,7 @@ export default function OrganAutoTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
                 <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                   {columns.map((column) => {
@@ -76,14 +77,14 @@ export default function OrganAutoTable(props) {
                   })}
                 </TableRow>
               );
-            })} */}
+            })} 
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={props?.rows?.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}

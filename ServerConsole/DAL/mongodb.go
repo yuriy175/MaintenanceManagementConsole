@@ -3,27 +3,30 @@ package DAL
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"../Models"
+	"../Utils"
 )
 
-func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
+func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 	quitCh := make(chan int)
 
 	session := dalCreateSession()
 	defer session.Close()
 
-	// db := session.DB(Models.DBName)
+	db := session.DB(Models.DBName)
 	// deviceCollection := db.C(Models.DeviceConnectionsTableName)
-	// studiesCollection := db.C(Models.StudyInWorkTableName)
+	studiesCollection := db.C(Models.StudyInWorkTableName)
 
 	go func() { //c *mgo.Collection) {
 		for d := range equipDalCh {
-			if d.MsgType == Models.MsgTypeHwConnectionStateArrived {
-				/*deviceId := d.Info["Id"].(float64)
+			/*if d.MsgType == Models.MsgTypeHwConnectionStateArrived {
+				deviceId := d.Info["Id"].(float64)
 				deviceName := d.Info["Name"].(string)
 				deviceType := d.Info["Type"].(string)
 				deviceConnection := d.Info["Connection"].(float64)
@@ -39,31 +42,36 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					DeviceType:       deviceType,
 					DeviceConnection: deviceConnection,
 				}
-				deviceCollection.Insert(model)*/
-			} else if d.MsgType == Models.MsgTypeStudyInWork {
+				deviceCollection.Insert(model)
+			} else */if strings.Contains(d.Topic, "/study") {
 				/*studyId := d.Info["StudyId"].(float64)
 				studyDicomUid := d.Info["StudyDicomUid"].(string)
 				studyName := d.Info["StudyName"].(string)
-
-				model := &Models.StudyInWorkModel{
-					Id:            bson.NewObjectId(),
-					DateTime:      time.Now(),
-					EquipNumber:   d.EquipNumber,
-					EquipName:     d.EquipName,
-					EquipIP:       d.EquipIP,
-					StudyId:       studyId,
-					StudyDicomUid: studyDicomUid,
-					StudyName:     studyName,
-				}
-				studiesCollection.Insert(model)*/
-			} else if d.MsgType == Models.MsgTypeHddDrivesInfo {
+				*/
+				// model := &Models.StudyInWorkModel{
+				// 	Id:            bson.NewObjectId(),
+				// 	DateTime:      time.Now(),
+				// 	EquipName:     d.EquipName,
+				// 	StudyId:       studyId,
+				// 	StudyDicomUid: studyDicomUid,
+				// 	StudyName:     studyName,
+				// 	State:         2,
+				// }
+				model := Models.StudyInWorkModel{}
+				json.Unmarshal([]byte(d.Data), &model)
+				model.Id = bson.NewObjectId()
+				model.DateTime = time.Now()
+				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
+				model.State = 2
+				studiesCollection.Insert(model)
+			} /*else if d.MsgType == Models.MsgTypeHddDrivesInfo {
 				var params []Models.HddDrivesInfoMessage
 				json.Unmarshal(d.Info, &params)
 
 				i := 0
 				i++
 
-				/*hddName := d.Info["HddName"].(string)
+				hddName := d.Info["HddName"].(string)
 				hddTotalSpace := d.Info["TotalSize"].(float64)
 				hddFreeSpace := d.Info["FreeSize"].(float64)
 
@@ -77,8 +85,8 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 					HddTotalSpace: hddTotalSpace,
 					HddFreeSpace:  hddFreeSpace,
 				}
-				studiesCollection.Insert(model)*/
-			}
+				studiesCollection.Insert(model)
+			}*/
 		}
 	}() //deviceCollection)
 
@@ -86,7 +94,7 @@ func DalWorker(equipDalCh chan *Models.EquipmentMessage) {
 	fmt.Println("DalWorker quitted")
 }
 
-func DalGetDeviceConnections() []Models.DeviceConnectionModel {
+func GetDeviceConnections() []Models.DeviceConnectionModel {
 	session := dalCreateSession()
 	defer session.Close()
 
@@ -101,7 +109,7 @@ func DalGetDeviceConnections() []Models.DeviceConnectionModel {
 	return devices
 }
 
-func DalGetStudiesInWork() []Models.StudyInWorkModel {
+func GetStudiesInWork() []Models.StudyInWorkModel {
 	session := dalCreateSession()
 	defer session.Close()
 
@@ -113,31 +121,73 @@ func DalGetStudiesInWork() []Models.StudyInWorkModel {
 	studies := []Models.StudyInWorkModel{}
 	studiesCollection.Find(query).All(&studies)
 
+	/*studies := []Models.StudyInWorkModel{
+		Models.StudyInWorkModel{
+			EquipName:     "krt",
+			State:         2,
+			StudyId:       1,
+			StudyDicomUid: "123",
+			StudyName:     "нога",
+		},
+		Models.StudyInWorkModel{
+			EquipName:     "krt",
+			State:         2,
+			StudyId:       2,
+			StudyDicomUid: "124",
+			StudyName:     "голова",
+		},
+	}*/
+
 	return studies
 }
 
-func DalGetHddDrivesInfo() []Models.HddDrivesInfoModel {
+func GetSystemInfo() []Models.SystemInfoModel {
 	session := dalCreateSession()
 	defer session.Close()
 
-	drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
 
-	// критерий выборки
-	query := bson.M{}
-	// объект для сохранения результата
-	drives := []Models.HddDrivesInfoModel{}
-	drivesCollection.Find(query).All(&drives)
+	// // критерий выборки
+	// query := bson.M{}
+	// // объект для сохранения результата
+	// drives := []Models.HddDrivesInfoModel{}
+	// drivesCollection.Find(query).All(&drives)
 
-	return drives
+	sysInfo := []Models.SystemInfoModel{
+		Models.SystemInfoModel{
+			EquipName:     "krt",
+			State:         1,
+			CPULoad:       32,
+			TotalMemory:   16,
+			FreeMemory:    8,
+			HddName:       "C:/",
+			HddTotalSpace: 1000,
+			HddFreeSpace:  333,
+		},
+		Models.SystemInfoModel{
+			EquipName:     "krt",
+			State:         1,
+			HddName:       "D:/",
+			HddTotalSpace: 500,
+			HddFreeSpace:  443,
+		},
+		Models.SystemInfoModel{
+			EquipName: "krt",
+			CPULoad:   45,
+		},
+	}
+
+	return sysInfo
 }
 
-func DalGetOrganAutoInfo() []Models.OrganAutoInfoModel {
+func GetOrganAutoInfo() []Models.OrganAutoInfoModel {
 	session := dalCreateSession()
 	defer session.Close()
 
 	organAutos := []Models.OrganAutoInfoModel{
 		Models.OrganAutoInfoModel{
 			EquipName:    "krt",
+			State:        0,
 			OrganAuto:    "нога",
 			Projection:   "кривая",
 			Direction:    "задняя",
@@ -146,6 +196,7 @@ func DalGetOrganAutoInfo() []Models.OrganAutoInfoModel {
 		},
 		Models.OrganAutoInfoModel{
 			EquipName:    "krt",
+			State:        1,
 			OrganAuto:    "рука",
 			Projection:   "левая",
 			Direction:    "задняя",
@@ -162,6 +213,45 @@ func DalGetOrganAutoInfo() []Models.OrganAutoInfoModel {
 	// drivesCollection.Find(query).All(&drives)
 
 	return organAutos
+}
+
+func GetGeneratorInfo() []Models.GeneratorInfoModel {
+	session := dalCreateSession()
+	defer session.Close()
+
+	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
+
+	// // критерий выборки
+	// query := bson.M{}
+	// // объект для сохранения результата
+	// drives := []Models.HddDrivesInfoModel{}
+	// drivesCollection.Find(query).All(&drives)
+
+	genInfo := []Models.GeneratorInfoModel{
+		Models.GeneratorInfoModel{
+			EquipName:   "krt",
+			State:       0,
+			Errors:      "все умерло",
+			Workstation: 1,
+			Heat:        1,
+			Current:     10,
+			Voltage:     66,
+		},
+		Models.GeneratorInfoModel{
+			EquipName:   "krt",
+			State:       1,
+			Workstation: 2,
+			Heat:        2,
+			Current:     5,
+			Voltage:     106,
+		},
+		Models.GeneratorInfoModel{
+			EquipName: "krt",
+			Voltage:   107,
+		},
+	}
+
+	return genInfo
 }
 
 func dalCreateSession() *mgo.Session {

@@ -12,7 +12,7 @@ import (
 func main() {
 
 	intCh := make(chan int)
-	equipDalCh := make(chan *Models.EquipmentMessage)
+	equipDalCh := make(chan *Models.RawMqttMessage)
 	equipWebSockCh := make(chan *Models.RawMqttMessage)
 
 	mqttReceiverService := &BL.MqttReceiverService{}

@@ -11,6 +11,7 @@ import {getUSFullDate} from '../utilities/utils'
 import SystemTable from './tables/historyTables/SystemTable'
 import OrganAutoTable from './tables/historyTables/OrganAutoTable'
 import GeneratorTable from './tables/historyTables/GeneratorTable'
+import StudiesTable from './tables/historyTables/StudiesTable'
 import * as EquipWorker from '../workers/equipWorker'
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +43,11 @@ export default function HistoryComponent(props) {
   const [startDate, setStartDate] = useState(getUSFullDate(new Date(curDate.setDate(curDate.getDate() - SearchPeriod))));
   const [endDate, setEndDate] = useState(getUSFullDate(new Date()));
   const [currEquip, setCurrEquip] = useState("OrganAutos");
+  
+  const [systemInfos, setSystemInfos] = useState([]);  
+  const [organAutos, setOrganAutos] = useState([]);  
+  const [generators, setGenerators] = useState([]);
+  const [studies, setStudies] = useState([]);
 
   const handleEquipsChange = async (event) => {
     const select = event.target;
@@ -60,12 +66,16 @@ export default function HistoryComponent(props) {
 
   const onSearch = async () => {
     const data = await EquipWorker.SearchEquip(currEquip, startDate, endDate);
-    // const filter = {useLast: selectedValue, sincePeriod: sincePeriodValue, lastPeriod: lastPeriodValue};
-    // deviceDispatch({
-    //   type: 'SETDATEFILTER',
-    //   payload:  filter,
-    // });
-    // await getFilteredMeasures(deviceState.currentdevice, filter, token, deviceDispatch, undefined, undefined, CurrentMeasureType);
+    if(currEquip === "SystemInfo"){
+        setSystemInfos(data);
+    } else if (currEquip === "OrganAutos"){
+        setOrganAutos(data);
+    } else if (currEquip === "Generators"){
+        setGenerators(data);
+    } else if (currEquip === "Studies"){
+        setStudies(data);
+    }
+    //
   };
 
 
@@ -104,16 +114,18 @@ export default function HistoryComponent(props) {
                 <option value={"SystemInfo"} className={classes.optionStyle}>Система</option>
                 <option value={"OrganAutos"} className={classes.optionStyle}>Орган авто</option>
                 <option value={"Generators"} className={classes.optionStyle}>Генераторы</option>
+                <option value={"Studies"} className={classes.optionStyle}>Исследования</option>
         </NativeSelect>
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSearch}>
             Искать
         </Button>
     </div>
     <div className={classes.root}>        
-        {currEquip === "SystemInfo" ? <SystemTable></SystemTable> : <></>}
-        {currEquip === "OrganAutos" ? <OrganAutoTable></OrganAutoTable> : <></>}     
-        {currEquip === "Generators" ? <GeneratorTable></GeneratorTable> : <></>}    
-           
+        {currEquip === "SystemInfo" ? <SystemTable data={systemInfos}></SystemTable> : <></>}
+        {currEquip === "OrganAutos" ? <OrganAutoTable data={organAutos}></OrganAutoTable> : <></>}     
+        {currEquip === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
+        {currEquip === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  
+        
     </div>
     </>
   );

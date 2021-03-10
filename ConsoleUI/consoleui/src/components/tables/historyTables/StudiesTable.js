@@ -10,17 +10,14 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
 const columns = [
-    { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
-    { id: 'DateTime', label: 'Время', minWidth: 100 },
-    { id: 'State', label: 'Состояние', minWidth: 100 },
-    { id: 'CPULoad', label: 'CPU загрузка', minWidth: 100 },
-    { id: 'TotalMemory', label: 'Всего памяти', minWidth: 100 },
-    { id: 'FreeMemory', label: 'Свободно памяти', minWidth: 100 },
-    { id: 'HddName', label: 'Имя диска', minWidth: 100 },
-    { id: 'HddTotalSpace', label: 'Всего', minWidth: 100 },  
-    { id: 'HddFreeSpace', label: 'Свободно', minWidth: 100 },  
-  ];
-  
+  { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
+  { id: 'DateTime', label: 'Время', minWidth: 100 },
+  { id: 'StudyId', label: 'Id исслед', minWidth: 100 },
+  { id: 'StudyDicomUid', label: 'Dicom Uid', minWidth: 100 },
+  { id: 'StudyName', label: 'Наименование', minWidth: 100 },
+  { id: 'State', label: 'Состояние', minWidth: 100 },
+];
+
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -30,8 +27,8 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SystemTable(props) {
-  console.log("render SystemTable");
+export default function StudiesTable(props) {
+  console.log("render StudiesTable");
 
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
@@ -78,7 +75,7 @@ export default function SystemTable(props) {
                   })}
                 </TableRow>
               );
-            })}
+            })} 
           </TableBody>
         </Table>
       </TableContainer>
