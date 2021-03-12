@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function GeneratorCard() {
   console.log(`! render GeneratorCard`);

@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
+import CardRow from './CardRow'
 
 import {useCardsStyles} from './CommonCard'
 

@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function DicomCard() {
   console.log(`! render DicomCard`);
@@ -20,12 +21,10 @@ export default function DicomCard() {
         <Typography variant="h5" component="h2">
           {bull}DICOM
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Соединение с PACS
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          PACS IP
-        </Typography>
+        <CardRow descr="Соединение с PACS" value={ 1? "Не готов" : "Готов"}></CardRow>
+        <CardRow descr="PACS IP" value={1? "Не готов" : "Готов"}></CardRow>
+        <CardRow descr="Собственный IP" value={1? "Не готов" : "Готов"}></CardRow>
+        <CardRow descr="Принтер" value={1? "Не готов" : "Готов"}></CardRow>
       </CardContent>
     </Card>
   );

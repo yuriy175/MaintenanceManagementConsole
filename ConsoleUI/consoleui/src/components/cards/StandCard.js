@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function StandCard() {
   console.log(`! render StandCard`);
@@ -22,18 +23,10 @@ export default function StandCard() {
         <Typography variant="h5" component="h2">
           {bull}Штатив
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Состояние - {currEquipState.stand?.State?.State< 1? "Не готов" : "Готов"} 
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Растр - {currEquipState.stand?.State?.RasterState}
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Позиция - {currEquipState.stand?.State?.Position_Current}
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Ошибки - {currEquipState.stand?.State?.ErrorDescriptions?.length}
-        </Typography>
+        <CardRow descr="Состояние" value={currEquipState.stand?.State?.State< 1? "Не готов" : "Готов"}></CardRow>
+        <CardRow descr="Растр" value={currEquipState.stand?.State?.RasterState}></CardRow>
+        <CardRow descr="Позиция" value={currEquipState.stand?.State?.Position_Current}></CardRow>
+        <CardRow descr="Ошибки" value={currEquipState.stand?.State?.ErrorDescriptions?.length}></CardRow>
       </CardContent>
     </Card>
   );

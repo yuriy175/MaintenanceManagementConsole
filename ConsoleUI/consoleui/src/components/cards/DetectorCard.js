@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function DetectorCard() {
   console.log(`! render DetectorCard`);
@@ -27,9 +28,9 @@ export default function DetectorCard() {
             <Typography variant="h6" component="h2">
               {bull}{i.DetectorName} 
             </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              Состояние - {i.State !== 2? "Не готов" : "Готов"}
-            </Typography>
+            <CardRow descr="Состояние" 
+              value={i.State !== 2? "Не готов" : "Готов"}
+              rightColor={i.State !== 2? "red" : "green"}></CardRow>
           </div>
           ))
         }        

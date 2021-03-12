@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function OrganAutoCard() {
   console.log(`! render OrganAutoCard`);
@@ -22,18 +23,11 @@ export default function OrganAutoCard() {
         <Typography variant="h5" component="h2">
           {bull}Органоавтоматика
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Название {currEquipState.organAuto?.Name}
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Прекция {currEquipState.organAuto?.Projection} {currEquipState.organAuto?.Direction}
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Возр. группа {currEquipState.organAuto?.AgeId}
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Телосложение {currEquipState.organAuto?.Constitution}
-        </Typography>
+        <CardRow descr="Название" value={currEquipState.organAuto?.Name} rightWidth={'50%'}></CardRow>
+        <CardRow descr="Прекция" value={currEquipState.organAuto?.Projection}></CardRow>
+        <CardRow descr="Направление" value={currEquipState.organAuto?.Direction}></CardRow>
+        <CardRow descr="Возр. группа" value={ currEquipState.organAuto?.AgeId}></CardRow>
+        <CardRow descr="Телосложение" value={currEquipState.organAuto?.Constitution}></CardRow>
       </CardContent>
     </Card>
   );

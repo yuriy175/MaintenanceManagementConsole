@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function DosimeterCard() {
   console.log(`! render DosimeterCard`);
@@ -22,12 +23,10 @@ export default function DosimeterCard() {
         <Typography variant="h5" component="h2">
           {bull}Дозиметр
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Состояние - {currEquipState.dosimeter?.State?.State< 1? "Не готов" : "Готов"} 
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Доза - {currEquipState.dosimeter?.State?.Dose} сГр
-        </Typography>
+        <CardRow descr="Состояние" 
+          value={currEquipState.dosimeter?.State?.State< 1? "Не готов" : "Готов"}
+          rightColor={currEquipState.dosimeter?.State?.State< 1? "red" : "green"}></CardRow>
+        <CardRow descr="Доза" value={currEquipState.dosimeter?.State?.Dose ? currEquipState.dosimeter?.State?.Dose : '-' + ' сГр'}></CardRow>
       </CardContent>
     </Card>
   );

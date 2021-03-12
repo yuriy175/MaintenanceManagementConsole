@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
+import CardRow from './CardRow'
 
 export default function SystemCard() {
   console.log(`! render SystemCard`);
@@ -22,19 +23,13 @@ export default function SystemCard() {
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          {currEquipState.cpu?.Model} 
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Загрузка - {currEquipState.cpu?.CPU_Load}%
-        </Typography>
+        <CardRow descr="Загрузка" value={currEquipState.cpu?.CPU_Load+'%'}></CardRow>
 
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Всего {currEquipState.memory?.TotalSize}Мб, Доступно {currEquipState.memory?.AvailableSize}Мб
-        </Typography>
+        <CardRow descr="Всего" value={currEquipState.memory?.TotalMemory+'Мб'}></CardRow>
+        <CardRow descr="Доступно" value={currEquipState.memory?.AvailableSize+'Мб'}></CardRow>
       </CardContent>
     </Card>
   );
