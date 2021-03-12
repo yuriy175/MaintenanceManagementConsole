@@ -52,7 +52,11 @@ namespace MessagesSender
             services.AddSingleton(
                typeof(IStudyingWatchService),
                typeof(StudyingWatchService));
-            
+
+            services.AddSingleton(
+               typeof(ISoftwareWatchService),
+               typeof(SoftwareWatchService));
+
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));
