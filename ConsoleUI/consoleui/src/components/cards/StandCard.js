@@ -23,7 +23,10 @@ export default function StandCard() {
         <Typography variant="h5" component="h2">
           {bull}Штатив
         </Typography>
-        <CardRow descr="Состояние" value={currEquipState.stand?.State?.State< 1? "Не готов" : "Готов"}></CardRow>
+        <CardRow descr="Состояние" 
+          value={currEquipState.stand?.State?.State< 1? "Не готов" : "Готов"}
+          rightColor={currEquipState.stand?.State?.State< 1? "red" : "green"}
+        ></CardRow>
         <CardRow descr="Растр" value={currEquipState.stand?.State?.RasterState}></CardRow>
         <CardRow descr="Позиция" value={currEquipState.stand?.State?.Position_Current}></CardRow>
         <CardRow descr="Ошибки" value={currEquipState.stand?.State?.ErrorDescriptions?.length}></CardRow>

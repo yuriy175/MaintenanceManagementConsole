@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
   selectEmpty: {
-    marginTop: theme.spacing(2),
+    // marginTop: theme.spacing(2),
     color: "white",
   },
   optionStyle:{

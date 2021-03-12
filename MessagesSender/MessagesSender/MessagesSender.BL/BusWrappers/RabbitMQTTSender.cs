@@ -150,11 +150,15 @@ namespace MessagesSender.BL.Remoting
 					}
 				});
 
-				await Client.SubscribeAsync(new TopicFilterBuilder()
-					.WithTopic(BroadcastCommandsTopic)
-					.WithTopic(Topic + CommandSubTopic)
-					.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
-					.Build());
+				await Client.SubscribeAsync(
+					new TopicFilterBuilder()
+						.WithTopic(BroadcastCommandsTopic)
+						.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
+						.Build(),
+					new TopicFilterBuilder()
+						.WithTopic(Topic + CommandSubTopic)
+						.WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
+						.Build());
 			}
 			catch (Exception ex)
 			{
