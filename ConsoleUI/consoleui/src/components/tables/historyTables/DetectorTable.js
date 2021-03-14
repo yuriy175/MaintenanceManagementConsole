@@ -11,8 +11,8 @@ const columns = [
     { id: 'XilibVersion', label: 'Версия xilib', minWidth: 100 },
   ];
 
-export default function DicomTable(props) {
-  console.log("render DicomTable");
+export default function DetectorTable(props) {
+  console.log("render DetectorTable");
 
   const rows = props.data;
   return (

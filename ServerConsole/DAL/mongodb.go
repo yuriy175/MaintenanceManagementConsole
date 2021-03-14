@@ -106,7 +106,7 @@ func GetDeviceConnections() []Models.DeviceConnectionModel {
 	query := bson.M{}
 	// объект для сохранения результата
 	devices := []Models.DeviceConnectionModel{}
-	deviceCollection.Find(query).All(&devices)
+	deviceCollection.Find(query).Sort("-datetime").All(&devices)
 
 	return devices
 }
@@ -126,7 +126,7 @@ func GetStudiesInWork(startDate time.Time, endDate time.Time) []Models.StudyInWo
 	}
 	// объект для сохранения результата
 	studies := []Models.StudyInWorkModel{}
-	err := studiesCollection.Find(query).All(&studies)
+	err := studiesCollection.Find(query).Sort("-datetime").All(&studies)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -167,7 +167,7 @@ func GetSystemInfo(startDate time.Time, endDate time.Time) []Models.SystemInfoMo
 	}
 	// // объект для сохранения результата
 	sysInfo := []Models.SystemInfoModel{}
-	sysInfoCollection.Find(query).All(&sysInfo)
+	sysInfoCollection.Find(query).Sort("-datetime").All(&sysInfo)
 
 	// sysInfo := []Models.SystemInfoModel{
 	// 	Models.SystemInfoModel{
@@ -232,7 +232,7 @@ func GetOrganAutoInfo(startDate time.Time, endDate time.Time) []Models.OrganAuto
 	}
 	// объект для сохранения результата
 	organAutos := []Models.OrganAutoInfoModel{}
-	organAutoCollection.Find(query).All(&organAutos)
+	organAutoCollection.Find(query).Sort("-datetime").All(&organAutos)
 
 	return organAutos
 }
@@ -253,7 +253,7 @@ func GetGeneratorInfo(startDate time.Time, endDate time.Time) []Models.Generator
 	}
 	// // объект для сохранения результата
 	genInfo := []Models.GeneratorInfoModel{}
-	genInfoCollection.Find(query).All(&genInfo)
+	genInfoCollection.Find(query).Sort("-datetime").All(&genInfo)
 
 	// genInfo := []Models.GeneratorInfoModel{
 	// 	Models.GeneratorInfoModel{
@@ -293,7 +293,7 @@ func GetSoftwareInfo(startDate time.Time, endDate time.Time) []Models.SoftwareIn
 
 	// // объект для сохранения результата
 	swInfo := []Models.SoftwareInfoModel{}
-	swInfoCollection.Find(query).All(&swInfo)
+	swInfoCollection.Find(query).Sort("-datetime").All(&swInfo)
 
 	return swInfo
 }
