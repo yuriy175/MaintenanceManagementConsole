@@ -24,8 +24,8 @@ export default function StandCard() {
           {bull}Штатив
         </Typography>
         <CardRow descr="Состояние" 
-          value={currEquipState.stand?.State?.State< 1? "Не готов" : "Готов"}
-          rightColor={currEquipState.stand?.State?.State< 1? "red" : "green"}
+          value={currEquipState.stand?.State?.State > 0? "Готов" : "Не готов" }
+          rightColor={currEquipState.stand?.State?.State > 0? "green" : "red"}
         ></CardRow>
         <CardRow descr="Растр" value={currEquipState.stand?.State?.RasterState}></CardRow>
         <CardRow descr="Позиция" value={currEquipState.stand?.State?.Position_Current}></CardRow>

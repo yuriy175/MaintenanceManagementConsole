@@ -25,8 +25,9 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 	organAutoCollection := db.C(Models.OrganAutoTableName)
 	genInfoCollection := db.C(Models.GeneratorInfoTableName)
 	sysInfoCollection := db.C(Models.SystemInfoTableName)
+	softwareInfoCollection := db.C(Models.SoftwareInfoTableName)
 
-	go func() { //c *mgo.Collection) {
+	go func() { 
 		for d := range equipDalCh {
 			/*if d.MsgType == Models.MsgTypeHwConnectionStateArrived {
 				deviceId := d.Info["Id"].(float64)
@@ -79,30 +80,15 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
 
 				sysInfoCollection.Insert(model)
+			} else if strings.Contains(d.Topic, "/ARM/Software") {
+				model := Models.SoftwareInfoModel{}
+				json.Unmarshal([]byte(d.Data), &model)
+				model.Id = bson.NewObjectId()
+				model.DateTime = time.Now()
+				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				softwareInfoCollection.Insert(model)
 			}
-			/*else if d.MsgType == Models.MsgTypeHddDrivesInfo {
-				var params []Models.HddDrivesInfoMessage
-				json.Unmarshal(d.Info, &params)
-
-				i := 0
-				i++
-
-				hddName := d.Info["HddName"].(string)
-				hddTotalSpace := d.Info["TotalSize"].(float64)
-				hddFreeSpace := d.Info["FreeSize"].(float64)
-
-				model := &Models.HddDrivesInfoModel{
-					Id:            bson.NewObjectId(),
-					DateTime:      time.Now(),
-					EquipNumber:   d.EquipNumber,
-					EquipName:     d.EquipName,
-					EquipIP:       d.EquipIP,
-					HddName:       hddName,
-					HddTotalSpace: hddTotalSpace,
-					HddFreeSpace:  hddFreeSpace,
-				}
-				studiesCollection.Insert(model)
-			}*/
 		}
 	}() //deviceCollection)
 
@@ -294,6 +280,33 @@ func GetGeneratorInfo(startDate time.Time, endDate time.Time) []Models.Generator
 	// }
 
 	return genInfo
+}
+
+func GetSoftwareInfo(startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel {
+	session := dalCreateSession()
+	defer session.Close()
+
+	swInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
+
+	// // критерий выборки
+	query := GetQuery(startDate, endDate)
+
+	// // объект для сохранения результата
+	swInfo := []Models.SoftwareInfoModel{}
+	swInfoCollection.Find(query).All(&swInfo)
+
+	return swInfo
+}
+
+func GetQuery(startDate time.Time, endDate time.Time) bson.M{
+	query := bson.M{
+		"datetime": bson.M{
+			"$gt": startDate,
+			"$lt": endDate,
+		},
+	}
+
+	return query
 }
 
 func dalCreateSession() *mgo.Session {

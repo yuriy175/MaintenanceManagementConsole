@@ -44,3 +44,11 @@ export async function SearchEquip(equipType, startDate, endDate) {
         return response.data;
     });
 };
+
+export async function RunTeamViewer(activatedEquipInfo) {
+    return await HandlerWrapper('RunTeamViewer', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/RunTeamViewer?activatedEquipInfo=' + activatedEquipInfo);
+        return response.data;
+    });
+};

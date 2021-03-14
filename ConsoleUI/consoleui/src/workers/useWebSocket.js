@@ -71,6 +71,11 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETCOLLIMATOR', payload: values }); 
                 }
+                else if(data?.Topic.includes('/ARM/Software'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETSOFTWARE', payload: values }); 
+                }
             };
         }
     }, [connection]);

@@ -69,3 +69,13 @@ type GeneratorInfoModel struct {
 	Mas         float64
 	Kv          float64
 }
+
+type SoftwareInfoModel struct {
+	Id          bson.ObjectId `bson:"_id"`
+	DateTime    time.Time
+	EquipName   string
+	SettingsDB bool
+    ObservationsDB bool
+    Version string
+    XilibVersion string
+}

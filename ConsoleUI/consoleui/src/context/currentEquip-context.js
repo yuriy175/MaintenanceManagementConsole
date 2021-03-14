@@ -14,6 +14,7 @@ const initialState = {
   memory:{},
   cpu:{},
   organAuto:{},
+  software:{},
 };
 
 function reducer(state, action) {
@@ -79,6 +80,12 @@ function reducer(state, action) {
       return {
         ...state,
         collimator: action.payload
+      };
+    }
+    case 'SETSOFTWARE': {
+      return {
+        ...state,
+        software: action.payload
       };
     }
 

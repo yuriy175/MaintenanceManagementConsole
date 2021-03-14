@@ -26,7 +26,7 @@ export default function DosimeterCard() {
         <CardRow descr="Состояние" 
           value={currEquipState.dosimeter?.State?.State > 0? "готов" : "Не готов"}
           rightColor={currEquipState.dosimeter?.State?.State > 0 ? "green" : "red"}></CardRow>
-        <CardRow descr="Доза" value={currEquipState.dosimeter?.State?.Dose ? currEquipState.dosimeter?.State?.Dose : '-' + ' сГр'}></CardRow>
+        <CardRow descr="Доза" value={currEquipState.dosimeter?.State?.Dose ? currEquipState.dosimeter?.State?.Dose + ' сГр' : '' }></CardRow>
       </CardContent>
     </Card>
   );

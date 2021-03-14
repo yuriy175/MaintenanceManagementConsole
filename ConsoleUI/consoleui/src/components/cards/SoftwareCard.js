@@ -23,12 +23,16 @@ export default function SoftwareCard() {
         <Typography variant="h5" component="h2">
           {bull}Software
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          {currEquipState.cpu?.Model} 
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Загрузка - {currEquipState.cpu?.CPU_Load}%
-        </Typography>
+        <CardRow descr="Settings БД" 
+          value={currEquipState.software?.SettingsDB ?  "Готов" : "Не готов" }
+          rightColor={currEquipState.software?.SettingsDB ? "green" : "red"}
+        ></CardRow>
+        <CardRow descr="Observations БД" 
+          value={currEquipState.software?.ObservationsDB ? "Готов" : "Не готов"}
+          rightColor={ currEquipState.software?.ObservationsDB ? "green" : "red"}
+        ></CardRow>
+        <CardRow descr="Версия Атлас" value={currEquipState.software?.Version}></CardRow>
+        <CardRow descr="Версия Xilib" value={currEquipState.software?.XilibVersion}></CardRow>
       </CardContent>
     </Card>
   );

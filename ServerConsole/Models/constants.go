@@ -9,6 +9,8 @@ const (
 	DeviceConnectionsTableName = "DeviceConnections"
 	StudyInWorkTableName       = "StudyInWork"
 	SystemInfoTableName        = "SystemInfo"
+	SoftwareInfoTableName      = "SoftwareInfo"
+	DicomInfoTableName         = "DicomInfo"
 	OrganAutoTableName         = "OrganAuto"
 	GeneratorInfoTableName     = "GeneratorInfo"
 	StandInfoTableName         = "StandInfo"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -7,12 +7,19 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import {useCardsStyles} from './CommonCard'
+import { CurrentEquipContext } from '../../context/currentEquip-context';
+import * as EquipWorker from '../../workers/equipWorker'
 
 export default function RemoteAccessCard() {
   console.log(`! render RemoteAccessCard`);
 
   const classes = useCardsStyles();
+  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
+
+  const onRunTV = async () => {
+    const res = await EquipWorker.RunTeamViewer(currEquipState.equipInfo);
+  };
 
   return (
     <Card className={classes.root}>
@@ -21,8 +28,11 @@ export default function RemoteAccessCard() {
           {bull}Удаленный доступ
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          Запустить TeamViewer
+          TeamViewer
         </Typography>
+        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onRunTV}>
+          Запустить
+        </Button>
       </CardContent>
     </Card>
   );

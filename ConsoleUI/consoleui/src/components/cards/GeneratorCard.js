@@ -24,11 +24,11 @@ export default function GeneratorCard() {
           {bull}Генератор
         </Typography>
         <CardRow descr="Состояние" 
-          value={currEquipState.generator?.State?.State < 1? "Не готов" : "Готов"}
-          rightColor={currEquipState.generator?.State?.State< 1? "red" : "green"}
+          value={currEquipState.generator?.State?.State > 0? "Готов" : "Не готов"}
+          rightColor={currEquipState.generator?.State?.State > 0? "green" : "red"}
         ></CardRow>
-        <CardRow descr="Ток" value={currEquipState.generator?.State?.Mas + ' мАс'}></CardRow>
-        <CardRow descr="Напряжение" value={currEquipState.generator?.State?.Kv + ' кВ'}></CardRow>
+        <CardRow descr="Ток" value={currEquipState.generator?.State?.Mas ? currEquipState.generator.State.Mas + ' мАс' : ''}></CardRow>
+        <CardRow descr="Напряжение" value={currEquipState.generator?.State?.Kv ? currEquipState.generator.State.Kv + ' кВ' : ''}></CardRow>
         <CardRow descr="Логическое. р. м." value={currEquipState.generator?.State?.Workstation}></CardRow>
         <CardRow descr="Нагрев" value={currEquipState.generator?.State?.HeatStatus}></CardRow>
         <CardRow descr="Педаль" value={currEquipState.generator?.State?.PedalPressed}></CardRow>

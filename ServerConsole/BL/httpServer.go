@@ -76,6 +76,24 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 		json.NewEncoder(w).Encode(equips)
 	})
 
+	http.HandleFunc("/equips/RunTeamViewer", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+
+		queryString := r.URL.Query()
+		activatedEquipInfos, ok := queryString["activatedEquipInfo"]
+
+		if !ok || len(activatedEquipInfos[0]) < 1 {
+			log.Println("Url Param 'activatedEquipInfo' is missing")
+			return
+		}
+		activatedEquipInfo := activatedEquipInfos[0]
+		mqttReceiverService.SendCommand(activatedEquipInfo, "runTV")
+	})
+
 	//(currEquip, startDate, endDate);
 	http.HandleFunc("/equips/SearchEquip", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
@@ -140,5 +158,8 @@ func SendSearchResults(w http.ResponseWriter, equipType string, startDate time.T
 	} else if equipType == "Studies" {
 		studies := DAL.GetStudiesInWork(startDate, endDate)
 		json.NewEncoder(w).Encode(studies)
-	}
+	} else if equipType == "Software" {
+		swInfo := DAL.GetSoftwareInfo(startDate, endDate)
+		json.NewEncoder(w).Encode(swInfo)
+	} 
 }

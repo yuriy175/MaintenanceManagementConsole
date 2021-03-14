@@ -12,6 +12,11 @@ import SystemTable from './tables/historyTables/SystemTable'
 import OrganAutoTable from './tables/historyTables/OrganAutoTable'
 import GeneratorTable from './tables/historyTables/GeneratorTable'
 import StudiesTable from './tables/historyTables/StudiesTable'
+import SofwareTable from './tables/historyTables/SofwareTable'
+import DetectorTable from './tables/historyTables/DetectorTable'
+import StandTable from './tables/historyTables/StandTable'
+import DicomTable from './tables/historyTables/DicomTable'
+
 import * as EquipWorker from '../workers/equipWorker'
 
 const useStyles = makeStyles((theme) => ({
@@ -48,6 +53,11 @@ export default function HistoryComponent(props) {
   const [organAutos, setOrganAutos] = useState([]);  
   const [generators, setGenerators] = useState([]);
   const [studies, setStudies] = useState([]);
+  const [stands, setStands] = useState([]);
+  const [detectors, setDetectors] = useState([]);
+  const [dosimeters, setDosimeters] = useState([]);
+  const [software, setSoftware] = useState([]);
+  const [dicom, setDicom] = useState([]);
 
   const handleEquipsChange = async (event) => {
     const select = event.target;
@@ -74,10 +84,18 @@ export default function HistoryComponent(props) {
         setGenerators(data);
     } else if (currEquip === "Studies"){
         setStudies(data);
+    } else if (currEquip === "Stands"){
+      setStands(data);
+    } else if (currEquip === "Dosimeters"){
+      setDosimeters(data);
+    } else if (currEquip === "Detectors"){
+      setDetectors(data);
+    } else if (currEquip === "Software"){
+      setSoftware(data);
+    } else if (currEquip === "Dicom"){
+      setDicom(data);
     }
-    //
   };
-
 
   return (
       <>
@@ -114,7 +132,12 @@ export default function HistoryComponent(props) {
                 <option value={"SystemInfo"} className={classes.optionStyle}>Система</option>
                 <option value={"OrganAutos"} className={classes.optionStyle}>Орган авто</option>
                 <option value={"Generators"} className={classes.optionStyle}>Генераторы</option>
+                <option value={"Stands"} className={classes.optionStyle}>Штативы</option>
+                <option value={"Dosimeters"} className={classes.optionStyle}>Дозиметры</option>
+                <option value={"Detectors"} className={classes.optionStyle}>Детекторы</option>
                 <option value={"Studies"} className={classes.optionStyle}>Исследования</option>
+                <option value={"Software"} className={classes.optionStyle}>Приложения</option>
+                <option value={"Dicom"} className={classes.optionStyle}>Dicom</option>
         </NativeSelect>
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSearch}>
             Искать
@@ -125,7 +148,10 @@ export default function HistoryComponent(props) {
         {currEquip === "OrganAutos" ? <OrganAutoTable data={organAutos}></OrganAutoTable> : <></>}     
         {currEquip === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
         {currEquip === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  
-        
+        {currEquip === "Software" ? <SofwareTable data={software}></SofwareTable> : <></>}  
+        {currEquip === "Detectors" ? <DetectorTable data={software}></DetectorTable> : <></>}  
+        {currEquip === "Stands" ? <StandTable data={software}></StandTable> : <></>}  
+        {currEquip === "Dicom" ? <DicomTable data={software}></DicomTable> : <></>}  
     </div>
     </>
   );
