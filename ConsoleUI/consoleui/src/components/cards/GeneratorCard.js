@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
-import CardRow from './CardRow'
+import CardRow, {CardErrorRow} from './CardRow'
 
 export default function GeneratorCard() {
   console.log(`! render GeneratorCard`);
@@ -33,6 +33,13 @@ export default function GeneratorCard() {
         <CardRow descr="Нагрев" value={currEquipState.generator?.State?.HeatStatus}></CardRow>
         <CardRow descr="Педаль" value={currEquipState.generator?.State?.PedalPressed}></CardRow>
         <CardRow descr="Ошибки" value={currEquipState.generator?.State?.ErrorDescriptions?.length}></CardRow>
+        {currEquipState.generator?.State?.ErrorDescriptions?.length ? 
+          currEquipState.generator.State.ErrorDescriptions.map((i, ind) => (
+            <CardErrorRow key={ind.toString()}  descr={i.Code} value={i.Description} ></CardErrorRow>
+            ))
+            :
+            <></>          
+        }
       </CardContent>
     </Card>
   );

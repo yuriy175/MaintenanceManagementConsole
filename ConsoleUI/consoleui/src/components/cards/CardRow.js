@@ -18,6 +18,12 @@ const useStyles = makeStyles({
     width:'30%',
     textAlign: 'right',
   },
+  errorDescr: {
+    width:'10%',
+  },
+  errorValue: {
+    width:'80%',
+  },
 });
 
 export default function CardRow(props) {
@@ -27,12 +33,32 @@ export default function CardRow(props) {
 
   return (
     <div className={classes.root}>
-        <RemoveRedEyeIcon color="primary" size="small"></RemoveRedEyeIcon>
+        {props.icon !== 'none' ? <RemoveRedEyeIcon color="primary" size="small"></RemoveRedEyeIcon> : <></>}
         <Typography className={classes.descr} color="textSecondary">
           {props.descr}
         </Typography>
         <Typography className={classes.value} color="textSecondary" style = {{
             width: props.rightWidth ? props.rightWidth : classes.value.width,
+            color: props.rightColor ? props.rightColor : "",
+          }}>
+          {props.value}
+        </Typography>
+    </div>
+  );
+}
+
+export function CardErrorRow(props) {
+
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+        <RemoveRedEyeIcon color="secondary" size="small"></RemoveRedEyeIcon>
+        <Typography className={classes.descr, classes.errorDescr} color="secondary">
+          {props.descr}
+        </Typography>
+        <Typography className={classes.value, classes.errorValue} color="secondary" style = {{
+            width: props.rightWidth ? props.rightWidth : classes.errorValue.width,
             color: props.rightColor ? props.rightColor : "",
           }}>
           {props.value}

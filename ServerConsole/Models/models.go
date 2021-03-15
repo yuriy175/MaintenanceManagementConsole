@@ -58,6 +58,11 @@ type OrganAutoInfoModel struct {
 	Constitution float64
 }
 
+type ErrorDescription struct {
+	Code string
+	Description string
+}
+
 type GeneratorInfoModel struct {
 	Id          bson.ObjectId `bson:"_id"`
 	DateTime    time.Time
@@ -68,6 +73,7 @@ type GeneratorInfoModel struct {
 	HeatStatus  float64
 	Mas         float64
 	Kv          float64
+	ErrorDescriptions []ErrorDescription
 }
 
 type SoftwareInfoModel struct {

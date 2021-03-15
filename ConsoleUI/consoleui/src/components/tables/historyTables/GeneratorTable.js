@@ -15,7 +15,24 @@ const columns = [
   { id: 'DateTime', label: 'Время', minWidth: 100 },
   { id: 'Workstation', label: 'Раб. место', minWidth: 100 },
   { id: 'HeatStatus', label: 'Нагрев', minWidth: 100 },
-  { id: 'Errors', label: 'Ошибки', minWidth: 100 },
+  { id: 'ErrorDescriptions', label: 'Ошибки', minWidth: 100, 
+    format: (values) =>
+    {
+      if(!values || !values.length) {
+        return values;
+      }
+      const errors = values.reduce((accumulator, currentValue) => accumulator + `Code ${currentValue.Code}: ${currentValue. Description}`, '');
+      return errors;
+    },
+    hasErrors: (values) =>
+    {
+      if(!values || !values.length) {
+        return false;
+      }
+
+      return true;
+    }
+  },
   { id: 'Mas', label: 'Ток', minWidth: 100 },
   { id: 'Kv', label: 'Напряжение', minWidth: 100 },  
 ];
@@ -27,6 +44,10 @@ const useStyles = makeStyles({
   container: {
     maxHeight: 440,
   },
+  errorCell:{
+    color: 'white',
+    background: 'red',
+  }
 });
 
 export default function GeneratorTable(props) {
@@ -70,8 +91,9 @@ export default function GeneratorTable(props) {
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                      <TableCell key={column.id} align={column.align} 
+                        className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : ''}>
+                        {column.format ? column.format(value) : value}
                       </TableCell>
                     );
                   })}
