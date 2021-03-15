@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
-import CardRow from './CardRow'
+import CardRow, {CardErrorRow} from './CardRow'
 
 export default function SoftwareCard() {
   console.log(`! render SoftwareCard`);
@@ -33,6 +33,14 @@ export default function SoftwareCard() {
         ></CardRow>
         <CardRow descr="Версия Атлас" value={currEquipState.software?.Version}></CardRow>
         <CardRow descr="Версия Xilib" value={currEquipState.software?.XilibVersion}></CardRow>
+        <CardRow descr="Ошибки" value={''}></CardRow>
+        {currEquipState.software?.ErrorDescriptions?.length ? 
+          currEquipState.software.ErrorDescriptions.map((i, ind) => (
+            <CardErrorRow key={ind.toString()}  descr={i.Code} value={i.Description} ></CardErrorRow>
+            ))
+            :
+            <></>          
+        }
       </CardContent>
     </Card>
   );

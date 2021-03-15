@@ -8,6 +8,24 @@ const columns = [
     { id: 'ObservationsDB', label: 'Observations БД', minWidth: 100 },
     { id: 'Version', label: 'Версия Атлас', minWidth: 100 },
     { id: 'XilibVersion', label: 'Версия xilib', minWidth: 100 },
+    { id: 'ErrorDescriptions', label: 'Ошибки', minWidth: 100, 
+      formatArray: (values) =>
+      {
+        if(!values || !values.length) {
+          return values;
+        }
+        //const errors = values.reduce((accumulator, currentValue) => accumulator + `Code ${currentValue.Code}: ${currentValue. Description}`, '');
+        return values.map((currentValue) => `Code ${currentValue.Code}: ${currentValue. Description}`);
+      },
+      hasErrors: (values) =>
+      {
+        if(!values || !values.length) {
+          return false;
+        }
+
+        return true;
+      }
+    },
   ];
 
 export default function SofwareTable(props) {

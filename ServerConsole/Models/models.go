@@ -84,6 +84,7 @@ type SoftwareInfoModel struct {
     ObservationsDB bool
     Version string
     XilibVersion string
+	ErrorDescriptions []ErrorDescription
 }
 
 type DicomInfo struct {

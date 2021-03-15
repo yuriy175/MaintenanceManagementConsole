@@ -16,6 +16,10 @@ const useStyles = makeStyles({
   container: {
     maxHeight: 440,
   },
+  errorCell:{
+    color: 'white',
+    background: 'red',
+  }
 });
 
 export default function CommonTable(props) {
@@ -59,7 +63,9 @@ export default function CommonTable(props) {
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
-                      <TableCell key={column.id} align={column.align}>
+                      <TableCell key={column.id} align={column.align}
+                        className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : ''}
+                      >
                         {column.format ? column.format(value) : 
                           column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}
                       </TableCell>

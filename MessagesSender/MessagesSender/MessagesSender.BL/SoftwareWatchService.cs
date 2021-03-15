@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using Atlas.Common.Core.Interfaces;
+using System.Diagnostics.Eventing.Reader;
 
 namespace MessagesSender.BL
 {
@@ -40,7 +41,8 @@ namespace MessagesSender.BL
         private readonly ISendingService _sendingService;
 
         private (string Version, string XilibVersion) _versions = (string.Empty, string.Empty);
-
+        private EventLogWatcher _watcher = null;
+        
         /// <summary>
         /// public constructor
         /// </summary>
@@ -63,6 +65,11 @@ namespace MessagesSender.BL
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
+
+            Task.Run(() =>
+            {
+                SubscribeSystemEvents();
+            });        
 
             _logger.Information("SoftwareWatchService started");
         }
@@ -104,6 +111,78 @@ namespace MessagesSender.BL
                 _logger.Error(ex, "GetVersions error ");
 
                 return (string.Empty, string.Empty);
+            }
+        }
+
+        private void SubscribeSystemEvents()
+        {
+            try
+            {
+                EventLogQuery subscriptionQuery = new EventLogQuery(
+                    //"Security",
+                    "Application",
+                    PathType.LogName
+                    //,"*[System/EventID=4624]"
+                    );
+
+                _watcher = new EventLogWatcher(subscriptionQuery);
+
+                // Make the watcher listen to the EventRecordWritten
+                // events.  When this event happens, the callback method
+                // (EventLogEventRead) is called.
+                _watcher.EventRecordWritten +=
+                    new EventHandler<EventRecordWrittenEventArgs>(
+                        EventLogEventRead);
+
+                // Activate the subscription
+                _watcher.Enabled = true;
+
+                //for (int i = 0; i < 5; i++)
+                //{
+                //    // Wait for events to occur. 
+                //    System.Threading.Thread.Sleep(10000);
+                //}
+            }
+            catch (EventLogReadingException e)
+            {
+                //Log("Error reading the log: {0}", e.Message);
+            }
+            finally
+            {
+                // Stop listening to events
+                //watcher.Enabled = false;
+
+                //if (watcher != null)
+                //{
+                //    watcher.Dispose();
+                //}
+            }
+            //Console.ReadKey();
+        }
+
+        // Callback method that gets executed when an event is
+        // reported to the subscription.
+        private void EventLogEventRead(object obj,
+            EventRecordWrittenEventArgs arg)
+        {
+            var eventRecord = arg.EventRecord;
+            // Make sure there was no error reading the event.
+            if (eventRecord != null && eventRecord.Level == 2)
+            {
+                _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
+                new
+                {
+                    ErrorDescriptions = new[] {
+                        new {
+                            Code = eventRecord.LevelDisplayName,
+                            Description = eventRecord.ProviderName,
+                        }
+                    }
+                });
+            }
+            else
+            {
+                _logger.Error("The event instance was null.");
             }
         }
     }
