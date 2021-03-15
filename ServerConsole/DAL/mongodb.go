@@ -27,6 +27,7 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 	sysInfoCollection := db.C(Models.SystemInfoTableName)
 	softwareInfoCollection := db.C(Models.SoftwareInfoTableName)
 	dicomInfoCollection := db.C(Models.DicomInfoTableName)
+	standInfoCollection := db.C(Models.StandInfoTableName)
 
 	go func() { 
 		for d := range equipDalCh {
@@ -97,6 +98,14 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
 
 				dicomInfoCollection.Insert(model)
+			} else if strings.Contains(d.Topic, "/stand/state") {
+				viewmodel := Models.StandInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+				viewmodel.State.Id = bson.NewObjectId()
+				viewmodel.State.DateTime = time.Now()
+				viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				standInfoCollection.Insert(viewmodel.State)
 			}
 		}
 	}() //deviceCollection)
@@ -322,6 +331,23 @@ func GetDicomInfo(startDate time.Time, endDate time.Time) []Models.DicomsInfoMod
 
 	return dicomInfo
 }
+
+func GetStandInfo(startDate time.Time, endDate time.Time) []Models.StandInfoModel {
+	session := dalCreateSession()
+	defer session.Close()
+
+	standInfoCollection := session.DB(Models.DBName).C(Models.StandInfoTableName)
+
+	// // критерий выборки
+	query := GetQuery(startDate, endDate)
+
+	// // объект для сохранения результата
+	standInfo := []Models.StandInfoModel{}
+	standInfoCollection.Find(query).Sort("-datetime").All(&standInfo)
+
+	return standInfo
+}
+
 
 func GetQuery(startDate time.Time, endDate time.Time) bson.M{
 	query := bson.M{

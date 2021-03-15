@@ -30,3 +30,8 @@ type GeneratorInfoViewModel struct {
 	Id    float64
 	State GeneratorInfoModel
 }
+
+type StandInfoViewModel struct {
+	Id    float64
+	State StandInfoModel
+}

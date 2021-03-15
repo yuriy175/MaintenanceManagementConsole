@@ -99,3 +99,14 @@ type DicomsInfoModel struct {
 	PACS []DicomInfo
 	WorkList []DicomInfo
 }
+
+type StandInfoModel struct {
+	Id          bson.ObjectId `bson:"_id"`
+	DateTime    time.Time
+	EquipName   string
+	State       float64
+	Errors      []string
+	RasterState float64
+	Position_Current  float64
+	ErrorDescriptions []ErrorDescription
+}
