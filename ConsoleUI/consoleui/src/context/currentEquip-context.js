@@ -88,6 +88,12 @@ function reducer(state, action) {
         software: action.payload
       };
     }
+    case 'SETDICOM': {
+      return {
+        ...state,
+        dicom: action.payload
+      };
+    }    
 
     default:
       throw new Error();

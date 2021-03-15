@@ -60,7 +60,8 @@ export default function CommonTable(props) {
                     const value = row[column.id];
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.format ? column.format(value) : value}
+                        {column.format ? column.format(value) : 
+                          column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}
                       </TableCell>
                     );
                   })}

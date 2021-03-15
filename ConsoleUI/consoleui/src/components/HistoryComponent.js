@@ -149,9 +149,9 @@ export default function HistoryComponent(props) {
         {currEquip === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
         {currEquip === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  
         {currEquip === "Software" ? <SofwareTable data={software}></SofwareTable> : <></>}  
-        {currEquip === "Detectors" ? <DetectorTable data={software}></DetectorTable> : <></>}  
-        {currEquip === "Stands" ? <StandTable data={software}></StandTable> : <></>}  
-        {currEquip === "Dicom" ? <DicomTable data={software}></DicomTable> : <></>}  
+        {currEquip === "Detectors" ? <DetectorTable data={detectors}></DetectorTable> : <></>}  
+        {currEquip === "Stands" ? <StandTable data={stands}></StandTable> : <></>}  
+        {currEquip === "Dicom" ? <DicomTable data={dicom}></DicomTable> : <></>}  
     </div>
     </>
   );

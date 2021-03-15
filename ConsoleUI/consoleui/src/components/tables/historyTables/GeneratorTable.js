@@ -16,13 +16,13 @@ const columns = [
   { id: 'Workstation', label: 'Раб. место', minWidth: 100 },
   { id: 'HeatStatus', label: 'Нагрев', minWidth: 100 },
   { id: 'ErrorDescriptions', label: 'Ошибки', minWidth: 100, 
-    format: (values) =>
+    formatArray: (values) =>
     {
       if(!values || !values.length) {
         return values;
       }
-      const errors = values.reduce((accumulator, currentValue) => accumulator + `Code ${currentValue.Code}: ${currentValue. Description}`, '');
-      return errors;
+      //const errors = values.reduce((accumulator, currentValue) => accumulator + `Code ${currentValue.Code}: ${currentValue. Description}`, '');
+      return values.map((currentValue) => `Code ${currentValue.Code}: ${currentValue. Description}`);
     },
     hasErrors: (values) =>
     {
@@ -93,7 +93,7 @@ export default function GeneratorTable(props) {
                     return (
                       <TableCell key={column.id} align={column.align} 
                         className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : ''}>
-                        {column.format ? column.format(value) : value}
+                        {column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}
                       </TableCell>
                     );
                   })}
