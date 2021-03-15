@@ -16,5 +16,11 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <returns>equipment info</returns>
         Task<(string Name, string Number)> GetEquipmentInfoAsync();
+
+        /// <summary>
+        /// Get dicom info.
+        /// </summary>
+        /// <returns>dicom info</returns>
+        Task<IEnumerable<(int Id, string Name, string IP, int ServiceRole)>> GetDicomServicesAsync();
     }
 }

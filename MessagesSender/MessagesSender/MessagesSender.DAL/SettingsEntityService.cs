@@ -54,6 +54,20 @@ namespace MessagesSender.DAL
         }
 
         /// <summary>
+        /// Get dicom info.
+        /// </summary>
+        /// <returns>dicom info</returns>
+        public async Task<IEnumerable<(int Id, string Name, string IP, int ServiceRole)>> GetDicomServicesAsync()
+        {
+            var dicomServices = await GetManyAction<DicomServices>(
+                context => context.DicomServices
+                    .Where(p => p.Status)
+                    .OrderBy(p => p.Id));
+
+            return dicomServices?.Select(d => (d.Id, d.LogicalName, d.IPAddress, d.ServiceRole));
+        }
+
+        /// <summary>
         /// Create context.
         /// </summary>
         /// <param name="logger">logger.</param>

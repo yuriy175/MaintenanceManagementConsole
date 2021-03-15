@@ -32,6 +32,7 @@ namespace MessagesSender.BL
         private readonly IHardwareStateService _hwStateService;
         private readonly ISoftwareWatchService _softwareWatchService;
         private readonly IEventPublisher _eventPublisher;
+        private readonly IDicomStateService _dicomStateService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -56,6 +57,7 @@ namespace MessagesSender.BL
         /// <param name="studyingWatchService">studying watch service</param>
         /// <param name="hwStateService">hardware state service</param>
         /// <param name="softwareWatchService">software watch service</param>
+        /// <param name="dicomStateService">dicom state service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
@@ -67,7 +69,8 @@ namespace MessagesSender.BL
             ISystemWatchService systemWatchService,
             IStudyingWatchService studyingWatchService,
             IHardwareStateService hwStateService,
-            ISoftwareWatchService softwareWatchService)
+            ISoftwareWatchService softwareWatchService,
+            IDicomStateService dicomStateService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -80,6 +83,7 @@ namespace MessagesSender.BL
             _hwStateService = hwStateService;
             _eventPublisher = eventPublisher;
             _softwareWatchService = softwareWatchService;
+            _dicomStateService = dicomStateService;
 
             new Action[]
                 {

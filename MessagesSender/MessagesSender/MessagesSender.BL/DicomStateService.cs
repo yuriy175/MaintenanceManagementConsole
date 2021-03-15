@@ -16,22 +16,98 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using MessagesSender.Core.Model;
 using Atlas.Acquisitions.Common.Core.Model;
+using System.Collections.Generic;
 
 namespace MessagesSender.BL
 {
+    /// <summary>
+    /// dicom state service 
+    /// </summary>
     public class DicomStateService : IDicomStateService
     {
+        private const int PACSServiceRole = 1;
+        private const int WorkListServiceRole = 4;
+
         private readonly ILogger _logger;
+        private readonly ISettingsEntityService _dbSettingsEntityService;
+        private readonly IWebClientService _webClientService;
+        private readonly IEventPublisher _eventPublisher;
+        private readonly ISendingService _sendingService;
+
+        private bool _isActivated = false;
+        private IEnumerable<(int Id, string Name, string IP, int ServiceRole)> _dicomServices = null;
 
         /// <summary>
         /// public constructor
         /// </summary>
         /// <param name="logger">logger</param>
+        /// <param name="dbSettingsEntityService">settings database connector</param>
+        /// <param name="webClientService">web client service</param>
+        /// <param name="eventPublisher">event publisher service</param>
+        /// <param name="sendingService">sending service</param>
         public DicomStateService(
-            ILogger logger)
+            ILogger logger,
+            ISettingsEntityService dbSettingsEntityService,
+            IWebClientService webClientService,
+            IEventPublisher eventPublisher,
+            ISendingService sendingService)
         {
             _logger = logger;
+            _dbSettingsEntityService = dbSettingsEntityService;
+            _eventPublisher = eventPublisher;
+            _sendingService = sendingService;
+            _webClientService = webClientService;
+
+            _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
+            _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
+
+            GetDicomServicesAsync();
+
             _logger.Information("DicomStateService started");
+        }
+
+        private async Task GetDicomServicesAsync()
+        {
+            _dicomServices = await _dbSettingsEntityService.GetDicomServicesAsync();
+        }
+
+        private void OnDeactivateArrivedAsync()
+        {
+            _isActivated = false;
+        }
+
+        private async Task<bool> OnActivateArrivedAsync()
+        {
+            _isActivated = true;
+
+            await SendDicomServicesAsync();
+            /*var generatorState = await _webClientService.SendAsync<GeneratorState>(
+                "Exposition",
+                "RequestGeneratorState",
+                new Dictionary<string, string> { });
+
+            if (CanSendGeneratorState(generatorState))
+            {
+                OnGeneratorState((GeneratorId, generatorState));
+            }*/
+
+            return true;
+        }
+
+        private async Task SendDicomServicesAsync()
+        {
+            if (_isActivated && _dicomServices != null)
+            {
+                await _sendingService.SendInfoToMqttAsync(
+                    MQMessages.DicomInfo,
+                    new
+                    {
+                        PACS = _dicomServices.Where(d => (d.ServiceRole & PACSServiceRole) > 0)
+                            .Select(d => new { d.Name, d.IP }),
+                        WorkList = _dicomServices.Where(d => (d.ServiceRole & WorkListServiceRole) > 0)
+                            .Select(d => new { d.Name, d.IP }),
+                    });
+            }
         }
     }
 }

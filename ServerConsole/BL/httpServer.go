@@ -161,5 +161,8 @@ func SendSearchResults(w http.ResponseWriter, equipType string, startDate time.T
 	} else if equipType == "Software" {
 		swInfo := DAL.GetSoftwareInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(swInfo)
+	} else if equipType == "Dicom" {
+		dicomInfo := DAL.GetDicomInfo(startDate, endDate)
+		json.NewEncoder(w).Encode(dicomInfo)
 	} 
 }

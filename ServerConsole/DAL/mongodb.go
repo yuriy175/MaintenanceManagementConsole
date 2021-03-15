@@ -26,6 +26,7 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 	genInfoCollection := db.C(Models.GeneratorInfoTableName)
 	sysInfoCollection := db.C(Models.SystemInfoTableName)
 	softwareInfoCollection := db.C(Models.SoftwareInfoTableName)
+	dicomInfoCollection := db.C(Models.DicomInfoTableName)
 
 	go func() { 
 		for d := range equipDalCh {
@@ -88,6 +89,14 @@ func DalWorker(equipDalCh chan *Models.RawMqttMessage) {
 				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
 
 				softwareInfoCollection.Insert(model)
+			} else if strings.Contains(d.Topic, "/dicom") {
+				model := Models.DicomsInfoModel{}
+				json.Unmarshal([]byte(d.Data), &model)
+				model.Id = bson.NewObjectId()
+				model.DateTime = time.Now()
+				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				dicomInfoCollection.Insert(model)
 			}
 		}
 	}() //deviceCollection)
@@ -296,6 +305,22 @@ func GetSoftwareInfo(startDate time.Time, endDate time.Time) []Models.SoftwareIn
 	swInfoCollection.Find(query).Sort("-datetime").All(&swInfo)
 
 	return swInfo
+}
+
+func GetDicomInfo(startDate time.Time, endDate time.Time) []Models.DicomsInfoModel {
+	session := dalCreateSession()
+	defer session.Close()
+
+	dicomInfoCollection := session.DB(Models.DBName).C(Models.DicomInfoTableName)
+
+	// // критерий выборки
+	query := GetQuery(startDate, endDate)
+
+	// // объект для сохранения результата
+	dicomInfo := []Models.DicomsInfoModel{}
+	dicomInfoCollection.Find(query).Sort("-datetime").All(&dicomInfo)
+
+	return dicomInfo
 }
 
 func GetQuery(startDate time.Time, endDate time.Time) bson.M{

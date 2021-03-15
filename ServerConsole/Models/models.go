@@ -85,3 +85,17 @@ type SoftwareInfoModel struct {
     Version string
     XilibVersion string
 }
+
+type DicomInfo struct {
+	Name string
+	IP string
+	State       float64
+}
+
+type DicomsInfoModel struct {
+	Id          bson.ObjectId `bson:"_id"`
+	DateTime    time.Time
+	EquipName   string
+	PACS []DicomInfo
+	WorkList []DicomInfo
+}
