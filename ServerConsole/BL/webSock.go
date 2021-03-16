@@ -24,6 +24,7 @@ func CreateWebSock(w http.ResponseWriter, r *http.Request, uid string) *WebSock 
 		log.Panicf("create web socket: %s", err)
 	}
 
+	log.Println("web sock created Url %s", uid)
 	return &WebSock{uid, conn}
 
 	/*for {

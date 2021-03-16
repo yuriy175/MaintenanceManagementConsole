@@ -51,9 +51,13 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 				for _, uid := range sessionUids {
 
 					//find websocket
+					log.Println(" message topic %s data %s to web sock %s", d.Topic, d.Data, uid)
+
 					v := webSocketConnections[uid]
 					b, err := json.Marshal(d)
-					if err = v.Conn.WriteMessage(1, b); err != nil {
+					if v == nil || v.Conn == nil {
+						log.Println(" no connection for  %s", uid)
+					} else if err = v.Conn.WriteMessage(1, b); err != nil {
 						// return
 					}
 				}

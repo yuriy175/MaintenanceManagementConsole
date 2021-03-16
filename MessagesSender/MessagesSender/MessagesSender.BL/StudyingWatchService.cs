@@ -16,6 +16,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using MessagesSender.Core.Model;
 using Atlas.Acquisitions.Common.Core.Model;
+using System.Collections.Generic;
 
 namespace MessagesSender.BL
 {
@@ -29,31 +30,35 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
+		private readonly IWebClientService _webClientService;
 
-        private bool _isActivated = false;
+		private bool _isActivated = false;
 
-        /// <summary>
-        /// public constructor
-        /// </summary>
-        /// <param name="logger">logger</param>
-        /// <param name="dbObservationsEntityService">observations database connector</param>
-        /// <param name="mqService">MQ service</param>
-        /// <param name="eventPublisher">event publisher service</param>
-        /// <param name="sendingService">sending service</param>
-        public StudyingWatchService(
+		/// <summary>
+		/// public constructor
+		/// </summary>
+		/// <param name="logger">logger</param>
+		/// <param name="dbObservationsEntityService">observations database connector</param>
+		/// <param name="mqService">MQ service</param>
+		/// <param name="eventPublisher">event publisher service</param>
+		/// <param name="sendingService">sending service</param>
+		/// <param name="webClientService">web client service</param>
+		public StudyingWatchService(
             ILogger logger,
             IObservationsEntityService dbObservationsEntityService,
             IMQCommunicationService mqService,
             IEventPublisher eventPublisher,
-            ISendingService sendingService)
+            ISendingService sendingService,
+			IWebClientService webClientService)
         {
             _logger = logger;
             _dbObservationsEntityService = dbObservationsEntityService;
             _mqService = mqService;
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
+			_webClientService = webClientService;
 
-            _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
+			_eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
             SubscribeMQRecevers();
@@ -134,7 +139,18 @@ namespace MessagesSender.BL
         private async Task<bool> OnActivateArrivedAsync()
         {
             _isActivated = true;
-            return true;
+
+			var organAuto = await _webClientService.SendAsync<OrganAuto>(
+				"OrganAutoManipulation",
+				"GetCurrentOrganAuto",
+				new Dictionary<string, string> { });
+
+			if (organAuto != null)
+			{
+				return await OnOrganAutoAsync((organAuto, 1));
+			}
+
+			return false;
         }
     }
 }
