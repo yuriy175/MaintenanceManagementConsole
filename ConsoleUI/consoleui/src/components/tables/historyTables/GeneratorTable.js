@@ -19,7 +19,7 @@ const columns = [
     formatArray: (values) =>
     {
       if(!values || !values.length) {
-        return values;
+        return values ?? [];
       }
       //const errors = values.reduce((accumulator, currentValue) => accumulator + `Code ${currentValue.Code}: ${currentValue. Description}`, '');
       return values.map((currentValue) => `Code ${currentValue.Code}: ${currentValue. Description}`);

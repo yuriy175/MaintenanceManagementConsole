@@ -2,6 +2,7 @@ package BL
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -28,6 +29,8 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 			return
 		}
 		uid := uids[0]
+		fmt.Printf("created uid: %s \n", uid)
+
 		webSocketConnections[uid] = CreateWebSock(w, r, uid)
 
 		/*msgType, msg, err := webSocketConnections[uid].Conn.ReadMessage()

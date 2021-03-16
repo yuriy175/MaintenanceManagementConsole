@@ -11,8 +11,12 @@ export function useWebSocket(props) {
     const [connection, setConnection] = useState(null);
     
     useEffect(() => {
-        const socket = new WebSocket(WebSocketAddress + "/websocket?uid=" + sessionUid);
-        setConnection(socket);
+        try {            
+            const socket = new WebSocket(WebSocketAddress + "/websocket?uid=" + sessionUid);
+            setConnection(socket);
+        } catch (e) {
+            console.log(e);
+        }
     }, []);
 
     useEffect(() => {

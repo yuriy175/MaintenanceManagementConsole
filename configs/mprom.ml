@@ -50,6 +50,21 @@ server {
    }
 
 
+       location /wsapp/ {
+
+       if ($request_uri ~* "/wsapp/(.*)") {
+            proxy_pass http://127.0.0.1:8080/$1;
+        }
+
+       proxy_pass http://127.0.0.1:8080;
+       proxy_http_version 1.1;
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection "Upgrade";
+       proxy_set_header Host $host;
+   }  
+
+
+
     listen [::]:443 ssl ipv6only=on; # managed by Certbot
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/mprom.ml/fullchain.pem; # managed by Certbot
