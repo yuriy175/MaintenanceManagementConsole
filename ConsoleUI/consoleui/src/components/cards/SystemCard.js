@@ -23,13 +23,67 @@ export default function SystemCard() {
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        <CardRow descr="Загрузка" value={currEquipState.cpu?.CPU_Load+'%'}></CardRow>
+        <CardRow descr="Модель" value={currEquipState.system?.Processor?.Model} rightWidth={'100%'}></CardRow>
+        <CardRow descr="Загрузка" value={currEquipState.system?.Processor?.CPU_Load+'%'}></CardRow>
 
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        <CardRow descr="Всего" value={currEquipState.memory?.TotalMemory+'Мб'}></CardRow>
-        <CardRow descr="Доступно" value={currEquipState.memory?.AvailableSize+'Мб'}></CardRow>
+        <CardRow descr="Всего" value={currEquipState.system?.Memory?.Memory_total_Gb+' Мб'}></CardRow>
+        <CardRow descr="Доступно" value={currEquipState.system?.Memory?.Memory_free_Gb+' Мб'}></CardRow>
+
+        <Typography variant="h5" component="h2">
+          {bull}Диски
+        </Typography>
+        {currEquipState.system?.HDD?.map((i, ind) => (
+          <div key={ind.toString()} >
+            <Typography variant="h6" component="h2">
+              {bull}Диск {i.Letter}
+            </Typography>
+            <CardRow descr="Всего" value={i.TotalSize+' Мб'}></CardRow>
+            <CardRow descr="Доступно" value={i.FreeSize+' Мб'}></CardRow>
+          </div>
+          ))
+        } 
+
+        <Typography variant="h5" component="h2">
+          {bull}Сеть
+        </Typography>
+        {currEquipState.system?.Network?.filter(i => i.NIC).map((i, ind) => (
+          <CardRow key={ind.toString()} descr={i.NIC} value={i.IP}></CardRow>
+          ))
+        } 
+
+        <Typography variant="h5" component="h2">
+          {bull}Видеоадаптеры
+        </Typography>
+        {currEquipState.system?.VGA?.map((i, ind) => (
+          <div key={ind.toString()} >
+            <CardRow descr="Имя" value={i.Card_Name} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Память" value={i.Memory_Gb+' Гб'}></CardRow>
+            <CardRow descr="Драйвер" value={i.Driver_Version}></CardRow>
+          </div>
+          ))
+        } 
+
+        <Typography variant="h5" component="h2">
+          {bull}Мониторы
+        </Typography>
+        {currEquipState.system?.Monitor?.map((i, ind) => (
+          <CardRow key={ind.toString()} descr={i.Device_Name} value={i.Width+'x'+i.Height}></CardRow>
+          ))
+        } 
+
+        <Typography variant="h5" component="h2">
+          {bull}Принтеры
+        </Typography>
+        {currEquipState.system?.Printer?.map((i, ind) => (
+          <div key={ind.toString()} >
+            <CardRow descr="Имя" value={i.Printer_Name} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Порт" value={i.Port_Name} rightWidth={'100%'}></CardRow>
+          </div>
+          ))
+        } 
       </CardContent>
     </Card>
   );

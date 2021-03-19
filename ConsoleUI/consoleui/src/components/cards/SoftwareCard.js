@@ -23,16 +23,18 @@ export default function SoftwareCard() {
         <Typography variant="h5" component="h2">
           {bull}Software
         </Typography>
-        <CardRow descr="Settings БД" 
-          value={currEquipState.software?.SettingsDB ?  "Готов" : "Не готов" }
-          rightColor={currEquipState.software?.SettingsDB ? "green" : "red"}
-        ></CardRow>
-        <CardRow descr="Observations БД" 
-          value={currEquipState.software?.ObservationsDB ? "Готов" : "Не готов"}
-          rightColor={ currEquipState.software?.ObservationsDB ? "green" : "red"}
-        ></CardRow>
-        <CardRow descr="Версия Атлас" value={currEquipState.software?.Version}></CardRow>
-        <CardRow descr="Версия Xilib" value={currEquipState.software?.XilibVersion}></CardRow>
+        <CardRow descr={currEquipState.software?.Sysinfo?.OS} value={currEquipState.software?.Sysinfo?.Version}></CardRow>
+        <CardRow descr={currEquipState.software?.MSSQL?.SQL} value={currEquipState.software?.MSSQL?.Version}></CardRow>
+        <CardRow descr={'Пользователь'} value={currEquipState.software?.User?.Current_user}></CardRow>
+
+        <Typography variant="h6" component="h2">
+          {bull}Атлас
+        </Typography>
+        <CardRow descr="Версия" value={currEquipState.software?.Atlas?.Atlas_Version}></CardRow>
+        <CardRow descr="Xilib" value={currEquipState.software?.Atlas?.XiLibs_Version}></CardRow>
+        <CardRow descr="Конфигурация" value={currEquipState.software?.Atlas?.Complex_type}></CardRow>
+        <CardRow descr="Язык" value={currEquipState.software?.Atlas?.Complex_type}></CardRow>
+        <CardRow descr="Multimonitor" value={currEquipState.software?.Atlas?.Multimonitor}></CardRow>
         <CardRow descr="Ошибки" value={''}></CardRow>
         {currEquipState.software?.ErrorDescriptions?.length ? 
           currEquipState.software.ErrorDescriptions.map((i, ind) => (

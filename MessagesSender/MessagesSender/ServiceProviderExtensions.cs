@@ -28,8 +28,12 @@ namespace MessagesSender
 			services.AddSingleton(
 			   typeof(IEventPublisher),
 			   typeof(EventPublisher));
+            
+            services.AddSingleton(
+               typeof(ITopicService),
+               typeof(TopicService));
 
-			services.AddSingleton(
+            services.AddSingleton(
                typeof(ICommandService),
                typeof(CommandService));
 

@@ -14,11 +14,14 @@ using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
-using MessagesSender.Core.Model;
+using MessagesSenderModel = MessagesSender.Core.Model;
 using Atlas.Acquisitions.Common.Core.Model;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using Atlas.Common.Core.Interfaces;
+using MessagesSender.BL.BusWrappers.Helpers;
+using System.Reflection;
 
 namespace MessagesSender.BL
 {
@@ -27,32 +30,47 @@ namespace MessagesSender.BL
     /// </summary>
     public class SystemWatchService : ISystemWatchService
     {
+        private const string MQTTsysinfoFolder = @".\MQTTsysinfo\MQTTsysinfo.exe";
+        private const string MQTTsysinfoCommandLine = "{0} {1} {2} {3}";
         private const long Megabyte = 1024 * 1024;
         private const long Gigabyte = 1024 * 1024 * 1024;
 
+        private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger; 
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
+        private readonly ITopicService _topicService;
 
         private readonly PerformanceCounter _totalCpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
         private readonly PerformanceCounter _idleCpu = new PerformanceCounter("Process", "% Processor Time", "Idle");
+
+        private (string HostName, string UserName, string Password)? _connectionProps;
+
         /// <summary>
         /// public constructor
         /// </summary>
+        /// <param name="configurationService">configuration service</param>
         /// <param name="logger">logger</param>
         /// <param name="eventPublisher">event publisher service</param>
         /// <param name="sendingService">sending service</param>
+        /// <param name="topicService">topic service</param>
         public SystemWatchService(
+            IConfigurationService configurationService,
             ILogger logger,
             IEventPublisher eventPublisher,
-            ISendingService sendingService)
+            ISendingService sendingService,
+            ITopicService topicService)
         {
+            _configurationService = configurationService;
             _logger = logger;
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
+            _topicService = topicService;
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
+
+            CreateConnectionProps();
 
             _logger.Information("HddWatchService started");
         }
@@ -64,7 +82,22 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnActivateArrivedAsync()
         {
-            var hddDrives = await GetDriveInfosAsync();
+            if (!_connectionProps.HasValue) 
+            {
+                return false;
+            }
+
+            RunCommand(
+                MQTTsysinfoFolder, 
+                string.Format(
+                    MQTTsysinfoCommandLine,
+                    //mprom.ml client1 medtex KRT/TESTARM 
+                    _connectionProps.Value.HostName,
+                    _connectionProps.Value.UserName,
+                    _connectionProps.Value.Password,
+                    await _topicService.GetTopicAsync()
+                    ));
+            /*var hddDrives = await GetDriveInfosAsync();
             if (hddDrives != null)
             {
                 _ = _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
@@ -86,20 +119,21 @@ namespace MessagesSender.BL
             {
                 _ = _sendingService.SendInfoToMqttAsync(MQMessages.CPUInfo,
                     new { cpuInfo.Value.Model, cpuInfo.Value.CPU_Load });
-            }
+            }*/
 
             return false;
         }
 
+        #region depricated region
         /// <summary>
         /// gets hdd drives info
         /// </summary>
         /// <returns>drives info</returns>
-        private async Task<IEnumerable<VolumeInfo>> GetDriveInfosAsync()
+        private async Task<IEnumerable<MessagesSenderModel.VolumeInfo>> GetDriveInfosAsync()
         {
             return DriveInfo.GetDrives()
                 .Where(d => d.IsReady)
-                .Select(d => new VolumeInfo
+                .Select(d => new MessagesSenderModel.VolumeInfo
                 {
                     Letter = d.Name,
                     FreeSize = (long)(d.TotalFreeSpace / Gigabyte),
@@ -144,6 +178,32 @@ namespace MessagesSender.BL
                 _logger.Error(ex, "GetRamInfoAsync error");
                 return (0, 0);
             }
+        }
+        #endregion
+
+        private void CreateConnectionProps()
+        {
+            var connectionString = _configurationService.Get<string>(MessagesSenderModel.Constants.RabbitMQConnectionStringName, null);
+            try
+            {
+                _connectionProps = ConnectionPropsCreator.Create(connectionString);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Rabbit MQ work queue wrong connection string");
+            }
+        }
+
+        private void RunCommand(string exePath, string args)
+        {
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), exePath);
+            var processStartInfo = new ProcessStartInfo(
+                path, 
+                // @"D:\Gits\MaintenanceManagementConsole\MessagesSender\MessagesSender\bin\Debug\netcoreapp3.1\MQTTsysinfo\MQTTsysinfo.exe",
+                args);
+            processStartInfo.WorkingDirectory = Path.GetDirectoryName(path);
+            
+            var process = Process.Start(processStartInfo);
         }
     }
 }

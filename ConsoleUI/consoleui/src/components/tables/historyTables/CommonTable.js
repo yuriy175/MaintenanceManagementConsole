@@ -19,6 +19,7 @@ const useStyles = makeStyles({
   errorCell:{
     color: 'white',
     background: 'red',
+    margin: '0px',
   }
 });
 

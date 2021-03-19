@@ -14,6 +14,7 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using MessagesSender.BL.BusWrappers.Helpers;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.BL.Remoting
 {
@@ -22,8 +23,6 @@ namespace MessagesSender.BL.Remoting
     /// </summary>
     public abstract class RabbitMQTTBase
     {
-        protected const string RabbitMQConnectionStringName = "ConsoleRabbitMQConnectionString";
-
         private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger;
         private readonly string _clientId = Guid.NewGuid().ToString();
@@ -77,7 +76,7 @@ namespace MessagesSender.BL.Remoting
                 return false;
             }
 
-            _topic = GetTopic(equipInfo);
+            _topic = await GetTopicAsync(equipInfo);
 
             await CreateConnection(new ConnectionFactory());
             Created = _mqttClient != null;
@@ -93,7 +92,7 @@ namespace MessagesSender.BL.Remoting
             }
         }
 
-        protected abstract string GetTopic((string Name, string Number) equipInfo);
+        protected abstract Task<string> GetTopicAsync((string Name, string Number) equipInfo);
 
         protected virtual async Task<IManagedMqttClient> CreateConnection(ConnectionFactory connectionFactory)
         {
@@ -183,7 +182,7 @@ namespace MessagesSender.BL.Remoting
 
         private void CreateConnectionProps()
         {
-            var connectionString = _configurationService.Get<string>(RabbitMQConnectionStringName, null);
+            var connectionString = _configurationService.Get<string>(Constants.RabbitMQConnectionStringName, null);
             try
             {
                 _connectionProps = ConnectionPropsCreator.Create(connectionString);

@@ -30,21 +30,33 @@ export function useWebSocket(props) {
                 console.log("Server: " + e.data + "\n");
                 const data = JSON.parse(e.data);
         
-                if(data?.Topic.includes('/ARM/Hardware/HDD'))
+                // if(data?.Topic.includes('/ARM/Hardware/HDD'))
+                // {
+                //     const values = data? JSON.parse(data.Data) : null;
+                //     currEquipDispatch({ type: 'SETHDDS', payload: values }); 
+                // }
+                // else if(data?.Topic.includes('/ARM/Hardware/Memory'))
+                // {
+                //     const values = data? JSON.parse(data.Data) : null;
+                //     currEquipDispatch({ type: 'SETMEMORY', payload: values }); 
+                // }
+                // else if(data?.Topic.includes('/ARM/Hardware/Processor'))
+                // {
+                //     const values = data? JSON.parse(data.Data) : null;
+                //     currEquipDispatch({ type: 'SETCPU', payload: values }); 
+                // }   
+                if(data?.Topic.includes('/ARM/Hardware'))
                 {
-                    const values = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETHDDS', payload: values }); 
-                }
-                else if(data?.Topic.includes('/ARM/Hardware/Memory'))
-                {
-                    const values = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETMEMORY', payload: values }); 
-                }
-                else if(data?.Topic.includes('/ARM/Hardware/Processor'))
-                {
-                    const values = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETCPU', payload: values }); 
-                }                
+                    try
+                    {
+                        const values = data? JSON.parse(data.Data) : null;
+                        currEquipDispatch({ type: 'SETSYSTEM', payload: values }); 
+                    }
+                    catch(e)
+                    {
+                        console.log(e);
+                    }                    
+                }             
                 else if(data?.Topic.includes('/organauto'))
                 {
                     const values = data? JSON.parse(data.Data) : null;

@@ -10,9 +10,10 @@ const initialState = {
   dosimeter:{},
   stand:{},
   dicom:{},
-  hdd:[],
-  memory:{},
-  cpu:{},
+  //hdd:[],
+  //memory:{},
+  //cpu:{},
+  system:{},
   organAuto:{},
   software:{},
 };
@@ -28,7 +29,7 @@ function reducer(state, action) {
         equipInfo: action.payload
       };
     }
-    case 'SETHDDS': {
+    /*case 'SETHDDS': {
       return {
         ...state,
         hdd: action.payload
@@ -45,7 +46,13 @@ function reducer(state, action) {
         ...state,
         cpu: action.payload
       };
-    }
+    }*/
+    case 'SETSYSTEM': {
+      return {
+        ...state,
+        system: action.payload
+      };
+    }    
     case 'SETORGANAUTO': {
       return {
         ...state,

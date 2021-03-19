@@ -32,7 +32,7 @@ export default function SummaryComponent(props) {
       <div className={classes.column}>
         <EquipImageCard></EquipImageCard>
         <SystemCard></SystemCard>
-        <HddCard></HddCard>
+        {/* <HddCard></HddCard> */}
       </div>
       <div className={classes.column}>
         <OrganAutoCard></OrganAutoCard>

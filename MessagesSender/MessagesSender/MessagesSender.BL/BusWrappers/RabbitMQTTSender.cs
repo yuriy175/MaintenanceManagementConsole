@@ -32,6 +32,7 @@ namespace MessagesSender.BL.Remoting
 
 		private readonly ILogger _logger;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly ITopicService _topicService;
 
 		private readonly Dictionary<string, string> _topicMap = new Dictionary<string, string>
 		{
@@ -55,13 +56,16 @@ namespace MessagesSender.BL.Remoting
 		/// <param name="configurationService">configuration service</param>
 		/// <param name="logger">logger</param>
 		/// <param name="eventPublisher">event publisher service</param>
+		/// <param name="topicService">topic service</param>
 		public RabbitMQTTSender(
             IConfigurationService configurationService,
             ILogger logger,
-			IEventPublisher eventPublisher) : base(configurationService, logger)
+			IEventPublisher eventPublisher,
+			ITopicService topicService) : base(configurationService, logger)
         {
 			_logger = logger;
 			_eventPublisher = eventPublisher;
+			_topicService = topicService;
 		}
 
 		/// <summary>
@@ -118,8 +122,9 @@ namespace MessagesSender.BL.Remoting
 		}
 
 
-		protected override string GetTopic((string Name, string Number) equipInfo)
-            => $"{equipInfo.Name}/{equipInfo.Number}";
+		protected override Task<string> GetTopicAsync((string Name, string Number) equipInfo)
+			=> _topicService.GetTopicAsync();
+			// $"{equipInfo.Name}/{equipInfo.Number}";
 
 		protected override async Task<IManagedMqttClient> CreateConnection(ConnectionFactory connectionFactory)
 		{
