@@ -96,9 +96,32 @@ function reducer(state, action) {
       };
     }
     case 'SETDICOM': {
+      let newWL = action.payload.WorkList;
+      if(newWL){
+        const oldWL = state.dicom.WorkList?.filter(e => !newWL.map(w => w.Name).includes(e.Name));
+        if(oldWL){
+          newWL = [...newWL, ...oldWL];
+        }
+      }
+      else{
+        newWL = state.dicom.WorkList;
+      }
+
+      let newPacs = action.payload.PACS;
+      if(newPacs){
+        const oldPacs = state.dicom.PACS?.filter(e => !newPacs.map(w => w.Name).includes(e.Name));
+        if(oldPacs){
+          newPacs = [...newPacs, ...oldPacs];
+        }
+      }
+      else{
+        newPacs = state.dicom.PACS;
+      }
+
+      const dicom = {PACS: newPacs, WorkList: newWL};
       return {
         ...state,
-        dicom: action.payload
+        dicom: dicom
       };
     }    
 

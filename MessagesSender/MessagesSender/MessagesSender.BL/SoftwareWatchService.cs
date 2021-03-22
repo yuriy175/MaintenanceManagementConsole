@@ -27,7 +27,7 @@ namespace MessagesSender.BL
     /// <summary>
     /// software watch service 
     /// </summary>
-    public class SoftwareWatchService : ISoftwareWatchService
+    public class SoftwareWatchService : ISoftwareWatchService, IDisposable
     {
         private const string AtlasInstanceVersionName = "AtlasInstanceVersion";
         private const string ServicesFolderName = "ServicesFolder";
@@ -39,10 +39,11 @@ namespace MessagesSender.BL
         private readonly ILogger _logger; 
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
+        private readonly IMQCommunicationService _mqService;
 
         private (string Version, string XilibVersion) _versions = (string.Empty, string.Empty);
         private EventLogWatcher _watcher = null;
-        
+
         /// <summary>
         /// public constructor
         /// </summary>
@@ -50,26 +51,30 @@ namespace MessagesSender.BL
         /// <param name="logger">logger</param>
         /// <param name="eventPublisher">event publisher service</param>
         /// <param name="sendingService">sending service</param>
+        /// <param name="mqService">MQ service</param>
         public SoftwareWatchService(
             IConfigurationService configurationService,
             ILogger logger,
             IEventPublisher eventPublisher,
-            ISendingService sendingService)
+            ISendingService sendingService,
+            IMQCommunicationService mqService)
         {
             _configurationService = configurationService;
             _logger = logger;
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
+            _mqService = mqService;
 
             _versions = GetVersions();
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
-            Task.Run(() =>
-            {
-                SubscribeSystemEvents();
-            });        
+            new Action[]
+                {
+                    () => _ = SubscribeMQRecevers(),
+                    () => SubscribeSystemEvents(),
+                }.RunTasksAsync();
 
             _logger.Information("SoftwareWatchService started");
         }
@@ -122,7 +127,6 @@ namespace MessagesSender.BL
                     //"Security",
                     "Application",
                     PathType.LogName
-                    //,"*[System/EventID=4624]"
                     );
 
                 _watcher = new EventLogWatcher(subscriptionQuery);
@@ -131,33 +135,15 @@ namespace MessagesSender.BL
                 // events.  When this event happens, the callback method
                 // (EventLogEventRead) is called.
                 _watcher.EventRecordWritten +=
-                    new EventHandler<EventRecordWrittenEventArgs>(
-                        EventLogEventRead);
+                    new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
 
                 // Activate the subscription
                 _watcher.Enabled = true;
-
-                //for (int i = 0; i < 5; i++)
-                //{
-                //    // Wait for events to occur. 
-                //    System.Threading.Thread.Sleep(10000);
-                //}
             }
-            catch (EventLogReadingException e)
+            catch (EventLogReadingException ex)
             {
-                //Log("Error reading the log: {0}", e.Message);
+                _logger.Error(ex, "Error reading the log: ");
             }
-            finally
-            {
-                // Stop listening to events
-                //watcher.Enabled = false;
-
-                //if (watcher != null)
-                //{
-                //    watcher.Dispose();
-                //}
-            }
-            //Console.ReadKey();
         }
 
         // Callback method that gets executed when an event is
@@ -191,6 +177,41 @@ namespace MessagesSender.BL
 			{
 				_logger.Error(ex, "EventLogEventRead error");
 			}
+        }
+
+        private Task SubscribeMQRecevers()
+        {
+            return Task.Run(() =>
+            {
+                _mqService.Subscribe<MQCommands, (string, IEnumerable<string>)>(
+                        (MQCommands.UserLoggedIn, userProps => OnUserLogIn(userProps)));
+
+                // _mqService.Subscribe<MQCommands, string>(
+                //        (MQCommands.UserLoggedOut, userName => OnUserLogOut(userName)));
+            });
+        }
+
+        private async void OnUserLogIn((string UserName, IEnumerable<string> UserRoles) userProps)
+        {
+            _ = _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
+                    new
+                    {
+                        Atlas_User = new
+                        {
+                            User = userProps.UserName,
+                            Role = userProps.UserRoles?.FirstOrDefault(),
+                        }
+                    });
+        }
+
+        public void Dispose()
+        {
+            // Stop listening to events
+            if (_watcher != null)
+            {
+                _watcher.Enabled = false;
+            }
+            _watcher?.Dispose();
         }
     }
 }

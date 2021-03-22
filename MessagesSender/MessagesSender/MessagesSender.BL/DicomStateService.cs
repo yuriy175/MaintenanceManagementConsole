@@ -124,7 +124,7 @@ namespace MessagesSender.BL
 					MQMessages.DicomInfo,					
 					new
 					{
-						WorkList = isWL ? new[] { new { dicomService.Name, dicomService.IP, state } } : null,
+						WorkList = isWL ? new[] { new { dicomService.Name, dicomService.IP, State = state } } : null,
 						PACS = isWL ? null : new[] { new { dicomService.Name, dicomService.IP, State = state }},
 					});
 			}

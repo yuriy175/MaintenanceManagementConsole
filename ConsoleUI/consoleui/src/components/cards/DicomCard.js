@@ -29,11 +29,14 @@ const DicomCard = React.memo((props) => {
         </Typography>
         {dicom?.PACS?.length ? 
           dicom.PACS.map((i, ind) => (
-            <CardRow key={ind.toString()}  
-              descr={i.Name + '('+ i.IP +')'} 
-              value={ 1? "Не готов" : "Готов"} 
-              rightColor={0? "green" : "red"}
-            ></CardRow>
+            <div key={ind.toString()}>
+              <CardRow descr={i.Name} value={ i.IP}></CardRow>
+              <CardRow   
+                descr={'Состояние'} 
+                value={ i.State ? "Включен" : "Нет связи"} 
+                rightColor={0? "green" : "red"}
+              ></CardRow>
+            </div>
             ))
             :
             <></>          
@@ -43,11 +46,14 @@ const DicomCard = React.memo((props) => {
         </Typography>
         {dicom?.WorkList?.length ? 
           dicom.WorkList.map((i, ind) => (
-            <CardRow key={ind.toString()}  
-              descr={i.Name + '('+ i.IP +')'} 
-              value={ 1? "Не готов" : "Готов"} 
-              rightColor={0? "green" : "red"}
-            ></CardRow>
+            <div key={ind.toString()}>
+              <CardRow descr={i.Name} value={ i.IP}></CardRow>
+              <CardRow   
+                descr={'Состояние'} 
+                value={ i.State ? "Включен" : "Нет связи"} 
+                rightColor={0? "green" : "red"}
+              ></CardRow>
+            </div>
             ))
             :
             <></>          

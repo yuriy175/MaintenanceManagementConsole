@@ -12,7 +12,7 @@ const columns = [
           return values;
         }
         
-        return values.map((currentValue) => `${currentValue.Name}(${currentValue.IP}): ${currentValue.State}`);
+        return values.map((currentValue) => `${currentValue.Name}(${currentValue.IP}): ${currentValue.State ? 'Включен' : 'Нет связи'}`);
       },
     },
     { id: 'WorkList', label: 'WorkList', minWidth: 100,
@@ -21,8 +21,8 @@ const columns = [
           if(!values || !values.length) {
             return values;
           }
-          const errors = values.reduce((accumulator, currentValue) => accumulator + `${currentValue.Name}(${currentValue.IP}): ${currentValue.State}`, '');
-          return errors;
+          
+          return values.map((currentValue) => `${currentValue.Name}(${currentValue.IP}): ${currentValue.State ? 'Включен' : 'Нет связи'}`);
         },
     },
   ];

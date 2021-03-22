@@ -36,6 +36,7 @@ const SoftwareCard = React.memo((props) => {
         <CardRow descr="Конфигурация" value={software?.Atlas?.Complex_type}></CardRow>
         <CardRow descr="Язык" value={software?.Atlas?.Complex_type}></CardRow>
         <CardRow descr="Multimonitor" value={software?.Atlas?.Multimonitor}></CardRow>
+        <CardRow descr={software?.Atlas?.Atlas_User?.Role} value={software?.Atlas?.Atlas_User?.User}></CardRow>        
         <CardRow descr="Ошибки" value={''}></CardRow>
         {software?.ErrorDescriptions?.length ? 
           software.ErrorDescriptions.map((i, ind) => (
