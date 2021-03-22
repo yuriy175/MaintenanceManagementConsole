@@ -19,15 +19,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EquipImageCard() {
+// export default function EquipImageCard() {
+const EquipImageCard = React.memo((props) => {
   console.log(`! render EquipImageCard`);
 
   const classes = useCardsStyles();
   const equipClasses = useStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
 
   const bull = <span className={classes.bullet}>•</span>;
 
+  const equipInfo = props.equipInfo;
   return (
     <Card className={classes.root}>
       <CardMedia
@@ -37,9 +38,11 @@ export default function EquipImageCard() {
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          Аппарат : {currEquipState.equipInfo}
+          Аппарат : {equipInfo}
         </Typography>
       </CardContent>
     </Card>
   );
-}
+});
+
+export default EquipImageCard;

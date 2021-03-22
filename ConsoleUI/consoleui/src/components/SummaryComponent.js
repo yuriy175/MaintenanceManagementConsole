@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { CurrentEquipContext } from '../context/currentEquip-context';
+
 import DetectorCard from './cards/DetectorCard'
 import GeneratorCard from './cards/GeneratorCard'
 import SystemCard from './cards/SystemCard'
@@ -26,25 +28,26 @@ export default function SummaryComponent(props) {
   console.log("render SummaryComponent");
 
   const classes = useStyles();
+  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
 
   return (
     <div className={classes.root}>
       <div className={classes.column}>
-        <EquipImageCard></EquipImageCard>
-        <SystemCard></SystemCard>
+        <EquipImageCard equipInfo={currEquipState.equipInfo}></EquipImageCard>
+        <SystemCard system={currEquipState.system}></SystemCard>
         {/* <HddCard></HddCard> */}
       </div>
       <div className={classes.column}>
-        <OrganAutoCard></OrganAutoCard>
-        <GeneratorCard></GeneratorCard>
-        <DetectorCard></DetectorCard>
-        <StandCard></StandCard>
-        <DosimeterCard></DosimeterCard>
+        <OrganAutoCard organAuto={currEquipState.organAuto}></OrganAutoCard>
+        <GeneratorCard generator={currEquipState.generator}></GeneratorCard>
+        <DetectorCard detectors={currEquipState.detectors}></DetectorCard>
+        <StandCard stand={currEquipState.stand}></StandCard>
+        <DosimeterCard dosimeter={currEquipState.dosimeter}></DosimeterCard>
       </div>
       <div className={classes.column}>
-        <RemoteAccessCard></RemoteAccessCard>
-        <DicomCard></DicomCard>
-        <SoftwareCard></SoftwareCard>
+        <RemoteAccessCard equipInfo={currEquipState.equipInfo}></RemoteAccessCard>
+        <DicomCard dicom={currEquipState.dicom}></DicomCard>
+        <SoftwareCard software={currEquipState.software}></SoftwareCard>
       </div>
     </div>
   );

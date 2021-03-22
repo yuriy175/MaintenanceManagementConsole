@@ -10,25 +10,28 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
-export default function OrganAutoCard() {
+//export default function OrganAutoCard(props) {
+const OrganAutoCard = React.memo((props) => {
   console.log(`! render OrganAutoCard`);
 
   const classes = useCardsStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
 
+  const organAuto = props.organAuto;
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
           {bull}Органоавтоматика
         </Typography>
-        <CardRow descr="Название" value={currEquipState.organAuto?.Name} rightWidth={'50%'}></CardRow>
-        <CardRow descr="Прекция" value={currEquipState.organAuto?.Projection}></CardRow>
-        <CardRow descr="Направление" value={currEquipState.organAuto?.Direction}></CardRow>
-        <CardRow descr="Возр. группа" value={ currEquipState.organAuto?.AgeId}></CardRow>
-        <CardRow descr="Телосложение" value={currEquipState.organAuto?.Constitution}></CardRow>
+        <CardRow descr="Название" value={organAuto?.Name} rightWidth={'50%'}></CardRow>
+        <CardRow descr="Прекция" value={organAuto?.Projection}></CardRow>
+        <CardRow descr="Направление" value={organAuto?.Direction}></CardRow>
+        <CardRow descr="Возр. группа" value={ organAuto?.AgeId}></CardRow>
+        <CardRow descr="Телосложение" value={organAuto?.Constitution}></CardRow>
       </CardContent>
     </Card>
   );
-}
+});
+
+export default OrganAutoCard;

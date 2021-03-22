@@ -10,32 +10,33 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
-export default function SystemCard() {
+const SystemCard = React.memo((props) => {
+//export default function SystemCard() {
   console.log(`! render SystemCard`);
 
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
+  const system = props.system;
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        <CardRow descr="Модель" value={currEquipState.system?.Processor?.Model} rightWidth={'100%'}></CardRow>
-        <CardRow descr="Загрузка" value={currEquipState.system?.Processor?.CPU_Load+'%'}></CardRow>
+        <CardRow descr="Модель" value={system?.Processor?.Model} rightWidth={'100%'}></CardRow>
+        <CardRow descr="Загрузка" value={system?.Processor?.CPU_Load+'%'}></CardRow>
 
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        <CardRow descr="Всего" value={currEquipState.system?.Memory?.Memory_total_Gb+' Мб'}></CardRow>
-        <CardRow descr="Доступно" value={currEquipState.system?.Memory?.Memory_free_Gb+' Мб'}></CardRow>
+        <CardRow descr="Всего" value={system?.Memory?.Memory_total_Gb+' Мб'}></CardRow>
+        <CardRow descr="Доступно" value={system?.Memory?.Memory_free_Gb+' Мб'}></CardRow>
 
         <Typography variant="h5" component="h2">
           {bull}Диски
         </Typography>
-        {currEquipState.system?.HDD?.map((i, ind) => (
+        {system?.HDD?.map((i, ind) => (
           <div key={ind.toString()} >
             <Typography variant="h6" component="h2">
               {bull}Диск {i.Letter}
@@ -49,7 +50,7 @@ export default function SystemCard() {
         <Typography variant="h5" component="h2">
           {bull}Сеть
         </Typography>
-        {currEquipState.system?.Network?.filter(i => i.NIC).map((i, ind) => (
+        {system?.Network?.filter(i => i.NIC).map((i, ind) => (
           <CardRow key={ind.toString()} descr={i.NIC} value={i.IP}></CardRow>
           ))
         } 
@@ -57,7 +58,7 @@ export default function SystemCard() {
         <Typography variant="h5" component="h2">
           {bull}Видеоадаптеры
         </Typography>
-        {currEquipState.system?.VGA?.map((i, ind) => (
+        {system?.VGA?.map((i, ind) => (
           <div key={ind.toString()} >
             <CardRow descr="Имя" value={i.Card_Name} rightWidth={'100%'}></CardRow>
             <CardRow descr="Память" value={i.Memory_Gb+' Гб'}></CardRow>
@@ -69,7 +70,7 @@ export default function SystemCard() {
         <Typography variant="h5" component="h2">
           {bull}Мониторы
         </Typography>
-        {currEquipState.system?.Monitor?.map((i, ind) => (
+        {system?.Monitor?.map((i, ind) => (
           <CardRow key={ind.toString()} descr={i.Device_Name} value={i.Width+'x'+i.Height}></CardRow>
           ))
         } 
@@ -77,7 +78,7 @@ export default function SystemCard() {
         <Typography variant="h5" component="h2">
           {bull}Принтеры
         </Typography>
-        {currEquipState.system?.Printer?.map((i, ind) => (
+        {system?.Printer?.map((i, ind) => (
           <div key={ind.toString()} >
             <CardRow descr="Имя" value={i.Printer_Name} rightWidth={'100%'}></CardRow>
             <CardRow descr="Порт" value={i.Port_Name} rightWidth={'100%'}></CardRow>
@@ -87,4 +88,6 @@ export default function SystemCard() {
       </CardContent>
     </Card>
   );
-}
+});
+
+export default SystemCard;

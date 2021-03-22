@@ -10,15 +10,16 @@ import {useCardsStyles} from './CommonCard'
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import * as EquipWorker from '../../workers/equipWorker'
 
-export default function RemoteAccessCard() {
+const RemoteAccessCard = React.memo((props) => {
+// export default function RemoteAccessCard() {
   console.log(`! render RemoteAccessCard`);
 
   const classes = useCardsStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
 
+  const equipInfo = props.equipInfo;
   const onRunTV = async () => {
-    const res = await EquipWorker.RunTeamViewer(currEquipState.equipInfo);
+    const res = await EquipWorker.RunTeamViewer(equipInfo);
   };
 
   return (
@@ -36,4 +37,6 @@ export default function RemoteAccessCard() {
       </CardContent>
     </Card>
   );
-}
+});
+
+export default RemoteAccessCard;

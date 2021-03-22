@@ -10,13 +10,14 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
-export default function StandCard() {
+const StandCard = React.memo((props) => {
+// export default function StandCard() {
   console.log(`! render StandCard`);
 
   const classes = useCardsStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
 
+  const stand = props.stand;
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -24,13 +25,15 @@ export default function StandCard() {
           {bull}Штатив
         </Typography>
         <CardRow descr="Состояние" 
-          value={currEquipState.stand?.State?.State > 0? "Готов" : "Не готов" }
-          rightColor={currEquipState.stand?.State?.State > 0? "green" : "red"}
+          value={stand?.State?.State > 0? "Готов" : "Не готов" }
+          rightColor={stand?.State?.State > 0? "green" : "red"}
         ></CardRow>
-        <CardRow descr="Растр" value={currEquipState.stand?.State?.RasterState}></CardRow>
-        <CardRow descr="Позиция" value={currEquipState.stand?.State?.Position_Current}></CardRow>
-        <CardRow descr="Ошибки" value={currEquipState.stand?.State?.ErrorDescriptions?.length}></CardRow>
+        <CardRow descr="Растр" value={stand?.State?.RasterState}></CardRow>
+        <CardRow descr="Позиция" value={stand?.State?.Position_Current}></CardRow>
+        <CardRow descr="Ошибки" value={stand?.State?.ErrorDescriptions?.length}></CardRow>
       </CardContent>
     </Card>
   );
-}
+});
+
+export default StandCard;
