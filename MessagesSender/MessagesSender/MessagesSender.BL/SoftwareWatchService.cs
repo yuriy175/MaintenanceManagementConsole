@@ -166,24 +166,31 @@ namespace MessagesSender.BL
             EventRecordWrittenEventArgs arg)
         {
             var eventRecord = arg.EventRecord;
-            // Make sure there was no error reading the event.
-            if (eventRecord != null && eventRecord.Level == 2)
-            {
-                _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
-                new
-                {
-                    ErrorDescriptions = new[] {
-                        new {
-                            Code = eventRecord.LevelDisplayName,
-                            Description = eventRecord.ProviderName,
-                        }
-                    }
-                });
-            }
-            else
-            {
-                _logger.Error("The event instance was null.");
-            }
+			try
+			{
+				// Make sure there was no error reading the event.
+				if (eventRecord != null && eventRecord.Level == 2)
+				{
+					_sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
+					new
+					{
+						ErrorDescriptions = new[] {
+						new {
+							Code = eventRecord.LevelDisplayName,
+							Description = eventRecord.ProviderName,
+						}
+						}
+					});
+				}
+				else
+				{
+					_logger.Error("The event instance was null.");
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "EventLogEventRead error");
+			}
         }
     }
 }
