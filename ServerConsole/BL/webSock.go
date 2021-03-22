@@ -10,6 +10,7 @@ import (
 type IWebSock interface {
 	Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock
 	WriteMessage(data []byte) error
+	IsValid() bool
 }
 
 func WebSockNew() IWebSock {
@@ -59,4 +60,8 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 
 func (ws *webSock) WriteMessage(data []byte) error {
 	return ws.Conn.WriteMessage(1, data)
+}
+
+func (ws *webSock) IsValid() bool {
+	return ws.Conn != nil
 }

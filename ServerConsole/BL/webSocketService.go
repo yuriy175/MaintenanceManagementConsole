@@ -75,7 +75,7 @@ func (service *webSocketService) Start() {
 
 					v := service._webSocketConnections[uid]
 					b, err := json.Marshal(d)
-					if v == nil || v.Conn == nil {
+					if v == nil || !v.IsValid() {
 						log.Println(" no connection for  %s", uid)
 					} else if err = v.WriteMessage(b); err != nil {
 						// return

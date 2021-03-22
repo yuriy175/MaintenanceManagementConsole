@@ -17,24 +17,27 @@ type IMqttReceiverService interface {
 }
 
 type mqttReceiverService struct {
+	_ioCProvider      IIoCProvider
 	_webSocketService IWebSocketService
 	_dalCh            chan *Models.RawMqttMessage
 	_webSockCh        chan *Models.RawMqttMessage
-	_mqttConnections  map[string]*MqttClient
+	_mqttConnections  map[string]IMqttClient
 }
 
 //var mqttConnections = map[string]*MqttClient{}
 
 func MqttReceiverServiceNew(
+	ioCProvider IIoCProvider,
 	webSocketService IWebSocketService,
 	dalCh chan *Models.RawMqttMessage,
 	webSockCh chan *Models.RawMqttMessage) IMqttReceiverService {
 	service := &mqttReceiverService{}
 
+	service._ioCProvider = ioCProvider
 	service._webSocketService = webSocketService
 	service._dalCh = dalCh
 	service._webSockCh = webSockCh
-	service._mqttConnections = map[string]*MqttClient{}
+	service._mqttConnections = map[string]IMqttClient{}
 
 	return service
 }
@@ -45,6 +48,7 @@ func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionStat
 	topicStorage := &TopicStorage{}
 	topics := topicStorage.getTopics()
 	mqttConnections := service._mqttConnections
+	ioCProvider := service._ioCProvider
 
 	if client, ok := mqttConnections[rootTopic]; ok {
 		fmt.Println(rootTopic + " already exists")
@@ -59,7 +63,7 @@ func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionStat
 
 	if !isOff {
 		go func() {
-			mqttConnections[rootTopic] = CreateMqttClient(rootTopic, topics, equipDalCh, equipWebSockCh, service, webSocketService)
+			mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
 		}()
 
 		fmt.Println(rootTopic + " created")
@@ -68,9 +72,10 @@ func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionStat
 
 func (service *mqttReceiverService) CreateCommonConnections() {
 	mqttConnections := service._mqttConnections
+	ioCProvider := service._ioCProvider
 
-	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, equipWebSockCh, service, webSocketService)
-	mqttConnections[Models.BroadcastCommandsTopic] = CreateMqttClient(Models.BroadcastCommandsTopic, []string{}, equipDalCh, equipWebSockCh, service, webSocketService)
+	mqttConnections[Models.CommonTopicPath] = ioCProvider.GetMqttClient().Create(Models.CommonTopicPath, []string{})
+	mqttConnections[Models.BroadcastCommandsTopic] = ioCProvider.GetMqttClient().Create(Models.BroadcastCommandsTopic, []string{})
 	return
 }
 
@@ -97,7 +102,7 @@ func (service *mqttReceiverService) GetConnectionNames() []string {
 
 	i := 0
 	for k, d := range mqttConnections {
-		if d.IsEquipment {
+		if d.IsEquipTopic() {
 			keys[i] = k
 			i++
 		}

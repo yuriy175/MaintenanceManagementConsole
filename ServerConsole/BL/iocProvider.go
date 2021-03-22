@@ -11,6 +11,7 @@ type IIoCProvider interface {
 	GetDalService() DAL.IDalService
 	GetHttpService() IHttpService
 	GetWebSocket() IWebSock
+	GetMqttClient() IMqttClient
 }
 
 type types struct {
@@ -29,7 +30,7 @@ func InitIoc() IIoCProvider {
 	webSockCh := make(chan *Models.RawMqttMessage)
 
 	webSocketService := WebSocketServiceNew(_types, webSockCh)
-	mqttReceiverService := MqttReceiverServiceNew(webSocketService, dalCh, webSockCh)
+	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalCh, webSockCh)
 	dalService := DAL.DalServiceNew(dalCh)
 	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService)
 
@@ -56,4 +57,8 @@ func (t *types) GetHttpService() IHttpService {
 
 func (t *types) GetWebSocket() IWebSock {
 	return WebSockNew()
+}
+
+func (t *types) GetMqttClient() IMqttClient {
+	return MqttClientNew(t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh)
 }

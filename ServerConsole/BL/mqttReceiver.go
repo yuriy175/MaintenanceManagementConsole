@@ -9,19 +9,41 @@ import (
 	"github.com/google/uuid"
 )
 
-type MqttClient struct {
-	Client      mqtt.Client
-	Topic       string
-	IsEquipment bool
+type IMqttClient interface {
+	Create(rootTopic string, subTopics []string) IMqttClient
+	Disconnect()
+	SendCommand(command string)
+	IsEquipTopic() bool
 }
 
-func CreateMqttClient(
+type mqttClient struct {
+	_mqttReceiverService IMqttReceiverService
+	_webSocketService    IWebSocketService
+	_dalCh               chan *Models.RawMqttMessage
+	_webSockCh           chan *Models.RawMqttMessage
+
+	_client      mqtt.Client
+	_topic       string
+	_isEquipment bool
+}
+
+func MqttClientNew(
+	mqttReceiverService IMqttReceiverService,
+	webSocketService IWebSocketService,
+	dalCh chan *Models.RawMqttMessage,
+	webSockCh chan *Models.RawMqttMessage) IMqttClient {
+	client := &mqttClient{}
+	client._mqttReceiverService = mqttReceiverService
+	client._webSocketService = webSocketService
+	client._dalCh = dalCh
+	client._webSockCh = webSockCh
+
+	return client
+}
+
+func (client *mqttClient) Create(
 	rootTopic string,
-	subTopics []string,
-	equipDalCh chan *Models.RawMqttMessage,
-	equipWebSockCh chan *Models.RawMqttMessage,
-	mqttReceiverService *MqttReceiverService,
-	webSocketService *WebSocketService) *MqttClient {
+	subTopics []string) IMqttClient {
 	//quitCh := make(chan int)
 
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -32,7 +54,7 @@ func CreateMqttClient(
 		fmt.Printf("Connect lost: %s %v", rootTopic, err)
 	}
 
-	var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+	var messagePubHandler mqtt.MessageHandler = func(c mqtt.Client, msg mqtt.Message) {
 		payload := msg.Payload()
 		topic := msg.Topic()
 		fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
@@ -48,16 +70,16 @@ func CreateMqttClient(
 			}
 
 			state := &Models.EquipConnectionState{newRootTopic, data == "off"}
-			go mqttReceiverService.UpdateMqtt(state, equipDalCh, equipWebSockCh)
-			go webSocketService.UpdateWebClients(state)
+			client._mqttReceiverService.UpdateMqtt(state)
+			client._webSocketService.UpdateWebClients(state)
 		} else {
 			//content := Models.EquipmentMessage{}
 			//json.Unmarshal([]byte(payload), &content)
 			// equipDalCh <- &content
 			rawMsg := Models.RawMqttMessage{topic, string(payload)}
 			//json.Unmarshal([]byte(payload), &content)
-			equipDalCh <- &rawMsg
-			equipWebSockCh <- &rawMsg
+			client._dalCh <- &rawMsg
+			client._webSockCh <- &rawMsg
 		}
 	}
 
@@ -72,10 +94,14 @@ func CreateMqttClient(
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
 
-	client := mqtt.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
+	c := mqtt.NewClient(opts)
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
 		panic(token.Error())
 	}
+
+	client._client = c
+	client._topic = rootTopic
+	client._isEquipment = rootTopic != Models.CommonTopicPath && rootTopic != Models.BroadcastCommandsTopic
 
 	go func() {
 		var topics = map[string]byte{}
@@ -84,24 +110,24 @@ func CreateMqttClient(
 			topics[rootTopic+value] = 0
 		}
 
-		token := client.SubscribeMultiple(topics, nil) // callback MessageHandler)
+		token := c.SubscribeMultiple(topics, nil) // callback MessageHandler)
 		token.Wait()
 		fmt.Printf("Subscribed to topic: %s", rootTopic)
 	}()
 
-	return &MqttClient{client, rootTopic, IsEquipTopic(rootTopic)}
+	return client
 }
 
-func (client *MqttClient) Disconnect() {
-	client.Client.Disconnect(0)
+func (client *mqttClient) Disconnect() {
+	client._client.Disconnect(0)
 }
 
-func (client *MqttClient) SendCommand(command string) {
-	commandTopic := client.Topic + "/command"
-	client.Client.Publish(commandTopic, 0, false, command)
+func (client *mqttClient) SendCommand(command string) {
+	commandTopic := client._topic + "/command"
+	client._client.Publish(commandTopic, 0, false, command)
 	fmt.Println("Sent command " + commandTopic + " " + command)
 }
 
-func IsEquipTopic(rootTopic string) bool {
-	return rootTopic != Models.CommonTopicPath && rootTopic != Models.BroadcastCommandsTopic
+func (client *mqttClient) IsEquipTopic() bool {
+	return client._isEquipment
 }
