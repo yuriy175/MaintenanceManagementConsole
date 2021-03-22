@@ -125,7 +125,7 @@ namespace MessagesSender.BL
 					new
 					{
 						WorkList = isWL ? new[] { new { dicomService.Name, dicomService.IP, state } } : null,
-						PACS = isWL ? null : new[] { new { dicomService.Name, dicomService.IP, state }},
+						PACS = isWL ? null : new[] { new { dicomService.Name, dicomService.IP, State = state }},
 					});
 			}
 		}
