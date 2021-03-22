@@ -81,15 +81,21 @@ namespace MessagesSender.BL
             _isActivated = true;
 
             await SendDicomServicesAsync();
-            /*var generatorState = await _webClientService.SendAsync<GeneratorState>(
-                "Exposition",
-                "RequestGeneratorState",
-                new Dictionary<string, string> { });
 
-            if (CanSendGeneratorState(generatorState))
-            {
-                OnGeneratorState((GeneratorId, generatorState));
-            }*/
+			_dicomServices.Where(d => (d.ServiceRole & PACSServiceRole) > 0 || (d.ServiceRole & WorkListServiceRole) > 0)
+				.ToList()
+				.ForEach(d =>
+				{
+					Task.Run(async () =>
+					{
+						var state = await _webClientService.SendAsync<bool>(
+							"Verify",
+							"CheckService",
+							new Dictionary<string, string> { { "serviceId", d.Id.ToString() } });
+
+						await SendDicomServiceStateAsync(d, state);
+					});
+				});
 
             return true;
         }
@@ -109,5 +115,19 @@ namespace MessagesSender.BL
                     });
             }
         }
-    }
+		private async Task SendDicomServiceStateAsync((int Id, string Name, string IP, int ServiceRole) dicomService, bool state)
+		{
+			if (_isActivated)
+			{
+				var isWL = (dicomService.ServiceRole & WorkListServiceRole) > 0;
+				await _sendingService.SendInfoToMqttAsync(
+					MQMessages.DicomInfo,					
+					new
+					{
+						WorkList = isWL ? new[] { new { dicomService.Name, dicomService.IP, state } } : null,
+						PACS = isWL ? null : new[] { new { dicomService.Name, dicomService.IP, state }},
+					});
+			}
+		}
+	}
 }
