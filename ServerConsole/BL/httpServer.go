@@ -11,19 +11,30 @@ import (
 	"../Models"
 )
 
-func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebSocketService) {
+type IHttpService interface {
+	Start()
+}
 
-	/*http.HandleFunc("/devices/", func(w http.ResponseWriter, r *http.Request) {
-		devices := DAL.DalGetDeviceConnections()
-		for _, device := range devices {
-			fmt.Fprintf(w, "time %s device : %d name : %s type : %s connection : %d\n",
-				device.DateTime.Format(time.RFC3339), device.DeviceId, device.DeviceName, device.DeviceType, device.DeviceConnection)
-		}
+type httpService struct {
+	_mqttReceiverService IMqttReceiverService
+	_webSocketService    IWebSocketService
+	_dalService          DAL.IDalService
+}
 
-		fmt.Fprint(w, "Index Page")
-	})*/
-	//
+func HttpServiceNew(
+	mqttReceiverService IMqttReceiverService, webSocketService IWebSocketService, dalService DAL.IDalService) IHttpService {
+	service := &httpService{}
 
+	service._mqttReceiverService = mqttReceiverService
+	service._webSocketService = webSocketService
+	service._dalService = dalService
+
+	return service
+}
+
+func (service *httpService) Start() {
+	mqttReceiverService := service._mqttReceiverService
+	webSocketService := service._webSocketService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -134,7 +145,7 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 
 		log.Println("Url is: %s %s %s", equipType, startDate, endDate)
 
-		SendSearchResults(w, equipType, startDate, endDate)
+		service.sendSearchResults(w, equipType, startDate, endDate)
 	})
 
 	address := Models.HttpServerAddress
@@ -142,30 +153,31 @@ func HttpServer(mqttReceiverService *MqttReceiverService, webSocketService *WebS
 	http.ListenAndServe(address, nil)
 }
 
-func SendSearchResults(w http.ResponseWriter, equipType string, startDate time.Time, endDate time.Time) {
+func (service *httpService) sendSearchResults(w http.ResponseWriter, equipType string, startDate time.Time, endDate time.Time) {
 
 	endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 0, time.UTC)
 
+	dalService := service._dalService
 	if equipType == "SystemInfo" {
-		sysInfo := DAL.GetSystemInfo(startDate, endDate)
+		sysInfo := dalService.GetSystemInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(sysInfo)
 	} else if equipType == "OrganAutos" {
-		organAutos := DAL.GetOrganAutoInfo(startDate, endDate)
+		organAutos := dalService.GetOrganAutoInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(organAutos)
 	} else if equipType == "Generators" {
-		genInfo := DAL.GetGeneratorInfo(startDate, endDate)
+		genInfo := dalService.GetGeneratorInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(genInfo)
 	} else if equipType == "Studies" {
-		studies := DAL.GetStudiesInWork(startDate, endDate)
+		studies := dalService.GetStudiesInWork(startDate, endDate)
 		json.NewEncoder(w).Encode(studies)
 	} else if equipType == "Software" {
-		swInfo := DAL.GetSoftwareInfo(startDate, endDate)
+		swInfo := dalService.GetSoftwareInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(swInfo)
 	} else if equipType == "Dicom" {
-		dicomInfo := DAL.GetDicomInfo(startDate, endDate)
+		dicomInfo := dalService.GetDicomInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(dicomInfo)
 	} else if equipType == "Stands" {
-		standInfo := DAL.GetStandInfo(startDate, endDate)
+		standInfo := dalService.GetStandInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(standInfo)
-	} 
+	}
 }

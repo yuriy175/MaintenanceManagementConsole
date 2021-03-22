@@ -20,7 +20,8 @@ func CreateMqttClient(
 	subTopics []string,
 	equipDalCh chan *Models.RawMqttMessage,
 	equipWebSockCh chan *Models.RawMqttMessage,
-	mqttReceiverService *MqttReceiverService) *MqttClient {
+	mqttReceiverService *MqttReceiverService,
+	webSocketService *WebSocketService) *MqttClient {
 	//quitCh := make(chan int)
 
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
@@ -46,7 +47,9 @@ func CreateMqttClient(
 				data = d
 			}
 
-			mqttReceiverService.UpdateMqtt(newRootTopic, data == "off", equipDalCh, equipWebSockCh)
+			state := &Models.EquipConnectionState{newRootTopic, data == "off"}
+			go mqttReceiverService.UpdateMqtt(state, equipDalCh, equipWebSockCh)
+			go webSocketService.UpdateWebClients(state)
 		} else {
 			//content := Models.EquipmentMessage{}
 			//json.Unmarshal([]byte(payload), &content)

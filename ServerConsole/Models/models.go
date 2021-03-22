@@ -59,55 +59,60 @@ type OrganAutoInfoModel struct {
 }
 
 type ErrorDescription struct {
-	Code string
+	Code        string
 	Description string
 }
 
 type GeneratorInfoModel struct {
-	Id          bson.ObjectId `bson:"_id"`
-	DateTime    time.Time
-	EquipName   string
-	State       float64
-	Errors      []string
-	Workstation float64
-	HeatStatus  float64
-	Mas         float64
-	Kv          float64
+	Id                bson.ObjectId `bson:"_id"`
+	DateTime          time.Time
+	EquipName         string
+	State             float64
+	Errors            []string
+	Workstation       float64
+	HeatStatus        float64
+	Mas               float64
+	Kv                float64
 	ErrorDescriptions []ErrorDescription
 }
 
 type SoftwareInfoModel struct {
-	Id          bson.ObjectId `bson:"_id"`
-	DateTime    time.Time
-	EquipName   string
-	SettingsDB bool
-    ObservationsDB bool
-    Version string
-    XilibVersion string
+	Id                bson.ObjectId `bson:"_id"`
+	DateTime          time.Time
+	EquipName         string
+	SettingsDB        bool
+	ObservationsDB    bool
+	Version           string
+	XilibVersion      string
 	ErrorDescriptions []ErrorDescription
 }
 
 type DicomInfo struct {
-	Name string
-	IP string
-	State       float64
+	Name  string
+	IP    string
+	State float64
 }
 
 type DicomsInfoModel struct {
-	Id          bson.ObjectId `bson:"_id"`
-	DateTime    time.Time
-	EquipName   string
-	PACS []DicomInfo
-	WorkList []DicomInfo
+	Id        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+	PACS      []DicomInfo
+	WorkList  []DicomInfo
 }
 
 type StandInfoModel struct {
-	Id          bson.ObjectId `bson:"_id"`
-	DateTime    time.Time
-	EquipName   string
-	State       float64
-	Errors      []string
-	RasterState float64
+	Id                bson.ObjectId `bson:"_id"`
+	DateTime          time.Time
+	EquipName         string
+	State             float64
+	Errors            []string
+	RasterState       float64
 	Position_Current  float64
 	ErrorDescriptions []ErrorDescription
+}
+
+type EquipConnectionState struct {
+	Name      string
+	Connected bool
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func RabbitMqReceiver(mqttReceiverService *MqttReceiverService, equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+func RabbitMqReceiver(mqttReceiverService *IMqttReceiverService, equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
 	quitCh := make(chan int)
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"

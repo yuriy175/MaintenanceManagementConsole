@@ -10,17 +10,37 @@ import (
 	"../Utils"
 )
 
-type WebSocketService struct {
+type IWebSocketService interface {
+	Start()
+	Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string)
+	UpdateWebClients(state *Models.EquipConnectionState)
 }
 
-// keys - sessionUids
-var webSocketConnections = map[string]*WebSock{}
+type webSocketService struct {
+	_ioCProvider IIoCProvider
+	_webSockCh   chan *Models.RawMqttMessage
+	// keys - sessionUids
+	_webSocketConnections map[string]IWebSock
 
-// keys - main equipment topics
-// values - slice of session uids
-var topicConnections = map[string][]string{}
+	// keys - main equipment topics
+	// values - slice of session uids
+	_topicConnections map[string][]string
+}
 
-func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
+func WebSocketServiceNew(
+	ioCProvider IIoCProvider,
+	webSockCh chan *Models.RawMqttMessage) IWebSocketService {
+	service := &webSocketService{}
+
+	service._ioCProvider = ioCProvider
+	service._webSockCh = webSockCh
+	service._webSocketConnections = map[string]IWebSock{}
+	service._topicConnections = map[string][]string{}
+
+	return service
+}
+
+func (service *webSocketService) Start() {
 	http.HandleFunc(Models.WebSocketQueryString, func(w http.ResponseWriter, r *http.Request) {
 		uids, ok := r.URL.Query()["uid"]
 
@@ -31,7 +51,7 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 		uid := uids[0]
 		fmt.Printf("created uid: %s \n", uid)
 
-		webSocketConnections[uid] = CreateWebSock(w, r, uid)
+		service._webSocketConnections[uid] = service._ioCProvider.GetWebSocket().Create(w, r, uid)
 
 		/*msgType, msg, err := webSocketConnections[uid].Conn.ReadMessage()
 		if err != nil {
@@ -40,24 +60,24 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 	})
 
 	go func() {
-		for d := range equipWebSockCh {
+		for d := range service._webSockCh {
 
 			//find equipment name of a new message
 			//topicParts := strings.Split(d.Topic, "/")
 			activatedEquipInfo := Utils.GetEquipFromTopic(d.Topic) //strings.Join([]string{topicParts[0], topicParts[1]}, "/")
 
 			//find all sessions activated this equipment
-			if sessionUids, ok := topicConnections[activatedEquipInfo]; ok {
+			if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
 				for _, uid := range sessionUids {
 
 					//find websocket
 					log.Println(" message topic %s data %s to web sock %s", d.Topic, d.Data, uid)
 
-					v := webSocketConnections[uid]
+					v := service._webSocketConnections[uid]
 					b, err := json.Marshal(d)
 					if v == nil || v.Conn == nil {
 						log.Println(" no connection for  %s", uid)
-					} else if err = v.Conn.WriteMessage(1, b); err != nil {
+					} else if err = v.WriteMessage(b); err != nil {
 						// return
 					}
 				}
@@ -69,11 +89,20 @@ func WebServer(equipWebSockCh chan *Models.RawMqttMessage) {
 	http.ListenAndServe(":8080", nil)
 }
 
-func (*WebSocketService) Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string) {
+func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string) {
+	topicConnections := service._topicConnections
+
 	if deactivatedEquipInfo != "" {
 	}
 
 	topicConnections[activatedEquipInfo] = append(topicConnections[activatedEquipInfo], sessionUid)
 
 	return
+}
+
+func (service *webSocketService) UpdateWebClients(state *Models.EquipConnectionState) {
+	for _, ws := range service._webSocketConnections {
+		b, _ := json.Marshal(state)
+		ws.WriteMessage(b)
+	}
 }

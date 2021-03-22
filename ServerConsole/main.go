@@ -5,26 +5,24 @@ import (
 	"log"
 
 	"./BL"
-	"./DAL"
-	"./Models"
 )
 
 func main() {
 
 	intCh := make(chan int)
-	equipDalCh := make(chan *Models.RawMqttMessage)
-	equipWebSockCh := make(chan *Models.RawMqttMessage)
 
-	mqttReceiverService := &BL.MqttReceiverService{}
-	webSocketService := &BL.WebSocketService{}
-	mqttReceiverService.CreateCommonConnections(equipDalCh, equipWebSockCh)
+	ioc := BL.InitIoc()
+	mqttReceiverService := ioc.GetMqttReceiverService()
+	webSocketService := ioc.GetWebSocketService()
+	dalService := ioc.GetDalService()
+	httpService := ioc.GetHttpService()
+	mqttReceiverService.CreateCommonConnections()
 
-	go DAL.DalWorker(equipDalCh)
-	go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh, equipWebSockCh)
-	// go BL.MqttReceiver(equipDalCh)
+	go dalService.Start()
+	// go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh, equipWebSockCh)
 
-	go BL.WebServer(equipWebSockCh)
-	go BL.HttpServer(mqttReceiverService, webSocketService)
+	go webSocketService.Start()
+	go httpService.Start()
 
 	mqttReceiverService.SendBroadcastCommand("reconnect")
 

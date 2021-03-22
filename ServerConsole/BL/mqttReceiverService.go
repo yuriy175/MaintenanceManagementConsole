@@ -6,14 +6,45 @@ import (
 	"../Models"
 )
 
-type MqttReceiverService struct {
+type IMqttReceiverService interface {
+	///
+	UpdateMqtt(state *Models.EquipConnectionState)
+	CreateCommonConnections()
+	SendCommand(equipment string, command string)
+	SendBroadcastCommand(command string)
+	GetConnectionNames() []string
+	///
 }
 
-var mqttConnections = map[string]*MqttClient{}
+type mqttReceiverService struct {
+	_webSocketService IWebSocketService
+	_dalCh            chan *Models.RawMqttMessage
+	_webSockCh        chan *Models.RawMqttMessage
+	_mqttConnections  map[string]*MqttClient
+}
 
-func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+//var mqttConnections = map[string]*MqttClient{}
+
+func MqttReceiverServiceNew(
+	webSocketService IWebSocketService,
+	dalCh chan *Models.RawMqttMessage,
+	webSockCh chan *Models.RawMqttMessage) IMqttReceiverService {
+	service := &mqttReceiverService{}
+
+	service._webSocketService = webSocketService
+	service._dalCh = dalCh
+	service._webSockCh = webSockCh
+	service._mqttConnections = map[string]*MqttClient{}
+
+	return service
+}
+
+func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionState) {
+	rootTopic := state.Name
+	isOff := !state.Connected
 	topicStorage := &TopicStorage{}
 	topics := topicStorage.getTopics()
+	mqttConnections := service._mqttConnections
 
 	if client, ok := mqttConnections[rootTopic]; ok {
 		fmt.Println(rootTopic + " already exists")
@@ -28,39 +59,40 @@ func (service *MqttReceiverService) UpdateMqtt(rootTopic string, isOff bool, equ
 
 	if !isOff {
 		go func() {
-			mqttConnections[rootTopic] = CreateMqttClient(rootTopic, topics, equipDalCh, equipWebSockCh, service)
+			mqttConnections[rootTopic] = CreateMqttClient(rootTopic, topics, equipDalCh, equipWebSockCh, service, webSocketService)
 		}()
 
 		fmt.Println(rootTopic + " created")
 	}
 }
 
-func (service *MqttReceiverService) CreateCommonConnections(equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
-	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, equipWebSockCh, service)
-	mqttConnections[Models.BroadcastCommandsTopic] = CreateMqttClient(Models.BroadcastCommandsTopic, []string{}, equipDalCh, equipWebSockCh, service)
+func (service *mqttReceiverService) CreateCommonConnections() {
+	mqttConnections := service._mqttConnections
+
+	mqttConnections[Models.CommonTopicPath] = CreateMqttClient(Models.CommonTopicPath, []string{}, equipDalCh, equipWebSockCh, service, webSocketService)
+	mqttConnections[Models.BroadcastCommandsTopic] = CreateMqttClient(Models.BroadcastCommandsTopic, []string{}, equipDalCh, equipWebSockCh, service, webSocketService)
 	return
 }
 
-func (*MqttReceiverService) SendCommand(equipment string, command string) {
-	if client, ok := mqttConnections[equipment]; ok {
+func (service *mqttReceiverService) SendCommand(equipment string, command string) {
+	if client, ok := service._mqttConnections[equipment]; ok {
 		go client.SendCommand(command)
 	}
 
 	return
 }
 
-//BroadcastCommandsTopic
-
-func (*MqttReceiverService) SendBroadcastCommand(command string) {
-	if client, ok := mqttConnections[Models.BroadcastCommandsTopic]; ok {
+func (service *mqttReceiverService) SendBroadcastCommand(command string) {
+	if client, ok := service._mqttConnections[Models.BroadcastCommandsTopic]; ok {
 		go client.SendCommand(command)
 	}
 
 	return
 }
 
-func (*MqttReceiverService) GetConnectionNames() []string {
-	// return []string{"first", "second"}
+func (service *mqttReceiverService) GetConnectionNames() []string {
+	mqttConnections := service._mqttConnections
+
 	keys := make([]string, len(mqttConnections))
 
 	i := 0

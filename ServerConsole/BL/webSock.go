@@ -7,7 +7,17 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type WebSock struct {
+type IWebSock interface {
+	Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock
+	WriteMessage(data []byte) error
+}
+
+func WebSockNew() IWebSock {
+	webSock := &webSock{}
+	return webSock
+}
+
+type webSock struct {
 	Uid  string
 	Conn *websocket.Conn
 }
@@ -17,15 +27,18 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func CreateWebSock(w http.ResponseWriter, r *http.Request, uid string) *WebSock {
+func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock {
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Panicf("create web socket: %s", err)
 	}
 
+	sock.Uid = uid
+	sock.Conn = conn
 	log.Println("web sock created Url %s", uid)
-	return &WebSock{uid, conn}
+
+	return sock
 
 	/*for {
 		// Read message from browser
@@ -42,4 +55,8 @@ func CreateWebSock(w http.ResponseWriter, r *http.Request, uid string) *WebSock 
 			return
 		}
 	}*/
+}
+
+func (ws *webSock) WriteMessage(data []byte) error {
+	return ws.Conn.WriteMessage(1, data)
 }
