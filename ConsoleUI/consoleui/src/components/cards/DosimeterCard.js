@@ -10,13 +10,14 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
-export default function DosimeterCard() {
+// export default function DosimeterCard() {
+const DosimeterCard = React.memo((props) => {
   console.log(`! render DosimeterCard`);
 
   const classes = useCardsStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
 
+  const dosimeter = props.dosimeter;
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -24,11 +25,13 @@ export default function DosimeterCard() {
           {bull}Дозиметр
         </Typography>
         <CardRow descr="Состояние" 
-          value={currEquipState.dosimeter?.State?.State > 0? "готов" : "Не готов"}
-          rightColor={currEquipState.dosimeter?.State?.State > 0 ? "green" : "red"}></CardRow>
-        <CardRow descr="Доза" value={currEquipState.dosimeter?.State?.Dose ? 
-          parseFloat(currEquipState.dosimeter?.State?.Dose).toFixed(2) + ' сГр' : '' }></CardRow>
+          value={dosimeter?.State?.State > 0? "готов" : "Не готов"}
+          rightColor={dosimeter?.State?.State > 0 ? "green" : "red"}></CardRow>
+        <CardRow descr="Доза" value={dosimeter?.State?.Dose ? 
+          parseFloat(dosimeter?.State?.Dose).toFixed(2) + ' сГр' : '' }></CardRow>
       </CardContent>
     </Card>
   );
-}
+});
+
+export default DosimeterCard;

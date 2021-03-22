@@ -10,13 +10,14 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
-export default function DicomCard() {
+// export default function DicomCard() {
+const DicomCard = React.memo((props) => {
   console.log(`! render DicomCard`);
 
   const classes = useCardsStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
 
+  const dicom = props.dicom;
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -26,8 +27,8 @@ export default function DicomCard() {
         <Typography variant="h6" component="h2">
           {bull}PACS
         </Typography>
-        {currEquipState.dicom?.PACS?.length ? 
-          currEquipState.dicom.PACS.map((i, ind) => (
+        {dicom?.PACS?.length ? 
+          dicom.PACS.map((i, ind) => (
             <CardRow key={ind.toString()}  
               descr={i.Name + '('+ i.IP +')'} 
               value={ 1? "Не готов" : "Готов"} 
@@ -40,8 +41,8 @@ export default function DicomCard() {
         <Typography variant="h6" component="h2">
           {bull}WorkList
         </Typography>
-        {currEquipState.dicom?.WorkList?.length ? 
-          currEquipState.dicom.WorkList.map((i, ind) => (
+        {dicom?.WorkList?.length ? 
+          dicom.WorkList.map((i, ind) => (
             <CardRow key={ind.toString()}  
               descr={i.Name + '('+ i.IP +')'} 
               value={ 1? "Не готов" : "Готов"} 
@@ -54,4 +55,6 @@ export default function DicomCard() {
       </CardContent>
     </Card>
   );
-}
+});
+
+export default DicomCard;

@@ -22,10 +22,14 @@ export function useWebSocket(props) {
     useEffect(() => {
         if (connection) {
             connection.onopen = function () {
-                console.log("Status: Connected\n");
+                console.log(`Status: Connected ${sessionUid}\n`);
                 // connection.send("789 from ui");
             };
         
+            connection.onclose = function(event) {
+                console.log(`Status: Connected ${sessionUid}\n`);
+              };
+
             connection.onmessage = function (e) {
                 console.log("Server: " + e.data + "\n");
                 const data = JSON.parse(e.data);

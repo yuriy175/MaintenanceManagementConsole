@@ -10,11 +10,11 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
-export default function DetectorCard() {
+// export default function DetectorCard(props) {
+const DetectorCard = React.memo((props) => {
   console.log(`! render DetectorCard`);
 
   const classes = useCardsStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const bull = <span className={classes.bullet}>•</span>;
 
   return (
@@ -23,7 +23,7 @@ export default function DetectorCard() {
         <Typography variant="h5" component="h2">
           {bull}Детекторы
         </Typography>
-        {currEquipState.detectors?.map((i, ind) => (
+        {props.detectors?.map((i, ind) => (
           <div key={ind.toString()} >
             <Typography variant="h6" component="h2">
               {bull}{i.DetectorName} 
@@ -37,4 +37,6 @@ export default function DetectorCard() {
       </CardContent>
     </Card>
   );
-}
+});
+
+export default DetectorCard;
