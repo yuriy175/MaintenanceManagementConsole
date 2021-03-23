@@ -35,3 +35,8 @@ type StandInfoViewModel struct {
 	Id    float64
 	State StandInfoModel
 }
+
+type EquipConnectionStateViewModel struct {
+	Topic  string
+	State EquipConnectionState
+}

@@ -2,13 +2,14 @@ package BL
 
 import (
 	"fmt"
+	"sync"
 
 	"../Models"
 )
 
 type IMqttReceiverService interface {
 	///
-	UpdateMqtt(state *Models.EquipConnectionState)
+	UpdateMqttConnections(state *Models.EquipConnectionState)
 	CreateCommonConnections()
 	SendCommand(equipment string, command string)
 	SendBroadcastCommand(command string)
@@ -17,6 +18,7 @@ type IMqttReceiverService interface {
 }
 
 type mqttReceiverService struct {
+	_mtx              sync.RWMutex
 	_ioCProvider      IIoCProvider
 	_webSocketService IWebSocketService
 	_dalCh            chan *Models.RawMqttMessage
@@ -42,7 +44,7 @@ func MqttReceiverServiceNew(
 	return service
 }
 
-func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionState) {
+func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipConnectionState) {
 	rootTopic := state.Name
 	isOff := !state.Connected
 	topicStorage := &TopicStorage{}
@@ -50,6 +52,8 @@ func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionStat
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
 	if client, ok := mqttConnections[rootTopic]; ok {
 		fmt.Println(rootTopic + " already exists")
 		if isOff {
@@ -62,24 +66,28 @@ func (service *mqttReceiverService) UpdateMqtt(state *Models.EquipConnectionStat
 	}
 
 	if !isOff {
-		go func() {
-			mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
-		}()
-
-		fmt.Println(rootTopic + " created")
+		mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
 	}
+
+	fmt.Println(rootTopic + " created")
 }
 
 func (service *mqttReceiverService) CreateCommonConnections() {
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
 	mqttConnections[Models.CommonTopicPath] = ioCProvider.GetMqttClient().Create(Models.CommonTopicPath, []string{})
 	mqttConnections[Models.BroadcastCommandsTopic] = ioCProvider.GetMqttClient().Create(Models.BroadcastCommandsTopic, []string{})
+
 	return
 }
 
 func (service *mqttReceiverService) SendCommand(equipment string, command string) {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
 	if client, ok := service._mqttConnections[equipment]; ok {
 		go client.SendCommand(command)
 	}
@@ -88,6 +96,9 @@ func (service *mqttReceiverService) SendCommand(equipment string, command string
 }
 
 func (service *mqttReceiverService) SendBroadcastCommand(command string) {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
 	if client, ok := service._mqttConnections[Models.BroadcastCommandsTopic]; ok {
 		go client.SendCommand(command)
 	}
@@ -96,6 +107,9 @@ func (service *mqttReceiverService) SendBroadcastCommand(command string) {
 }
 
 func (service *mqttReceiverService) GetConnectionNames() []string {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
 	mqttConnections := service._mqttConnections
 
 	keys := make([]string, len(mqttConnections))

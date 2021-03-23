@@ -69,9 +69,9 @@ func (client *mqttClient) Create(
 				data = d
 			}
 
-			state := &Models.EquipConnectionState{newRootTopic, data == "off"}
-			client._mqttReceiverService.UpdateMqtt(state)
-			client._webSocketService.UpdateWebClients(state)
+			state := &Models.EquipConnectionState{newRootTopic, data == "on"}
+			go client._mqttReceiverService.UpdateMqttConnections(state)
+			go client._webSocketService.UpdateWebClients(state)
 		} else {
 			//content := Models.EquipmentMessage{}
 			//json.Unmarshal([]byte(payload), &content)

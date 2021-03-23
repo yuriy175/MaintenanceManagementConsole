@@ -34,7 +34,12 @@ func InitIoc() IIoCProvider {
 	dalService := DAL.DalServiceNew(dalCh)
 	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService)
 
-	_types = &types{mqttReceiverService, webSocketService, dalService, httpService, dalCh, webSockCh}
+	_types._mqttReceiverService = mqttReceiverService
+	_types._webSocketService = webSocketService
+	_types._dalService = dalService
+	_types._httpService = httpService
+	_types._dalCh = dalCh
+	_types._webSockCh = webSockCh
 
 	return _types
 }

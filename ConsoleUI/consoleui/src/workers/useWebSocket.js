@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
+import { AllEquipsContext } from '../context/allEquips-context';
 
 import {sessionUid} from '../utilities/utils'
 
@@ -8,6 +9,7 @@ export function useWebSocket(props) {
     console.log(`useWebSocket `+sessionUid);
 
     const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+    const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
     const [connection, setConnection] = useState(null);
     
     useEffect(() => {
@@ -101,6 +103,10 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETDICOM', payload: values }); 
                 }
+                else if(data?.Topic.includes('Subscribe'))
+                {
+                    allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
+                }   
             };
         }
     }, [connection]);

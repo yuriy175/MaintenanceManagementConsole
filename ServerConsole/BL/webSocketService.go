@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 
 	"../Models"
 	"../Utils"
@@ -17,6 +18,7 @@ type IWebSocketService interface {
 }
 
 type webSocketService struct {
+	_mtx         sync.RWMutex
 	_ioCProvider IIoCProvider
 	_webSockCh   chan *Models.RawMqttMessage
 	// keys - sessionUids
@@ -51,6 +53,9 @@ func (service *webSocketService) Start() {
 		uid := uids[0]
 		fmt.Printf("created uid: %s \n", uid)
 
+		service._mtx.Lock()
+		defer service._mtx.Unlock()
+
 		service._webSocketConnections[uid] = service._ioCProvider.GetWebSocket().Create(w, r, uid)
 
 		/*msgType, msg, err := webSocketConnections[uid].Conn.ReadMessage()
@@ -66,6 +71,8 @@ func (service *webSocketService) Start() {
 			//topicParts := strings.Split(d.Topic, "/")
 			activatedEquipInfo := Utils.GetEquipFromTopic(d.Topic) //strings.Join([]string{topicParts[0], topicParts[1]}, "/")
 
+			service._mtx.Lock()
+
 			//find all sessions activated this equipment
 			if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
 				for _, uid := range sessionUids {
@@ -78,11 +85,12 @@ func (service *webSocketService) Start() {
 					if v == nil || !v.IsValid() {
 						log.Println(" no connection for  %s", uid)
 					} else if err = v.WriteMessage(b); err != nil {
-						// return
+						log.Println("send message error for  %s", uid)
 					}
 				}
 			}
-
+			
+			service._mtx.Unlock()
 		}
 	}()
 
@@ -90,8 +98,10 @@ func (service *webSocketService) Start() {
 }
 
 func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string) {
-	topicConnections := service._topicConnections
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
 
+	topicConnections := service._topicConnections
 	if deactivatedEquipInfo != "" {
 	}
 
@@ -101,8 +111,13 @@ func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo 
 }
 
 func (service *webSocketService) UpdateWebClients(state *Models.EquipConnectionState) {
+	stateVM := &Models.EquipConnectionStateViewModel{Models.CommonTopicPath, *state}
+
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
 	for _, ws := range service._webSocketConnections {
-		b, _ := json.Marshal(state)
+		b, _ := json.Marshal(stateVM)
 		ws.WriteMessage(b)
 	}
 }

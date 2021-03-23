@@ -11,7 +11,7 @@ function reducer(state, action) {
     case 'SETEQUIPS': {
       return {
         ...state,
-        equips: action.payload
+        equips: action.payload?.filter(p => p)
       };
     }    
     case 'ADDEQUIP': {
@@ -20,6 +20,22 @@ function reducer(state, action) {
         equipInfo: action.payload
       };
     }
+    case 'CONNECTIONCHANGED': {
+      let equips = state.equips ?? [];
+      const equipName = action.payload.State.Name;
+      if(action.payload.State.Connected && !equips.includes(equipName)){
+        equips = [...equips, equipName]
+      }
+      else if(!action.payload.State.Connected && equips.includes(equipName)){
+        equips = equips.filter(p => p != equipName)
+      }
+      
+      return {
+        ...state,
+        equips: equips
+      };
+    }    
+    
     default:
       throw new Error();
   }
