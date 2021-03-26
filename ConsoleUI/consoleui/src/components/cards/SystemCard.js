@@ -30,19 +30,34 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        <CardRow descr="Всего" value={system?.Memory?.Memory_total_Gb+' Мб'}></CardRow>
-        <CardRow descr="Доступно" value={system?.Memory?.Memory_free_Gb+' Мб'}></CardRow>
+        <CardRow descr="Всего" value={system?.Memory?.Memory_total_Gb+' Гб'}></CardRow>
+        <CardRow descr="Доступно" value={system?.Memory?.Memory_free_Gb+' Гб'}></CardRow>
 
         <Typography variant="h5" component="h2">
           {bull}Диски
+        </Typography>
+        <Typography variant="h6" component="h2">
+              {bull}Логические диски
         </Typography>
         {system?.HDD?.map((i, ind) => (
           <div key={ind.toString()} >
             <Typography variant="h6" component="h2">
               {bull}Диск {i.Letter}
             </Typography>
-            <CardRow descr="Всего" value={i.TotalSize+' Мб'}></CardRow>
-            <CardRow descr="Доступно" value={i.FreeSize+' Мб'}></CardRow>
+            <CardRow descr="Всего" value={i.TotalSize+' Гб'}></CardRow>
+            <CardRow descr="Доступно" value={i.FreeSize+' Гб'}></CardRow>
+          </div>
+          ))
+        } 
+        <Typography variant="h6" component="h2">
+              {bull}Физические диски
+        </Typography>
+        {system?.PhysicalDisks?.map((i, ind) => (
+          <div key={ind.toString()} >
+            <Typography variant="h6" component="h2">
+              {bull}Диск {i.MediaType}
+            </Typography>
+            <CardRow descr={i.FriendlyName+' Гб'} value={i.Size_Gb+' Гб'}></CardRow>
           </div>
           ))
         } 
