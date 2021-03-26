@@ -19,5 +19,5 @@
 /MessagesSender/MessagesSender/bin
 /MessagesSender/MessagesSender/obj
 
-/ConsoleUI/consoleui/build
+#/ConsoleUI/consoleui/build
 /ConsoleUI/consoleui/node_modules
