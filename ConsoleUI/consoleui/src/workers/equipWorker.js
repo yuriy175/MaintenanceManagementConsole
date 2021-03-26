@@ -52,3 +52,27 @@ export async function RunTeamViewer(activatedEquipInfo) {
         return response.data;
     });
 };
+
+export async function RunTaskManager(activatedEquipInfo) {
+    return await HandlerWrapper('RunTaskManager', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/RunTaskManager?activatedEquipInfo=' + activatedEquipInfo);
+        return response.data;
+    });
+};
+
+export async function SendAtlasLogs(activatedEquipInfo) {
+    return await HandlerWrapper('SendAtlasLogs', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/SendAtlasLogs?activatedEquipInfo=' + activatedEquipInfo);
+        return response.data;
+    });
+};
+
+export async function XilibLogsOn(activatedEquipInfo) {
+    return await HandlerWrapper('XilibLogsOn', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/XilibLogsOn?activatedEquipInfo=' + activatedEquipInfo);
+        return response.data;
+    });
+};

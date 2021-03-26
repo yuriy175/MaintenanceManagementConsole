@@ -61,6 +61,10 @@ namespace MessagesSender
                typeof(ISoftwareWatchService),
                typeof(SoftwareWatchService));
 
+            services.AddSingleton(
+               typeof(IRemoteControlService),
+               typeof(RemoteControlService));            
+
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));

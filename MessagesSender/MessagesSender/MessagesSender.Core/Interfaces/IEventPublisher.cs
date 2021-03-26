@@ -16,6 +16,16 @@ namespace MessagesSender.Core.Interfaces
         void RunTVCommandArrived();
         void RegisterRunTVCommandArrivedEvent(Action handler);
 
+        void SendAtlasLogsCommandArrived();
+        void RegisterSendAtlasLogsCommandArrivedEvent(Action handler);
+
+        void RunTaskManCommandArrived();
+        void RegisterRunTaskManCommandEvent(Action handler);
+
+        void XilibLogsOnCommandArrived();
+        void RegisterXilibLogsOnCommandArrivedEvent(Action handler);
+
+
         void ReconnectCommandArrived();
         void RegisterReconnectCommandArrivedEvent(Action handler);
     }

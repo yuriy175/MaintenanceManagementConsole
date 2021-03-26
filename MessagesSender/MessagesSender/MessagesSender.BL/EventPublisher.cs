@@ -7,7 +7,7 @@ namespace MessagesSender.BL
 {
     public class EventPublisher : IEventPublisher
     {
-        enum EventTypes { CommandArrived, Activate, Deactivate, RunTV, Reconnect }
+        enum EventTypes { CommandArrived, Activate, Deactivate, RunTV, RunTaskManager, SendAtlasLogs, XilibLogsOn, Reconnect }
 
         private readonly Dictionary<EventTypes, List<Delegate>> _eventHandlers =
             Array.ConvertAll((int[])Enum.GetValues(typeof(EventTypes)), Convert.ToInt32)
@@ -61,6 +61,33 @@ namespace MessagesSender.BL
         public void RegisterReconnectCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.Reconnect].Add(handler);
+        }
+
+        public void SendAtlasLogsCommandArrived()
+        {
+            _eventHandlers[EventTypes.SendAtlasLogs].ForEach(h => (h as Action)());
+        }
+        public void RegisterSendAtlasLogsCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.SendAtlasLogs].Add(handler);
+        }
+
+        public void RunTaskManCommandArrived()
+        {
+            _eventHandlers[EventTypes.RunTaskManager].ForEach(h => (h as Action)());
+        }
+        public void RegisterRunTaskManCommandEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.RunTaskManager].Add(handler);
+        }
+
+        public void XilibLogsOnCommandArrived()
+        {
+            _eventHandlers[EventTypes.XilibLogsOn].ForEach(h => (h as Action)());
+        }
+        public void RegisterXilibLogsOnCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.XilibLogsOn].Add(handler);
         }
     }
 }

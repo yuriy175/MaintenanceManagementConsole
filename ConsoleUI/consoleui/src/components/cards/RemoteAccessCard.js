@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import {useCardsStyles} from './CommonCard'
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import * as EquipWorker from '../../workers/equipWorker'
+import {CardButtonedRow} from './CardRow'
 
 const RemoteAccessCard = React.memo((props) => {
 // export default function RemoteAccessCard() {
@@ -18,8 +19,20 @@ const RemoteAccessCard = React.memo((props) => {
   const bull = <span className={classes.bullet}>•</span>;
 
   const equipInfo = props.equipInfo;
-  const onRunTV = async () => {
+  const onRunTeamViewer = async () => {
     const res = await EquipWorker.RunTeamViewer(equipInfo);
+  };
+
+  const onRunTaskManager = async () => {
+    const res = await EquipWorker.RunTaskManager(equipInfo);
+  };
+
+  const onAtlasLogs = async () => {
+    const res = await EquipWorker.SendAtlasLogs(equipInfo);
+  };
+
+  const onXilibLogs = async () => {
+    const res = await EquipWorker.XilibLogsOn(equipInfo);
   };
 
   return (
@@ -28,12 +41,16 @@ const RemoteAccessCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}Удаленный доступ
         </Typography>
-        <Typography className={classes.pos} color="textSecondary">
+        <CardButtonedRow descr={'TeamViewer'} title={'Запустить'} onClick={onRunTeamViewer}></CardButtonedRow>
+        <CardButtonedRow descr={'Логи Атлас'} title={'Прислать'} onClick={onAtlasLogs}></CardButtonedRow>
+        <CardButtonedRow descr={'Логи Xilib'} title={'Включить'} onClick={onXilibLogs}></CardButtonedRow>
+        <CardButtonedRow descr={'TaskManager'} title={'Запустить'} onClick={onRunTaskManager}></CardButtonedRow>
+        {/* <Typography className={classes.pos} color="textSecondary">
           TeamViewer
         </Typography>
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onRunTV}>
           Запустить
-        </Button>
+        </Button> */}
       </CardContent>
     </Card>
   );

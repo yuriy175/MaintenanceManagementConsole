@@ -21,19 +21,22 @@ using System.IO;
 
 namespace MessagesSender.BL
 {
-    public class CommandService : ICommandService
-    {
-        private const string ActivateCommandName = "activate";
+	public class CommandService : ICommandService
+	{
+		private const string ActivateCommandName = "activate";
 		private const string DeactivateCommandName = "deactivate";
 		private const string RunTeamViewerCommandName = "runTV";
+		private const string RunTaskManCommandName = "runTaskMan";
+		private const string SendAtlasLogsCommandName = "sendAtlasLogs";
+		private const string XilibLogsOnCommandName = "xilibLogsOn";
 		private const string ReconnectCommandName = "reconnect";
 
 		private readonly ILogger _logger;
 		private readonly IEventPublisher _eventPublisher;
 
 		private readonly Dictionary<string, Action> _commandMap = new Dictionary<string, Action>
-        {
-        };
+		{
+		};
 
 		/// <summary>
 		/// public constructor
@@ -41,24 +44,27 @@ namespace MessagesSender.BL
 		/// <param name="logger">logger</param>
 		/// <param name="eventPublisher">event publisher service</param>
 		public CommandService(
-            ILogger logger,
+			ILogger logger,
 			IEventPublisher eventPublisher)
-        {
-            _logger = logger;
+		{
+			_logger = logger;
 			_eventPublisher = eventPublisher;
 
 			_commandMap = new Dictionary<string, Action>
-            {
-                { ActivateCommandName, () => OnActivateCommand()},
+			{
+				{ ActivateCommandName, () => OnActivateCommand()},
 				{ DeactivateCommandName, () => OnDeactivateCommand()},
 				{ RunTeamViewerCommandName, () => OnRunTVCommandAsync()},
+				{ RunTaskManCommandName, () => OnRunTaskManCommandAsync()},
+				{ SendAtlasLogsCommandName, () => OnSendAtlasLogsCommandAsync()},
+				{ XilibLogsOnCommandName, () => OnXilibLogsOnCommandAsync()},
 				{ ReconnectCommandName, () => OnReconnectCommand()},
 			};
 
 			_eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
 
 			_logger.Information("CommandService started");
-        }
+		}
 
 		private Task<bool> OnCommandArrivedAsync(string command)
 		{
@@ -75,14 +81,14 @@ namespace MessagesSender.BL
 			return Task.FromResult(false);
 		}
 
-        /// <summary>
-        /// activate command handler
-        /// </summary>
-        /// <returns>result</returns>
-        private void OnActivateCommand()
-        {
-			_eventPublisher.ActivateCommandArrived();			
-        }
+		/// <summary>
+		/// activate command handler
+		/// </summary>
+		/// <returns>result</returns>
+		private void OnActivateCommand()
+		{
+			_eventPublisher.ActivateCommandArrived();
+		}
 
 		private void OnDeactivateCommand()
 		{
@@ -97,6 +103,21 @@ namespace MessagesSender.BL
 		private void OnReconnectCommand()
 		{
 			_eventPublisher.ReconnectCommandArrived();
+		}
+
+		private void OnRunTaskManCommandAsync()
+		{
+			_eventPublisher.RunTaskManCommandArrived();
+		}
+
+		private void OnSendAtlasLogsCommandAsync()
+		{
+			_eventPublisher.SendAtlasLogsCommandArrived();
+		}
+
+		private void OnXilibLogsOnCommandAsync()
+		{
+			_eventPublisher.XilibLogsOnCommandArrived();
 		}
 	}
 }

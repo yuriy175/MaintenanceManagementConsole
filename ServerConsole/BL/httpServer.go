@@ -88,21 +88,19 @@ func (service *httpService) Start() {
 	})
 
 	http.HandleFunc("/equips/RunTeamViewer", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		service.SendCommand(w, r, "runTV")
+	})
 
-		w.Header().Set("Content-Type", "application/json")
+	http.HandleFunc("/equips/RunTaskManager", func(w http.ResponseWriter, r *http.Request) {
+		service.SendCommand(w, r, "runTaskMan")
+	})
 
-		queryString := r.URL.Query()
-		activatedEquipInfos, ok := queryString["activatedEquipInfo"]
+	http.HandleFunc("/equips/SendAtlasLogs", func(w http.ResponseWriter, r *http.Request) {
+		service.SendCommand(w, r, "sendAtlasLogs")
+	})
 
-		if !ok || len(activatedEquipInfos[0]) < 1 {
-			log.Println("Url Param 'activatedEquipInfo' is missing")
-			return
-		}
-		activatedEquipInfo := activatedEquipInfos[0]
-		mqttReceiverService.SendCommand(activatedEquipInfo, "runTV")
+	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {
+		service.SendCommand(w, r, "xilibLogsOn")
 	})
 
 	//(currEquip, startDate, endDate);
@@ -180,4 +178,22 @@ func (service *httpService) sendSearchResults(w http.ResponseWriter, equipType s
 		standInfo := dalService.GetStandInfo(startDate, endDate)
 		json.NewEncoder(w).Encode(standInfo)
 	}
+}
+
+func (service *httpService) SendCommand(w http.ResponseWriter, r *http.Request, command string) {
+	//Allow CORS here By * or specific origin
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	w.Header().Set("Content-Type", "application/json")
+
+	queryString := r.URL.Query()
+	activatedEquipInfos, ok := queryString["activatedEquipInfo"]
+
+	if !ok || len(activatedEquipInfos[0]) < 1 {
+		log.Println("Url Param 'activatedEquipInfo' is missing")
+		return
+	}
+	activatedEquipInfo := activatedEquipInfos[0]
+	service._mqttReceiverService.SendCommand(activatedEquipInfo, command)
 }

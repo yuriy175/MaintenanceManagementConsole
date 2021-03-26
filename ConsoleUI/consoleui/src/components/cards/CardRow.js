@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles({
  root: {
@@ -17,6 +18,15 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     width:'30%',
     textAlign: 'right',
+  },
+  button: {
+    marginRight: '0.5em',
+    width:'30%',
+    textAlign: 'right',
+    marginTop: '0.5em',
+  },
+  buttonDescr: {
+    alignSelf: 'center',
   },
   errorDescr: {
     width:'10%',
@@ -63,6 +73,22 @@ export function CardErrorRow(props) {
           }}>
           {props.value}
         </Typography>
+    </div>
+  );
+}
+
+export function CardButtonedRow(props) {
+
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+        <Typography className={`${classes.descr} ${classes.buttonDescr}`} color="textSecondary">
+          {props.descr}
+        </Typography>
+        <Button variant="contained" color="primary" className={classes.button} onClick={props.onClick}>
+          {props.title}
+        </Button>
     </div>
   );
 }
