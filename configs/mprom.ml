@@ -1,7 +1,7 @@
 server {
 
 #        root /var/www/mprom.ml/html;
-	root /home/epo/ConsoleUI/consoleui/build;
+	root /home/MMC/ConsoleUI/consoleui/build;
         index index.html index.htm index.nginx-debian.html;
 
         server_name mprom.ml www.mprom.ml;
@@ -24,7 +24,7 @@ server {
    }
 
     location /epo/ {
-#	root /home/epo/ConsoleUI/consoleui/build;
+#	root /home/MMC/ConsoleUI/consoleui/build;
 	proxy_pass http://127.0.0.1:5000;
         proxy_buffering                     off;
         proxy_set_header Host               $http_host;
