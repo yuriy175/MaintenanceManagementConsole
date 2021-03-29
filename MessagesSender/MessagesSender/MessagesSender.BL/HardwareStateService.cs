@@ -93,7 +93,8 @@ namespace MessagesSender.BL
 
         private void OnStandState((int Id, StandState State) state)
         {
-            if (!_isActivated || !CanSendStandState(state.State))
+            if (!AlwaysSendStandState(state.State) && 
+                (!_isActivated || !CanSendStandState(state.State)))
             {
                 return;
             }
@@ -111,7 +112,8 @@ namespace MessagesSender.BL
 
         private void OnGeneratorState((int Id, GeneratorState State) state)
         {
-            if (!_isActivated || !CanSendGeneratorState(state.State))
+            if (!AlwaysSendGeneratorState(state.State) &&
+                (!_isActivated || !CanSendGeneratorState(state.State)))
             {
                 return;
             }
@@ -244,6 +246,16 @@ namespace MessagesSender.BL
             state != null && (
                 state.State.HasValue ||
                 !string.IsNullOrEmpty(state.FilterPresentation)
+            );
+
+        private bool AlwaysSendGeneratorState(GeneratorState state) =>
+            state != null && (
+                state.Error != null 
+            );
+
+        private bool AlwaysSendStandState(StandState state) =>
+            state != null && (
+                state.Error != null
             );
     }
 }

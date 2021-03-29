@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
@@ -18,6 +18,7 @@ import StandTable from './tables/historyTables/StandTable'
 import DicomTable from './tables/historyTables/DicomTable'
 
 import * as EquipWorker from '../workers/equipWorker'
+import { CurrentEquipContext } from '../context/currentEquip-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,11 +44,13 @@ export default function HistoryComponent(props) {
   console.log("render HistoryComponent");
 
   const classes = useStyles();
+  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
 
   const curDate = new Date();
   const [startDate, setStartDate] = useState(getUSFullDate(new Date(curDate.setDate(curDate.getDate() - SearchPeriod))));
   const [endDate, setEndDate] = useState(getUSFullDate(new Date()));
-  const [currEquip, setCurrEquip] = useState("OrganAutos");
+  const [equipName, setEquipName] = useState(currEquipState?.equipInfo);
+  const [currType, setCurrType] = useState("SystemInfo");
   
   const [systemInfos, setSystemInfos] = useState([]);  
   const [organAutos, setOrganAutos] = useState([]);  
@@ -59,11 +62,11 @@ export default function HistoryComponent(props) {
   const [software, setSoftware] = useState([]);
   const [dicom, setDicom] = useState([]);
 
-  const handleEquipsChange = async (event) => {
+  const handleTypeChange = async (event) => {
     const select = event.target;
     const val = select.options[select.selectedIndex].value;
 
-    setCurrEquip(val);
+    setCurrType(val);
   };
 
   const handleStartDateChange = (ev) => {
@@ -74,26 +77,42 @@ export default function HistoryComponent(props) {
     setEndDate(ev.target.value);
   };
 
+  const handleNameChange = (ev) => {
+    setEquipName(ev.target.value);
+  };  
+
   const onSearch = async () => {
-    const data = await EquipWorker.SearchEquip(currEquip, startDate, endDate);
-    if(currEquip === "SystemInfo"){
+    const data = await EquipWorker.SearchEquip(currType, equipName, startDate, endDate);
+    switch (currType) {
+      case "SystemInfo":
         setSystemInfos(data);
-    } else if (currEquip === "OrganAutos"){
+        break;
+      case "OrganAutos":
         setOrganAutos(data);
-    } else if (currEquip === "Generators"){
+        break;
+      case "Generators":
         setGenerators(data);
-    } else if (currEquip === "Studies"){
+        break;
+      case "Studies":
         setStudies(data);
-    } else if (currEquip === "Stands"){
-      setStands(data);
-    } else if (currEquip === "Dosimeters"){
-      setDosimeters(data);
-    } else if (currEquip === "Detectors"){
-      setDetectors(data);
-    } else if (currEquip === "Software"){
-      setSoftware(data);
-    } else if (currEquip === "Dicom"){
-      setDicom(data);
+        break;
+      case "Stands":
+        setStands(data);
+        break;
+      case "Dosimeters":
+        setDosimeters(data);
+        break;
+      case "Detectors":
+        setDetectors(data);
+        break;
+      case "Software":
+        setSoftware(data);
+        break;
+      case "Dicom":
+        setDicom(data);
+        break;
+      default:
+        alert( "Нет таких значений" );
     }
   };
 
@@ -123,11 +142,12 @@ export default function HistoryComponent(props) {
             }}
         />
         <NativeSelect
-                value={currEquip}
-                onChange={handleEquipsChange}
+                value={currType}
+                onChange={handleTypeChange}
                 name="equips"
                 className={classes.selectEmpty, classes.commonSpacing}
                 variant="outlined"
+                label="Данные"
               >
                 <option value={"SystemInfo"} className={classes.optionStyle}>Система</option>
                 <option value={"OrganAutos"} className={classes.optionStyle}>Орган авто</option>
@@ -139,19 +159,20 @@ export default function HistoryComponent(props) {
                 <option value={"Software"} className={classes.optionStyle}>Приложения</option>
                 <option value={"Dicom"} className={classes.optionStyle}>Dicom</option>
         </NativeSelect>
+        <TextField id="standard-basic" label="Компекс" defaultValue={equipName} onChange={handleNameChange}/>
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSearch}>
             Искать
         </Button>
     </div>
     <div className={classes.root}>        
-        {currEquip === "SystemInfo" ? <SystemTable data={systemInfos}></SystemTable> : <></>}
-        {currEquip === "OrganAutos" ? <OrganAutoTable data={organAutos}></OrganAutoTable> : <></>}     
-        {currEquip === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
-        {currEquip === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  
-        {currEquip === "Software" ? <SofwareTable data={software}></SofwareTable> : <></>}  
-        {currEquip === "Detectors" ? <DetectorTable data={detectors}></DetectorTable> : <></>}  
-        {currEquip === "Stands" ? <StandTable data={stands}></StandTable> : <></>}  
-        {currEquip === "Dicom" ? <DicomTable data={dicom}></DicomTable> : <></>}  
+        {currType === "SystemInfo" ? <SystemTable data={systemInfos}></SystemTable> : <></>}
+        {currType === "OrganAutos" ? <OrganAutoTable data={organAutos}></OrganAutoTable> : <></>}     
+        {currType === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
+        {currType === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  
+        {currType === "Software" ? <SofwareTable data={software}></SofwareTable> : <></>}  
+        {currType === "Detectors" ? <DetectorTable data={detectors}></DetectorTable> : <></>}  
+        {currType === "Stands" ? <StandTable data={stands}></StandTable> : <></>}  
+        {currType === "Dicom" ? <DicomTable data={dicom}></DicomTable> : <></>}  
     </div>
     </>
   );

@@ -16,13 +16,13 @@ import (
 type IDalService interface {
 	Start()
 	////
-	GetStudiesInWork(startDate time.Time, endDate time.Time) []Models.StudyInWorkModel
-	GetSystemInfo(startDate time.Time, endDate time.Time) []Models.SystemInfoModel
-	GetOrganAutoInfo(startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
-	GetGeneratorInfo(startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel
-	GetSoftwareInfo(startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel
-	GetDicomInfo(startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
-	GetStandInfo(startDate time.Time, endDate time.Time) []Models.StandInfoModel
+	GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel
+	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SystemInfoModel
+	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
+	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel
+	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel
+	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
+	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel
 }
 
 type dalService struct {
@@ -121,13 +121,13 @@ func (service *dalService) Start() {
 	fmt.Println("DalWorker quitted")
 }
 
-func (service *dalService) GetStudiesInWork(startDate time.Time, endDate time.Time) []Models.StudyInWorkModel {
+func (service *dalService) GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel {
 	session := service.createSession()
 	defer session.Close()
 
 	studiesCollection := session.DB(Models.DBName).C(Models.StudyInWorkTableName)
 
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 	// объект для сохранения результата
 	studies := []Models.StudyInWorkModel{}
 	err := studiesCollection.Find(query).Sort("-datetime").All(&studies)
@@ -138,14 +138,14 @@ func (service *dalService) GetStudiesInWork(startDate time.Time, endDate time.Ti
 	return studies
 }
 
-func (service *dalService) GetSystemInfo(startDate time.Time, endDate time.Time) []Models.SystemInfoModel {
+func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SystemInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
 	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
 
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
 	sysInfo := []Models.SystemInfoModel{}
 	sysInfoCollection.Find(query).Sort("-datetime").All(&sysInfo)
@@ -153,13 +153,13 @@ func (service *dalService) GetSystemInfo(startDate time.Time, endDate time.Time)
 	return sysInfo
 }
 
-func (service *dalService) GetOrganAutoInfo(startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel {
+func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
 	organAutoCollection := session.DB(Models.DBName).C(Models.OrganAutoTableName)
 
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 	// объект для сохранения результата
 	organAutos := []Models.OrganAutoInfoModel{}
 	organAutoCollection.Find(query).Sort("-datetime").All(&organAutos)
@@ -167,7 +167,7 @@ func (service *dalService) GetOrganAutoInfo(startDate time.Time, endDate time.Ti
 	return organAutos
 }
 
-func (service *dalService) GetGeneratorInfo(startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel {
+func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
@@ -175,7 +175,7 @@ func (service *dalService) GetGeneratorInfo(startDate time.Time, endDate time.Ti
 	genInfoCollection := session.DB(Models.DBName).C(Models.GeneratorInfoTableName)
 
 	// // критерий выборки
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
 	genInfo := []Models.GeneratorInfoModel{}
 	genInfoCollection.Find(query).Sort("-datetime").All(&genInfo)
@@ -183,14 +183,14 @@ func (service *dalService) GetGeneratorInfo(startDate time.Time, endDate time.Ti
 	return genInfo
 }
 
-func (service *dalService) GetSoftwareInfo(startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel {
+func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
 	swInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
 
 	// // критерий выборки
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 
 	// // объект для сохранения результата
 	swInfo := []Models.SoftwareInfoModel{}
@@ -199,14 +199,14 @@ func (service *dalService) GetSoftwareInfo(startDate time.Time, endDate time.Tim
 	return swInfo
 }
 
-func (service *dalService) GetDicomInfo(startDate time.Time, endDate time.Time) []Models.DicomsInfoModel {
+func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
 	dicomInfoCollection := session.DB(Models.DBName).C(Models.DicomInfoTableName)
 
 	// // критерий выборки
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 
 	// // объект для сохранения результата
 	dicomInfo := []Models.DicomsInfoModel{}
@@ -215,14 +215,14 @@ func (service *dalService) GetDicomInfo(startDate time.Time, endDate time.Time) 
 	return dicomInfo
 }
 
-func (service *dalService) GetStandInfo(startDate time.Time, endDate time.Time) []Models.StandInfoModel {
+func (service *dalService) GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
 	standInfoCollection := session.DB(Models.DBName).C(Models.StandInfoTableName)
 
 	// // критерий выборки
-	query := service.getQuery(startDate, endDate)
+	query := service.getQuery(equipName, startDate, endDate)
 
 	// // объект для сохранения результата
 	standInfo := []Models.StandInfoModel{}
@@ -231,12 +231,19 @@ func (service *dalService) GetStandInfo(startDate time.Time, endDate time.Time) 
 	return standInfo
 }
 
-func (service *dalService) getQuery(startDate time.Time, endDate time.Time) bson.M {
-	query := bson.M{
+func (service *dalService) getQuery(equipName string, startDate time.Time, endDate time.Time) bson.M {
+	var query bson.M
+	query = bson.M{
 		"datetime": bson.M{
 			"$gt": startDate,
 			"$lt": endDate,
 		},
+	}
+	if equipName == "" {
+	} else {
+		query = bson.M{"$and": []bson.M{
+			bson.M{"equipname": equipName},
+			query}}
 	}
 
 	return query

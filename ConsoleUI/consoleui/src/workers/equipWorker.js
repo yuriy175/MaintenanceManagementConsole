@@ -35,10 +35,11 @@ export async function Activate(activatedEquipInfo, deactivatedEquipInfo) {
     });
 };
 
-export async function SearchEquip(equipType, startDate, endDate) {
+export async function SearchEquip(currType, equipName, startDate, endDate) {
     return await HandlerWrapper('SearchEquip', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController +
-            '/SearchEquip?equipType=' + equipType+
+            '/SearchEquip?currType=' + currType+
+            '&equipName=' + equipName+
             '&startDate=' + startDate+
             '&endDate=' + endDate);
         return response.data;

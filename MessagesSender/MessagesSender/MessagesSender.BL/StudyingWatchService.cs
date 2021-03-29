@@ -83,10 +83,11 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnStudyInWorkAsync(int studyId)
         {
-            if (!_isActivated)
-            {
-                return true;
-            }
+            // always send study changes
+            //if (!_isActivated)
+            //{
+            //    return true;
+            //}
 
             var studyProps = await _dbObservationsEntityService.GetStudyInfoByIdAsync(studyId);
             if (!studyProps.HasValue)
@@ -108,10 +109,11 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnOrganAutoAsync((OrganAuto OrganAuto, int LogicalWsId) organAuto)
         {
-            if (!_isActivated)
-            {
-                return true;
-            }
+            // always send organ auto changes
+            //if (!_isActivated)
+            //{
+            //    return true;
+            //}
 
             if (organAuto.OrganAuto == null)
             {

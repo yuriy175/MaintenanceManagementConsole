@@ -37,7 +37,7 @@ export default function CommonTable(props) {
     setPage(0);
   };
 
-  const rows = props.rows ?? [];
+  const rows = props.rows ? props.rows : [];
   const columns = props.columns;
 
   return (
