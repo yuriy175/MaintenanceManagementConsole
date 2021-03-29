@@ -28,18 +28,20 @@ type StudyInWorkModel struct {
 	State         float64
 }
 
+/*
 type SystemInfoModel struct {
-	Id            bson.ObjectId `bson:"_id"`
-	DateTime      time.Time
-	EquipName     string
-	State         float64
-	CPU_Load      float64
-	TotalMemory   float64
-	AvailableSize float64
-	HddName       string
-	HddTotalSpace float64
-	HddFreeSpace  float64
+	Id        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+		State         float64
+		CPU_Load      float64
+		TotalMemory   float64
+		AvailableSize float64
+		HddName       string
+		HddTotalSpace float64
+		HddFreeSpace  float64
 }
+*/
 
 type RawMqttMessage struct {
 	Topic string
@@ -115,4 +117,31 @@ type StandInfoModel struct {
 type EquipConnectionState struct {
 	Name      string
 	Connected bool
+}
+
+type SystemInfoModel struct {
+	Id        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+	Parameter string
+	Value     string
+}
+
+type HDDVolatileInfoModel struct {
+	Letter   string
+	FreeSize string
+}
+
+type SystemVolatileInfoModel struct {
+	Id                    bson.ObjectId `bson:"_id"`
+	DateTime              time.Time
+	EquipName             string
+	HDD                   []HDDVolatileInfoModel
+	Processor_CPU_Load    string
+	Memory_Memory_free_Gb string
+}
+
+type FullSystemInfoModel struct {
+	PermanentInfo []SystemInfoModel
+	VolatileInfo  []SystemVolatileInfoModel
 }

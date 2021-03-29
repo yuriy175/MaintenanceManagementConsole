@@ -165,7 +165,7 @@ export default function HistoryComponent(props) {
         </Button>
     </div>
     <div className={classes.root}>        
-        {currType === "SystemInfo" ? <SystemTable data={systemInfos}></SystemTable> : <></>}
+        {currType === "SystemInfo" ? <SystemTable equipName={equipName} data={systemInfos}></SystemTable> : <></>}
         {currType === "OrganAutos" ? <OrganAutoTable data={organAutos}></OrganAutoTable> : <></>}     
         {currType === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
         {currType === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  

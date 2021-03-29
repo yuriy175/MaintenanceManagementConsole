@@ -17,7 +17,7 @@ type IDalService interface {
 	Start()
 	////
 	GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel
-	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SystemInfoModel
+	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel
 	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
 	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel
 	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel
@@ -50,9 +50,13 @@ func (service *dalService) Start() {
 	organAutoCollection := db.C(Models.OrganAutoTableName)
 	genInfoCollection := db.C(Models.GeneratorInfoTableName)
 	sysInfoCollection := db.C(Models.SystemInfoTableName)
+	sysVolatileInfoCollection := db.C(Models.SystemVolatileInfoTableName)
 	softwareInfoCollection := db.C(Models.SoftwareInfoTableName)
 	dicomInfoCollection := db.C(Models.DicomInfoTableName)
 	standInfoCollection := db.C(Models.StandInfoTableName)
+
+	service.ensureIndeces(sysInfoCollection, []string{"equipname", "datetime"})
+	service.ensureIndeces(sysVolatileInfoCollection, []string{"equipname", "datetime"})
 
 	go func() {
 		for d := range service._dalCh {
@@ -82,13 +86,9 @@ func (service *dalService) Start() {
 
 				genInfoCollection.Insert(viewmodel.State)
 			} else if strings.Contains(d.Topic, "/ARM/Hardware") {
-				model := Models.SystemInfoModel{}
-				json.Unmarshal([]byte(d.Data), &model)
-				model.Id = bson.NewObjectId()
-				model.DateTime = time.Now()
-				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
-
-				sysInfoCollection.Insert(model)
+				viewmodel := Models.SystemInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+				service.insertSystemInfo(&viewmodel, d.Topic, sysInfoCollection, sysVolatileInfoCollection)
 			} else if strings.Contains(d.Topic, "/ARM/Software") {
 				model := Models.SoftwareInfoModel{}
 				json.Unmarshal([]byte(d.Data), &model)
@@ -138,19 +138,23 @@ func (service *dalService) GetStudiesInWork(equipName string, startDate time.Tim
 	return studies
 }
 
-func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SystemInfoModel {
+func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
 	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
+	sysVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
 
 	query := service.getQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
 	sysInfo := []Models.SystemInfoModel{}
 	sysInfoCollection.Find(query).Sort("-datetime").All(&sysInfo)
 
-	return sysInfo
+	sysVolatileInfo := []Models.SystemVolatileInfoModel{}
+	sysVolatileInfoCollection.Find(query).Sort("-datetime").All(&sysVolatileInfo)
+
+	return &Models.FullSystemInfoModel{sysInfo, sysVolatileInfo}
 }
 
 func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel {
@@ -239,8 +243,7 @@ func (service *dalService) getQuery(equipName string, startDate time.Time, endDa
 			"$lt": endDate,
 		},
 	}
-	if equipName == "" {
-	} else {
+	if equipName != "" {
 		query = bson.M{"$and": []bson.M{
 			bson.M{"equipname": equipName},
 			query}}
@@ -256,4 +259,56 @@ func (service *dalService) createSession() *mgo.Session {
 	}
 
 	return session
+}
+
+func (service *dalService) insertSystemInfo(
+	viewmodel *Models.SystemInfoViewModel,
+	topic string,
+	sysInfoCollection *mgo.Collection,
+	sysVolatileInfoCollection *mgo.Collection) {
+	dateTime := time.Now()
+	equipName := Utils.GetEquipFromTopic(topic)
+
+	createSystemInfo := func(paramName string, value string) Models.SystemInfoModel {
+		model := Models.SystemInfoModel{}
+
+		model.Id = bson.NewObjectId()
+		model.DateTime = dateTime
+		model.EquipName = equipName
+
+		model.Parameter = paramName
+		model.Value = value
+
+		return model
+	}
+
+	volatileModel := Models.SystemVolatileInfoModel{}
+
+	bulk := sysInfoCollection.Bulk()
+	//users := make([]interface{}, count)
+	infos := []interface{}{
+		createSystemInfo("Memory_Model_Memory_total_Gb", viewmodel.Memory.Memory_total_Gb),
+		createSystemInfo("Processor_Model", viewmodel.Processor.Model),
+		createSystemInfo("Motherboard_Model", viewmodel.Motherboard.Model),
+	}
+	bulk.Insert(infos...)
+	_, bulkErr := bulk.Run()
+	if bulkErr != nil {
+		fmt.Println("bulkErr error! ")
+	}
+
+	volatileModel.Id = bson.NewObjectId()
+	volatileModel.DateTime = dateTime
+	volatileModel.EquipName = equipName
+	//HDD                   []HDDVolatileInfoModel
+	volatileModel.Processor_CPU_Load = viewmodel.Processor.CPU_Load
+	volatileModel.Memory_Memory_free_Gb = viewmodel.Memory.Memory_free_Gb
+	sysVolatileInfoCollection.Insert(volatileModel)
+}
+
+func (service *dalService) ensureIndeces(sysInfoCollection *mgo.Collection, keys []string) {
+	idx := mgo.Index{
+		Key: keys,
+	}
+	sysInfoCollection.EnsureIndex(idx)
 }
