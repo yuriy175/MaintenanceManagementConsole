@@ -119,14 +119,6 @@ type EquipConnectionState struct {
 	Connected bool
 }
 
-type SystemInfoModel struct {
-	Id        bson.ObjectId `bson:"_id"`
-	DateTime  time.Time
-	EquipName string
-	Parameter string
-	Value     string
-}
-
 type HDDVolatileInfoModel struct {
 	Letter   string
 	FreeSize string
@@ -139,6 +131,71 @@ type SystemVolatileInfoModel struct {
 	HDD                   []HDDVolatileInfoModel
 	Processor_CPU_Load    string
 	Memory_Memory_free_Gb string
+}
+
+////
+type HddDriveInfoModel struct {
+	Letter    string
+	TotalSize string
+}
+
+type ProcessorInfoModel struct {
+	Model string
+}
+
+type MotherboardInfoModel struct {
+	Model string
+}
+
+type MemoryInfoModel struct {
+	Memory_total_Gb string
+}
+
+type NetworkInfoModel struct {
+	NIC string
+	IP  string
+}
+
+type VGAInfoModel struct {
+	Card_Name      string
+	Driver_Version string
+	Memory_Gb      string
+}
+
+type MonitorInfoModel struct {
+	Device_Name string
+	Width       string
+	Height      string
+}
+
+type PhysicalDiskInfoModel struct {
+	FriendlyName string
+	MediaType    string
+	Size_Gb      string
+}
+
+type PrinterInfoModel struct {
+	Printer_Name string
+	Port_Name    string
+}
+
+////
+
+type SystemInfoModel struct {
+	Id        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+	//Parameter string
+	//Value     string
+	HDD           []HddDriveInfoModel
+	PhysicalDisks []PhysicalDiskInfoModel
+	Processor     ProcessorInfoModel
+	Motherboard   MotherboardInfoModel
+	Memory        MemoryInfoModel
+	Network       []NetworkInfoModel
+	VGA           []VGAInfoModel
+	Monitor       []MonitorInfoModel
+	Printer       []PrinterInfoModel
 }
 
 type FullSystemInfoModel struct {

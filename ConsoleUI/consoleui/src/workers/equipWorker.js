@@ -46,6 +46,15 @@ export async function SearchEquip(currType, equipName, startDate, endDate) {
     });
 };
 
+export async function GetPermanentData(currType, equipName) {
+    return await HandlerWrapper('GetPermanentData', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController +
+            '/GetPermanentData?currType=' + currType+
+            '&equipName=' + equipName);
+        return response.data;
+    });
+};
+
 export async function RunTeamViewer(activatedEquipInfo) {
     return await HandlerWrapper('RunTeamViewer', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +

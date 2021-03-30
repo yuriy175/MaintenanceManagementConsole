@@ -66,17 +66,30 @@ type VGAInfoViewModel struct {
 }
 
 type MonitorInfoViewModel struct {
-	Monitor_Name   string `json:"Device_Name"`
-	Monitor_Width  string `json:"Width"`
-	Monitor_Height string `json:"Height"`
+	Device_Name string `json:"Device_Name"`
+	Width       string `json:"Width"`
+	Height      string `json:"Height"`
+}
+
+type PhysicalDiskInfoViewModel struct {
+	FriendlyName string
+	MediaType    string
+	Size_Gb      string
+}
+
+type PrinterInfoViewModel struct {
+	Printer_Name string
+	Port_Name    string
 }
 
 type SystemInfoViewModel struct {
-	HDD         []HddDriveInfoViewModel
-	Processor   ProcessorInfoViewModel
-	Motherboard MotherboardInfoViewModel
-	Memory      MemoryInfoViewModel
-	Network     []NetworkInfoViewModel
-	VGA         []VGAInfoViewModel
-	Monitor     []MonitorInfoViewModel
+	HDD           []HddDriveInfoViewModel
+	PhysicalDisks []PhysicalDiskInfoViewModel
+	Processor     ProcessorInfoViewModel
+	Motherboard   MotherboardInfoViewModel
+	Memory        MemoryInfoViewModel
+	Network       []NetworkInfoViewModel
+	VGA           []VGAInfoViewModel
+	Monitor       []MonitorInfoViewModel
+	Printer       []PrinterInfoViewModel
 }

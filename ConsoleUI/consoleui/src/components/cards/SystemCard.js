@@ -24,14 +24,20 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        <CardRow descr="Модель" value={system?.Processor?.Model} rightWidth={'100%'}></CardRow>
-        <CardRow descr="Загрузка" value={system?.Processor?.CPU_Load+'%'}></CardRow>
+        {system?.Processor?.Model || system?.Processor?.CPU_Load ? 
+          <>
+            <CardRow descr="Модель" value={system?.Processor?.Model} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Загрузка" value={system?.Processor?.CPU_Load+'%'}></CardRow>
+          </> : <></>}
 
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        <CardRow descr="Всего" value={system?.Memory?.Memory_total_Gb+' Гб'}></CardRow>
-        <CardRow descr="Доступно" value={system?.Memory?.Memory_free_Gb+' Гб'}></CardRow>
+        {system?.Memory?.Memory_total_Gb || system?.Memory?.Memory_free_Gb ? 
+          <>
+            <CardRow descr="Всего" value={system?.Memory?.Memory_total_Gb+' Гб'}></CardRow>
+            <CardRow descr="Доступно" value={system?.Memory?.Memory_free_Gb+' Гб'}></CardRow>
+          </> : <></>}
 
         <Typography variant="h5" component="h2">
           {bull}Диски

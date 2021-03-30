@@ -23,6 +23,9 @@ type IDalService interface {
 	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel
 	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
 	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel
+
+	GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel
+	GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel
 }
 
 type dalService struct {
@@ -142,19 +145,17 @@ func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, 
 	session := service.createSession()
 	defer session.Close()
 
-	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
-	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
 	sysVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
 
 	query := service.getQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
-	sysInfo := []Models.SystemInfoModel{}
-	sysInfoCollection.Find(query).Sort("-datetime").All(&sysInfo)
+	sysInfo := service.GetPermanentSystemInfo(equipName)
+	sysInfos := []Models.SystemInfoModel{*sysInfo}
 
 	sysVolatileInfo := []Models.SystemVolatileInfoModel{}
 	sysVolatileInfoCollection.Find(query).Sort("-datetime").All(&sysVolatileInfo)
 
-	return &Models.FullSystemInfoModel{sysInfo, sysVolatileInfo}
+	return &Models.FullSystemInfoModel{sysInfos, sysVolatileInfo}
 }
 
 func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel {
@@ -235,6 +236,30 @@ func (service *dalService) GetStandInfo(equipName string, startDate time.Time, e
 	return standInfo
 }
 
+func (service *dalService) GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel {
+	session := service.createSession()
+	defer session.Close()
+
+	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
+
+	sysInfo := Models.SystemInfoModel{}
+	sysQuery := bson.M{"equipname": equipName}
+	sysInfoCollection.Find(sysQuery).Sort("-datetime").One(&sysInfo)
+
+	return &sysInfo
+}
+
+func (service *dalService) GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel {
+	session := service.createSession()
+	defer session.Close()
+
+	// softwareInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
+
+	softwareInfo := Models.SoftwareInfoModel{}
+
+	return &softwareInfo
+}
+
 func (service *dalService) getQuery(equipName string, startDate time.Time, endDate time.Time) bson.M {
 	var query bson.M
 	query = bson.M{
@@ -269,7 +294,10 @@ func (service *dalService) insertSystemInfo(
 	dateTime := time.Now()
 	equipName := Utils.GetEquipFromTopic(topic)
 
-	createSystemInfo := func(paramName string, value string) Models.SystemInfoModel {
+	model := Models.SystemInfoModel{}
+	volatileModel := Models.SystemVolatileInfoModel{}
+
+	/*createSystemInfo := func(paramName string, value string) Models.SystemInfoModel {
 		model := Models.SystemInfoModel{}
 
 		model.Id = bson.NewObjectId()
@@ -282,8 +310,6 @@ func (service *dalService) insertSystemInfo(
 		return model
 	}
 
-	volatileModel := Models.SystemVolatileInfoModel{}
-
 	bulk := sysInfoCollection.Bulk()
 	//users := make([]interface{}, count)
 	infos := []interface{}{
@@ -295,7 +321,63 @@ func (service *dalService) insertSystemInfo(
 	_, bulkErr := bulk.Run()
 	if bulkErr != nil {
 		fmt.Println("bulkErr error! ")
+	}*/
+	hdds := []Models.HddDriveInfoModel{}
+	for _, value := range viewmodel.HDD {
+		hdds = append(hdds, Models.HddDriveInfoModel{
+			Letter:    value.Letter,
+			TotalSize: value.TotalSize,
+		})
 	}
+
+	phyDisks := []Models.PhysicalDiskInfoModel{}
+	for _, value := range viewmodel.PhysicalDisks {
+		phyDisks = append(phyDisks, Models.PhysicalDiskInfoModel{
+			FriendlyName: value.FriendlyName,
+			MediaType:    value.MediaType,
+			Size_Gb:      value.Size_Gb,
+		})
+	}
+
+	nets := []Models.NetworkInfoModel{}
+	for _, value := range viewmodel.Network {
+		nets = append(nets, Models.NetworkInfoModel{
+			NIC: value.NIC,
+			IP:  value.IP,
+		})
+	}
+
+	vgas := []Models.VGAInfoModel{}
+	for _, value := range viewmodel.VGA {
+		vgas = append(vgas, Models.VGAInfoModel{
+			Card_Name:      value.Card_Name,
+			Driver_Version: value.Driver_Version,
+			Memory_Gb:      value.Memory_Gb,
+		})
+	}
+
+	monitors := []Models.MonitorInfoModel{}
+	for _, value := range viewmodel.Monitor {
+		monitors = append(monitors, Models.MonitorInfoModel{
+			Device_Name: value.Device_Name,
+			Width:       value.Width,
+			Height:      value.Height,
+		})
+	}
+
+	model.Id = bson.NewObjectId()
+	model.DateTime = dateTime
+	model.EquipName = equipName
+	model.HDD = hdds
+	model.PhysicalDisks = phyDisks
+	model.Processor = Models.ProcessorInfoModel{Model: viewmodel.Processor.Model}
+	model.Motherboard = Models.MotherboardInfoModel{Model: viewmodel.Motherboard.Model}
+	model.Memory = Models.MemoryInfoModel{Memory_total_Gb: viewmodel.Memory.Memory_total_Gb}
+	model.Network = nets
+	model.VGA = vgas
+	model.Monitor = monitors
+	//model.Printer           []PrinterInfoModel
+	sysInfoCollection.Insert(model)
 
 	volatileModel.Id = bson.NewObjectId()
 	volatileModel.DateTime = dateTime

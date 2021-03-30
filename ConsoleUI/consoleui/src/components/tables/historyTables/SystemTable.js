@@ -29,7 +29,37 @@ export default function SystemTable(props) {
 
   const classes = useStyles();
   const volatileInfoRows = props.data?.VolatileInfo;
-  const permanentInfoRows = props.data?.PermanentInfo;
+  const permanentInfo = props.data?.PermanentInfo?.length > 0 ? props.data?.PermanentInfo[0] : null;
+  const hdds = permanentInfo?.HDD?.map(e => 
+    { 
+      return { Parameter: `Логический ${e.Letter}`, Value: e.TotalSize, DateTime: permanentInfo?.DateTime }
+    });
+  
+  const physicalDisks = permanentInfo?.PhysicalDisks?.map(e => 
+    { 
+      return { Parameter: `Физический ${e.MediaType} ${e.FriendlyName}`, Value: e.Size_Gb, DateTime: permanentInfo?.DateTime }
+    });
+
+  const monitors = permanentInfo?.Monitor?.map(e => 
+    { 
+      return { Parameter: `Монитор ${e.Device_Name}`, Value: `${e.Width}x${e.Height}`, DateTime: permanentInfo?.DateTime }
+    });
+
+  const vga = permanentInfo?.VGA?.map(e => 
+    { 
+      return { Parameter: `Видеоадаптер ${e.Card_Name}`, Value: `${e.Memory_Gb}`, DateTime: permanentInfo?.DateTime }
+    });
+
+  const permanentInfoRows = [
+    { Parameter: "Память, Гб", Value: permanentInfo?.Memory.Memory_total_Gb, DateTime: permanentInfo?.DateTime },
+    { Parameter: "Материнская плата", Value: permanentInfo?.Motherboard.Model, DateTime: permanentInfo?.DateTime },
+    { Parameter: "Процессор", Value: permanentInfo?.Processor.Model, DateTime: permanentInfo?.DateTime },
+  ]
+    .concat(hdds ?? [])
+    .concat(physicalDisks ?? [])    
+    .concat(monitors ?? [])
+    .concat(vga ?? []);
+
   return (
     <div className={classes.root}>
       |{props.equipName ? 

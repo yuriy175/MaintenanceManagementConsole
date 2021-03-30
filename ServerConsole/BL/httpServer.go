@@ -153,6 +153,33 @@ func (service *httpService) Start() {
 		service.sendSearchResults(w, equipType, equipName, startDate, endDate)
 	})
 
+	http.HandleFunc("/equips/GetPermanentData", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+		queryString := r.URL.Query()
+
+		equipTypes, ok := queryString["currType"]
+		if !ok || len(equipTypes[0]) < 1 {
+			log.Println("Url Param 'currType' is missing")
+			return
+		}
+		equipType := equipTypes[0]
+
+		equipNames, ok := queryString["equipName"]
+		if !ok {
+			log.Println("Url Param 'equipName' is missing")
+			return
+		}
+		equipName := equipNames[0]
+
+		log.Println("Url is: %s %s", equipType, equipName)
+
+		service.sendPermanentSearchResults(w, equipType, equipName)
+	})
+
 	address := Models.HttpServerAddress
 	fmt.Println("http server is listening... " + address)
 	http.ListenAndServe(address, nil)
@@ -189,6 +216,21 @@ func (service *httpService) sendSearchResults(
 	} else if equipType == "Stands" {
 		standInfo := dalService.GetStandInfo(equipName, startDate, endDate)
 		json.NewEncoder(w).Encode(standInfo)
+	}
+}
+
+func (service *httpService) sendPermanentSearchResults(
+	w http.ResponseWriter,
+	equipType string,
+	equipName string) {
+
+	dalService := service._dalService
+	if equipType == "SystemInfo" {
+		sysInfo := dalService.GetPermanentSystemInfo(equipName)
+		json.NewEncoder(w).Encode(sysInfo)
+	} else if equipType == "Software" {
+		swInfo := dalService.GetPermanentSystemInfo(equipName)
+		json.NewEncoder(w).Encode(swInfo)
 	}
 }
 
