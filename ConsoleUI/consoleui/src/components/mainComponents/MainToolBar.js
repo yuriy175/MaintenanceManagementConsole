@@ -55,7 +55,7 @@ export default function MainToolBar() {
   {
     currEquipDispatch({ type: 'RESET', payload: true });
     // new software & system info come very slowly
-    const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", currEquipState.equipInfo);
+    const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
     currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
 
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
