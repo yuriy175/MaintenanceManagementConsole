@@ -50,12 +50,15 @@ export default function SystemTable(props) {
       return { Parameter: `Видеоадаптер ${e.Card_Name}`, Value: `${e.Memory_Gb}`, DateTime: permanentInfo?.DateTime }
     });
 
-  const permanentInfoRows = [
-    { Parameter: "Память, Гб", Value: permanentInfo?.Memory.Memory_total_Gb, DateTime: permanentInfo?.DateTime },
-    { Parameter: "Материнская плата", Value: permanentInfo?.Motherboard.Model, DateTime: permanentInfo?.DateTime },
-    { Parameter: "Процессор", Value: permanentInfo?.Processor.Model, DateTime: permanentInfo?.DateTime },
-  ]
+  const processor = permanentInfo?.Processor?.Model ? [ { Parameter: "Процессор", Value: permanentInfo?.Processor.Model, DateTime: permanentInfo?.DateTime }] : []
+  const motherboard = permanentInfo?.Motherboard?.Model ? [ { Parameter: "Материнская плата", Value: permanentInfo?.Motherboard.Model, DateTime: permanentInfo?.DateTime }] : []
+  const memory = permanentInfo?.Memory?.Memory_total_Gb ? [ { Parameter: "Память, Гб", Value: permanentInfo?.Memory.Memory_total_Gb, DateTime: permanentInfo?.DateTime }] : []
+
+  const permanentInfoRows = 
+    processor
+    .concat(memory)
     .concat(hdds ?? [])
+    .concat(motherboard)    
     .concat(physicalDisks ?? [])    
     .concat(monitors ?? [])
     .concat(vga ?? []);
