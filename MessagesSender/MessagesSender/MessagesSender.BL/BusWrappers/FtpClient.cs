@@ -59,8 +59,9 @@ namespace MessagesSender.BL.Remoting
 
 			try
 			{
-				var sourceStream = File.OpenRead(filePath);
-				using (Stream requestStream = request.GetRequestStream())
+				using (var sourceStream = File.OpenRead(filePath))
+				{
+					using (Stream requestStream = request.GetRequestStream())
 					{
 						//requestStream.Write(fileContents, 0, fileContents.Length);
 						var buffer = new byte[4096 * 2];
@@ -70,6 +71,7 @@ namespace MessagesSender.BL.Remoting
 							requestStream.Write(buffer, 0, nRead);
 						}
 					}
+				}
 
 				using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
 				{

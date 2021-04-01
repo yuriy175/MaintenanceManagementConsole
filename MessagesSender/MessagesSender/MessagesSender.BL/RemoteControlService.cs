@@ -184,6 +184,8 @@ namespace MessagesSender.BL
 						}
 						catch (Exception ex)
 						{
+							Console.WriteLine(ex.Message);
+
 							await Task.Delay(1000);
 							++i;
 						}
@@ -191,8 +193,8 @@ namespace MessagesSender.BL
 
 					await _ftpClient.SendAsync(zip);
 
-					File.Delete(zip);
-					Directory.Delete(Path.Combine(Path.GetDirectoryName(zip), Path.GetFileNameWithoutExtension(zip)), true);
+					//File.Delete(zip);
+					//Directory.Delete(Path.Combine(Path.GetDirectoryName(zip), Path.GetFileNameWithoutExtension(zip)), true);
 
 					_xilog = string.Empty;
 				}
