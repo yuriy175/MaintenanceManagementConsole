@@ -57,8 +57,10 @@ func (client *mqttClient) Create(
 	var messagePubHandler mqtt.MessageHandler = func(c mqtt.Client, msg mqtt.Message) {
 		payload := msg.Payload()
 		topic := msg.Topic()
-		fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
+		//fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
 		if topic == Models.CommonTopicPath {
+			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
+
 			var content = map[string]string{}
 			json.Unmarshal([]byte(payload), &content)
 

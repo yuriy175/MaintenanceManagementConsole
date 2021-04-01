@@ -3,6 +3,7 @@ using Atlas.Common.Impls;
 using Atlas.Remoting.Core.Interfaces;
 using Atlas.Remoting.Impls;
 using MessagesSender.BL;
+using MessagesSender.BL.Helpers;
 using MessagesSender.BL.Remoting;
 using MessagesSender.Core.Interfaces;
 using MessagesSender.DAL;
@@ -33,7 +34,11 @@ namespace MessagesSender
                typeof(ITopicService),
                typeof(TopicService));
 
-            services.AddSingleton(
+			services.AddSingleton(
+			   typeof(IZipService),
+			   typeof(ZipService));
+
+			services.AddSingleton(
                typeof(ICommandService),
                typeof(CommandService));
 
@@ -137,7 +142,11 @@ namespace MessagesSender
         /// <returns>updated service collection.</returns>
         public static IServiceCollection AddRemotingServices(this IServiceCollection services)
         {
-            services.AddSingleton(
+			services.AddSingleton(
+			   typeof(IFtpClient),
+			   typeof(FtpClient));
+
+			services.AddSingleton(
                typeof(IWebClientService),
                typeof(WebClientService));
             

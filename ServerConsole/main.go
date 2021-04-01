@@ -24,7 +24,7 @@ func main() {
 	go webSocketService.Start()
 	go httpService.Start()
 
-	mqttReceiverService.SendBroadcastCommand("reconnect")
+	go mqttReceiverService.SendBroadcastCommand("reconnect")
 
 	fmt.Println("App Go started")
 	<-intCh

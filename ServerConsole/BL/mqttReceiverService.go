@@ -52,14 +52,24 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipCon
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 
+	fmt.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
+
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
+
+	fmt.Printf("UpdateMqttConnections unlocked")
+
 	if client, ok := mqttConnections[rootTopic]; ok {
 		fmt.Println(rootTopic + " already exists")
 		if isOff {
 			go client.Disconnect()
 			delete(mqttConnections, rootTopic)
 			fmt.Println(rootTopic + " deleted")
+		}
+
+		// if the topic is observed by any client -> send activate command
+		if service._webSocketService.HasActiveClients(rootTopic) {
+			go service.SendCommand(rootTopic, "activate")
 		}
 
 		return
@@ -85,6 +95,8 @@ func (service *mqttReceiverService) CreateCommonConnections() {
 }
 
 func (service *mqttReceiverService) SendCommand(equipment string, command string) {
+	fmt.Printf("SendCommand from topic: %s %s\n", equipment, command)
+
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 

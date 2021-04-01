@@ -15,6 +15,7 @@ type IWebSocketService interface {
 	Start()
 	Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string)
 	UpdateWebClients(state *Models.EquipConnectionState)
+	HasActiveClients(topic string) bool
 }
 
 type webSocketService struct {
@@ -78,18 +79,18 @@ func (service *webSocketService) Start() {
 				for _, uid := range sessionUids {
 
 					//find websocket
-					log.Println(" message topic %s data %s to web sock %s", d.Topic, d.Data, uid)
+					//log.Println(" message topic %s data %s to web sock %s", d.Topic, d.Data, uid)
 
 					v := service._webSocketConnections[uid]
 					b, err := json.Marshal(d)
 					if v == nil || !v.IsValid() {
 						log.Println(" no connection for  %s", uid)
 					} else if err = v.WriteMessage(b); err != nil {
-						log.Println("send message error for  %s", uid)
+						//log.Println("send message error for  %s", uid)
 					}
 				}
 			}
-			
+
 			service._mtx.Unlock()
 		}
 	}()
@@ -107,6 +108,8 @@ func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo 
 
 	topicConnections[activatedEquipInfo] = append(topicConnections[activatedEquipInfo], sessionUid)
 
+	fmt.Printf("websocket Activate %s\n", activatedEquipInfo)
+
 	return
 }
 
@@ -120,4 +123,9 @@ func (service *webSocketService) UpdateWebClients(state *Models.EquipConnectionS
 		b, _ := json.Marshal(stateVM)
 		ws.WriteMessage(b)
 	}
+}
+
+func (service *webSocketService) HasActiveClients(topic string) bool {
+	_, ok := service._topicConnections[topic]
+	return ok
 }
