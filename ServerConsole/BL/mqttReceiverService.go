@@ -69,7 +69,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipCon
 
 		// if the topic is observed by any client -> send activate command
 		if service._webSocketService.HasActiveClients(rootTopic) {
-			go service.SendCommand(rootTopic, "activate")
+			// go service.SendCommand(rootTopic, "activate")
 		}
 
 		return

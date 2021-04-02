@@ -34,7 +34,7 @@ const DicomCard = React.memo((props) => {
               <CardRow   
                 descr={'Состояние'} 
                 value={ i.State ? "Включен" : "Нет связи"} 
-                rightColor={0? "green" : "red"}
+                rightColor={i.State ? "green" : "red"}
               ></CardRow>
             </div>
             ))

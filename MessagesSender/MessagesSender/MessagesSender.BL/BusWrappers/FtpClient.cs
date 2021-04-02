@@ -1,4 +1,7 @@
+using Atlas.Common.Core.Interfaces;
+using MessagesSender.BL.BusWrappers.Helpers;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -15,20 +18,33 @@ namespace MessagesSender.BL.Remoting
 	/// </summary>
     class FtpClient : IFtpClient
 	{
+		private readonly IConfigurationService _configurationService;
 		private readonly ILogger _logger;
 		private readonly ITopicService _topicService;
+
+		private (string HostName, string UserName, string Password)? _connectionProps = null;
 
 		/// <summary>
 		/// public constructor
 		/// </summary>
+		/// <param name="configurationService">configuration service</param>
 		/// <param name="logger">logger</param>
 		/// <param name="topicService">topic service</param>
 		public FtpClient(
+			IConfigurationService configurationService,
 			ILogger logger,
 			ITopicService topicService)
 		{
+			_configurationService = configurationService;
 			_logger = logger;
 			_topicService = topicService;
+
+			_configurationService.AddConfigFile(
+				Path.Combine(
+					Path.GetDirectoryName(
+						typeof(IFtpClient).Assembly.Location), "ftpsettings.json"));
+
+			CreateConnectionProps();
 		}
 
 		/// <summary>
@@ -38,22 +54,19 @@ namespace MessagesSender.BL.Remoting
 		/// <returns>result</returns>	
 		public async Task<bool> SendAsync(string filePath)
 		{
-			// FtpWebRequest request = (FtpWebRequest)WebRequest.Create("ftp://193.123.58.227:21");
-			var uri = "ftp://193.123.58.227:21/files/" + Path.GetFileNameWithoutExtension(filePath) + ".zip"; //@"/" + "logs.zip";
+			if (!_connectionProps.HasValue)
+			{
+				return false;
+			}
+
+			//var uri = "ftp://193.123.58.227:21/files/" + Path.GetFileNameWithoutExtension(filePath) + ".zip"; //@"/" + "logs.zip";
+			var uri = _connectionProps.Value.HostName + Path.GetFileNameWithoutExtension(filePath) + ".zip"; //@"/" + "logs.zip";
 			FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uri);
 			request.Method = WebRequestMethods.Ftp.UploadFile;
 
 			// This example assumes the FTP site uses anonymous logon.
-			request.Credentials = new NetworkCredential("mqttftp", "medtex");
-
-			// Copy the contents of the file to the request stream.
-			//byte[] fileContents;
-			//using (StreamReader sourceStream = new StreamReader(filePath)) //  "testfile.txt"))
-			//{
-			//	fileContents = sourceStream.ReadBlock(fileContents, 0, )// Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
-			//}
-
-			//request.ContentLength = fileContents.Length;
+			//request.Credentials = new NetworkCredential("mqttftp", "medtex");
+			request.Credentials = new NetworkCredential(_connectionProps.Value.UserName, _connectionProps.Value.Password);
 			request.UsePassive = false;
 			request.UseBinary = true;
 
@@ -86,5 +99,18 @@ namespace MessagesSender.BL.Remoting
 
 			return true;
 		}
-    }
+
+		private void CreateConnectionProps()
+		{
+			var connectionString = _configurationService.Get<string>(Constants.FtpClientConnectionStringName, null);
+			try
+			{
+				_connectionProps = ConnectionPropsCreator.Create(connectionString);
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Ftp client wrong connection string");
+			}
+		}
+	}
 }

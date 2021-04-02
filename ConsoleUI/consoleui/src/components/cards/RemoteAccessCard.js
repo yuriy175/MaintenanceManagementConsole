@@ -35,6 +35,7 @@ const RemoteAccessCard = React.memo((props) => {
     const res = await EquipWorker.XilibLogsOn(equipInfo);
   };
 
+  const remoteaccess = props.remoteaccess;
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -43,7 +44,12 @@ const RemoteAccessCard = React.memo((props) => {
         </Typography>
         <CardButtonedRow descr={'TeamViewer'} title={'Запустить'} onClick={onRunTeamViewer}></CardButtonedRow>
         <CardButtonedRow descr={'Логи Атлас'} title={'Прислать'} onClick={onAtlasLogs}></CardButtonedRow>
-        <CardButtonedRow descr={'Логи Xilib'} title={'Включить'} onClick={onXilibLogs}></CardButtonedRow>
+        <CardButtonedRow descr={'Логи Xilib'} 
+          title={!remoteaccess.xilogs? 'Не опред' : remoteaccess.xilogs.on ? 'Выключить' : 'Включить'} 
+          onClick={onXilibLogs}
+          buttonColor={!remoteaccess.xilogs? undefined : remoteaccess.xilogs.on ? "secondary" : "primary"}
+          disabled={!remoteaccess.xilogs? undefined : true}
+        ></CardButtonedRow>
         <CardButtonedRow descr={'TaskManager'} title={'Запустить'} onClick={onRunTaskManager}></CardButtonedRow>
         {/* <Typography className={classes.pos} color="textSecondary">
           TeamViewer

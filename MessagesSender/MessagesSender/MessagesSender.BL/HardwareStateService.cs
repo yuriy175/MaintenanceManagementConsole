@@ -62,7 +62,7 @@ namespace MessagesSender.BL
             _sendingService = sendingService;
             _webClientService = webClientService;
 
-            _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
+			_eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
             SubscribeMQRecevers();

@@ -9,6 +9,7 @@
 	"/dicom",
 	"/ARM/Hardware/Complex",
 	"/organauto",
-	"/ARM/Software/Complex"
+	"/ARM/Software/Complex",
+	"/remoteaccess"
 	]
 }

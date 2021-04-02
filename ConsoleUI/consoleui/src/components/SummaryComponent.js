@@ -45,7 +45,7 @@ export default function SummaryComponent(props) {
         <DosimeterCard dosimeter={currEquipState.dosimeter}></DosimeterCard>
       </div>
       <div className={classes.column}>
-        <RemoteAccessCard equipInfo={currEquipState.equipInfo}></RemoteAccessCard>
+        <RemoteAccessCard equipInfo={currEquipState.equipInfo} remoteaccess={currEquipState.remoteaccess}></RemoteAccessCard>
         <DicomCard dicom={currEquipState.dicom}></DicomCard>
         <SoftwareCard software={currEquipState.software}></SoftwareCard>
       </div>

@@ -1,0 +1,4 @@
+{
+  "FtpClientConnectionString": "Server=ftp://193.123.58.227:21/files/;User=mqttftp;Password=medtex"
+
+}

@@ -103,6 +103,11 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETDICOM', payload: values }); 
                 }
+                else if(data?.Topic.includes('/remoteaccess'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETREMOTEACCESS', payload: values }); 
+                }
                 else if(data?.Topic.includes('Subscribe'))
                 {
                     allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 

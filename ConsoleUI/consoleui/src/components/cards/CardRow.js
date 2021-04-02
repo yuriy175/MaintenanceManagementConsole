@@ -86,7 +86,12 @@ export function CardButtonedRow(props) {
         <Typography className={`${classes.descr} ${classes.buttonDescr}`} color="textSecondary">
           {props.descr}
         </Typography>
-        <Button variant="contained" color="primary" className={classes.button} onClick={props.onClick}>
+        <Button variant="contained" 
+            color={props.buttonColor ? props.buttonColor : "primary"}
+            className={classes.button} 
+            onClick={props.onClick} 
+            disabled={props.disabled ? "disabled" : ""}
+        >
           {props.title}
         </Button>
     </div>

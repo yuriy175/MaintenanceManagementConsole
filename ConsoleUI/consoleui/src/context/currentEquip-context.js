@@ -16,6 +16,7 @@ const initialState = {
   system:{},
   organAuto:{},
   software:{},
+  remoteaccess:{},
 };
 
 function reducer(state, action) {
@@ -93,6 +94,12 @@ function reducer(state, action) {
       return {
         ...state,
         software: action.payload
+      };
+    }
+    case 'SETREMOTEACCESS': {
+      return {
+        ...state,
+        remoteaccess: action.payload
       };
     }
     case 'SETDICOM': {

@@ -35,7 +35,7 @@ namespace MessagesSender.BL
 		private const string XiLogFolderPathName = @"Logs\XiLogs";
 		private const string TaskManPath = @"C:\Windows\System32\Taskmgr.exe";
 		private const string XilogsFolder = @".\XiLogs\xilogs.exe";
-		private const string XilogsCommandLineFormat = "1 {0} {1} \"{2}\"";
+		private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
 
 		private readonly IConfigurationService _configurationService;
         private readonly ISettingsEntityService _dbSettingsEntityService;
@@ -80,6 +80,7 @@ namespace MessagesSender.BL
 			_ftpClient = ftpClient;
 			_topicService = topicService;
 
+			_eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
 			_eventPublisher.RegisterRunTVCommandArrivedEvent(() => RunTeamViewerAsync());
             _eventPublisher.RegisterRunTaskManCommandEvent(() => RunTaskManagerAsync());
             _eventPublisher.RegisterSendAtlasLogsCommandArrivedEvent(() => SendAtlasLogsAsync());
@@ -160,21 +161,33 @@ namespace MessagesSender.BL
 						string.Format(
 							XilogsCommandLineFormat,
 							//xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
+							"1",
 							XilogModes.Normal,
 							XilogLevels.Info,
 							xilog
 							));
 
+					await SendXilogsStateStateAsync(true);
 					_xilog = xilog;
 				}
 				else
 				{
-					RunCommand(XilogsFolder, string.Empty);
+					RunCommand(
+						XilogsFolder,
+						string.Format(
+							XilogsCommandLineFormat,
+							//xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
+							"0",
+							XilogModes.Normal,
+							XilogLevels.Info,
+							_xilog
+							));
 
 					await Task.Yield();
 
 					int i = 0;
 					var zip = string.Empty;
+					/*zip = await _zipService.ZipFileAsync(_xilog);
 					while (i < 5)
 					{
 						try
@@ -189,9 +202,10 @@ namespace MessagesSender.BL
 							await Task.Delay(1000);
 							++i;
 						}
-					}
+					}*/
 
-					await _ftpClient.SendAsync(zip);
+					var result = await _ftpClient.SendAsync(zip);
+					await SendXilogsStateStateAsync(false, result);
 
 					//File.Delete(zip);
 					//Directory.Delete(Path.Combine(Path.GetDirectoryName(zip), Path.GetFileNameWithoutExtension(zip)), true);
@@ -207,6 +221,13 @@ namespace MessagesSender.BL
 			return true;
         }
 
+		private async Task<bool> OnActivateArrivedAsync()
+		{
+			await SendXilogsStateStateAsync(false);
+
+			return true;
+		}
+
 		private void RunCommand(string exePath, string args)
 		{
 			var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), exePath);
@@ -219,6 +240,19 @@ namespace MessagesSender.BL
 			processStartInfo.WorkingDirectory = Path.GetDirectoryName(path);
 
 			var process = Process.Start(processStartInfo);
+
+			process.WaitForExit();
+		}
+
+		private async Task SendXilogsStateStateAsync(bool isOn, bool? ftpSendResult = null)
+		{
+			await _sendingService.SendInfoToMqttAsync(
+				MQMessages.RemoteAccess,
+				new
+				{
+					Xilogs = isOn,
+					FtpSendResult = ftpSendResult
+				});
 		}
 	}
 }

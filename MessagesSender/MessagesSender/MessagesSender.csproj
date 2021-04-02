@@ -76,6 +76,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ContentWithTargetPath Remove="Resources\ftpsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="MessagesSender.BL\CommandService.cs~RFb067ed68.TMP" />
 	</ItemGroup>
 	
