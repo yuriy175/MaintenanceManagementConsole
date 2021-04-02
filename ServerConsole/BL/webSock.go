@@ -1,6 +1,7 @@
 package BL
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -39,23 +40,23 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 	sock.Conn = conn
 	log.Println("web sock created Url %s", uid)
 
+	// return sock
+
+	/**/
+	go func() {
+		for {
+			// Read message from browser
+			_, msg, err := conn.ReadMessage()
+			if err != nil {
+				return
+			}
+	
+			// Print the message to the console
+			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))	
+		}
+	}()
+
 	return sock
-
-	/*for {
-		// Read message from browser
-		msgType, msg, err := conn.ReadMessage()
-		if err != nil {
-			return
-		}
-
-		// Print the message to the console
-		fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-		// Write message back to browser
-		if err = conn.WriteMessage(msgType, msg); err != nil {
-			return
-		}
-	}*/
 }
 
 func (ws *webSock) WriteMessage(data []byte) error {
