@@ -59,12 +59,23 @@ export function useWebSocket(props) {
                 console.log("Server: " + e.data + "\n");
                 const data = JSON.parse(e.data);
         
-                const topic = getEquipFromTopic(data?.Topic);
-                if(!topic || topic !== equipInfo.current){
+                const topic = data?.Topic;
+                if(!topic){
                     return;
                 }
 
-                const path = data.Topic.replace(topic, '');
+                if(topic.startsWith('Subscribe'))
+                {
+                    allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
+                    return;
+                }   
+
+                const equip = getEquipFromTopic(data?.Topic);
+                if(!equip || equip !== equipInfo.current){
+                    return;
+                }
+
+                const path = data.Topic.replace(equip, '');
                 if(path.startsWith('/ARM/Hardware'))
                 {
                     try
@@ -127,10 +138,6 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETREMOTEACCESS', payload: values }); 
                 }
-                else if(path.startsWith('Subscribe'))
-                {
-                    allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
-                }   
             };
         }
     }, [connection]);
