@@ -3,7 +3,7 @@ import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
 import { AllEquipsContext } from '../context/allEquips-context';
 
-import {sessionUid} from '../utilities/utils'
+import {sessionUid, getEquipFromTopic} from '../utilities/utils'
 
 export function useWebSocket(props) {
     console.log(`useWebSocket `+sessionUid);
@@ -11,15 +11,24 @@ export function useWebSocket(props) {
     const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
     const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
     const [connection, setConnection] = useState(null);
+    const equipInfo = useRef(currEquipState.equipInfo);
     
-    useEffect(() => {
+    function createSocket(){
         try {            
             const socket = new WebSocket(WebSocketAddress + "/websocket?uid=" + sessionUid);
             setConnection(socket);
         } catch (e) {
             console.log(e);
         }
+    }
+
+    useEffect(() => {
+        createSocket();
     }, []);
+
+    useEffect(() => {
+        equipInfo.current = currEquipState.equipInfo;
+    }, [currEquipState.equipInfo]);
 
     useEffect(() => {
         if (connection) {
@@ -29,29 +38,28 @@ export function useWebSocket(props) {
             };
         
             connection.onclose = function(event) {
-                console.log(`Status: Connected ${sessionUid}\n`);
+                console.log(`Status: Closed ${sessionUid}\n`);
+                setTimeout(function() {
+                    createSocket();
+                  }, 1000);
+              };
+              
+            connection.onerror = function(err) {
+                console.error('Socket encountered error: ', err.message, 'Closing socket');
+                connection.close();
               };
 
             connection.onmessage = function (e) {
                 console.log("Server: " + e.data + "\n");
                 const data = JSON.parse(e.data);
         
-                // if(data?.Topic.includes('/ARM/Hardware/HDD'))
-                // {
-                //     const values = data? JSON.parse(data.Data) : null;
-                //     currEquipDispatch({ type: 'SETHDDS', payload: values }); 
-                // }
-                // else if(data?.Topic.includes('/ARM/Hardware/Memory'))
-                // {
-                //     const values = data? JSON.parse(data.Data) : null;
-                //     currEquipDispatch({ type: 'SETMEMORY', payload: values }); 
-                // }
-                // else if(data?.Topic.includes('/ARM/Hardware/Processor'))
-                // {
-                //     const values = data? JSON.parse(data.Data) : null;
-                //     currEquipDispatch({ type: 'SETCPU', payload: values }); 
-                // }   
-                if(data?.Topic.includes('/ARM/Hardware'))
+                const topic = getEquipFromTopic(data?.Topic);
+                if(!topic || topic !== equipInfo.current){
+                    return;
+                }
+
+                const path = data.Topic.replace(topic, '');
+                if(path.startsWith('/ARM/Hardware'))
                 {
                     try
                     {
@@ -63,52 +71,52 @@ export function useWebSocket(props) {
                         console.log(e);
                     }                    
                 }             
-                else if(data?.Topic.includes('/organauto'))
+                else if(path.startsWith('/organauto'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETORGANAUTO', payload: values }); 
                 }                
-                else if(data?.Topic.includes('/stand'))
+                else if(path.startsWith('/stand'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETSTAND', payload: values }); 
                 }
-                else if(data?.Topic.includes('/generator'))
+                else if(path.startsWith('/generator'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETGENERATOR', payload: values }); 
                 }
-                else if(data?.Topic.includes('/detector'))
+                else if(path.startsWith('/detector'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETDETECTOR', payload: values }); 
                 }
-                else if(data?.Topic.includes('/dosimeter'))
+                else if(path.startsWith('/dosimeter'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETDOSIMETER', payload: values }); 
                 }
-                else if(data?.Topic.includes('/collimator'))
+                else if(path.startsWith('/collimator'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETCOLLIMATOR', payload: values }); 
                 }
-                else if(data?.Topic.includes('/ARM/Software'))
+                else if(path.startsWith('/ARM/Software'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETSOFTWARE', payload: values }); 
                 }
-                else if(data?.Topic.includes('/dicom'))
+                else if(path.startsWith('/dicom'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETDICOM', payload: values }); 
                 }
-                else if(data?.Topic.includes('/remoteaccess'))
+                else if(path.startsWith('/remoteaccess'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETREMOTEACCESS', payload: values }); 
                 }
-                else if(data?.Topic.includes('Subscribe'))
+                else if(path.startsWith('Subscribe'))
                 {
                     allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
                 }   

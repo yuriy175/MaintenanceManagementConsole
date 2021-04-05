@@ -53,13 +53,14 @@ export default function MainToolBar() {
 
   const onEquipChanged = async equipInfo =>
   {
-    currEquipDispatch({ type: 'RESET', payload: true });
+    currEquipDispatch({ type: 'RESET', payload: true });    
+    currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
+
     // new software & system info come very slowly
     const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
     currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
 
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
-    currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
   }
   
   useEffect(() => {

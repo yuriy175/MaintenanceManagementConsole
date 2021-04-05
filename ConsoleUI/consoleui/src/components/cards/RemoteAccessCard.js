@@ -48,7 +48,7 @@ const RemoteAccessCard = React.memo((props) => {
           title={!remoteaccess.xilogs? 'Не опред' : remoteaccess.xilogs.on ? 'Выключить' : 'Включить'} 
           onClick={onXilibLogs}
           buttonColor={!remoteaccess.xilogs? undefined : remoteaccess.xilogs.on ? "secondary" : "primary"}
-          disabled={!remoteaccess.xilogs? undefined : true}
+          disabled={!remoteaccess.xilogs? false : true}
         ></CardButtonedRow>
         <CardButtonedRow descr={'TaskManager'} title={'Запустить'} onClick={onRunTaskManager}></CardButtonedRow>
         {/* <Typography className={classes.pos} color="textSecondary">

@@ -11,4 +11,15 @@ export function getUSFullDate(date)
     return date.getFullYear() + "-" + leadZero(date.getMonth() + 1) + "-"+ leadZero(date.getDate());
 }
 
+export function getEquipFromTopic(topic ){
+	const topicParts = topic.split("/");
+    if(topicParts.length < 2){
+        return null;
+    }
+
+	const equip = `${topicParts[0]}/${topicParts[1]}`;
+
+	return equip;
+}
+
 export const sessionUid = generateSessionUid();

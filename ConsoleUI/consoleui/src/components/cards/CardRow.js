@@ -90,7 +90,7 @@ export function CardButtonedRow(props) {
             color={props.buttonColor ? props.buttonColor : "primary"}
             className={classes.button} 
             onClick={props.onClick} 
-            disabled={props.disabled ? "disabled" : ""}
+            disabled={props.disabled}
         >
           {props.title}
         </Button>
