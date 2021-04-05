@@ -250,7 +250,7 @@ namespace MessagesSender.BL
 				MQMessages.RemoteAccess,
 				new
 				{
-					Xilogs = isOn,
+					Xilogs = new { on = isOn },
 					FtpSendResult = ftpSendResult
 				});
 		}
