@@ -107,10 +107,15 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETCOLLIMATOR', payload: values }); 
                 }
-                else if(path.startsWith('/ARM/Software'))
+                else if(path.startsWith('/ARM/Software/Complex'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETSOFTWARE', payload: values }); 
+                }
+                else if(path.startsWith('/ARM/Software/msg'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETSOFTWAREMSG', payload: values }); 
                 }
                 else if(path.startsWith('/dicom'))
                 {

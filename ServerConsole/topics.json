@@ -10,6 +10,7 @@
 	"/ARM/Hardware/Complex",
 	"/organauto",
 	"/ARM/Software/Complex",
-	"/remoteaccess"
+	"/remoteaccess",
+	"/ARM/Software/msg"
 	]
 }

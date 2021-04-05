@@ -60,6 +60,9 @@ export default function MainToolBar() {
     const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
     currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
 
+    const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
+    currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
+
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   }
   

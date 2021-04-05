@@ -148,8 +148,7 @@ namespace MessagesSender.BL
 
         // Callback method that gets executed when an event is
         // reported to the subscription.
-        private void EventLogEventRead(object obj,
-            EventRecordWrittenEventArgs arg)
+        private void EventLogEventRead(object obj, EventRecordWrittenEventArgs arg)
         {
             var eventRecord = arg.EventRecord;
 			try
@@ -157,16 +156,7 @@ namespace MessagesSender.BL
 				// Make sure there was no error reading the event.
 				if (eventRecord != null && eventRecord.Level == 2)
 				{
-					_sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
-					new
-					{
-						ErrorDescriptions = new[] {
-						new {
-							Code = eventRecord.LevelDisplayName,
-							Description = eventRecord.ProviderName,
-						}
-						}
-					});
+                    SendCommonErrorAsync(eventRecord.LevelDisplayName, eventRecord.ProviderName);
 				}
 				else
 				{
@@ -186,6 +176,9 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (string, IEnumerable<string>)>(
                         (MQCommands.UserLoggedIn, userProps => OnUserLogIn(userProps)));
 
+                _mqService.Subscribe<MQCommands, int>(
+                        (MQCommands.Message, code => SendAtlasErrorAsync(code, string.Empty)));
+
                 // _mqService.Subscribe<MQCommands, string>(
                 //        (MQCommands.UserLoggedOut, userName => OnUserLogOut(userName)));
             });
@@ -201,6 +194,34 @@ namespace MessagesSender.BL
                             User = userProps.UserName,
                             Role = userProps.UserRoles?.FirstOrDefault(),
                         }
+                    });
+        }
+
+        private void SendCommonErrorAsync(string code, string description)
+        {
+            _ = _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareMsgInfo,
+                    new
+                    {
+                        ErrorDescriptions = new[] {
+                        new {
+                            Code = code,
+                            Description = description,
+                        }
+                    }
+                    });
+        }
+
+        private void SendAtlasErrorAsync(int code, string description)
+        {
+            _ = _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareMsgInfo,
+                    new
+                    {
+                        AtlasErrorDescriptions = new[] {
+                        new {
+                            Code = code,
+                            Description = description,
+                        }
+                    }
                     });
         }
 

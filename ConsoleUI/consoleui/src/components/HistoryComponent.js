@@ -50,7 +50,7 @@ export default function HistoryComponent(props) {
   const [startDate, setStartDate] = useState(getUSFullDate(new Date(curDate.setDate(curDate.getDate() - SearchPeriod))));
   const [endDate, setEndDate] = useState(getUSFullDate(new Date()));
   const [equipName, setEquipName] = useState(currEquipState?.equipInfo);
-  const [currType, setCurrType] = useState("SystemInfo");
+  const [currType, setCurrType] = useState("Software");//"SystemInfo");
   
   const [systemInfos, setSystemInfos] = useState([]);  
   const [organAutos, setOrganAutos] = useState([]);  
@@ -169,7 +169,7 @@ export default function HistoryComponent(props) {
         {currType === "OrganAutos" ? <OrganAutoTable data={organAutos}></OrganAutoTable> : <></>}     
         {currType === "Generators" ? <GeneratorTable data={generators}></GeneratorTable> : <></>}    
         {currType === "Studies" ? <StudiesTable data={studies}></StudiesTable> : <></>}  
-        {currType === "Software" ? <SofwareTable data={software}></SofwareTable> : <></>}  
+        {currType === "Software" ? <SofwareTable equipName={equipName} data={software}></SofwareTable> : <></>}  
         {currType === "Detectors" ? <DetectorTable data={detectors}></DetectorTable> : <></>}  
         {currType === "Stands" ? <StandTable data={stands}></StandTable> : <></>}  
         {currType === "Dicom" ? <DicomTable data={dicom}></DicomTable> : <></>}  

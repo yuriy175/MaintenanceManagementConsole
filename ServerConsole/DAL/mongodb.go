@@ -20,7 +20,7 @@ type IDalService interface {
 	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel
 	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
 	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel
-	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel
+	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel
 	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
 	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel
 
@@ -55,6 +55,7 @@ func (service *dalService) Start() {
 	sysInfoCollection := db.C(Models.SystemInfoTableName)
 	sysVolatileInfoCollection := db.C(Models.SystemVolatileInfoTableName)
 	softwareInfoCollection := db.C(Models.SoftwareInfoTableName)
+	softwareVolatileInfoCollection := db.C(Models.SoftwareVolatileInfoTableName)
 	dicomInfoCollection := db.C(Models.DicomInfoTableName)
 	standInfoCollection := db.C(Models.StandInfoTableName)
 
@@ -92,14 +93,14 @@ func (service *dalService) Start() {
 				viewmodel := Models.SystemInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
 				service.insertSystemInfo(&viewmodel, d.Topic, sysInfoCollection, sysVolatileInfoCollection)
-			} else if strings.Contains(d.Topic, "/ARM/Software") {
-				model := Models.SoftwareInfoModel{}
-				json.Unmarshal([]byte(d.Data), &model)
-				model.Id = bson.NewObjectId()
-				model.DateTime = time.Now()
-				model.EquipName = Utils.GetEquipFromTopic(d.Topic)
-
-				softwareInfoCollection.Insert(model)
+			} else if strings.Contains(d.Topic, "/ARM/Software/Complex") {
+				viewmodel := Models.SoftwareInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+				service.insertPermanentSoftwareInfo(&viewmodel, d.Topic, softwareInfoCollection)
+			} else if strings.Contains(d.Topic, "/ARM/Software/msg") {
+				viewmodel := Models.SoftwareInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+				service.insertPermanentSoftwareInfo(&viewmodel, d.Topic, softwareVolatileInfoCollection)
 			} else if strings.Contains(d.Topic, "/dicom") {
 				model := Models.DicomsInfoModel{}
 				json.Unmarshal([]byte(d.Data), &model)
@@ -188,20 +189,21 @@ func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Tim
 	return genInfo
 }
 
-func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) []Models.SoftwareInfoModel {
+func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel {
 	session := service.createSession()
 	defer session.Close()
 
-	swInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
+	swVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
 
-	// // критерий выборки
 	query := service.getQuery(equipName, startDate, endDate)
-
 	// // объект для сохранения результата
-	swInfo := []Models.SoftwareInfoModel{}
-	swInfoCollection.Find(query).Sort("-datetime").All(&swInfo)
+	swInfo := service.GetPermanentSoftwareInfo(equipName)
+	swInfos := []Models.SoftwareInfoModel{*swInfo}
 
-	return swInfo
+	swVolatileInfo := []Models.SoftwareVolatileInfoModel{}
+	swVolatileInfoCollection.Find(query).Sort("-datetime").All(&swVolatileInfo)
+
+	return &Models.FullSoftwareInfoModel{swInfos, swVolatileInfo}
 }
 
 func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel {
@@ -253,9 +255,11 @@ func (service *dalService) GetPermanentSoftwareInfo(equipName string) *Models.So
 	session := service.createSession()
 	defer session.Close()
 
-	// softwareInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
+	softwareInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
 
 	softwareInfo := Models.SoftwareInfoModel{}
+	sysQuery := bson.M{"equipname": equipName}
+	softwareInfoCollection.Find(sysQuery).Sort("-datetime").One(&softwareInfo)
 
 	return &softwareInfo
 }
@@ -387,6 +391,68 @@ func (service *dalService) insertSystemInfo(
 	volatileModel.Memory_Memory_free_Gb = viewmodel.Memory.Memory_free_Gb
 	sysVolatileInfoCollection.Insert(volatileModel)
 }
+
+////
+func (service *dalService) insertPermanentSoftwareInfo(
+	viewmodel *Models.SoftwareInfoViewModel,
+	topic string,
+	swInfoCollection *mgo.Collection) {
+	dateTime := time.Now()
+	equipName := Utils.GetEquipFromTopic(topic)
+
+	model := Models.SoftwareInfoModel{}
+
+	dbs := []Models.DatabasesModel{}
+	for _, value := range viewmodel.Databases {
+		dbs = append(dbs, Models.DatabasesModel{
+			DB_name:        value.DB_name,
+			DB_Status:      value.DB_Status,
+			DB_compability: value.DB_compability,
+		})
+	}
+
+	model.Id = bson.NewObjectId()
+	model.DateTime = dateTime
+	model.EquipName = equipName
+	model.Databases = dbs
+
+	model.Sysinfo = Models.SysInfoModel{
+		OS:           viewmodel.Sysinfo.OS,
+		Version:      viewmodel.Sysinfo.Version,
+		Build_Number: viewmodel.Sysinfo.Build_Number,
+	}
+	model.MSSQL = Models.MSSQLInfoModel{
+		SQL:     viewmodel.MSSQL.SQL,
+		Version: viewmodel.MSSQL.Version,
+		Status:  viewmodel.MSSQL.Status,
+	}
+	model.Atlas = Models.AtlasInfoModel{
+		Atlas_Version:  viewmodel.Atlas.Atlas_Version,
+		Complex_type:   viewmodel.Atlas.Complex_type,
+		Language:       viewmodel.Atlas.Language,
+		Multimonitor:   viewmodel.Atlas.Multimonitor,
+		XiLibs_Version: viewmodel.Atlas.XiLibs_Version,
+	}
+
+	swInfoCollection.Insert(model)
+}
+
+func (service *dalService) insertVolatileSoftwareInfo(
+	viewmodel *Models.SoftwareMessageViewModel,
+	topic string,
+	swVolatileInfoCollection *mgo.Collection) {
+	dateTime := time.Now()
+	equipName := Utils.GetEquipFromTopic(topic)
+	volatileModel := Models.SoftwareVolatileInfoModel{}
+	volatileModel.Id = bson.NewObjectId()
+	volatileModel.DateTime = dateTime
+	volatileModel.EquipName = equipName
+	//volatileModel.ErrorCode = viewmodel.ErrorCode
+	//volatileModel.ErrorDescription = viewmodel.ErrorDescription
+	swVolatileInfoCollection.Insert(volatileModel)
+}
+
+////
 
 func (service *dalService) ensureIndeces(sysInfoCollection *mgo.Collection, keys []string) {
 	idx := mgo.Index{

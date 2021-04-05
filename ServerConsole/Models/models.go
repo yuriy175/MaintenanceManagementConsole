@@ -78,16 +78,16 @@ type GeneratorInfoModel struct {
 	ErrorDescriptions []ErrorDescription
 }
 
-type SoftwareInfoModel struct {
-	Id                bson.ObjectId `bson:"_id"`
-	DateTime          time.Time
-	EquipName         string
-	SettingsDB        bool
-	ObservationsDB    bool
-	Version           string
-	XilibVersion      string
-	ErrorDescriptions []ErrorDescription
-}
+// type SoftwareInfoModel struct {
+// 	Id                bson.ObjectId `bson:"_id"`
+// 	DateTime          time.Time
+// 	EquipName         string
+// 	SettingsDB        bool
+// 	ObservationsDB    bool
+// 	Version           string
+// 	XilibVersion      string
+// 	ErrorDescriptions []ErrorDescription
+// }
 
 type DicomInfo struct {
 	Name  string
@@ -201,4 +201,53 @@ type SystemInfoModel struct {
 type FullSystemInfoModel struct {
 	PermanentInfo []SystemInfoModel
 	VolatileInfo  []SystemVolatileInfoModel
+}
+
+type SysInfoModel struct {
+	OS           string
+	Version      string
+	Build_Number string
+}
+
+type MSSQLInfoModel struct {
+	SQL     string
+	Version string
+	Status  string
+}
+
+type DatabasesModel struct {
+	DB_name        string
+	DB_Status      string
+	DB_compability string
+}
+
+type AtlasInfoModel struct {
+	Atlas_Version  string
+	Complex_type   string
+	Language       string
+	Multimonitor   string
+	XiLibs_Version string
+}
+
+type SoftwareVolatileInfoModel struct {
+	Id               bson.ObjectId `bson:"_id"`
+	DateTime         time.Time
+	EquipName        string
+	ErrorCode        string
+	ErrorDescription string
+}
+
+type SoftwareInfoModel struct {
+	Id        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+	Sysinfo   SysInfoModel
+	MSSQL     MSSQLInfoModel
+	Databases []DatabasesModel
+	Atlas     AtlasInfoModel
+}
+
+type FullSoftwareInfoModel struct {
+	PermanentInfo []SoftwareInfoModel
+	VolatileInfo  []SoftwareVolatileInfoModel
 }

@@ -229,7 +229,7 @@ func (service *httpService) sendPermanentSearchResults(
 		sysInfo := dalService.GetPermanentSystemInfo(equipName)
 		json.NewEncoder(w).Encode(sysInfo)
 	} else if equipType == "Software" {
-		swInfo := dalService.GetPermanentSystemInfo(equipName)
+		swInfo := dalService.GetPermanentSoftwareInfo(equipName)
 		json.NewEncoder(w).Encode(swInfo)
 	}
 }

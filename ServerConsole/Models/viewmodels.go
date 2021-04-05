@@ -93,3 +93,46 @@ type SystemInfoViewModel struct {
 	Monitor       []MonitorInfoViewModel
 	Printer       []PrinterInfoViewModel
 }
+
+type SysInfoViewModel struct {
+	OS           string
+	Version      string
+	Build_Number string
+}
+
+type MSSQLInfoViewModel struct {
+	SQL     string
+	Version string
+	Status  string
+}
+
+type DatabasesViewModel struct {
+	DB_name        string
+	DB_Status      string
+	DB_compability string
+}
+
+type AtlasInfoViewModel struct {
+	Atlas_Version  string
+	Complex_type   string
+	Language       string
+	Multimonitor   string
+	XiLibs_Version string
+}
+
+type SoftwareInfoViewModel struct {
+	Sysinfo   SysInfoViewModel
+	MSSQL     MSSQLInfoViewModel
+	Databases []DatabasesViewModel
+	Atlas     AtlasInfoViewModel
+}
+
+type MessageViewModel struct {
+	Code        string
+	Description string
+}
+
+type SoftwareMessageViewModel struct {
+	ErrorDescriptions      []MessageViewModel
+	AtlasErrorDescriptions []MessageViewModel
+}

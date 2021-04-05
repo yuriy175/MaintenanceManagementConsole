@@ -27,6 +27,25 @@ const SoftwareCard = React.memo((props) => {
         <CardRow descr={software?.Sysinfo?.OS} value={software?.Sysinfo?.Version}></CardRow>
         <CardRow descr={software?.MSSQL?.SQL} value={software?.MSSQL?.Version}></CardRow>
         <CardRow descr={'Пользователь'} value={software?.User?.Current_user}></CardRow>
+        <CardRow descr="Ошибки" value={''}></CardRow>
+        {software?.ErrorDescriptions?.length ? 
+          software.ErrorDescriptions.map((i, ind) => (
+            <CardErrorRow key={ind.toString()}  descr={i.Code} value={i.Description} ></CardErrorRow>
+            ))
+            :
+            <></>          
+        }
+
+        <Typography variant="h6" component="h2">
+          {bull}Базы данных
+        </Typography>
+        {software?.Databases?.length ? 
+          software.Databases.map((i, ind) => (
+            <CardRow key={ind.toString()} descr={i.DB_name} value={i.DB_Status}></CardRow>
+            ))
+            :
+            <></>          
+        }
 
         <Typography variant="h6" component="h2">
           {bull}Атлас
@@ -38,8 +57,8 @@ const SoftwareCard = React.memo((props) => {
         <CardRow descr="Multimonitor" value={software?.Atlas?.Multimonitor}></CardRow>
         <CardRow descr={software?.Atlas?.Atlas_User?.Role} value={software?.Atlas?.Atlas_User?.User}></CardRow>        
         <CardRow descr="Ошибки" value={''}></CardRow>
-        {software?.ErrorDescriptions?.length ? 
-          software.ErrorDescriptions.map((i, ind) => (
+        {software?.AtlasErrorDescriptions?.length ? 
+          software.AtlasErrorDescriptions.map((i, ind) => (
             <CardErrorRow key={ind.toString()}  descr={i.Code} value={i.Description} ></CardErrorRow>
             ))
             :

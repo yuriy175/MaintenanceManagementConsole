@@ -10,9 +10,6 @@ const initialState = {
   dosimeter:{},
   stand:{},
   dicom:{},
-  //hdd:[],
-  //memory:{},
-  //cpu:{},
   system:{},
   organAuto:{},
   software:{},
@@ -30,24 +27,6 @@ function reducer(state, action) {
         equipInfo: action.payload
       };
     }
-    /*case 'SETHDDS': {
-      return {
-        ...state,
-        hdd: action.payload
-      };
-    }
-    case 'SETMEMORY': {
-      return {
-        ...state,
-        memory: action.payload
-      };
-    }
-    case 'SETCPU': {
-      return {
-        ...state,
-        cpu: action.payload
-      };
-    }*/
     case 'SETSYSTEM': {
       return {
         ...state,
@@ -94,6 +73,12 @@ function reducer(state, action) {
       return {
         ...state,
         software: action.payload
+      };
+    }
+    case 'SETSOFTWAREMSG': {
+      return {
+        ...state,
+        software: {...state.software, ...action.payload}
       };
     }
     case 'SETREMOTEACCESS': {

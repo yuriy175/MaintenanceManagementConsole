@@ -13,6 +13,7 @@ namespace MessagesSender.Core.Model
         MemoryInfo,
         DicomInfo,
         SoftwareInfo,
-		RemoteAccess,
+        SoftwareMsgInfo,
+        RemoteAccess,
     }
 }
