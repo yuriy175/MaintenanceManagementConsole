@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
 import { AllEquipsContext } from '../context/allEquips-context';
+import * as EquipWorker from '../workers/equipWorker'
 
 import {sessionUid, getEquipFromTopic} from '../utilities/utils'
 
@@ -14,7 +15,8 @@ export function useWebSocket(props) {
     const equipInfo = useRef(currEquipState.equipInfo);
     
     function createSocket(){
-        try {            
+        try {   
+            console.log(`Status: Creating socket ${sessionUid}\n`);         
             const socket = new WebSocket(WebSocketAddress + "/websocket?uid=" + sessionUid);
             setConnection(socket);
         } catch (e) {
@@ -32,14 +34,18 @@ export function useWebSocket(props) {
 
     useEffect(() => {
         if (connection) {
-            connection.onopen = function () {
+            connection.onopen = async function () {
                 console.log(`Status: Connected ${sessionUid}\n`);
-                // connection.send("789 from ui");
+
+                const equips = await EquipWorker.GetAllEquips();
+                allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
             };
         
             connection.onclose = function(event) {
                 console.log(`Status: Closed ${sessionUid}\n`);
+                currEquipDispatch({ type: 'RESET', payload: true });    
                 setTimeout(function() {
+                    console.log(`Status: Reconnecting ${sessionUid}\n`);
                     createSocket();
                   }, 1000);
               };

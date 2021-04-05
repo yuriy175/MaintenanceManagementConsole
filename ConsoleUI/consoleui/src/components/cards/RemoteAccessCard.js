@@ -45,10 +45,10 @@ const RemoteAccessCard = React.memo((props) => {
         <CardButtonedRow descr={'TeamViewer'} title={'Запустить'} onClick={onRunTeamViewer}></CardButtonedRow>
         <CardButtonedRow descr={'Логи Атлас'} title={'Прислать'} onClick={onAtlasLogs}></CardButtonedRow>
         <CardButtonedRow descr={'Логи Xilib'} 
-          title={!remoteaccess.xilogs? 'Не опред' : remoteaccess.xilogs.on ? 'Выключить' : 'Включить'} 
+          title={!remoteaccess.Xilogs? 'Не опред' : remoteaccess.Xilogs.on ? 'Выключить' : 'Включить'} 
           onClick={onXilibLogs}
-          buttonColor={!remoteaccess.xilogs? undefined : remoteaccess.xilogs.on ? "secondary" : "primary"}
-          disabled={!remoteaccess.xilogs? false : true}
+          buttonColor={!remoteaccess.Xilogs? undefined : remoteaccess.Xilogs.on ? "secondary" : "primary"}
+          disabled={!remoteaccess.Xilogs}
         ></CardButtonedRow>
         <CardButtonedRow descr={'TaskManager'} title={'Запустить'} onClick={onRunTaskManager}></CardButtonedRow>
         {/* <Typography className={classes.pos} color="textSecondary">

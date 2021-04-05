@@ -63,24 +63,24 @@ export default function MainToolBar() {
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   }
   
-  useEffect(() => {
-      (async () => {
-          if(allEquipsState.equips !== null)
-          {
-            return;
-          }
+  // useEffect(() => {
+  //     (async () => {
+  //         if(allEquipsState.equips !== null)
+  //         {
+  //           return;
+  //         }
 
-          const equips = await EquipWorker.GetAllEquips();
-          allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
-          if(!equips || equips?.length === 0)     
-          {
-            return;
-          }
+  //         const equips = await EquipWorker.GetAllEquips();
+  //         allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
+  //         if(!equips || equips?.length === 0)     
+  //         {
+  //           return;
+  //         }
 
-          const equipInfo = equips[0];
-          onEquipChanged(equipInfo);
-      })();
-  }, [allEquipsState.equips]);
+  //         const equipInfo = equips[0];
+  //         onEquipChanged(equipInfo);
+  //     })();
+  // }, [allEquipsState.equips]);
 
 
   const webSocket = useWebSocket(
