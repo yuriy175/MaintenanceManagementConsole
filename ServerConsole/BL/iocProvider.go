@@ -61,7 +61,7 @@ func (t *types) GetHttpService() IHttpService {
 }
 
 func (t *types) GetWebSocket() IWebSock {
-	return WebSockNew()
+	return WebSockNew(t._webSocketService)
 }
 
 func (t *types) GetMqttClient() IMqttClient {

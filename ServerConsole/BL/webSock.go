@@ -14,14 +14,17 @@ type IWebSock interface {
 	IsValid() bool
 }
 
-func WebSockNew() IWebSock {
+func WebSockNew(webSocketService IWebSocketService) IWebSock {
 	webSock := &webSock{}
+	webSock._webSocketService = webSocketService
+
 	return webSock
 }
 
 type webSock struct {
-	Uid  string
-	Conn *websocket.Conn
+	_webSocketService IWebSocketService
+	_uid              string
+	_conn             *websocket.Conn
 }
 
 var upgrader = websocket.Upgrader{
@@ -36,8 +39,8 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 		log.Panicf("create web socket: %s", err)
 	}
 
-	sock.Uid = uid
-	sock.Conn = conn
+	sock._uid = uid
+	sock._conn = conn
 	log.Println("web sock created Url %s", uid)
 
 	// return sock
@@ -46,13 +49,15 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 	go func() {
 		for {
 			// Read message from browser
-			_, msg, err := conn.ReadMessage()
-			if err != nil {
+			_, msg, err := sock._conn.ReadMessage()
+			if _, ok := err.(*websocket.CloseError); ok {
+				sock._webSocketService.ClientClosed(sock._uid)
+				sock.onClose()
 				return
 			}
-	
+
 			// Print the message to the console
-			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))	
+			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
 		}
 	}()
 
@@ -60,9 +65,14 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 }
 
 func (ws *webSock) WriteMessage(data []byte) error {
-	return ws.Conn.WriteMessage(1, data)
+	return ws._conn.WriteMessage(1, data)
 }
 
 func (ws *webSock) IsValid() bool {
-	return ws.Conn != nil
+	return ws._conn != nil
+}
+
+func (ws *webSock) onClose() {
+	ws._conn.Close()
+	ws._conn = nil
 }

@@ -16,6 +16,7 @@ type IWebSocketService interface {
 	Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string)
 	UpdateWebClients(state *Models.EquipConnectionState)
 	HasActiveClients(topic string) bool
+	ClientClosed(sessionUid string)
 }
 
 type webSocketService struct {
@@ -52,17 +53,13 @@ func (service *webSocketService) Start() {
 			return
 		}
 		uid := uids[0]
-		fmt.Printf("created uid: %s \n", uid)
 
 		service._mtx.Lock()
 		defer service._mtx.Unlock()
 
 		service._webSocketConnections[uid] = service._ioCProvider.GetWebSocket().Create(w, r, uid)
 
-		/*msgType, msg, err := webSocketConnections[uid].Conn.ReadMessage()
-		if err != nil {
-			fmt.Printf("sent: %s %d\n", string(msg), msgType)
-		}*/
+		fmt.Printf("created websocket uid: %s \n", uid)
 	})
 
 	go func() {
@@ -77,14 +74,11 @@ func (service *webSocketService) Start() {
 			//find all sessions activated this equipment
 			if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
 				for _, uid := range sessionUids {
-
-					//find websocket
-					//log.Println(" message topic %s data %s to web sock %s", d.Topic, d.Data, uid)
-
 					v := service._webSocketConnections[uid]
 					b, err := json.Marshal(d)
 					if v == nil || !v.IsValid() {
 						log.Println(" no connection for  %s", uid)
+						service.removeFromTopicMap(activatedEquipInfo, uid)
 					} else if err = v.WriteMessage(b); err != nil {
 						//log.Println("send message error for  %s", uid)
 					}
@@ -102,9 +96,8 @@ func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
+	service.removeFromTopicMap(deactivatedEquipInfo, sessionUid)
 	topicConnections := service._topicConnections
-	if deactivatedEquipInfo != "" {
-	}
 
 	topicConnections[activatedEquipInfo] = append(topicConnections[activatedEquipInfo], sessionUid)
 
@@ -128,4 +121,36 @@ func (service *webSocketService) UpdateWebClients(state *Models.EquipConnectionS
 func (service *webSocketService) HasActiveClients(topic string) bool {
 	_, ok := service._topicConnections[topic]
 	return ok
+}
+
+func (service *webSocketService) ClientClosed(uid string) {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	delete(service._webSocketConnections, uid)
+	fmt.Printf("removed websocket uid: %s \n", uid)
+}
+
+func (service *webSocketService) removeFromTopicMap(equipInfo string, uid string) {
+	if equipInfo == "" || uid == "" {
+		return
+	}
+
+	if sessionUids, ok := service._topicConnections[equipInfo]; ok {
+		ind := -1
+		for i, v := range sessionUids {
+			if v == uid {
+				ind = i
+				break
+			}
+		}
+
+		if ind < 0 {
+			return
+		}
+
+		service._topicConnections[equipInfo] = append(
+			service._topicConnections[equipInfo][:ind], service._topicConnections[equipInfo][ind+1:]...)
+		log.Println("removed absent connection for  %s", uid)
+	}
 }
