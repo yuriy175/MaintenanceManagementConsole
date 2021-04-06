@@ -51,8 +51,9 @@ namespace MessagesSender.BL.Remoting
 		/// send file content to ftp
 		/// </summary>
 		/// <param name="filePath">file path</param>
+		/// <param name="destFileName">destination file name</param>
 		/// <returns>result</returns>	
-		public async Task<bool> SendAsync(string filePath)
+		public async Task<bool> SendAsync(string filePath, string destFileName = null)
 		{
 			if (!_connectionProps.HasValue)
 			{
@@ -60,7 +61,9 @@ namespace MessagesSender.BL.Remoting
 			}
 
 			//var uri = "ftp://193.123.58.227:21/files/" + Path.GetFileNameWithoutExtension(filePath) + ".zip"; //@"/" + "logs.zip";
-			var uri = _connectionProps.Value.HostName + Path.GetFileNameWithoutExtension(filePath) + ".zip"; //@"/" + "logs.zip";
+			var uri = _connectionProps.Value.HostName +
+				Path.GetFileNameWithoutExtension(string.IsNullOrEmpty(destFileName) ? filePath : destFileName) +
+				".zip"; //@"/" + "logs.zip";
 			FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uri);
 			request.Method = WebRequestMethods.Ftp.UploadFile;
 

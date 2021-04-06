@@ -84,7 +84,7 @@ function reducer(state, action) {
     case 'SETREMOTEACCESS': {
       return {
         ...state,
-        remoteaccess: action.payload
+        remoteaccess: {...state.remoteaccess, ...action.payload}
       };
     }
     case 'SETDICOM': {

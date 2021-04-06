@@ -31,8 +31,10 @@ namespace MessagesSender.BL
 		private enum XilogLevels { Info, Verbose }
 
 		private const string InstallPathName = "InstallPath";
-        private const string LogFolderPathName = "Logs";
+		private const string EtlXilibLogsEnabledName = "EtlXilibLogsEnabled";
+		private const string LogFolderPathName = "Logs";
 		private const string XiLogFolderPathName = @"Logs\XiLogs";
+		private const string XiLogFileName = @"xilogs.zip";
 		private const string TaskManPath = @"C:\Windows\System32\Taskmgr.exe";
 		private const string XilogsFolder = @".\XiLogs\xilogs.exe";
 		private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
@@ -46,6 +48,10 @@ namespace MessagesSender.BL
 		private readonly IZipService _zipService;
 		private readonly IFtpClient _ftpClient;
 		private readonly ITopicService _topicService;
+
+		private readonly AsyncLock _xilibSync = new AsyncLock();
+
+		private bool _xilibState = false;
 
 		/// <summary>
 		/// public constructor
@@ -86,7 +92,13 @@ namespace MessagesSender.BL
             _eventPublisher.RegisterSendAtlasLogsCommandArrivedEvent(() => SendAtlasLogsAsync());
             _eventPublisher.RegisterXilibLogsOnCommandArrivedEvent(() => XilibLogsOnAsync());
 
-            _logger.Information("RemoteControlService started");
+			Task.Run(async () =>
+			{
+				var appParam = await _dbSettingsEntityService.GetAppParamAsync(EtlXilibLogsEnabledName);
+				_xilibState = appParam == null ? false : Convert.ToBoolean(appParam.ParamValue);
+			});
+
+			_logger.Information("RemoteControlService started");
         }
 
         /// <summary>
@@ -117,7 +129,8 @@ namespace MessagesSender.BL
         public async Task<bool> SendAtlasLogsAsync()
         {
             var installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
-            try
+			var result = false;
+			try
             {
                 var zip = await _zipService.ZipFolderAsync(Path.Combine(installPath, LogFolderPathName));
 				// await EmailSender.SendAtlasLogsAsync(zip);
@@ -126,13 +139,17 @@ namespace MessagesSender.BL
 
 				File.Delete(zip);
                 Directory.Delete(Path.Combine(Path.GetDirectoryName(zip), Path.GetFileNameWithoutExtension(zip)), true);
-            }
+
+				result = true;
+			}
             catch (Exception ex)
             {
                 _logger.Error(ex, "SendAtlasLogs error: ");
             }
 
-            return true;
+			await SendAtlasStateAsync(result);
+
+			return true;
         }
 
 		private string _xilog = string.Empty;
@@ -143,79 +160,76 @@ namespace MessagesSender.BL
         public async Task<bool> XilibLogsOnAsync()
         {
 			var installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
-			
-			try
+
+			using (await _xilibSync.LockAsync())
 			{
-				if (string.IsNullOrEmpty(_xilog))
+				try
 				{
-					var xilog = Path.Combine(installPath, XiLogFolderPathName);
-					if (!Directory.Exists(xilog))
+					if (!_xilibState)
 					{
-						Directory.CreateDirectory(xilog);
+						var xilog = Path.Combine(installPath, XiLogFolderPathName);
+						if (!Directory.Exists(xilog))
+						{
+							Directory.CreateDirectory(xilog);
+						}
+
+						xilog += @"\xilogs" + DateTime.Now.ToString("_dd_MM_yyyy_HH_mm_ss") + ".etl";
+						await _dbSettingsEntityService.UpsertAppParamAsync(EtlXilibLogsEnabledName, true);
+
+						RunCommand(
+							XilogsFolder,
+							string.Format(
+								XilogsCommandLineFormat,
+								//xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
+								"1",
+								XilogModes.Normal,
+								XilogLevels.Info,
+								xilog
+								));
+
+						_xilibState = true;
+						await SendXilogsStateAsync();
+						_xilog = xilog;
 					}
-
-					xilog += @"\xilogs" + DateTime.Now.ToString("_dd_MM_yyyy_HH_mm_ss") + ".etl";
-
-					RunCommand(
-						XilogsFolder,
-						string.Format(
-							XilogsCommandLineFormat,
-							//xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
-							"1",
-							XilogModes.Normal,
-							XilogLevels.Info,
-							xilog
-							));
-
-					await SendXilogsStateStateAsync(true);
-					_xilog = xilog;
-				}
-				else
-				{
-					RunCommand(
-						XilogsFolder,
-						string.Format(
-							XilogsCommandLineFormat,
-							//xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
-							"0",
-							XilogModes.Normal,
-							XilogLevels.Info,
-							_xilog
-							));
-
-					await Task.Yield();
-
-					int i = 0;
-					var zip = string.Empty;
-					/*zip = await _zipService.ZipFileAsync(_xilog);
-					while (i < 5)
+					else
 					{
-						try
+						RunCommand(
+							XilogsFolder,
+							string.Format(
+								XilogsCommandLineFormat,
+								//xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
+								"0",
+								XilogModes.Normal,
+								XilogLevels.Info,
+								_xilog
+								));
+
+						await Task.Yield();
+
+						await _dbSettingsEntityService.UpsertAppParamAsync(EtlXilibLogsEnabledName, false);
+						int i = 0;
+						var zip = Path.Combine(Path.GetDirectoryName(_xilog), XiLogFileName); // Path.GetFileNameWithoutExtension(_xilog) + ".zip");
+						if (!File.Exists(zip))
 						{
-							zip = await _zipService.ZipFileAsync(_xilog);
-							break;
+							_logger.Error("XilibLogsOnAsync error: No zip file found");
+							return false;
 						}
-						catch (Exception ex)
-						{
-							Console.WriteLine(ex.Message);
 
-							await Task.Delay(1000);
-							++i;
-						}
-					}*/
+						var result = await _ftpClient.SendAsync(zip, $"{await _topicService.GetTopicAsync()}_{Path.GetFileName(_xilog)}");
 
-					var result = await _ftpClient.SendAsync(zip);
-					await SendXilogsStateStateAsync(false, result);
+						_xilibState = false;
+						await SendXilogsStateAsync(result);
 
-					//File.Delete(zip);
-					//Directory.Delete(Path.Combine(Path.GetDirectoryName(zip), Path.GetFileNameWithoutExtension(zip)), true);
+						File.Delete(zip);
 
-					_xilog = string.Empty;
+						_xilog = string.Empty;
+					}
 				}
-			}
-			catch (Exception ex)
-			{
-				_logger.Error(ex, "XilibLogsOnAsync error: ");
+				catch (Exception ex)
+				{
+					_logger.Error(ex, "XilibLogsOnAsync error: ");
+					return false;
+				}
 			}
 
 			return true;
@@ -223,7 +237,7 @@ namespace MessagesSender.BL
 
 		private async Task<bool> OnActivateArrivedAsync()
 		{
-			await SendXilogsStateStateAsync(false);
+			await SendXilogsStateAsync();
 
 			return true;
 		}
@@ -244,13 +258,23 @@ namespace MessagesSender.BL
 			process.WaitForExit();
 		}
 
-		private async Task SendXilogsStateStateAsync(bool isOn, bool? ftpSendResult = null)
+		private async Task SendXilogsStateAsync(bool? ftpSendResult = null)
 		{
 			await _sendingService.SendInfoToMqttAsync(
 				MQMessages.RemoteAccess,
 				new
 				{
-					Xilogs = new { on = isOn },
+					Xilogs = new { on = _xilibState},
+					FtpSendResult = ftpSendResult
+				});
+		}
+
+		private async Task SendAtlasStateAsync(bool? ftpSendResult = null)
+		{
+			await _sendingService.SendInfoToMqttAsync(
+				MQMessages.RemoteAccess,
+				new
+				{
 					FtpSendResult = ftpSendResult
 				});
 		}

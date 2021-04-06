@@ -100,6 +100,22 @@ func (service *httpService) Start() {
 	})
 
 	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {
+		queryString := r.URL.Query()
+
+		detailedXilibs, ok := queryString["detailedXilib"]
+		if !ok || len(detailedXilibs[0]) < 1 {
+			log.Println("Url Param 'detailedXilib' is missing")
+			return
+		}
+		// detailedXilib := detailedXilibs[0]
+		
+		verboseXilibs, ok := queryString["verboseXilib"]
+		if !ok || len(verboseXilibs[0]) < 1 {
+			log.Println("Url Param 'verboseXilib' is missing")
+			return
+		}
+		// verboseXilib := verboseXilibs[0]
+
 		service.SendCommand(w, r, "xilibLogsOn")
 	})
 

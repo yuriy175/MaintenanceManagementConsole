@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { CurrentEquipContext } from '../context/currentEquip-context';
 
 import DetectorCard from './cards/DetectorCard'
@@ -13,6 +14,7 @@ import RemoteAccessCard from './cards/RemoteAccessCard'
 import StandCard from './cards/StandCard'
 import DosimeterCard from './cards/DosimeterCard'
 import SoftwareCard from './cards/SoftwareCard'
+import NotifyDlg from './dialogs/NotifyDlg'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +32,7 @@ export default function SummaryComponent(props) {
   const classes = useStyles();
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
 
+  const notifyText = currEquipState.remoteaccess?.FtpSendResult;
   return (
     <div className={classes.root}>
       <div className={classes.column}>
@@ -49,6 +52,7 @@ export default function SummaryComponent(props) {
         <DicomCard dicom={currEquipState.dicom}></DicomCard>
         <SoftwareCard software={currEquipState.software}></SoftwareCard>
       </div>
+      {notifyText ? <NotifyDlg title='Данные FTP' text={'Данные посланы ' + (currEquipState.remoteaccess?.FtpSendResult ? 'успешно' : 'с ошибками') }></NotifyDlg> : <></>}
     </div>
   );
 }

@@ -79,10 +79,12 @@ export async function SendAtlasLogs(activatedEquipInfo) {
     });
 };
 
-export async function XilibLogsOn(activatedEquipInfo) {
+export async function XilibLogsOn(activatedEquipInfo, detailedXilib, verboseXilib) {
     return await HandlerWrapper('XilibLogsOn', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
-            '/XilibLogsOn?activatedEquipInfo=' + activatedEquipInfo);
+            '/XilibLogsOn?activatedEquipInfo=' + activatedEquipInfo+
+            '&detailedXilib=' + detailedXilib +
+            '&verboseXilib=' + verboseXilib);
         return response.data;
     });
 };

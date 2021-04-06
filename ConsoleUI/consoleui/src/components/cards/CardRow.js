@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 import Button from '@material-ui/core/Button';
+import Switch from '@material-ui/core/Switch';
 
 const useStyles = makeStyles({
  root: {
@@ -94,6 +95,25 @@ export function CardButtonedRow(props) {
         >
           {props.title}
         </Button>
+    </div>
+  );
+}
+
+export function CardSwitchedRow(props) {
+
+  const classes = useStyles();
+
+  return (
+    <div className={classes.root}>
+        <Typography className={`${classes.descr} ${classes.switchDescr}`} color="textSecondary">
+          {props.descr}
+        </Typography>
+        <Switch
+          checked={props.checked}
+          onChange={props.onChange}
+          color="primary"
+          inputProps={{ 'aria-label': 'primary checkbox' }}
+        />
     </div>
   );
 }

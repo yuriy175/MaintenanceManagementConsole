@@ -14,7 +14,8 @@ namespace MessagesSender.Core.Interfaces
 		/// send file content to ftp
 		/// </summary>
 		/// <param name="filePath">file path</param>
+		/// <param name="destFileName">destination file name</param>
 		/// <returns>result</returns>
-		Task<bool> SendAsync(string filePath);
+		Task<bool> SendAsync(string filePath, string destination = null);
 	}
 }

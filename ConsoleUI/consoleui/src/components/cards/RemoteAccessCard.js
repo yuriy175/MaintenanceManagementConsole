@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -9,11 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import {useCardsStyles} from './CommonCard'
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import * as EquipWorker from '../../workers/equipWorker'
-import {CardButtonedRow} from './CardRow'
+import {CardButtonedRow, CardSwitchedRow} from './CardRow'
 
-const RemoteAccessCard = React.memo((props) => {
-// export default function RemoteAccessCard() {
+const RemoteAccessCard = React.memo((props) => {  
   console.log(`! render RemoteAccessCard`);
+  const [detailedXilib, setDetailedXilib] = useState(false);
+  const [verboseXilib, setVerboseXilib] = useState(false);
 
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
@@ -32,7 +33,15 @@ const RemoteAccessCard = React.memo((props) => {
   };
 
   const onXilibLogs = async () => {
-    const res = await EquipWorker.XilibLogsOn(equipInfo);
+    const res = await EquipWorker.XilibLogsOn(equipInfo, detailedXilib, verboseXilib);
+  };
+
+  const onDetailedXilib = async () => {
+    setDetailedXilib(!detailedXilib);
+  };
+
+  const onVerboseXilib = async () => {
+    setVerboseXilib(!verboseXilib);
   };
 
   const remoteaccess = props.remoteaccess;
@@ -43,6 +52,7 @@ const RemoteAccessCard = React.memo((props) => {
           {bull}Удаленный доступ
         </Typography>
         <CardButtonedRow descr={'TeamViewer'} title={'Запустить'} onClick={onRunTeamViewer}></CardButtonedRow>
+        <CardButtonedRow descr={'TaskManager'} title={'Запустить'} onClick={onRunTaskManager}></CardButtonedRow>
         <CardButtonedRow descr={'Логи Атлас'} title={'Прислать'} onClick={onAtlasLogs}></CardButtonedRow>
         <CardButtonedRow descr={'Логи Xilib'} 
           title={!remoteaccess.Xilogs? 'Не опред' : remoteaccess.Xilogs.on ? 'Выключить' : 'Включить'} 
@@ -50,13 +60,8 @@ const RemoteAccessCard = React.memo((props) => {
           buttonColor={!remoteaccess.Xilogs? undefined : remoteaccess.Xilogs.on ? "secondary" : "primary"}
           disabled={!remoteaccess.Xilogs}
         ></CardButtonedRow>
-        <CardButtonedRow descr={'TaskManager'} title={'Запустить'} onClick={onRunTaskManager}></CardButtonedRow>
-        {/* <Typography className={classes.pos} color="textSecondary">
-          TeamViewer
-        </Typography>
-        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onRunTV}>
-          Запустить
-        </Button> */}
+        <CardSwitchedRow descr={'Детальный'} onChange={onDetailedXilib}></CardSwitchedRow>
+        <CardSwitchedRow descr={'Подробный'} onChange={onVerboseXilib}></CardSwitchedRow>
       </CardContent>
     </Card>
   );
