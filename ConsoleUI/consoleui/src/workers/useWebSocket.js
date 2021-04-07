@@ -87,7 +87,12 @@ export function useWebSocket(props) {
                     {
                         console.log(e);
                     }                    
-                }             
+                }
+                else if(path.startsWith('/images'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETIMAGES', payload: values }); 
+                }            
                 else if(path.startsWith('/organauto'))
                 {
                     const values = data? JSON.parse(data.Data) : null;

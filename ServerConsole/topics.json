@@ -11,6 +11,7 @@
 	"/organauto",
 	"/ARM/Software/Complex",
 	"/remoteaccess",
-	"/ARM/Software/msg"
+	"/ARM/Software/msg",
+	"/images"
 	]
 }

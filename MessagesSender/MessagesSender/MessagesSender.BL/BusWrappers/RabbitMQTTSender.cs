@@ -50,6 +50,7 @@ namespace MessagesSender.BL.Remoting
 			{ MQMessages.SoftwareInfo.ToString(), "/ARM/Software"},
 			{ MQMessages.SoftwareMsgInfo.ToString(), "/ARM/Software/msg"},			
 			{ MQMessages.RemoteAccess.ToString(), "/remoteaccess"},
+			{ MQMessages.ImagesInfo.ToString(), "/images"},
 		};
 
 		/// <summary>

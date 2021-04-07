@@ -58,7 +58,11 @@ namespace MessagesSender
                typeof(IDicomStateService),
                typeof(DicomStateService));
 
-            services.AddSingleton(
+			services.AddSingleton(
+			   typeof(IImagesWatchService),
+			   typeof(ImagesWatchService));
+
+			services.AddSingleton(
                typeof(IStudyingWatchService),
                typeof(StudyingWatchService));
 

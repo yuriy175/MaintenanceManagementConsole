@@ -14,6 +14,7 @@ import RemoteAccessCard from './cards/RemoteAccessCard'
 import StandCard from './cards/StandCard'
 import DosimeterCard from './cards/DosimeterCard'
 import SoftwareCard from './cards/SoftwareCard'
+import ImagesCard from './cards/ImagesCard'
 import NotifyDlg from './dialogs/NotifyDlg'
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +43,7 @@ export default function SummaryComponent(props) {
       </div>
       <div className={classes.column}>
         <OrganAutoCard organAuto={currEquipState.organAuto}></OrganAutoCard>
+        <ImagesCard images={currEquipState.images}></ImagesCard>
         <GeneratorCard generator={currEquipState.generator}></GeneratorCard>
         <DetectorCard detectors={currEquipState.detectors}></DetectorCard>
         <StandCard stand={currEquipState.stand}></StandCard>

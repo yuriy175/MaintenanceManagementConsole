@@ -17,14 +17,15 @@ using System.Text;
 using MessagesSender.Core.Model;
 using Atlas.Acquisitions.Common.Core.Model;
 using System.Collections.Generic;
+using Atlas.Common.Core;
 
 namespace MessagesSender.BL
 {
     /// <summary>
     /// studying watch service
     /// </summary>
-    public class StudyingWatchService : IStudyingWatchService
-    {
+    public class ImagesWatchService : IImagesWatchService
+	{
         private readonly ILogger _logger;
         private readonly IObservationsEntityService _dbObservationsEntityService;
         private readonly IMQCommunicationService _mqService;
@@ -33,6 +34,8 @@ namespace MessagesSender.BL
 		private readonly IWebClientService _webClientService;
 
 		private bool _isActivated = false;
+		private int? _imageCount = null;
+		private List<(int Id, ImageTypes Type)> _todayImages = null;
 
 		/// <summary>
 		/// public constructor
@@ -43,7 +46,7 @@ namespace MessagesSender.BL
 		/// <param name="eventPublisher">event publisher service</param>
 		/// <param name="sendingService">sending service</param>
 		/// <param name="webClientService">web client service</param>
-		public StudyingWatchService(
+		public ImagesWatchService(
             ILogger logger,
             IObservationsEntityService dbObservationsEntityService,
             IMQCommunicationService mqService,
@@ -71,59 +74,18 @@ namespace MessagesSender.BL
             return Task.Run(() =>
             {
                 _mqService.Subscribe<MQCommands, int>(
-                    (MQCommands.StudyInWork, async data => OnStudyInWorkAsync(data)));
-
-                _mqService.Subscribe<MQCommands, (OrganAuto OrganAuto, int LogicalWsId)>(
-                    (MQCommands.SetOrganAuto, async organAuto => await OnOrganAutoAsync(organAuto)));
+                        (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
             });
         }
-
-        private async Task<bool> OnStudyInWorkAsync(int studyId)
+		
+        private async Task<bool> OnNewImageCreatedAsync(int imageId)
         {
-            // always send study changes
-            //if (!_isActivated)
-            //{
-            //    return true;
-            //}
+			++_imageCount;
+			SendImagesInfoAsync();
 
-            var studyProps = await _dbObservationsEntityService.GetStudyInfoByIdAsync(studyId);
-            if (!studyProps.HasValue)
-            {
-                _logger.Error($"no study found for {studyId}");
-                return false;
-            }
-
-            return await _sendingService.SendInfoToMqttAsync(
-                MQCommands.StudyInWork,
-                new { studyProps.Value.StudyId, studyProps.Value.StudyDicomUid, studyProps.Value.StudyName });
+			return true;
         }
-
-        private async Task<bool> OnOrganAutoAsync((OrganAuto OrganAuto, int LogicalWsId) organAuto)
-        {
-            // always send organ auto changes
-            //if (!_isActivated)
-            //{
-            //    return true;
-            //}
-
-            if (organAuto.OrganAuto == null)
-            {
-                _logger.Error("OnOrganAutoAsync error : no OrganAuto arrived");
-                return false;
-            }
-
-            return await _sendingService.SendInfoToMqttAsync(
-                MQCommands.SetOrganAuto,
-                new { 
-                    organAuto.OrganAuto.Name, 
-                    organAuto.OrganAuto.Laterality,
-                    organAuto.OrganAuto.Projection,
-                    organAuto.OrganAuto.Direction,
-                    organAuto.OrganAuto.AgeId,
-                    organAuto.OrganAuto.Constitution
-                });
-        }
-
+		
         private void OnDeactivateArrivedAsync()
         {
             _isActivated = false;
@@ -132,18 +94,30 @@ namespace MessagesSender.BL
         private async Task<bool> OnActivateArrivedAsync()
         {
             _isActivated = true;
+			_imageCount = await _dbObservationsEntityService.GetImageCountAsync();
+			_todayImages = (await _dbObservationsEntityService.GetTodayImagesWithTypesAsync())?.ToList();
 
-			var organAuto = await _webClientService.SendAsync<OrganAuto>(
-				"OrganAutoManipulation",
-				"GetCurrentOrganAuto",
-				new Dictionary<string, string> { });
-
-			if (organAuto != null)
-			{
-				return await OnOrganAutoAsync((organAuto, 1));
-			}
+			SendImagesInfoAsync();
 
 			return false;
         }
-    }
+
+		private async Task<bool> SendImagesInfoAsync()
+		{
+			var imageCount = _imageCount;
+			var todayImages = _todayImages;
+
+			return await _sendingService.SendInfoToMqttAsync(
+				MQMessages.ImagesInfo,
+				new
+				{
+					ImageCount = imageCount,
+					Today = todayImages != null ? new
+					{
+						SingleGraphy = todayImages.Count(i => i.Type == ImageTypes.Graphy),
+						Scopy = todayImages.Count(i => i.Type == ImageTypes.Scopy),
+					} : null,
+				});
+		}
+	}
 }

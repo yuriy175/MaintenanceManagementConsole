@@ -14,6 +14,7 @@ const initialState = {
   organAuto:{},
   software:{},
   remoteaccess:{},
+  images:{},
 };
 
 function reducer(state, action) {
@@ -85,6 +86,18 @@ function reducer(state, action) {
       return {
         ...state,
         remoteaccess: {...state.remoteaccess, ...action.payload}
+      };
+    }
+    case 'SETIMAGES': {
+      return {
+        ...state,
+        images: action.payload
+      };
+    }
+    case 'ADDIMAGE': {
+      return {
+        ...state,
+        images: {...state.images, ...action.payload}
       };
     }
     case 'SETDICOM': {

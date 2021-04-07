@@ -34,8 +34,9 @@ namespace MessagesSender.BL
         private readonly IEventPublisher _eventPublisher;
         private readonly IDicomStateService _dicomStateService;
         private readonly IRemoteControlService _remoteControlService;
+		private readonly IImagesWatchService _imagesWatchService;
 
-        private IPAddress _ipAddress = null;
+		private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
 
         private enum MessageType
@@ -44,23 +45,24 @@ namespace MessagesSender.BL
             ConnectionState,
         }
 
-        /// <summary>
-        /// public constructor
-        /// </summary>
-        /// <param name="dbSettingsEntityService">settings database connector</param>
-        /// <param name="dbObservationsEntityService">observations database connector</param>
-        /// <param name="logger">logger</param>
-        /// <param name="eventPublisher">event publisher service</param>
-        /// <param name="sendingService">sending service</param>
-        /// <param name="mqService">MQ service</param>
-        /// <param name="commandService">command service</param>
-        /// <param name="systemWatchService">system watch service</param>
-        /// <param name="studyingWatchService">studying watch service</param>
-        /// <param name="hwStateService">hardware state service</param>
-        /// <param name="softwareWatchService">software watch service</param>
-        /// <param name="dicomStateService">dicom state service</param>
-        /// <param name="remoteControlService">remote control service</param>
-        public Service(
+		/// <summary>
+		/// public constructor
+		/// </summary>
+		/// <param name="dbSettingsEntityService">settings database connector</param>
+		/// <param name="dbObservationsEntityService">observations database connector</param>
+		/// <param name="logger">logger</param>
+		/// <param name="eventPublisher">event publisher service</param>
+		/// <param name="sendingService">sending service</param>
+		/// <param name="mqService">MQ service</param>
+		/// <param name="commandService">command service</param>
+		/// <param name="systemWatchService">system watch service</param>
+		/// <param name="studyingWatchService">studying watch service</param>
+		/// <param name="hwStateService">hardware state service</param>
+		/// <param name="softwareWatchService">software watch service</param>
+		/// <param name="dicomStateService">dicom state service</param>
+		/// <param name="remoteControlService">remote control service</param>
+		/// <param name="imagesWatchService">images watch service</param>
+		public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
@@ -73,7 +75,8 @@ namespace MessagesSender.BL
             IHardwareStateService hwStateService,
             ISoftwareWatchService softwareWatchService,
             IDicomStateService dicomStateService,
-            IRemoteControlService remoteControlService)
+            IRemoteControlService remoteControlService,
+			IImagesWatchService imagesWatchService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -88,8 +91,9 @@ namespace MessagesSender.BL
             _softwareWatchService = softwareWatchService;
             _dicomStateService = dicomStateService;
             _remoteControlService = remoteControlService;
+			_imagesWatchService = imagesWatchService;
 
-            new Action[]
+			new Action[]
                 {
                     () => _ = SubscribeMQRecevers(),
                     async () =>

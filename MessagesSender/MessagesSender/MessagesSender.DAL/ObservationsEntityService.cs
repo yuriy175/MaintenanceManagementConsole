@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Atlas.Common.Core;
 using Atlas.Common.Core.Interfaces;
 using Atlas.Common.DAL;
 using Atlas.Common.DAL.Helpers;
@@ -49,12 +50,39 @@ namespace MessagesSender.DAL
             return study == null ? null as (int, string, string)? : (study.Id, study.DicomUid, study.Name);
         }
 
-        /// <summary>
-        /// Create context
-        /// </summary>
-        /// <param name="logger">logger.</param>
-        /// <returns>observation context.</returns>
-        protected override ObservationContext CreateContext()
+		/// <summary>
+		/// Get all image count.
+		/// </summary>
+		/// <returns>image count</returns>
+		public async Task<int> GetImageCountAsync()
+		{
+			using (var context = CreateContext())
+			{
+				return await context.Images.CountAsync();
+			}
+		}
+
+		/// <summary>
+		/// Get today's images with types.
+		/// </summary>
+		/// <returns>images</returns>
+		public async Task<IEnumerable<(int Id, ImageTypes Type)>> GetTodayImagesWithTypesAsync()
+		{
+			var todayStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+			var todayEnd = new DateTime(todayStart.Year, todayStart.Month, todayStart.Day, 23, 59, 59);
+			var images = await GetManyAction<Image>(
+				context => context.Images
+					.Where(i => todayStart <= i.DateCreation && i.DateCreation <= todayEnd));
+
+			return images?.Select(i => (i.Id, (ImageTypes)i.ImageType));
+		}
+
+		/// <summary>
+		/// Create context
+		/// </summary>
+		/// <param name="logger">logger.</param>
+		/// <returns>observation context.</returns>
+		protected override ObservationContext CreateContext()
         {
             return ObservationContext.Create(
                 _configurationService?["ConnectionStrings", "ObservationConnection"],
