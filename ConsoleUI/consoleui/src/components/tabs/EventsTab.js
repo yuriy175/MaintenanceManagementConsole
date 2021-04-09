@@ -7,8 +7,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MapComponent(props) {
-  console.log("render MapComponent");
+export default function EventsTab(props) {
+  console.log("render EventsTab");
 
   const classes = useStyles();
 

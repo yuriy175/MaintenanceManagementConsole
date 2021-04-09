@@ -14,7 +14,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
 import MainToolBar from './MainToolBar';
-import MainInfoComponent from '../MainInfoComponent';
+import MainInfoComponent from './MainInfoComponent';
 
 const drawerWidth = 240;
 const mainMenu = ['Обзор', 'Карта', 'Журнал событий', 'История'];

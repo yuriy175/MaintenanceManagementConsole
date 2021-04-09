@@ -5,20 +5,20 @@ import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
 
-import {SearchPeriod} from '../model/constants'
-import {getUSFullDate} from '../utilities/utils'
+import {SearchPeriod} from '../../model/constants'
+import {getUSFullDate} from '../../utilities/utils'
 
-import SystemTable from './tables/historyTables/SystemTable'
-import OrganAutoTable from './tables/historyTables/OrganAutoTable'
-import GeneratorTable from './tables/historyTables/GeneratorTable'
-import StudiesTable from './tables/historyTables/StudiesTable'
-import SofwareTable from './tables/historyTables/SofwareTable'
-import DetectorTable from './tables/historyTables/DetectorTable'
-import StandTable from './tables/historyTables/StandTable'
-import DicomTable from './tables/historyTables/DicomTable'
+import SystemTable from '../tables/historyTables/SystemTable'
+import OrganAutoTable from '../tables/historyTables/OrganAutoTable'
+import GeneratorTable from '../tables/historyTables/GeneratorTable'
+import StudiesTable from '../tables/historyTables/StudiesTable'
+import SofwareTable from '../tables/historyTables/SofwareTable'
+import DetectorTable from '../tables/historyTables/DetectorTable'
+import StandTable from '../tables/historyTables/StandTable'
+import DicomTable from '../tables/historyTables/DicomTable'
 
-import * as EquipWorker from '../workers/equipWorker'
-import { CurrentEquipContext } from '../context/currentEquip-context';
+import * as EquipWorker from '../../workers/equipWorker'
+import { CurrentEquipContext } from '../../context/currentEquip-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function HistoryComponent(props) {
-  console.log("render HistoryComponent");
+export default function HistoryTab(props) {
+  console.log("render HistoryTab");
 
   const classes = useStyles();
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);

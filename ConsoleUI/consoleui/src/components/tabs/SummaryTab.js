@@ -1,21 +1,20 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { CurrentEquipContext } from '../context/currentEquip-context';
+import { CurrentEquipContext } from '../../context/currentEquip-context';
 
-import DetectorCard from './cards/DetectorCard'
-import GeneratorCard from './cards/GeneratorCard'
-import SystemCard from './cards/SystemCard'
-import HddCard from './cards/HddCard'
-import OrganAutoCard from './cards/OrganAutoCard'
-import EquipImageCard from './cards/EquipImageCard'
-import DicomCard from './cards/DicomCard'
-import RemoteAccessCard from './cards/RemoteAccessCard'
-import StandCard from './cards/StandCard'
-import DosimeterCard from './cards/DosimeterCard'
-import SoftwareCard from './cards/SoftwareCard'
-import ImagesCard from './cards/ImagesCard'
-import NotifyDlg from './dialogs/NotifyDlg'
+import DetectorCard from '../cards/DetectorCard'
+import GeneratorCard from '../cards/GeneratorCard'
+import SystemCard from '../cards/SystemCard'
+import OrganAutoCard from '../cards/OrganAutoCard'
+import EquipImageCard from '../cards/EquipImageCard'
+import DicomCard from '../cards/DicomCard'
+import RemoteAccessCard from '../cards/RemoteAccessCard'
+import StandCard from '../cards/StandCard'
+import DosimeterCard from '../cards/DosimeterCard'
+import SoftwareCard from '../cards/SoftwareCard'
+import ImagesCard from '../cards/ImagesCard'
+import NotifyDlg from '../dialogs/NotifyDlg'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SummaryComponent(props) {
-  console.log("render SummaryComponent");
+export default function SummaryTab(props) {
+  console.log("render SummaryTab");
 
   const classes = useStyles();
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
