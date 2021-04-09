@@ -1,5 +1,5 @@
 import React from 'react';
-import CommonTable from './CommonTable'
+import CommonTable from '../CommonTable'
 
 const columns = [
   { id: 'EquipName', label: 'Комплекс', minWidth: 170 },

@@ -5,6 +5,7 @@ import SummaryTab from '../tabs/SummaryTab';
 import MapTab from '../tabs/MapTab';
 import EventsTab from '../tabs/EventsTab';
 import HistoryTab from '../tabs/HistoryTab';
+import AdminTab from '../tabs/AdminTab';
 
 export default function MainInfoComponent(props) {
   console.log("render MainInfoComponent");
@@ -15,6 +16,7 @@ export default function MainInfoComponent(props) {
       {props.Index === 1 ? <MapTab></MapTab> : <></>}
       {props.Index === 2 ? <EventsTab></EventsTab> : <></>}
       {props.Index === 3 ? <HistoryTab></HistoryTab> : <></>}
+      {props.Index === 4 ? <AdminTab></AdminTab> : <></>}
     </div>
   );
 }

@@ -17,7 +17,7 @@ import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
 
 const drawerWidth = 240;
-const mainMenu = ['Обзор', 'Карта', 'Журнал событий', 'История'];
+const mainMenu = ['Обзор', 'Карта', 'Журнал событий', 'История', 'Администрироание'];
 
 const useStyles = makeStyles((theme) => ({
   root: {

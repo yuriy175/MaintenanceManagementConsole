@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import CommonTable from './CommonTable'
+import CommonTable from '../CommonTable'
 
 const columnsPermanent = [
     { id: 'Parameter', label: 'Параметр', minWidth: 170 },    

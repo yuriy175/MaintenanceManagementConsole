@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import CommonTable from './CommonTable'
+import CommonTable from '../CommonTable'
 
 const columns = [
     { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
