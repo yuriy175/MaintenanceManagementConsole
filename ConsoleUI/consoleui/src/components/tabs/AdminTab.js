@@ -67,6 +67,10 @@ export default function AdminTab(props) {
     const data = await AdminWorker.UpdateUser({login, password, surname, email, role});
   };
 
+  const onLogin = async () => {
+    const data = await AdminWorker.Login({login, password});
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.root}>
@@ -78,8 +82,11 @@ export default function AdminTab(props) {
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onAdd}>
               Добавить
         </Button>
+        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onLogin}>
+              Login
+        </Button>
       </div>
-      <UserTable></UserTable>
+      <UserTable data={usersState.users}></UserTable>
     </div>
   );
 }

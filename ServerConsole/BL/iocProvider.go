@@ -2,6 +2,7 @@ package BL
 
 import (
 	"../DAL"
+	"../Interfaces"
 	"../Models"
 )
 
@@ -15,6 +16,7 @@ type IIoCProvider interface {
 }
 
 type types struct {
+	_authService         Interfaces.IAuthService
 	_mqttReceiverService IMqttReceiverService
 	_webSocketService    IWebSocketService
 	_dalService          DAL.IDalService
@@ -29,11 +31,13 @@ func InitIoc() IIoCProvider {
 	dalCh := make(chan *Models.RawMqttMessage)
 	webSockCh := make(chan *Models.RawMqttMessage)
 
+	authService := AuthServiceNew()
 	webSocketService := WebSocketServiceNew(_types, webSockCh)
 	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalCh, webSockCh)
-	dalService := DAL.DalServiceNew(dalCh)
-	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService)
+	dalService := DAL.DalServiceNew(authService, dalCh)
+	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService, authService)
 
+	_types._authService = authService
 	_types._mqttReceiverService = mqttReceiverService
 	_types._webSocketService = webSocketService
 	_types._dalService = dalService

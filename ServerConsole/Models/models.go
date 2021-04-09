@@ -253,11 +253,11 @@ type FullSoftwareInfoModel struct {
 }
 
 type UserModel struct {
-	Id       bson.ObjectId `bson:"_id"`
-	DateTime time.Time
-	Login    string
-	Password []byte
-	Surname  string
-	Role     string
-	Email    string
+	Id           bson.ObjectId `bson:"_id"`
+	DateTime     time.Time
+	Login        string
+	PasswordHash [32]byte
+	Surname      string
+	Role         string
+	Email        string
 }

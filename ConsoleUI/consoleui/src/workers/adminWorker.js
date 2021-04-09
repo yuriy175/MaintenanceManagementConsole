@@ -17,10 +17,30 @@ export async function GetAllUsers() {
 
 export async function UpdateUser(user) {
     return await HandlerWrapper('UpdateUser', async () => {
-        const response = await axios.post(EquipsServiceAddress + AdminController +
-            '/UpdateUser',
-            JSON.stringify(user),
-            GetJsonHeader());
+        const response = await axios.post(EquipsServiceAddress + AdminController + '/UpdateUser',
+            user, //json,
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                }
+            });
+
+        return response.data;
+    });
+};
+
+export async function Login(login) {
+    return await HandlerWrapper('Login', async () => {
+        const response = await axios.post(EquipsServiceAddress + AdminController + '/Login',
+            login, 
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                }
+            });
+
         return response.data;
     });
 };

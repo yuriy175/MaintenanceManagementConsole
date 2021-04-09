@@ -2,12 +2,11 @@ package BL
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"../DAL"
+	"../Models"
 )
 
 type AdminController struct {
@@ -44,31 +43,24 @@ func (service *AdminController) Handle() {
 	})
 
 	http.HandleFunc("/equips/UpdateUser", func(w http.ResponseWriter, r *http.Request) {
-		//queryString := r.URL.Query()
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
-		// Convert response body to string
-		bodyString := string(bodyBytes)
-		fmt.Println("API Response as String:\n" + bodyString)
+		var userVM = &Models.UserViewModel{}
+		json.Unmarshal(bodyBytes, &userVM)
 
-		log.Println("Url Param 'detailedXilib' is missing")
+		user := dalService.UpdateUser(userVM)
+		json.NewEncoder(w).Encode(user)
+	})
 
-		/*detailedXilibs, ok := queryString["detailedXilib"]
-		if !ok || len(detailedXilibs[0]) < 1 {
-			log.Println("Url Param 'detailedXilib' is missing")
-			return
-		}
-		// detailedXilib := detailedXilibs[0]
+	http.HandleFunc("/equips/Login", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
-		verboseXilibs, ok := queryString["verboseXilib"]
-		if !ok || len(verboseXilibs[0]) < 1 {
-			log.Println("Url Param 'verboseXilib' is missing")
-			return
-		}
-		// verboseXilib := verboseXilibs[0]
+		var userVM = &Models.UserViewModel{}
+		json.Unmarshal(bodyBytes, &userVM)
 
-		service.SendCommand(w, r, "xilibLogsOn")
-		*/
+		user := dalService.GetUserByName(userVM.Login, userVM.Email, userVM.Password)
+		json.NewEncoder(w).Encode(user)
 	})
 }

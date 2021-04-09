@@ -9,6 +9,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"../Interfaces"
 	"../Models"
 	"../Utils"
 )
@@ -28,18 +29,22 @@ type IDalService interface {
 	GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel
 
 	//user repository
-	UpdateUser(user Models.UserModel) *Models.UserModel
+	UpdateUser(user *Models.UserViewModel) *Models.UserModel
 	GetUsers() []Models.UserModel
+	GetUserByName(surname string, email string, password string) bool
 }
 
 type dalService struct {
-	_dalCh chan *Models.RawMqttMessage
+	_dalCh       chan *Models.RawMqttMessage
+	_authService Interfaces.IAuthService
 }
 
 func DalServiceNew(
+	authService Interfaces.IAuthService,
 	dalCh chan *Models.RawMqttMessage) IDalService {
 	service := &dalService{}
 
+	service._authService = authService
 	service._dalCh = dalCh
 
 	return service
@@ -468,8 +473,27 @@ func (service *dalService) ensureIndeces(sysInfoCollection *mgo.Collection, keys
 	sysInfoCollection.EnsureIndex(idx)
 }
 
-func (service *dalService) UpdateUser(user Models.UserModel) *Models.UserModel {
-	return nil
+func (service *dalService) UpdateUser(userVM *Models.UserViewModel) *Models.UserModel {
+	session := service.createSession()
+	defer session.Close()
+
+	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
+
+	sum := service._authService.GetSum(userVM.Password)
+
+	model := Models.UserModel{}
+	model.Id = bson.NewObjectId()
+	model.DateTime = time.Now()
+
+	model.Login = userVM.Login
+	model.PasswordHash = sum
+	model.Surname = userVM.Surname
+	model.Role = userVM.Role
+	model.Email = userVM.Email
+
+	userCollection.Insert(model)
+
+	return &model
 }
 
 func (service *dalService) GetUsers() []Models.UserModel {
@@ -486,4 +510,22 @@ func (service *dalService) GetUsers() []Models.UserModel {
 	userCollection.Find(query).All(&users)
 
 	return users
+}
+
+func (service *dalService) GetUserByName(login string, email string, password string) bool {
+	session := service.createSession()
+	defer session.Close()
+
+	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
+
+	// // критерий выборки
+	query := bson.M{"login": login}
+
+	// // объект для сохранения результата
+	user := Models.UserModel{}
+	userCollection.Find(query).One(&user)
+
+	ok := service._authService.CheckSum(password, user.PasswordHash)
+
+	return ok
 }

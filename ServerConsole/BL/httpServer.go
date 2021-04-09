@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"../DAL"
+	"../Interfaces"
 	"../Models"
 )
 
@@ -13,6 +14,7 @@ type IHttpService interface {
 }
 
 type httpService struct {
+	_authService         Interfaces.IAuthService
 	_mqttReceiverService IMqttReceiverService
 	_webSocketService    IWebSocketService
 	_dalService          DAL.IDalService
@@ -21,12 +23,16 @@ type httpService struct {
 }
 
 func HttpServiceNew(
-	mqttReceiverService IMqttReceiverService, webSocketService IWebSocketService, dalService DAL.IDalService) IHttpService {
+	mqttReceiverService IMqttReceiverService,
+	webSocketService IWebSocketService,
+	dalService DAL.IDalService,
+	authService Interfaces.IAuthService) IHttpService {
 	service := &httpService{}
 
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService
+	service._authService = authService
 
 	service._equipController = EquipControllerNew(mqttReceiverService, webSocketService, dalService, service)
 	service._adminController = AdminControllerNew(mqttReceiverService, webSocketService, dalService)

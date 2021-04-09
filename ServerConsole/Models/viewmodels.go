@@ -136,3 +136,11 @@ type SoftwareMessageViewModel struct {
 	ErrorDescriptions      []MessageViewModel
 	AtlasErrorDescriptions []MessageViewModel
 }
+
+type UserViewModel struct {
+	Login    string
+	Password string
+	Surname  string
+	Role     string
+	Email    string
+}
