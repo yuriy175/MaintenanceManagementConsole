@@ -1,6 +1,9 @@
 package BL
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -27,6 +30,7 @@ func AdminControllerNew(
 func (service *AdminController) Handle() {
 	//mqttReceiverService := service._mqttReceiverService
 	//webSocketService := service._webSocketService
+	dalService := service._dalService
 
 	http.HandleFunc("/equips/GetAllUsers", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
@@ -34,12 +38,20 @@ func (service *AdminController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")
-		// equips := mqttReceiverService.GetConnectionNames()
-		// json.NewEncoder(w).Encode(equips)
+		//roles := dalService.GetRoles()
+		users := dalService.GetUsers()
+		json.NewEncoder(w).Encode(users)
 	})
 
 	http.HandleFunc("/equips/UpdateUser", func(w http.ResponseWriter, r *http.Request) {
 		//queryString := r.URL.Query()
+		defer r.Body.Close()
+		bodyBytes, _ := ioutil.ReadAll(r.Body)
+
+		// Convert response body to string
+		bodyString := string(bodyBytes)
+		fmt.Println("API Response as String:\n" + bodyString)
+
 		log.Println("Url Param 'detailedXilib' is missing")
 
 		/*detailedXilibs, ok := queryString["detailedXilib"]

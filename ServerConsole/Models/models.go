@@ -251,3 +251,13 @@ type FullSoftwareInfoModel struct {
 	PermanentInfo []SoftwareInfoModel
 	VolatileInfo  []SoftwareVolatileInfoModel
 }
+
+type UserModel struct {
+	Id       bson.ObjectId `bson:"_id"`
+	DateTime time.Time
+	Login    string
+	Password []byte
+	Surname  string
+	Role     string
+	Email    string
+}

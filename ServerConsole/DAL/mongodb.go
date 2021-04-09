@@ -26,6 +26,10 @@ type IDalService interface {
 
 	GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel
 	GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel
+
+	//user repository
+	UpdateUser(user Models.UserModel) *Models.UserModel
+	GetUsers() []Models.UserModel
 }
 
 type dalService struct {
@@ -61,6 +65,9 @@ func (service *dalService) Start() {
 
 	service.ensureIndeces(sysInfoCollection, []string{"equipname", "datetime"})
 	service.ensureIndeces(sysVolatileInfoCollection, []string{"equipname", "datetime"})
+
+	service.ensureIndeces(softwareInfoCollection, []string{"equipname", "datetime"})
+	service.ensureIndeces(softwareVolatileInfoCollection, []string{"equipname", "datetime"})
 
 	go func() {
 		for d := range service._dalCh {
@@ -459,4 +466,24 @@ func (service *dalService) ensureIndeces(sysInfoCollection *mgo.Collection, keys
 		Key: keys,
 	}
 	sysInfoCollection.EnsureIndex(idx)
+}
+
+func (service *dalService) UpdateUser(user Models.UserModel) *Models.UserModel {
+	return nil
+}
+
+func (service *dalService) GetUsers() []Models.UserModel {
+	session := service.createSession()
+	defer session.Close()
+
+	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
+
+	// // критерий выборки
+	query := bson.M{}
+
+	// // объект для сохранения результата
+	users := []Models.UserModel{}
+	userCollection.Find(query).All(&users)
+
+	return users
 }

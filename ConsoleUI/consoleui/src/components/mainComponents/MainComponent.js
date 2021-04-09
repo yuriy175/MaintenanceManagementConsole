@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,6 +15,9 @@ import MailIcon from '@material-ui/icons/Mail';
 
 import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
+
+import { UsersContext } from '../../context/users-context';
+import * as AdminWorker from '../../workers/adminWorker'
 
 const drawerWidth = 240;
 const mainMenu = ['Обзор', 'Карта', 'Журнал событий', 'История', 'Администрироание'];
@@ -48,6 +51,19 @@ export default function MainComponent() {
   const classes = useStyles();
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [usersState, usersDispatch] = useContext(UsersContext);
+
+  useEffect(() => {
+      (async () => {
+          if(usersState.users)
+          {
+            return;
+          }
+
+          const users = await AdminWorker.GetAllUsers();
+          usersDispatch({ type: 'SETUSERS', payload: users }); 
+      })();
+  }, [usersState.users]);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);

@@ -19,6 +19,9 @@ const (
 	DetectorInfoTableName         = "DetectorInfo"
 	DosimeterInfoTableName        = "DosimeterInfo"
 
+	RolesTableName = "Roles"
+	UsersTableName = "Users"
+
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
 	//"Server=mprom.ml;User=client1;Password=medtex"
 	RabbitMQHost          = "mprom.ml" // "localhost"

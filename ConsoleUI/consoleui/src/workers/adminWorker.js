@@ -18,7 +18,9 @@ export async function GetAllUsers() {
 export async function UpdateUser(user) {
     return await HandlerWrapper('UpdateUser', async () => {
         const response = await axios.post(EquipsServiceAddress + AdminController +
-            '/UpdateUser?user=' + user);
+            '/UpdateUser',
+            JSON.stringify(user),
+            GetJsonHeader());
         return response.data;
     });
 };
