@@ -7,4 +7,7 @@ export const EquipsServiceAddress = window.EquipsServiceAddress;
 export const WebSocketAddress = window.WebSocketAddress;
 
 export const SearchPeriod = 7;
+export const UserRole = 'User'
+export const AdminRole = 'Administrator';
+export const Roles = [UserRole, AdminRole];
 
