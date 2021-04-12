@@ -534,7 +534,7 @@ func (service *dalService) GetUserByName(login string, email string, password st
 	user := Models.UserModel{}
 	userCollection.Find(query).One(&user)
 
-	if ok := service._authService.CheckSum(password, user.PasswordHash); ok {
+	if ok := service._authService.CheckSum(password, user.PasswordHash); ok && !user.Disabled {
 		return &user
 	}
 

@@ -85,9 +85,6 @@ export default function AdminTab(props) {
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onAdd}>
               Добавить
         </Button>
-        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onLogin}>
-              Login
-        </Button>
       </div>
       <UserTable data={usersState.users}></UserTable>
     </div>

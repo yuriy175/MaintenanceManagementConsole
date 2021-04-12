@@ -34,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
   optionStyle:{
     backgroundColor: "#3f51b5",
     color:"black",
+  },
+  userName:{
+    // textAlign: "end",
+    width: `calc(100% - 180px)`,
   }
 }));
 
@@ -113,7 +117,7 @@ export default function MainToolBar() {
                 }
               </NativeSelect>
             </FormControl>
-            <Typography variant="h6" noWrap>
+            <Typography variant="h6" noWrap align="right"  className={classes.userName}> 
               {userName}
             </Typography>
         </Toolbar>
