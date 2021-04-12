@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.MessagesSender.BL.Helpers;
 using MimeKit;
 using Serilog;
 using System;
@@ -23,9 +24,9 @@ namespace MessagesSender.BL.Helpers
                 (
                       "smtp.mail.ru",
                       "yuriy_nv@mail.ru",
-                      "yuri.vorobyev@mskorp.ru",
-                      //"sergey.nikiforov@mskorp.ru",
-                      "ynone");
+                      //"yuri.vorobyev@mskorp.ru",
+                      "sergey.nikiforov@mskorp.ru",
+                      "psw");
 
         /// <summary>
         /// public constructor

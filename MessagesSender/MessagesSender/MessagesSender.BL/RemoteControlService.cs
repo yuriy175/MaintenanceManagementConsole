@@ -22,6 +22,8 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.IO;
 using System.Reflection;
+using MessagesSender.MessagesSender.BL.Helpers;
+using System.Drawing.Imaging;
 
 namespace MessagesSender.BL
 {
@@ -36,7 +38,10 @@ namespace MessagesSender.BL
 		private const string XiLogFolderPathName = @"Logs\XiLogs";
 		private const string XiLogFileName = @"xilogs.zip";
 		private const string TaskManPath = @"C:\Windows\System32\Taskmgr.exe";
+		private const string TeamViewerPath = @"D:\res\SnapShot_src\SnapShot\SnapShot\bin\Debug\SnapShot.exe";
+			//@"C:\Windows\System32\notepad.exe";
 		private const string XilogsFolder = @".\XiLogs\xilogs.exe";
+		private const string TeamViewerImagePath = @".\tvImage.jpeg";
 		private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
 
 		private readonly IConfigurationService _configurationService;
@@ -48,10 +53,10 @@ namespace MessagesSender.BL
 		private readonly IZipService _zipService;
 		private readonly IFtpClient _ftpClient;
 		private readonly ITopicService _topicService;
-		private readonly IEmailSender _emailSender,
+		private readonly IEmailSender _emailSender;
 
 		private readonly AsyncLock _xilibSync = new AsyncLock();
-
+		private readonly string _installPath = string.Empty;
 		private bool _xilibState = false;
 
 		/// <summary>
@@ -96,6 +101,8 @@ namespace MessagesSender.BL
             _eventPublisher.RegisterSendAtlasLogsCommandArrivedEvent(() => SendAtlasLogsAsync());
             _eventPublisher.RegisterXilibLogsOnCommandArrivedEvent(() => XilibLogsOnAsync());
 
+			_installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
+
 			Task.Run(async () =>
 			{
 				var appParam = await _dbSettingsEntityService.GetAppParamAsync(EtlXilibLogsEnabledName);
@@ -111,6 +118,20 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> RunTeamViewerAsync()
         {
+			var process = Process.Start(TeamViewerPath);
+			await Task.Delay(1000);
+
+			var tvFile = Path.Combine(_installPath, LogFolderPathName, TeamViewerImagePath);
+			var hWnd = WindowSnapshotHelper.GetWindowHandler(process);
+
+			//var hwnd = Win32API.FindWindow((textBoxClass.Text.Length > 0) ? textBoxClass.Text : null,
+			//	(textBoxCaption.Text.Length > 0) ? textBoxCaption.Text : null);
+			var image = WindowSnapshotHelper.MakeSnapshot(hWnd, false, Win32API.WindowShowStyle.Restore);
+			if (image != null)
+			{
+				image.Save(tvFile, ImageFormat.Jpeg);
+			}
+			
 			var result = await _emailSender.SendTeamViewerAsync(tvFile);
 			await SendTeamViewerStateAsync(result);
 
@@ -166,15 +187,13 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> XilibLogsOnAsync()
         {
-			var installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
-
 			using (await _xilibSync.LockAsync())
 			{
 				try
 				{
 					if (!_xilibState)
 					{
-						var xilog = Path.Combine(installPath, XiLogFolderPathName);
+						var xilog = Path.Combine(_installPath, XiLogFolderPathName);
 						if (!Directory.Exists(xilog))
 						{
 							Directory.CreateDirectory(xilog);
