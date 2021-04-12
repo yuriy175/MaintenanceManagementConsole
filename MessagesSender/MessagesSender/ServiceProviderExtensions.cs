@@ -38,7 +38,11 @@ namespace MessagesSender
 			   typeof(IZipService),
 			   typeof(ZipService));
 
-			services.AddSingleton(
+            services.AddSingleton(
+               typeof(IEmailSender),
+               typeof(EmailSender));
+
+            services.AddSingleton(
                typeof(ICommandService),
                typeof(CommandService));
 

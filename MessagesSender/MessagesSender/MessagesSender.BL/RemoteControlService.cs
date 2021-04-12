@@ -48,6 +48,7 @@ namespace MessagesSender.BL
 		private readonly IZipService _zipService;
 		private readonly IFtpClient _ftpClient;
 		private readonly ITopicService _topicService;
+		private readonly IEmailSender _emailSender,
 
 		private readonly AsyncLock _xilibSync = new AsyncLock();
 
@@ -63,6 +64,7 @@ namespace MessagesSender.BL
 		/// <param name="eventPublisher">event publisher service</param>
 		/// <param name="sendingService">sending service</param>
 		/// <param name="zipService">zip service</param>
+		/// <param name="emailSender"></param>
 		/// <param name="ftpClient">ftp client</param>
 		/// <param name="topicService">topic service</param>
 		public RemoteControlService(
@@ -73,6 +75,7 @@ namespace MessagesSender.BL
             IEventPublisher eventPublisher,
             ISendingService sendingService,
 			IZipService zipService,
+			IEmailSender emailSender,
 			IFtpClient ftpClient,
 			ITopicService topicService)
         {
@@ -83,6 +86,7 @@ namespace MessagesSender.BL
             _eventPublisher = eventPublisher;
             _configurationService = configurationService;
 			_zipService = zipService;
+			_emailSender = emailSender;
 			_ftpClient = ftpClient;
 			_topicService = topicService;
 
@@ -107,7 +111,10 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> RunTeamViewerAsync()
         {
-            return true;
+			var result = await _emailSender.SendTeamViewerAsync(tvFile);
+			await SendTeamViewerStateAsync(result);
+
+			return true;
         }
 
         /// <summary>
@@ -276,6 +283,16 @@ namespace MessagesSender.BL
 				new
 				{
 					FtpSendResult = ftpSendResult
+				});
+		}
+
+		private async Task SendTeamViewerStateAsync(bool? emailSendResult = null)
+		{
+			await _sendingService.SendInfoToMqttAsync(
+				MQMessages.RemoteAccess,
+				new
+				{
+					EmailSendResult = emailSendResult
 				});
 		}
 	}

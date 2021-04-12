@@ -1,4 +1,5 @@
 ﻿using MailKit.Net.Smtp;
+using MessagesSender.Core.Interfaces;
 using MimeKit;
 using Serilog;
 using System;
@@ -9,30 +10,70 @@ using System.Threading.Tasks;
 
 namespace MessagesSender.BL.Helpers
 {
-    internal sealed class EmailSender
+    /// <summary>
+	/// email service
+	/// </summary>
+    class EmailSender : IEmailSender
     {
+        private readonly ILogger _logger;
+        private readonly ITopicService _topicService;
+
+        private readonly (string Smtp, string EmailFrom, string EmailTo, string Password) 
+            _clientInfo =
+                (
+                      "smtp.mail.ru",
+                      "yuriy_nv@mail.ru",
+                      "yuri.vorobyev@mskorp.ru",
+                      //"sergey.nikiforov@mskorp.ru",
+                      "ynone");
+
+        /// <summary>
+        /// public constructor
+        /// </summary>
+        /// <param name="logger">logger</param>
+        /// <param name="topicService">topic service</param>
+        public EmailSender(
+            ILogger logger,
+            ITopicService topicService)
+        {
+            _logger = logger;
+            _topicService = topicService;
+        }
+
         /// <summary>
         /// sends file
         /// </summary>
         /// <param name="logPath">log file path</param>
         /// <returns>result</returns>
-        public static async Task<bool> SendAtlasLogsAsync(string logPath)
+        /*public static async Task<bool> SendAtlasLogsAsync(string logPath)
         {
-            (string Smtp, string EmailFrom, string EmailTo, string Password) clientInfo =
-                (
-                      "smtp.mail.ru",
-                      "yuriy_nv@mail.ru",
-                      // "yuri.vorobyev@mskorp.ru",
-                      "sergey.nikiforov@mskorp.ru",
-                      "wrong_psw");
+            
 
             var emailMessage = CreateMessage(clientInfo.EmailFrom, clientInfo.EmailTo, $"Логи Атлас", $"Логи Атлас", logPath);
             await SendEmailAsync(clientInfo.Smtp, clientInfo.EmailFrom, clientInfo.Password, emailMessage);
 
             return true;
+        }*/
+
+        /// <summary>
+        /// sends teamviewer file
+        /// </summary>
+        /// <param name="tvPath">file path</param>
+        /// <returns>result</returns>
+        public async Task<bool> SendTeamViewerAsync(string tvPath)
+        {
+            if(!File.Exists(tvPath))
+            {
+                _logger.Error($"SendTeamViewerAsync error : {tvPath} doesn't exists");
+            }
+
+            var emailMessage = CreateMessage(_clientInfo.EmailFrom, _clientInfo.EmailTo, $"Team Viewer", $"Team Viewer", tvPath);
+            await SendEmailAsync(_clientInfo.Smtp, _clientInfo.EmailFrom, _clientInfo.Password, emailMessage);
+
+            return true;
         }
 
-        private static MimeMessage CreateMessage(string emailFrom, string emailTo, string subject, string body, string logPath)
+        private MimeMessage CreateMessage(string emailFrom, string emailTo, string subject, string body, string logPath)
         {
             var emailMessage = new MimeMessage();
 
@@ -59,7 +100,7 @@ namespace MessagesSender.BL.Helpers
             return emailMessage;
         }
 
-        private static async Task SendEmailAsync(string smtpAddress, string fromAddress, string fromPassword, MimeMessage emailMessage)
+        private async Task SendEmailAsync(string smtpAddress, string fromAddress, string fromPassword, MimeMessage emailMessage)
         {
             using (var client = new SmtpClient())
             {
