@@ -529,6 +529,9 @@ func (service *dalService) GetUserByName(login string, email string, password st
 
 	// // критерий выборки
 	query := bson.M{"login": login}
+	if login == "" {
+		query = bson.M{"email": email}
+	}
 
 	// // объект для сохранения результата
 	user := Models.UserModel{}
