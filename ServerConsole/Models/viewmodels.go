@@ -138,9 +138,11 @@ type SoftwareMessageViewModel struct {
 }
 
 type UserViewModel struct {
+	Id       string
 	Login    string
 	Password string
 	Surname  string
 	Role     string
 	Email    string
+	Disabled bool
 }

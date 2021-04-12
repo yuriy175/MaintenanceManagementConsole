@@ -31,7 +31,7 @@ type IDalService interface {
 	//user repository
 	UpdateUser(user *Models.UserViewModel) *Models.UserModel
 	GetUsers() []Models.UserModel
-	GetUserByName(surname string, email string, password string) bool
+	GetUserByName(surname string, email string, password string) *Models.UserModel
 }
 
 type dalService struct {
@@ -479,19 +479,28 @@ func (service *dalService) UpdateUser(userVM *Models.UserViewModel) *Models.User
 
 	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
 
-	sum := service._authService.GetSum(userVM.Password)
-
 	model := Models.UserModel{}
-	model.Id = bson.NewObjectId()
-	model.DateTime = time.Now()
 
 	model.Login = userVM.Login
-	model.PasswordHash = sum
 	model.Surname = userVM.Surname
 	model.Role = userVM.Role
 	model.Email = userVM.Email
+	model.Disabled = userVM.Disabled
 
-	userCollection.Insert(model)
+	if userVM.Id == "" {
+		sum := service._authService.GetSum(userVM.Password)
+
+		model.Id = bson.NewObjectId()
+		model.DateTime = time.Now()
+		model.PasswordHash = sum
+
+		userCollection.Insert(model)
+	} else {
+		userCollection.Update(
+			bson.M{"login": model.Login},
+			bson.D{
+				{"$set", bson.D{{"disabled", model.Disabled}}}})
+	}
 
 	return &model
 }
@@ -507,12 +516,12 @@ func (service *dalService) GetUsers() []Models.UserModel {
 
 	// // объект для сохранения результата
 	users := []Models.UserModel{}
-	userCollection.Find(query).All(&users)
+	userCollection.Find(query).Sort("-datetime").All(&users)
 
 	return users
 }
 
-func (service *dalService) GetUserByName(login string, email string, password string) bool {
+func (service *dalService) GetUserByName(login string, email string, password string) *Models.UserModel {
 	session := service.createSession()
 	defer session.Close()
 
@@ -525,7 +534,9 @@ func (service *dalService) GetUserByName(login string, email string, password st
 	user := Models.UserModel{}
 	userCollection.Find(query).One(&user)
 
-	ok := service._authService.CheckSum(password, user.PasswordHash)
+	if ok := service._authService.CheckSum(password, user.PasswordHash); ok {
+		return &user
+	}
 
-	return ok
+	return nil
 }

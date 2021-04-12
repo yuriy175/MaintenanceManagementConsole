@@ -54,6 +54,11 @@ func (service *AdminController) Handle() {
 	})
 
 	http.HandleFunc("/equips/Login", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
@@ -61,6 +66,10 @@ func (service *AdminController) Handle() {
 		json.Unmarshal(bodyBytes, &userVM)
 
 		user := dalService.GetUserByName(userVM.Login, userVM.Email, userVM.Password)
+		if user == nil {
+			http.Error(w, "Not authorized", 401)
+			return
+		}
 		json.NewEncoder(w).Encode(user)
 	})
 }

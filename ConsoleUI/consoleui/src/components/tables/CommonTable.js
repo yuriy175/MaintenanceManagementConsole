@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useDebugValue } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -8,6 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles({
   root: {
@@ -67,8 +68,14 @@ export default function CommonTable(props) {
                       <TableCell key={column.id} align={column.align}
                         className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : ''}
                       >
-                        {column.format ? column.format(value) : 
-                          column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}
+                        {column.checked ? 
+                          <Checkbox
+                            checked={value}
+                            onChange={(ev) => props.onSelect(ev, row)}
+                            inputProps={{ 'aria-label': 'select all desserts' }}
+                          /> : 
+                          column.format ? column.format(value) : 
+                            column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}
                       </TableCell>
                     );
                   })}

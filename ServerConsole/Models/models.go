@@ -260,4 +260,5 @@ type UserModel struct {
 	Surname      string
 	Role         string
 	Email        string
+	Disabled     bool
 }

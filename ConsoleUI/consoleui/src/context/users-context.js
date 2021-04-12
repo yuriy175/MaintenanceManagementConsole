@@ -12,7 +12,7 @@ function reducer(state, action) {
     case 'RESET': {
       return initialState;
     }
-    case 'ADDUSER': {
+    case 'SETUSER': {
       return {
         ...state,
         currentUser: action.payload

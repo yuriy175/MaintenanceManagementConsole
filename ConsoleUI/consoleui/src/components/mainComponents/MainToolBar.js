@@ -9,6 +9,7 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
+import { UsersContext } from '../../context/users-context';
 
 import * as EquipWorker from '../../workers/equipWorker'
 // import * as WebSocket from '../../workers/webSocket'
@@ -42,7 +43,9 @@ export default function MainToolBar() {
   const classes = useStyles();
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
   const [currEquip, setCurrEquip] = useState('none');
+  const [userName, setUserName] = useState('');
 
   const handleEquipsChange = async (event) => {
     const select = event.target;
@@ -78,6 +81,12 @@ export default function MainToolBar() {
       })();
   }, [allEquipsState.equips]);
 
+  useEffect(() => {
+    (async () => {
+      setUserName(usersState?.currentUser?.Surname);
+    })();
+  }, [usersState.currentUser]);
+
 
   const webSocket = useWebSocket(
     {
@@ -104,6 +113,9 @@ export default function MainToolBar() {
                 }
               </NativeSelect>
             </FormControl>
+            <Typography variant="h6" noWrap>
+              {userName}
+            </Typography>
         </Toolbar>
     </AppBar>
   );
