@@ -38,8 +38,9 @@ namespace MessagesSender.BL
 		private const string XiLogFolderPathName = @"Logs\XiLogs";
 		private const string XiLogFileName = @"xilogs.zip";
 		private const string TaskManPath = @"C:\Windows\System32\Taskmgr.exe";
-		private const string TeamViewerPath = @"D:\res\SnapShot_src\SnapShot\SnapShot\bin\Debug\SnapShot.exe";
-			//@"C:\Windows\System32\notepad.exe";
+		private const string TeamViewerProcessName = @"TeamViewer";
+		private const string TeamViewerPath = @"c:\Program Files (x86)\TeamViewer\TeamViewer.exe";//@"D:\res\SnapShot_src\SnapShot\SnapShot\bin\Debug\SnapShot.exe";
+																				 //@"C:\Windows\System32\notepad.exe";
 		private const string XilogsFolder = @".\XiLogs\xilogs.exe";
 		private const string TeamViewerImagePath = @".\tvImage.jpeg";
 		private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
@@ -118,14 +119,20 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> RunTeamViewerAsync()
         {
-			var process = Process.Start(TeamViewerPath);
-			await Task.Delay(1000);
+			Process process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == TeamViewerProcessName);
+			Process oldProc = null;
+
+			if ((process != null && !WindowSnapshotHelper.IsValidUIWnd(process.MainWindowHandle)) || process == null)
+			{
+				oldProc = process;
+				process = Process.Start(TeamViewerPath);
+			}
+
+			await Task.Delay(2000);
 
 			var tvFile = Path.Combine(_installPath, LogFolderPathName, TeamViewerImagePath);
-			var hWnd = WindowSnapshotHelper.GetWindowHandler(process);
-
-			//var hwnd = Win32API.FindWindow((textBoxClass.Text.Length > 0) ? textBoxClass.Text : null,
-			//	(textBoxCaption.Text.Length > 0) ? textBoxCaption.Text : null);
+			var hWnd = WindowSnapshotHelper.GetWindowHandler(oldProc ?? process);
+			
 			var image = WindowSnapshotHelper.MakeSnapshot(hWnd, false, Win32API.WindowShowStyle.Restore);
 			if (image != null)
 			{
