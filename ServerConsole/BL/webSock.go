@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -33,6 +34,8 @@ var upgrader = websocket.Upgrader{
 }
 
 func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock {
+	timeoutDuration := 60 * time.Second
+
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -43,11 +46,15 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 	sock._conn = conn
 	log.Println("web sock created Url %s", uid)
 
-	// return sock
+	sock._conn.SetPongHandler(func(str string) error {
+		log.Println("pong received", str)
+		return nil
+	})
 
-	/**/
 	go func() {
 		for {
+			sock._conn.SetReadDeadline(time.Now().Add(timeoutDuration))
+
 			// Read message from browser
 			_, msg, err := sock._conn.ReadMessage()
 			if _, ok := err.(*websocket.CloseError); ok {
