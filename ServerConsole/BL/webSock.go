@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -26,6 +27,7 @@ type webSock struct {
 	_webSocketService IWebSocketService
 	_uid              string
 	_conn             *websocket.Conn
+	_mtx              sync.RWMutex
 }
 
 var upgrader = websocket.Upgrader{
@@ -80,6 +82,7 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 		for {
 			select {
 			case _ = <-ticker.C:
+				sock._mtx.Lock()
 				err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
 				if err != nil {
 					log.Println("write:", err)
@@ -87,6 +90,7 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 				} else {
 					log.Println("ping sent")
 				}
+				sock._mtx.Unlock()
 				// case <-interrupt:
 				// 	log.Println("interrupt")
 				// 	// To cleanly close a connection, a client should send a close
