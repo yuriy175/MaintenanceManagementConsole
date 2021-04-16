@@ -34,7 +34,8 @@ var upgrader = websocket.Upgrader{
 }
 
 func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock {
-	timeoutDuration := 60 * time.Second
+	//timeoutDuration := 60 * time.Second
+	timeoutDuration := 2 * time.Minute
 
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -70,6 +71,40 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 
 			// Print the message to the console
 			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
+		}
+	}()
+
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case _ = <-ticker.C:
+				err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
+				if err != nil {
+					log.Println("write:", err)
+					return
+				} else {
+					log.Println("ping sent")
+				}
+				// case <-interrupt:
+				// 	log.Println("interrupt")
+				// 	// To cleanly close a connection, a client should send a close
+				// 	// frame and wait for the server to close the connection.
+				// 	err := c.WriteMessage(
+				// 		websocket.CloseMessage,
+				// 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				// 	if err != nil {
+				// 		log.Println("write close:", err)
+				// 		return
+				// 	}
+				// 	select {
+				// 	case <-done:
+				// 	case <-time.After(time.Second):
+				// 	}
+				// 	c.Close()
+				// 	return
+			}
 		}
 	}()
 
