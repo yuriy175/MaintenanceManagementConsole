@@ -39,6 +39,13 @@ export function useWebSocket(props) {
 
                 const equips = await EquipWorker.GetAllEquips();
                 allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
+
+                // Send a ping every 10s
+                // to keep the connection live
+                setInterval(function(){
+                    console.log(`pinging...\n`);
+                    connection.send('ping');
+                }, 10000);
             };
         
             connection.onclose = function(event) {

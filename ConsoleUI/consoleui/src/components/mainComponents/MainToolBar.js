@@ -73,17 +73,17 @@ export default function MainToolBar() {
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   }
   
-  useEffect(() => {
-      (async () => {
-          if(!allEquipsState.equips || currEquipState.equipInfo)
-          {
-            return;
-          }
+  // useEffect(() => {
+  //     (async () => {
+  //         if(!allEquipsState.equips || currEquipState.equipInfo)
+  //         {
+  //           return;
+  //         }
 
-          const equipInfo = allEquipsState.equips[0];
-          onEquipChanged(equipInfo);
-      })();
-  }, [allEquipsState.equips]);
+  //         const equipInfo = allEquipsState.equips[0];
+  //         onEquipChanged(equipInfo);
+  //     })();
+  // }, [allEquipsState.equips]);
 
   useEffect(() => {
     (async () => {
