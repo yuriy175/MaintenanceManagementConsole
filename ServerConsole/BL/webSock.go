@@ -63,6 +63,11 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 				return
 			}
 
+			if err != nil {
+				fmt.Printf("websocket readmessage error met\n")
+				return
+			}
+
 			// Print the message to the console
 			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
 		}
