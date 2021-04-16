@@ -46,8 +46,23 @@ func (client *mqttClient) Create(
 	subTopics []string) IMqttClient {
 	//quitCh := make(chan int)
 
+	var reconnectingHandler mqtt.ReconnectHandler = func(client mqtt.Client, optins *mqtt.ClientOptions) {
+		fmt.Println("Reconnecting " + rootTopic)
+	}
+
 	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
 		fmt.Println("Connected " + rootTopic)
+		go func() {
+			var topics = map[string]byte{}
+			topics[rootTopic] = 0
+			for _, value := range subTopics {
+				topics[rootTopic+value] = 0
+			}
+
+			token := client.SubscribeMultiple(topics, nil) // callback MessageHandler)
+			token.Wait()
+			fmt.Printf("Subscribed to topic: %s", rootTopic)
+		}()
 	}
 
 	var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
@@ -95,6 +110,7 @@ func (client *mqttClient) Create(
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
+	opts.OnReconnecting = reconnectingHandler
 
 	c := mqtt.NewClient(opts)
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
@@ -105,17 +121,17 @@ func (client *mqttClient) Create(
 	client._topic = rootTopic
 	client._isEquipment = rootTopic != Models.CommonTopicPath && rootTopic != Models.BroadcastCommandsTopic
 
-	go func() {
-		var topics = map[string]byte{}
-		topics[rootTopic] = 0
-		for _, value := range subTopics {
-			topics[rootTopic+value] = 0
-		}
+	// go func() {
+	// 	var topics = map[string]byte{}
+	// 	topics[rootTopic] = 0
+	// 	for _, value := range subTopics {
+	// 		topics[rootTopic+value] = 0
+	// 	}
 
-		token := c.SubscribeMultiple(topics, nil) // callback MessageHandler)
-		token.Wait()
-		fmt.Printf("Subscribed to topic: %s", rootTopic)
-	}()
+	// 	token := c.SubscribeMultiple(topics, nil) // callback MessageHandler)
+	// 	token.Wait()
+	// 	fmt.Printf("Subscribed to topic: %s", rootTopic)
+	// }()
 
 	return client
 }
