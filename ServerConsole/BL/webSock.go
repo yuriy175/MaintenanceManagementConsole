@@ -116,6 +116,8 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 }
 
 func (ws *webSock) WriteMessage(data []byte) error {
+	ws._mtx.Lock()
+	defer ws._mtx.Unlock()
 	return ws._conn.WriteMessage(1, data)
 }
 
