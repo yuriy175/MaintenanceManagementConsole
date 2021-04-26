@@ -7,16 +7,11 @@ import (
 	"sync"
 	"time"
 
+	"../Interfaces"
 	"github.com/gorilla/websocket"
 )
 
-type IWebSock interface {
-	Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock
-	WriteMessage(data []byte) error
-	IsValid() bool
-}
-
-func WebSockNew(webSocketService IWebSocketService) IWebSock {
+func WebSockNew(webSocketService Interfaces.IWebSocketService) Interfaces.IWebSock {
 	webSock := &webSock{}
 	webSock._webSocketService = webSocketService
 
@@ -24,7 +19,7 @@ func WebSockNew(webSocketService IWebSocketService) IWebSock {
 }
 
 type webSock struct {
-	_webSocketService IWebSocketService
+	_webSocketService Interfaces.IWebSocketService
 	_uid              string
 	_conn             *websocket.Conn
 	_mtx              sync.RWMutex
@@ -35,7 +30,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) IWebSock {
+func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) Interfaces.IWebSock {
 	//timeoutDuration := 60 * time.Second
 	timeoutDuration := 2 * time.Minute
 

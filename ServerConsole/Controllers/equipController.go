@@ -1,4 +1,4 @@
-package BL
+package Controllers
 
 import (
 	"encoding/json"
@@ -7,18 +7,21 @@ import (
 	"net/http"
 	"time"
 
-	"../DAL"
+	"../Interfaces"
 )
 
 type EquipController struct {
-	_mqttReceiverService IMqttReceiverService
-	_webSocketService    IWebSocketService
-	_dalService          DAL.IDalService
-	_httpService         IHttpService
+	_mqttReceiverService Interfaces.IMqttReceiverService
+	_webSocketService    Interfaces.IWebSocketService
+	_dalService          Interfaces.IDalService
+	_httpService         Interfaces.IHttpService
 }
 
 func EquipControllerNew(
-	mqttReceiverService IMqttReceiverService, webSocketService IWebSocketService, dalService DAL.IDalService, httpService IHttpService) *EquipController {
+	mqttReceiverService Interfaces.IMqttReceiverService,
+	webSocketService Interfaces.IWebSocketService,
+	dalService Interfaces.IDalService,
+	httpService Interfaces.IHttpService) *EquipController {
 	service := &EquipController{}
 
 	service._httpService = httpService

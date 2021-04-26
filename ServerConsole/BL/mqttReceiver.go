@@ -4,21 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"../Interfaces"
 	"../Models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
 
-type IMqttClient interface {
-	Create(rootTopic string, subTopics []string) IMqttClient
-	Disconnect()
-	SendCommand(command string)
-	IsEquipTopic() bool
-}
-
 type mqttClient struct {
-	_mqttReceiverService IMqttReceiverService
-	_webSocketService    IWebSocketService
+	_mqttReceiverService Interfaces.IMqttReceiverService
+	_webSocketService    Interfaces.IWebSocketService
 	_dalCh               chan *Models.RawMqttMessage
 	_webSockCh           chan *Models.RawMqttMessage
 
@@ -28,10 +22,10 @@ type mqttClient struct {
 }
 
 func MqttClientNew(
-	mqttReceiverService IMqttReceiverService,
-	webSocketService IWebSocketService,
+	mqttReceiverService Interfaces.IMqttReceiverService,
+	webSocketService Interfaces.IWebSocketService,
 	dalCh chan *Models.RawMqttMessage,
-	webSockCh chan *Models.RawMqttMessage) IMqttClient {
+	webSockCh chan *Models.RawMqttMessage) Interfaces.IMqttClient {
 	client := &mqttClient{}
 	client._mqttReceiverService = mqttReceiverService
 	client._webSocketService = webSocketService
@@ -43,7 +37,7 @@ func MqttClientNew(
 
 func (client *mqttClient) Create(
 	rootTopic string,
-	subTopics []string) IMqttClient {
+	subTopics []string) Interfaces.IMqttClient {
 	//quitCh := make(chan int)
 
 	var reconnectingHandler mqtt.ReconnectHandler = func(client mqtt.Client, optins *mqtt.ClientOptions) {

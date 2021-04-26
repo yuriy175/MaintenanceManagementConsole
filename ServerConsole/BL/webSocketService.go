@@ -7,24 +7,17 @@ import (
 	"net/http"
 	"sync"
 
+	"../Interfaces"
 	"../Models"
 	"../Utils"
 )
 
-type IWebSocketService interface {
-	Start()
-	Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string)
-	UpdateWebClients(state *Models.EquipConnectionState)
-	HasActiveClients(topic string) bool
-	ClientClosed(sessionUid string)
-}
-
 type webSocketService struct {
 	_mtx         sync.RWMutex
-	_ioCProvider IIoCProvider
+	_ioCProvider Interfaces.IIoCProvider
 	_webSockCh   chan *Models.RawMqttMessage
 	// keys - sessionUids
-	_webSocketConnections map[string]IWebSock
+	_webSocketConnections map[string]Interfaces.IWebSock
 
 	// keys - main equipment topics
 	// values - slice of session uids
@@ -32,13 +25,13 @@ type webSocketService struct {
 }
 
 func WebSocketServiceNew(
-	ioCProvider IIoCProvider,
-	webSockCh chan *Models.RawMqttMessage) IWebSocketService {
+	ioCProvider Interfaces.IIoCProvider,
+	webSockCh chan *Models.RawMqttMessage) Interfaces.IWebSocketService {
 	service := &webSocketService{}
 
 	service._ioCProvider = ioCProvider
 	service._webSockCh = webSockCh
-	service._webSocketConnections = map[string]IWebSock{}
+	service._webSocketConnections = map[string]Interfaces.IWebSock{}
 	service._topicConnections = map[string][]string{}
 
 	return service

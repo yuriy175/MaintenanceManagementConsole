@@ -1,22 +1,24 @@
-package BL
+package Controllers
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
-	"../DAL"
+	"../Interfaces"
 	"../Models"
 )
 
 type AdminController struct {
-	_mqttReceiverService IMqttReceiverService
-	_webSocketService    IWebSocketService
-	_dalService          DAL.IDalService
+	_mqttReceiverService Interfaces.IMqttReceiverService
+	_webSocketService    Interfaces.IWebSocketService
+	_dalService          Interfaces.IDalService
 }
 
 func AdminControllerNew(
-	mqttReceiverService IMqttReceiverService, webSocketService IWebSocketService, dalService DAL.IDalService) *AdminController {
+	mqttReceiverService Interfaces.IMqttReceiverService,
+	webSocketService Interfaces.IWebSocketService,
+	dalService Interfaces.IDalService) *AdminController {
 	service := &AdminController{}
 
 	service._mqttReceiverService = mqttReceiverService

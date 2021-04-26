@@ -14,38 +14,21 @@ import (
 	"../Utils"
 )
 
-type IDalService interface {
-	Start()
-	////
-	GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel
-	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel
-	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
-	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel
-	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel
-	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
-	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel
-
-	GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel
-	GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel
-
-	//user repository
-	UpdateUser(user *Models.UserViewModel) *Models.UserModel
-	GetUsers() []Models.UserModel
-	GetUserByName(surname string, email string, password string) *Models.UserModel
-}
-
 type dalService struct {
-	_dalCh       chan *Models.RawMqttMessage
-	_authService Interfaces.IAuthService
+	_dalCh          chan *Models.RawMqttMessage
+	_authService    Interfaces.IAuthService
+	_userRepository *userRepository
 }
 
 func DalServiceNew(
 	authService Interfaces.IAuthService,
-	dalCh chan *Models.RawMqttMessage) IDalService {
+	dalCh chan *Models.RawMqttMessage) Interfaces.IDalService {
 	service := &dalService{}
 
 	service._authService = authService
 	service._dalCh = dalCh
+
+	service._userRepository = UserRepositoryNew(service, authService)
 
 	return service
 }
@@ -53,7 +36,7 @@ func DalServiceNew(
 func (service *dalService) Start() {
 	quitCh := make(chan int)
 
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	db := session.DB(Models.DBName)
@@ -138,7 +121,7 @@ func (service *dalService) Start() {
 }
 
 func (service *dalService) GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	studiesCollection := session.DB(Models.DBName).C(Models.StudyInWorkTableName)
@@ -155,7 +138,7 @@ func (service *dalService) GetStudiesInWork(equipName string, startDate time.Tim
 }
 
 func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	sysVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
@@ -172,7 +155,7 @@ func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, 
 }
 
 func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	organAutoCollection := session.DB(Models.DBName).C(Models.OrganAutoTableName)
@@ -186,7 +169,7 @@ func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Tim
 }
 
 func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
@@ -202,7 +185,7 @@ func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Tim
 }
 
 func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	swVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
@@ -219,7 +202,7 @@ func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time
 }
 
 func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	dicomInfoCollection := session.DB(Models.DBName).C(Models.DicomInfoTableName)
@@ -235,7 +218,7 @@ func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, e
 }
 
 func (service *dalService) GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	standInfoCollection := session.DB(Models.DBName).C(Models.StandInfoTableName)
@@ -251,7 +234,7 @@ func (service *dalService) GetStandInfo(equipName string, startDate time.Time, e
 }
 
 func (service *dalService) GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
@@ -264,7 +247,7 @@ func (service *dalService) GetPermanentSystemInfo(equipName string) *Models.Syst
 }
 
 func (service *dalService) GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel {
-	session := service.createSession()
+	session := service.CreateSession()
 	defer session.Close()
 
 	softwareInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
@@ -293,7 +276,7 @@ func (service *dalService) getQuery(equipName string, startDate time.Time, endDa
 	return query
 }
 
-func (service *dalService) createSession() *mgo.Session {
+func (service *dalService) CreateSession() *mgo.Session {
 	session, err := mgo.Dial(Models.MongoDBConnectionString)
 	if err != nil {
 		panic(err)
@@ -474,72 +457,13 @@ func (service *dalService) ensureIndeces(sysInfoCollection *mgo.Collection, keys
 }
 
 func (service *dalService) UpdateUser(userVM *Models.UserViewModel) *Models.UserModel {
-	session := service.createSession()
-	defer session.Close()
-
-	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
-
-	model := Models.UserModel{}
-
-	model.Login = userVM.Login
-	model.Surname = userVM.Surname
-	model.Role = userVM.Role
-	model.Email = userVM.Email
-	model.Disabled = userVM.Disabled
-
-	if userVM.Id == "" {
-		sum := service._authService.GetSum(userVM.Password)
-
-		model.Id = bson.NewObjectId()
-		model.DateTime = time.Now()
-		model.PasswordHash = sum
-
-		userCollection.Insert(model)
-	} else {
-		userCollection.Update(
-			bson.M{"login": model.Login},
-			bson.D{
-				{"$set", bson.D{{"disabled", model.Disabled}}}})
-	}
-
-	return &model
+	return service._userRepository.UpdateUser(userVM)
 }
 
 func (service *dalService) GetUsers() []Models.UserModel {
-	session := service.createSession()
-	defer session.Close()
-
-	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
-
-	// // критерий выборки
-	query := bson.M{}
-
-	// // объект для сохранения результата
-	users := []Models.UserModel{}
-	userCollection.Find(query).Sort("-datetime").All(&users)
-
-	return users
+	return service._userRepository.GetUsers()
 }
 
 func (service *dalService) GetUserByName(login string, email string, password string) *Models.UserModel {
-	session := service.createSession()
-	defer session.Close()
-
-	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
-
-	// // критерий выборки
-	query := bson.M{"login": login}
-	if login == "" {
-		query = bson.M{"email": email}
-	}
-
-	// // объект для сохранения результата
-	user := Models.UserModel{}
-	userCollection.Find(query).One(&user)
-
-	if ok := service._authService.CheckSum(password, user.PasswordHash); ok && !user.Disabled {
-		return &user
-	}
-
-	return nil
+	return service._userRepository.GetUserByName(login, email, password)
 }

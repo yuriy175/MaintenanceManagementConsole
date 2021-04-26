@@ -4,42 +4,36 @@ import (
 	"fmt"
 	"sync"
 
+	"../Interfaces"
 	"../Models"
 )
 
-type IMqttReceiverService interface {
-	///
-	UpdateMqttConnections(state *Models.EquipConnectionState)
-	CreateCommonConnections()
-	SendCommand(equipment string, command string)
-	SendBroadcastCommand(command string)
-	GetConnectionNames() []string
-	///
-}
-
 type mqttReceiverService struct {
 	_mtx              sync.RWMutex
-	_ioCProvider      IIoCProvider
-	_webSocketService IWebSocketService
+	_ioCProvider      Interfaces.IIoCProvider
+	_webSocketService Interfaces.IWebSocketService
 	_dalCh            chan *Models.RawMqttMessage
 	_webSockCh        chan *Models.RawMqttMessage
-	_mqttConnections  map[string]IMqttClient
+	_mqttConnections  map[string]Interfaces.IMqttClient
+	_topicStorage     Interfaces.ITopicStorage
 }
 
 //var mqttConnections = map[string]*MqttClient{}
 
 func MqttReceiverServiceNew(
-	ioCProvider IIoCProvider,
-	webSocketService IWebSocketService,
+	ioCProvider Interfaces.IIoCProvider,
+	webSocketService Interfaces.IWebSocketService,
+	topicStorage Interfaces.ITopicStorage,
 	dalCh chan *Models.RawMqttMessage,
-	webSockCh chan *Models.RawMqttMessage) IMqttReceiverService {
+	webSockCh chan *Models.RawMqttMessage) Interfaces.IMqttReceiverService {
 	service := &mqttReceiverService{}
 
 	service._ioCProvider = ioCProvider
 	service._webSocketService = webSocketService
+	service._topicStorage = topicStorage
 	service._dalCh = dalCh
 	service._webSockCh = webSockCh
-	service._mqttConnections = map[string]IMqttClient{}
+	service._mqttConnections = map[string]Interfaces.IMqttClient{}
 
 	return service
 }
@@ -47,8 +41,7 @@ func MqttReceiverServiceNew(
 func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipConnectionState) {
 	rootTopic := state.Name
 	isOff := !state.Connected
-	topicStorage := &TopicStorage{}
-	topics := topicStorage.getTopics()
+	topics := service._topicStorage.GetTopics()
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 
