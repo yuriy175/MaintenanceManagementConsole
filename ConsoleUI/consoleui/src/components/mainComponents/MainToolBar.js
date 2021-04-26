@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
@@ -53,7 +55,7 @@ export default function MainToolBar() {
 
   const handleEquipsChange = async (event) => {
     const select = event.target;
-    const val = select.options[select.selectedIndex].value;
+    const val = select.value;// select.options[select.selectedIndex].value;
 
     await onEquipChanged(val);
   };
@@ -103,7 +105,7 @@ export default function MainToolBar() {
         <Toolbar>
             <Typography variant="h6" noWrap>
             </Typography>
-            <FormControl className={classes.formControl}>
+            {/* <FormControl className={classes.formControl}>
               <NativeSelect
                 value={currEquipState.equipInfo}
                 onChange={handleEquipsChange}
@@ -116,6 +118,21 @@ export default function MainToolBar() {
                     ))
                 }
               </NativeSelect>
+            </FormControl> */}
+            <FormControl className={classes.formControl}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={currEquipState.equipInfo}
+                onChange={handleEquipsChange}
+                className={classes.selectEmpty}
+                variant="outlined"
+              >
+                {allEquipsState.equips?.map((i, ind) => (
+                    <MenuItem key={ind.toString()} value={i} className={classes.optionStyle}>{i}</MenuItem>
+                    ))
+                }
+              </Select>
             </FormControl>
             <Typography variant="h6" noWrap align="right"  className={classes.userName}> 
               {userName}
