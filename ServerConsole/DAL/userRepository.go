@@ -11,15 +11,18 @@ import (
 
 type userRepository struct {
 	_dalService  *dalService
+	_dbName      string
 	_authService Interfaces.IAuthService
 }
 
 func UserRepositoryNew(
 	dalService *dalService,
+	dbName string,
 	authService Interfaces.IAuthService) *userRepository {
 	repository := &userRepository{}
 
 	repository._dalService = dalService
+	repository._dbName = dbName
 	repository._authService = authService
 
 	return repository
@@ -29,7 +32,7 @@ func (repository *userRepository) UpdateUser(userVM *Models.UserViewModel) *Mode
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
+	userCollection := session.DB(repository._dbName).C(Models.UsersTableName)
 
 	model := Models.UserModel{}
 
@@ -61,7 +64,7 @@ func (repository *userRepository) GetUsers() []Models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
+	userCollection := session.DB(repository._dbName).C(Models.UsersTableName)
 
 	// // критерий выборки
 	query := bson.M{}
@@ -77,7 +80,7 @@ func (repository *userRepository) GetUserByName(login string, email string, pass
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	userCollection := session.DB(Models.DBName).C(Models.UsersTableName)
+	userCollection := session.DB(repository._dbName).C(Models.UsersTableName)
 
 	// // критерий выборки
 	query := bson.M{"login": login}

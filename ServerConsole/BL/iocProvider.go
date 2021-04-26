@@ -14,6 +14,7 @@ type types struct {
 	_dalService          Interfaces.IDalService
 	_httpService         Interfaces.IHttpService
 	_topicStorage        Interfaces.ITopicStorage
+	_settingsService     Interfaces.ISettingsService
 	_dalCh               chan *Models.RawMqttMessage
 	_webSockCh           chan *Models.RawMqttMessage
 }
@@ -25,10 +26,11 @@ func InitIoc() Interfaces.IIoCProvider {
 	webSockCh := make(chan *Models.RawMqttMessage)
 
 	authService := AuthServiceNew()
-	webSocketService := WebSocketServiceNew(_types, webSockCh)
 	topicStorage := Utils.TopicStorageNew()
+	settingsService := SettingsServiceNew()
+	webSocketService := WebSocketServiceNew(_types, webSockCh)
 	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, topicStorage, dalCh, webSockCh)
-	dalService := DAL.DalServiceNew(authService, dalCh)
+	dalService := DAL.DalServiceNew(authService, settingsService, dalCh)
 	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService, authService)
 
 	_types._authService = authService
@@ -37,6 +39,7 @@ func InitIoc() Interfaces.IIoCProvider {
 	_types._dalService = dalService
 	_types._httpService = httpService
 	_types._topicStorage = topicStorage
+	_types._settingsService = settingsService
 	_types._dalCh = dalCh
 	_types._webSockCh = webSockCh
 
@@ -64,5 +67,5 @@ func (t *types) GetWebSocket() Interfaces.IWebSock {
 }
 
 func (t *types) GetMqttClient() Interfaces.IMqttClient {
-	return MqttClientNew(t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh)
+	return MqttClientNew(t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh)
 }

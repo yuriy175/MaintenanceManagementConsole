@@ -11,6 +11,7 @@ import (
 )
 
 type mqttClient struct {
+	_settingsService     Interfaces.ISettingsService
 	_mqttReceiverService Interfaces.IMqttReceiverService
 	_webSocketService    Interfaces.IWebSocketService
 	_dalCh               chan *Models.RawMqttMessage
@@ -22,11 +23,13 @@ type mqttClient struct {
 }
 
 func MqttClientNew(
+	settingsService Interfaces.ISettingsService,
 	mqttReceiverService Interfaces.IMqttReceiverService,
 	webSocketService Interfaces.IWebSocketService,
 	dalCh chan *Models.RawMqttMessage,
 	webSockCh chan *Models.RawMqttMessage) Interfaces.IMqttClient {
 	client := &mqttClient{}
+	client._settingsService = settingsService
 	client._mqttReceiverService = mqttReceiverService
 	client._webSocketService = webSocketService
 	client._dalCh = dalCh
@@ -94,13 +97,15 @@ func (client *mqttClient) Create(
 		}
 	}
 
-	var broker = Models.RabbitMQHost
+	rabbitMQSettings := client._settingsService.GetRabbitMQSettings()
+
+	var broker = rabbitMQSettings.Host
 	var port = 1883
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
 	opts.SetClientID(uuid.New().String())
-	opts.SetUsername(Models.RabbitMQUser)
-	opts.SetPassword(Models.RabbitMQPassword)
+	opts.SetUsername(rabbitMQSettings.User)
+	opts.SetPassword(rabbitMQSettings.Password)
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler

@@ -9,11 +9,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func RabbitMqReceiver(mqttReceiverService *Interfaces.IMqttReceiverService, equipDalCh chan *Models.RawMqttMessage, equipWebSockCh chan *Models.RawMqttMessage) {
+func RabbitMqReceiver(
+	settingsService Interfaces.ISettingsService,
+	mqttReceiverService *Interfaces.IMqttReceiverService,
+	equipDalCh chan *Models.RawMqttMessage,
+	equipWebSockCh chan *Models.RawMqttMessage) {
 	quitCh := make(chan int)
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
-	rabbitMQConnectionString := fmt.Sprintf("amqp://%s:%s@%s:5672", Models.RabbitMQUser, Models.RabbitMQPassword, Models.RabbitMQHost)
+	rabbitMQSettings := settingsService.GetRabbitMQSettings()
+	rabbitMQConnectionString := fmt.Sprintf("amqp://%s:%s@%s:5672", rabbitMQSettings.User, rabbitMQSettings.Password, rabbitMQSettings.Host)
 
 	conn, err := amqp.Dial(rabbitMQConnectionString)
 	failOnError(err, "Failed to connect to RabbitMQ")

@@ -1,0 +1,11 @@
+{
+	"RabbitMQ":{
+			"Host":"mprom.ml",
+			"User":"client1",
+			"Password":"medtex"
+		},
+	"MongoDB":{
+		"ConnectionString" :"mongodb://127.0.0.1",
+		"DBName":"test"
+	}	
+}
