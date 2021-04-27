@@ -262,3 +262,14 @@ type UserModel struct {
 	Email        string
 	Disabled     bool
 }
+
+type RabbitMQSettingsModel struct {
+	Host     string
+	User     string
+	Password string
+}
+
+type MongoDBSettingsModel struct {
+	ConnectionString string
+	DBName           string
+}

@@ -15,20 +15,30 @@ import (
 )
 
 type dalService struct {
-	_dalCh          chan *Models.RawMqttMessage
-	_authService    Interfaces.IAuthService
+	_dalCh           chan *Models.RawMqttMessage
+	_authService     Interfaces.IAuthService
+	_settingsService Interfaces.ISettingsService
+
+	_dbName           string
+	_connectionString string
+
 	_userRepository *userRepository
 }
 
 func DalServiceNew(
 	authService Interfaces.IAuthService,
+	settingsService Interfaces.ISettingsService,
 	dalCh chan *Models.RawMqttMessage) Interfaces.IDalService {
 	service := &dalService{}
 
 	service._authService = authService
+	service._settingsService = settingsService
 	service._dalCh = dalCh
 
-	service._userRepository = UserRepositoryNew(service, authService)
+	service._dbName = settingsService.GetMongoDBSettings().DBName
+	service._connectionString = settingsService.GetMongoDBSettings().ConnectionString
+
+	service._userRepository = UserRepositoryNew(service, service._dbName, authService)
 
 	return service
 }
@@ -39,7 +49,7 @@ func (service *dalService) Start() {
 	session := service.CreateSession()
 	defer session.Close()
 
-	db := session.DB(Models.DBName)
+	db := session.DB(service._dbName)
 	// deviceCollection := db.C(Models.DeviceConnectionsTableName)
 	studiesCollection := db.C(Models.StudyInWorkTableName)
 	organAutoCollection := db.C(Models.OrganAutoTableName)
@@ -124,7 +134,7 @@ func (service *dalService) GetStudiesInWork(equipName string, startDate time.Tim
 	session := service.CreateSession()
 	defer session.Close()
 
-	studiesCollection := session.DB(Models.DBName).C(Models.StudyInWorkTableName)
+	studiesCollection := session.DB(service._dbName).C(Models.StudyInWorkTableName)
 
 	query := service.getQuery(equipName, startDate, endDate)
 	// объект для сохранения результата
@@ -141,7 +151,7 @@ func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, 
 	session := service.CreateSession()
 	defer session.Close()
 
-	sysVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
+	sysVolatileInfoCollection := session.DB(service._dbName).C(Models.SystemVolatileInfoTableName)
 
 	query := service.getQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
@@ -158,7 +168,7 @@ func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Tim
 	session := service.CreateSession()
 	defer session.Close()
 
-	organAutoCollection := session.DB(Models.DBName).C(Models.OrganAutoTableName)
+	organAutoCollection := session.DB(service._dbName).C(Models.OrganAutoTableName)
 
 	query := service.getQuery(equipName, startDate, endDate)
 	// объект для сохранения результата
@@ -173,7 +183,7 @@ func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Tim
 	defer session.Close()
 
 	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
-	genInfoCollection := session.DB(Models.DBName).C(Models.GeneratorInfoTableName)
+	genInfoCollection := session.DB(service._dbName).C(Models.GeneratorInfoTableName)
 
 	// // критерий выборки
 	query := service.getQuery(equipName, startDate, endDate)
@@ -188,7 +198,7 @@ func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time
 	session := service.CreateSession()
 	defer session.Close()
 
-	swVolatileInfoCollection := session.DB(Models.DBName).C(Models.SystemVolatileInfoTableName)
+	swVolatileInfoCollection := session.DB(service._dbName).C(Models.SystemVolatileInfoTableName)
 
 	query := service.getQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
@@ -205,7 +215,7 @@ func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, e
 	session := service.CreateSession()
 	defer session.Close()
 
-	dicomInfoCollection := session.DB(Models.DBName).C(Models.DicomInfoTableName)
+	dicomInfoCollection := session.DB(service._dbName).C(Models.DicomInfoTableName)
 
 	// // критерий выборки
 	query := service.getQuery(equipName, startDate, endDate)
@@ -221,7 +231,7 @@ func (service *dalService) GetStandInfo(equipName string, startDate time.Time, e
 	session := service.CreateSession()
 	defer session.Close()
 
-	standInfoCollection := session.DB(Models.DBName).C(Models.StandInfoTableName)
+	standInfoCollection := session.DB(service._dbName).C(Models.StandInfoTableName)
 
 	// // критерий выборки
 	query := service.getQuery(equipName, startDate, endDate)
@@ -237,7 +247,7 @@ func (service *dalService) GetPermanentSystemInfo(equipName string) *Models.Syst
 	session := service.CreateSession()
 	defer session.Close()
 
-	sysInfoCollection := session.DB(Models.DBName).C(Models.SystemInfoTableName)
+	sysInfoCollection := session.DB(service._dbName).C(Models.SystemInfoTableName)
 
 	sysInfo := Models.SystemInfoModel{}
 	sysQuery := bson.M{"equipname": equipName}
@@ -250,7 +260,7 @@ func (service *dalService) GetPermanentSoftwareInfo(equipName string) *Models.So
 	session := service.CreateSession()
 	defer session.Close()
 
-	softwareInfoCollection := session.DB(Models.DBName).C(Models.SoftwareInfoTableName)
+	softwareInfoCollection := session.DB(service._dbName).C(Models.SoftwareInfoTableName)
 
 	softwareInfo := Models.SoftwareInfoModel{}
 	sysQuery := bson.M{"equipname": equipName}
@@ -277,7 +287,7 @@ func (service *dalService) getQuery(equipName string, startDate time.Time, endDa
 }
 
 func (service *dalService) CreateSession() *mgo.Session {
-	session, err := mgo.Dial(Models.MongoDBConnectionString)
+	session, err := mgo.Dial(service._connectionString)
 	if err != nil {
 		panic(err)
 	}

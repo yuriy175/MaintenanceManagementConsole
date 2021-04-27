@@ -78,6 +78,10 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 			select {
 			case _ = <-ticker.C:
 				sock._mtx.Lock()
+				if sock._conn == nil {
+					return
+				}
+
 				err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
 				if err != nil {
 					log.Println("write:", err)
