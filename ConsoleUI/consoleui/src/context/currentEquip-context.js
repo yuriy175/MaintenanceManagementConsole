@@ -15,6 +15,7 @@ const initialState = {
   software:{},
   remoteaccess:{},
   images:{},
+  aecs:{},
 };
 
 function reducer(state, action) {
@@ -54,11 +55,28 @@ function reducer(state, action) {
       return newState;
     }
     case 'SETDETECTOR': {
+      const newDetectorId = action.payload.DetectorId;
+      let oldDetector = state.detectors?.filter(d => d.DetectorId === newDetectorId)[0];
+      let newDetectors = state.detectors;
+      if(oldDetector){
+        oldDetector = {...oldDetector, ...action.payload}
+        newDetectors = [...state.detectors?.filter(d => d.DetectorId !== newDetectorId), oldDetector]
+      }
+      else{
+        newDetectors = [...state.detectors, action.payload]
+      }
+
       return {
         ...state,
-        detectors: [action.payload]
+        detectors: newDetectors //[...state.detectors, ...action.payload]
       };
     }
+    case 'SETAEC': {
+      return {
+        ...state,
+        aecs: {Id: action.payload.Id, Type: action.payload.Type, State: {...state.aecs.State, ...action.payload.State}}
+      };
+    }    
     case 'SETSTAND': {
       return {
         ...state,

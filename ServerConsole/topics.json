@@ -12,6 +12,7 @@
 	"/ARM/Software/Complex",
 	"/remoteaccess",
 	"/ARM/Software/msg",
-	"/images"
+	"/images",
+	"/aec/state"
 	]
 }

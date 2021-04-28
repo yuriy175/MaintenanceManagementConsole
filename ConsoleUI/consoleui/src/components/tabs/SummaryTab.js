@@ -44,7 +44,7 @@ export default function SummaryTab(props) {
         <OrganAutoCard organAuto={currEquipState.organAuto}></OrganAutoCard>
         <ImagesCard images={currEquipState.images}></ImagesCard>
         <GeneratorCard generator={currEquipState.generator}></GeneratorCard>
-        <DetectorCard detectors={currEquipState.detectors}></DetectorCard>
+        <DetectorCard detectors={currEquipState.detectors} aecs={currEquipState.aecs}></DetectorCard>
         <StandCard stand={currEquipState.stand}></StandCard>
         <DosimeterCard dosimeter={currEquipState.dosimeter}></DosimeterCard>
       </div>

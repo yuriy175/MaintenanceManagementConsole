@@ -17,13 +17,15 @@ const DetectorCard = React.memo((props) => {
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
+  const detectors = props.detectors;
+  const aecs = props.aecs;
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
           {bull}Детекторы
         </Typography>
-        {props.detectors?.map((i, ind) => (
+        {detectors?.map((i, ind) => (
           <div key={ind.toString()} >
             <Typography variant="h6" component="h2">
               {bull}{i.DetectorName} 
@@ -31,6 +33,17 @@ const DetectorCard = React.memo((props) => {
             <CardRow descr="Состояние" 
               value={i.State !== 2? "Не готов" : "Готов"}
               rightColor={i.State !== 2? "red" : "green"}></CardRow>
+            <CardRow descr="Поле детектора" value={i.DetectorField}></CardRow>
+            {aecs?
+              <>
+                <Typography variant="h6" component="h2">
+                  {bull}АКЭ
+                </Typography>
+                <CardRow descr="Состояние" value={aecs.State?.Aec_enabled ? "Вкл" : "Выкл"}></CardRow>
+                <CardRow descr="Поля АКЭ" value={aecs.State?.Aec_fields}></CardRow>
+                <CardRow descr="Плотность" value={aecs.State?.Aec_density}></CardRow>
+              </> : <></>
+            }
           </div>
           ))
         }        

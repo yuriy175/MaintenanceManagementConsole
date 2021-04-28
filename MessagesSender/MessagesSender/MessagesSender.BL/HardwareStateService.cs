@@ -86,9 +86,15 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
-                _mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
+				_mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
+				   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
+
+				_mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
                             (MQCommands.ProcessDoseArrived, state => OnDosimeterState(state)));
-            });
+
+				_mqService.Subscribe<MQCommands, (int Id, string Type, AecState State)>(
+							(MQCommands.AecStateArrived, state => OnAecState(state)));
+			});
         }
 
         private void OnStandState((int Id, StandState State) state)
@@ -165,6 +171,16 @@ namespace MessagesSender.BL
                 new { state.Id, state.State });
         }
 
+		private void OnAecState((int Id, string Type, AecState State) state)
+		{
+			if (_isActivated)
+			{
+				_sendingService.SendInfoToMqttAsync(
+					MQCommands.AecStateArrived,
+					new { state.Id, state.Type, state.State });
+			}
+		}
+
         private void OnDetectorStateChanged((int DetectorId, string DetectorName, DetectorState State) state)
         {
             if (_isActivated)
@@ -175,7 +191,17 @@ namespace MessagesSender.BL
             }
         }
 
-        private void OnDeactivateArrivedAsync()
+		private void OnDetectorFieldChanged((int DetectorId, int? DetectorField) state)
+		{
+			if (_isActivated)
+			{
+				_sendingService.SendInfoToMqttAsync(
+					MQCommands.DetectorStateArrived,
+					new { state.DetectorId, state.DetectorField });
+			}
+		}
+
+		private void OnDeactivateArrivedAsync()
         {
             _isActivated = false;
         }

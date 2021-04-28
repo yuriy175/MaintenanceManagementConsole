@@ -41,6 +41,7 @@ namespace MessagesSender.BL.Remoting
 			{ MQCommands.StandStateArrived.ToString(), "/stand/state"},
 			{ MQCommands.CollimatorStateArrived.ToString(), "/collimator/state"},
 			{ MQCommands.DetectorStateArrived.ToString(), "/detector/state"},
+			{ MQCommands.AecStateArrived.ToString(), "/aec/state"},
 			{ MQMessages.HddDrivesInfo.ToString(), "/ARM/Hardware/HDD"},
 			{ MQMessages.CPUInfo.ToString(), "/ARM/Hardware/Processor"},
 			{ MQMessages.MemoryInfo.ToString(), "/ARM/Hardware/Memory"},

@@ -134,13 +134,6 @@ namespace MessagesSender.BL
 			return await sender.SendAsync(
 				msgType,
 				info);
-				/*new { 
-                    _equipmentInfo.Number, 
-                    _equipmentInfo.Name, 
-                    ipAddress = _ipAddress?.ToString(),
-                    msgType = msgType.ToString(),
-                    info,
-                });*/
 		}
 
         private async Task GetEquipmentInfoAsync()

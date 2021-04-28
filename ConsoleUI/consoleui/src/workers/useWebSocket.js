@@ -130,6 +130,11 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETCOLLIMATOR', payload: values }); 
                 }
+                else if(path.startsWith('/aec/'))
+                {
+                    const values = data? JSON.parse(data.Data) : null;
+                    currEquipDispatch({ type: 'SETAEC', payload: values }); 
+                }
                 else if(path.startsWith('/ARM/Software/Complex'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
