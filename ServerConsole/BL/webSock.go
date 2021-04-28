@@ -51,6 +51,12 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 
 	go func() {
 		for {
+			sock._mtx.Lock()
+			if sock._conn == nil {
+				sock._mtx.Unlock()
+				return
+			}
+
 			sock._conn.SetReadDeadline(time.Now().Add(timeoutDuration))
 
 			// Read message from browser
@@ -58,16 +64,19 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 			if _, ok := err.(*websocket.CloseError); ok {
 				sock._webSocketService.ClientClosed(sock._uid)
 				sock.onClose()
+				sock._mtx.Unlock()
 				return
 			}
 
 			if err != nil {
 				fmt.Printf("websocket readmessage error met\n")
+				sock._mtx.Unlock()
 				return
 			}
 
 			// Print the message to the console
 			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
+			sock._mtx.Unlock()
 		}
 	}()
 
@@ -79,12 +88,14 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 			case _ = <-ticker.C:
 				sock._mtx.Lock()
 				if sock._conn == nil {
+					sock._mtx.Unlock()
 					return
 				}
 
 				err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
 				if err != nil {
 					log.Println("write:", err)
+					sock._mtx.Unlock()
 					return
 				} else {
 					log.Println("ping sent")
