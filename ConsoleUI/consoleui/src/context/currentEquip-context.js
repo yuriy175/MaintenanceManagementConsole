@@ -41,10 +41,17 @@ function reducer(state, action) {
       };
     }
     case 'SETGENERATOR': {
-      return {
+      const newState = {
         ...state,
         generator: {Id: action.payload.Id, State: {...state.generator.State, ...action.payload.State}}
       };
+      //
+      if(newState.generator?.State?.ErrorDescriptions && 
+        (!newState.generator?.State?.Error || newState.generator?.State?.Error[0] === 0)){
+        newState.generator.State.ErrorDescriptions = [];
+      }
+
+      return newState;
     }
     case 'SETDETECTOR': {
       return {
@@ -94,12 +101,12 @@ function reducer(state, action) {
         images: action.payload
       };
     }
-    case 'ADDIMAGE': {
-      return {
-        ...state,
-        images: {...state.images, ...action.payload}
-      };
-    }
+    // case 'ADDIMAGE': {
+    //   return {
+    //     ...state,
+    //     images: {...state.images, ...action.payload}
+    //   };
+    // }
     case 'SETDICOM': {
       let newWL = action.payload.WorkList;
       if(newWL){
