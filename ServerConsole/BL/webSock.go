@@ -51,9 +51,9 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 
 	go func() {
 		for {
-			sock._mtx.Lock()
+			//sock._mtx.Lock()
 			if sock._conn == nil {
-				sock._mtx.Unlock()
+				//sock._mtx.Unlock()
 				return
 			}
 
@@ -64,19 +64,19 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 			if _, ok := err.(*websocket.CloseError); ok {
 				sock._webSocketService.ClientClosed(sock._uid)
 				sock.onClose()
-				sock._mtx.Unlock()
+				//sock._mtx.Unlock()
 				return
 			}
 
 			if err != nil {
 				fmt.Printf("websocket readmessage error met\n")
-				sock._mtx.Unlock()
+				//sock._mtx.Unlock()
 				return
 			}
 
 			// Print the message to the console
 			fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-			sock._mtx.Unlock()
+			//sock._mtx.Unlock()
 		}
 	}()
 
@@ -85,39 +85,39 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 		defer ticker.Stop()
 		for {
 			select {
-			case _ = <-ticker.C:
-				sock._mtx.Lock()
-				if sock._conn == nil {
-					sock._mtx.Unlock()
-					return
-				}
+				case _ = <-ticker.C:
+					sock._mtx.Lock()
+					if sock._conn == nil {
+						sock._mtx.Unlock()
+						return
+					}
 
-				err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
-				if err != nil {
-					log.Println("write:", err)
+					err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
+					if err != nil {
+						log.Println("write:", err)
+						sock._mtx.Unlock()
+						return
+					} else {
+						log.Println("ping sent")
+					}
 					sock._mtx.Unlock()
-					return
-				} else {
-					log.Println("ping sent")
-				}
-				sock._mtx.Unlock()
-				// case <-interrupt:
-				// 	log.Println("interrupt")
-				// 	// To cleanly close a connection, a client should send a close
-				// 	// frame and wait for the server to close the connection.
-				// 	err := c.WriteMessage(
-				// 		websocket.CloseMessage,
-				// 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-				// 	if err != nil {
-				// 		log.Println("write close:", err)
-				// 		return
-				// 	}
-				// 	select {
-				// 	case <-done:
-				// 	case <-time.After(time.Second):
-				// 	}
-				// 	c.Close()
-				// 	return
+					// case <-interrupt:
+					// 	log.Println("interrupt")
+					// 	// To cleanly close a connection, a client should send a close
+					// 	// frame and wait for the server to close the connection.
+					// 	err := c.WriteMessage(
+					// 		websocket.CloseMessage,
+					// 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+					// 	if err != nil {
+					// 		log.Println("write close:", err)
+					// 		return
+					// 	}
+					// 	select {
+					// 	case <-done:
+					// 	case <-time.After(time.Second):
+					// 	}
+					// 	c.Close()
+					// 	return
 			}
 		}
 	}()
