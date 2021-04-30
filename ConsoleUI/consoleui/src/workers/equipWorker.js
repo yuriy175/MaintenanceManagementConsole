@@ -16,9 +16,9 @@ const EquipsController = '/equips';
     });
 };*/
 
-export async function GetAllEquips() {
-    return await HandlerWrapper('GetAllEquips', async () => {
-        const path = EquipsServiceAddress + EquipsController + '/GetAllEquips';
+export async function GetConnectedEquips() {
+    return await HandlerWrapper('GetConnectedEquips', async () => {
+        const path = EquipsServiceAddress + EquipsController + '/GetConnectedEquips';
         console.log(path);
         const response = await axios.get(path);
         return response.data;
@@ -85,6 +85,13 @@ export async function XilibLogsOn(activatedEquipInfo, detailedXilib, verboseXili
             '/XilibLogsOn?activatedEquipInfo=' + activatedEquipInfo+
             '&detailedXilib=' + detailedXilib +
             '&verboseXilib=' + verboseXilib);
+        return response.data;
+    });
+};
+
+export async function GetAllEquips() {
+    return await HandlerWrapper('GetAllEquips', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController + '/GetAllEquips');
         return response.data;
     });
 };

@@ -28,9 +28,10 @@ func InitIoc() Interfaces.IIoCProvider {
 	authService := AuthServiceNew()
 	topicStorage := Utils.TopicStorageNew()
 	settingsService := SettingsServiceNew()
-	webSocketService := WebSocketServiceNew(_types, webSockCh)
-	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, topicStorage, dalCh, webSockCh)
+
 	dalService := DAL.DalServiceNew(authService, settingsService, dalCh)
+	webSocketService := WebSocketServiceNew(_types, webSockCh)
+	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalService, topicStorage, dalCh, webSockCh)
 	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService, authService)
 
 	_types._authService = authService

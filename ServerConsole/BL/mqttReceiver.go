@@ -83,7 +83,9 @@ func (client *mqttClient) Create(
 				data = d
 			}
 
-			state := &Models.EquipConnectionState{newRootTopic, data == "on"}
+			isOn := data == "on"
+			state := &Models.EquipConnectionState{newRootTopic, isOn}
+
 			go client._mqttReceiverService.UpdateMqttConnections(state)
 			go client._webSocketService.UpdateWebClients(state)
 		} else {

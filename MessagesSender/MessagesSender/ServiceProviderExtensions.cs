@@ -76,7 +76,11 @@ namespace MessagesSender
 
             services.AddSingleton(
                typeof(IRemoteControlService),
-               typeof(RemoteControlService));            
+               typeof(RemoteControlService));
+
+            services.AddSingleton(
+               typeof(IHospitalInfoService),
+               typeof(HospitalInfoService));            
 
             return services.AddSingleton(
                typeof(IService),

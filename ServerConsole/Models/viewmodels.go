@@ -146,3 +146,10 @@ type UserViewModel struct {
 	Email    string
 	Disabled bool
 }
+
+type EquipInfoViewModel struct {
+	HospitalName      string
+	HospitalAddress   string
+	HospitalLongitude string
+	HospitalLatitude  string
+}

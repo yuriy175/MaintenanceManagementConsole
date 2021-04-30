@@ -273,3 +273,13 @@ type MongoDBSettingsModel struct {
 	ConnectionString string
 	DBName           string
 }
+
+type EquipInfoModel struct {
+	Id                bson.ObjectId `bson:"_id"`
+	RegisterDate      time.Time
+	EquipName         string
+	HospitalName      string
+	HospitalAddress   string
+	HospitalLongitude string
+	HospitalLatitude  string
+}

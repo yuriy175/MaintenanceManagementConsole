@@ -13,6 +13,7 @@
 	"/remoteaccess",
 	"/ARM/Software/msg",
 	"/images",
-	"/aec/state"
+	"/aec/state",
+	"/hospital"
 	]
 }

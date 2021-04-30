@@ -37,8 +37,8 @@ export function useWebSocket(props) {
             connection.onopen = async function () {
                 console.log(`Status: Connected ${sessionUid}\n`);
 
-                const equips = await EquipWorker.GetAllEquips();
-                allEquipsDispatch({ type: 'SETEQUIPS', payload: equips ? equips : [] });   
+                const equips = await EquipWorker.GetConnectedEquips();
+                allEquipsDispatch({ type: 'SETCONNECTEDEQUIPS', payload: equips ? equips : [] });     
 
                 // Send a ping every 10s
                 // to keep the connection live

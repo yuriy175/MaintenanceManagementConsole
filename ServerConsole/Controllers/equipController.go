@@ -35,6 +35,8 @@ func EquipControllerNew(
 func (service *EquipController) Handle() {
 	mqttReceiverService := service._mqttReceiverService
 	webSocketService := service._webSocketService
+	dalService := service._dalService
+
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
@@ -78,7 +80,7 @@ func (service *EquipController) Handle() {
 		mqttReceiverService.SendCommand(activatedEquipInfo, "activate")
 	})
 
-	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/equips/GetConnectedEquips", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -86,6 +88,16 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Content-Type", "application/json")
 		equips := mqttReceiverService.GetConnectionNames()
 		json.NewEncoder(w).Encode(equips)
+	})
+
+	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+		equipInfos := dalService.GetEquipInfos()
+		json.NewEncoder(w).Encode(equipInfos)
 	})
 
 	http.HandleFunc("/equips/RunTeamViewer", func(w http.ResponseWriter, r *http.Request) {

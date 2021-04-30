@@ -30,6 +30,7 @@ namespace MessagesSender.BL
 		private const string SendAtlasLogsCommandName = "sendAtlasLogs";
 		private const string XilibLogsOnCommandName = "xilibLogsOn";
 		private const string ReconnectCommandName = "reconnect";
+		private const string EquipInfoCommandName = "equipInfo";
 
 		private readonly ILogger _logger;
 		private readonly IEventPublisher _eventPublisher;
@@ -59,6 +60,7 @@ namespace MessagesSender.BL
 				{ SendAtlasLogsCommandName, () => OnSendAtlasLogsCommandAsync()},
 				{ XilibLogsOnCommandName, () => OnXilibLogsOnCommandAsync()},
 				{ ReconnectCommandName, () => OnReconnectCommand()},
+				{ EquipInfoCommandName, () => OnEquipInfoCommand()},
 			};
 
 			_eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
@@ -119,5 +121,10 @@ namespace MessagesSender.BL
 		{
 			_eventPublisher.XilibLogsOnCommandArrived();
 		}
+
+		private void OnEquipInfoCommand()
+		{
+			_eventPublisher.GetHospitalInfoCommandArrived();
+		}		
 	}
 }

@@ -22,7 +22,8 @@ type dalService struct {
 	_dbName           string
 	_connectionString string
 
-	_userRepository *userRepository
+	_userRepository      *userRepository
+	_equipInfoRepository *equipInfoRepository
 }
 
 func DalServiceNew(
@@ -39,6 +40,7 @@ func DalServiceNew(
 	service._connectionString = settingsService.GetMongoDBSettings().ConnectionString
 
 	service._userRepository = UserRepositoryNew(service, service._dbName, authService)
+	service._equipInfoRepository = EquipInfoRepositoryNew(service, service._dbName)
 
 	return service
 }
@@ -122,6 +124,11 @@ func (service *dalService) Start() {
 				viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
 
 				standInfoCollection.Insert(viewmodel.State)
+			} else if strings.Contains(d.Topic, "/hospital") {
+				viewmodel := Models.EquipInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+
+				service._equipInfoRepository.InsertEquipInfo(Utils.GetEquipFromTopic(d.Topic), &viewmodel)
 			}
 		}
 	}() //deviceCollection)
@@ -476,4 +483,12 @@ func (service *dalService) GetUsers() []Models.UserModel {
 
 func (service *dalService) GetUserByName(login string, email string, password string) *Models.UserModel {
 	return service._userRepository.GetUserByName(login, email, password)
+}
+
+func (service *dalService) CheckEquipment(equipName string) bool {
+	return service._equipInfoRepository.CheckEquipment(equipName)
+}
+
+func (service *dalService) GetEquipInfos() []Models.EquipInfoModel {
+	return service._equipInfoRepository.GetEquipInfos()
 }

@@ -22,6 +22,6 @@ namespace MessagesSender.DAL.Model
         public int Id { get; set; }
         public string DicomAttribute { get; set; }
         public string Value { get; set; }
-        public string ParameterComment { get; set; }
+        public string ParameterComment { get; set; }        
     }
 }

@@ -7,7 +7,17 @@ namespace MessagesSender.BL
 {
     public class EventPublisher : IEventPublisher
     {
-        enum EventTypes { CommandArrived, Activate, Deactivate, RunTV, RunTaskManager, SendAtlasLogs, XilibLogsOn, Reconnect }
+        enum EventTypes { 
+            CommandArrived, 
+            Activate, 
+            Deactivate, 
+            RunTV, 
+            RunTaskManager, 
+            SendAtlasLogs, 
+            XilibLogsOn, 
+            Reconnect,
+            GetHospitalInfo
+        }
 
         private readonly Dictionary<EventTypes, List<Delegate>> _eventHandlers =
             Array.ConvertAll((int[])Enum.GetValues(typeof(EventTypes)), Convert.ToInt32)
@@ -88,6 +98,15 @@ namespace MessagesSender.BL
         public void RegisterXilibLogsOnCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.XilibLogsOn].Add(handler);
+        }
+
+        public void GetHospitalInfoCommandArrived()
+        {
+            _eventHandlers[EventTypes.GetHospitalInfo].ForEach(h => (h as Action)());
+        }
+        public void RegisterGetHospitalInfoCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.GetHospitalInfo].Add(handler);
         }
     }
 }

@@ -12,6 +12,7 @@ type mqttReceiverService struct {
 	_mtx              sync.RWMutex
 	_ioCProvider      Interfaces.IIoCProvider
 	_webSocketService Interfaces.IWebSocketService
+	_dalService       Interfaces.IDalService
 	_dalCh            chan *Models.RawMqttMessage
 	_webSockCh        chan *Models.RawMqttMessage
 	_mqttConnections  map[string]Interfaces.IMqttClient
@@ -23,6 +24,7 @@ type mqttReceiverService struct {
 func MqttReceiverServiceNew(
 	ioCProvider Interfaces.IIoCProvider,
 	webSocketService Interfaces.IWebSocketService,
+	dalService Interfaces.IDalService,
 	topicStorage Interfaces.ITopicStorage,
 	dalCh chan *Models.RawMqttMessage,
 	webSockCh chan *Models.RawMqttMessage) Interfaces.IMqttReceiverService {
@@ -30,6 +32,7 @@ func MqttReceiverServiceNew(
 
 	service._ioCProvider = ioCProvider
 	service._webSocketService = webSocketService
+	service._dalService = dalService
 	service._topicStorage = topicStorage
 	service._dalCh = dalCh
 	service._webSockCh = webSockCh
@@ -44,6 +47,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipCon
 	topics := service._topicStorage.GetTopics()
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
+	dalService := service._dalService
 
 	fmt.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
 
@@ -70,6 +74,9 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipCon
 
 	if !isOff {
 		mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
+		if !dalService.CheckEquipment(rootTopic) {
+			go service.SendCommand(rootTopic, "equipInfo")
+		}
 	}
 
 	fmt.Println(rootTopic + " created")

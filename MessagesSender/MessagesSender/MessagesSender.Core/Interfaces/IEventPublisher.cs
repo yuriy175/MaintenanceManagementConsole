@@ -25,8 +25,10 @@ namespace MessagesSender.Core.Interfaces
         void XilibLogsOnCommandArrived();
         void RegisterXilibLogsOnCommandArrivedEvent(Action handler);
 
-
         void ReconnectCommandArrived();
         void RegisterReconnectCommandArrivedEvent(Action handler);
+
+        void GetHospitalInfoCommandArrived();
+        void RegisterGetHospitalInfoCommandArrivedEvent(Action handler);
     }
 }

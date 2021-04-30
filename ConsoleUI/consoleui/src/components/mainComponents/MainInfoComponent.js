@@ -6,6 +6,7 @@ import MapTab from '../tabs/MapTab';
 import EventsTab from '../tabs/EventsTab';
 import HistoryTab from '../tabs/HistoryTab';
 import AdminTab from '../tabs/AdminTab';
+import EquipsTab from '../tabs/EquipsTab';
 
 export default function MainInfoComponent(props) {
   console.log("render MainInfoComponent");
@@ -13,10 +14,11 @@ export default function MainInfoComponent(props) {
   return (
     <div>
       {props.Index === 0 ? <SummaryTab></SummaryTab> : <></>}
-      {props.Index === 1 ? <MapTab></MapTab> : <></>}
-      {props.Index === 2 ? <EventsTab></EventsTab> : <></>}
-      {props.Index === 3 ? <HistoryTab></HistoryTab> : <></>}
-      {props.Index === 4 ? <AdminTab></AdminTab> : <></>}
+      {props.Index === 1 ? <EquipsTab></EquipsTab> : <></>}
+      {props.Index === 2 ? <MapTab></MapTab> : <></>}
+      {props.Index === 3 ? <EventsTab></EventsTab> : <></>}
+      {props.Index === 4 ? <HistoryTab></HistoryTab> : <></>}
+      {props.Index === 5 ? <AdminTab></AdminTab> : <></>}
     </div>
   );
 }

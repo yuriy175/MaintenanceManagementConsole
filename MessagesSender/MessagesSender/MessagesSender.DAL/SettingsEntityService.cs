@@ -67,13 +67,27 @@ namespace MessagesSender.DAL
             return dicomServices?.Select(d => (d.Id, d.LogicalName, d.IPAddress, d.ServiceRole));
         }
 
-		/// <summary>
-		/// inserts or updates app parameter
-		/// </summary>
-		/// <param name="appParam">app parameter name</param>
-		/// <param name="value">value</param>
-		/// <returns>new app parameter</returns>
-		public async Task<AppParams> UpsertAppParamAsync<T>(string appParam, T value)
+        /// <summary>
+        /// Get hospital info info.
+        /// </summary>
+        /// <returns>equipment info</returns>
+        public async Task<(string Name, string Address, double Latitude, double Longitude)?> GetHospitalInfoAsync()
+        {
+            var sysInfo = await GetAction<SysInfo>(
+                            context => context.SysInfo.FirstOrDefault());
+
+            return sysInfo == null ? 
+                null as (string, string, double, double)? : 
+                (sysInfo.HospitalName, sysInfo.Address, 10, 20);
+        }
+
+        /// <summary>
+        /// inserts or updates app parameter
+        /// </summary>
+        /// <param name="appParam">app parameter name</param>
+        /// <param name="value">value</param>
+        /// <returns>new app parameter</returns>
+        public async Task<AppParams> UpsertAppParamAsync<T>(string appParam, T value)
 		{
 			AppParams appParams = null;
 			var paramVal = value.ToString();

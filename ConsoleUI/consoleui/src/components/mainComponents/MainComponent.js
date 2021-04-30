@@ -17,10 +17,12 @@ import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
 
 import { UsersContext } from '../../context/users-context';
+import { AllEquipsContext } from '../../context/allEquips-context';
 import * as AdminWorker from '../../workers/adminWorker'
+import * as EquipWorker from '../../workers/equipWorker'
 
 const drawerWidth = 240;
-const mainMenu = ['Обзор', 'Карта', 'Журнал событий', 'История', 'Администрироание'];
+const mainMenu = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий', 'История', 'Администрирование'];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +54,7 @@ export default function MainComponent() {
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [usersState, usersDispatch] = useContext(UsersContext);
+  const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
 
   useEffect(() => {
       (async () => {
@@ -65,7 +68,13 @@ export default function MainComponent() {
       })();
   }, [usersState.users]);
 
-  const handleListItemClick = (event, index) => {
+  const handleListItemClick = async (event, index) => {
+    if(index === 1)
+    {
+      const allEquips = await EquipWorker.GetAllEquips();
+      allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips });  
+    }
+
     setSelectedIndex(index);
   };
 

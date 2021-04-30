@@ -37,5 +37,11 @@ namespace MessagesSender.Core.Interfaces
 		/// <param name="appParam">app parameter name</param>
 		/// <returns>app parameter</returns>
 		Task<AppParams> GetAppParamAsync(string appParam);
-	}
+
+        /// <summary>
+        /// Get hospital info info.
+        /// </summary>
+        /// <returns>equipment info</returns>
+        Task<(string Name, string Address, double Latitude, double Longitude)?> GetHospitalInfoAsync();
+    }
 }

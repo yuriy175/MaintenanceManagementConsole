@@ -3,12 +3,19 @@ import React, { useReducer, createContext } from 'react';
 export const AllEquipsContext = createContext();
 
 const initialState = {
+  allEquips: null,
   equips: null,
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'SETEQUIPS': {
+    case 'SETALLEQUIPS': {
+      return {
+        ...state,
+        allEquips: action.payload?.filter(p => p)
+      };
+    }    
+    case 'SETCONNECTEDEQUIPS': {
       return {
         ...state,
         equips: action.payload?.filter(p => p)

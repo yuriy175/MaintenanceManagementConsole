@@ -8,6 +8,9 @@ import FormControl from '@material-ui/core/FormControl';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
+import LocationOffOutlinedIcon from '@material-ui/icons/LocationOffOutlined';
 
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
@@ -27,11 +30,13 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 220,
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
     color: "white",
+    display: 'flex',
+
   },
   optionStyle:{
     backgroundColor: "#3f51b5",
@@ -129,7 +134,13 @@ export default function MainToolBar() {
                 variant="outlined"
               >
                 {allEquipsState.equips?.map((i, ind) => (
-                    <MenuItem key={ind.toString()} value={i} className={classes.optionStyle}>{i}</MenuItem>
+                    <MenuItem key={ind.toString()} value={i} className={classes.optionStyle}>
+                      <ListItemIcon>
+                        {/* <LocationOffOutlinedIcon fontSize="small" /> */}
+                        <LocationOnOutlinedIcon fontSize="large" style={{ color: 'white' }}/>
+                      </ListItemIcon>
+                      <Typography variant="inherit">{i}</Typography>                      
+                    </MenuItem>
                     ))
                 }
               </Select>

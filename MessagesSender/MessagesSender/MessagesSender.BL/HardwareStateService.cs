@@ -86,8 +86,8 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
-				_mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
-				   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
+				//_mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
+				//   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
 
 				_mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
                             (MQCommands.ProcessDoseArrived, state => OnDosimeterState(state)));

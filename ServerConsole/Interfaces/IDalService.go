@@ -24,4 +24,8 @@ type IDalService interface {
 	UpdateUser(user *Models.UserViewModel) *Models.UserModel
 	GetUsers() []Models.UserModel
 	GetUserByName(surname string, email string, password string) *Models.UserModel
+
+	//equip info repository
+	CheckEquipment(equipName string) bool
+	GetEquipInfos() []Models.EquipInfoModel
 }
