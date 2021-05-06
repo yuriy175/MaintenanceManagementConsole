@@ -31,7 +31,13 @@ const GeneratorCard = React.memo((props) => {
         <CardRow descr="Ток" value={generator?.State?.Mas ? generator.State.Mas + ' мАс' : ''}></CardRow>
         <CardRow descr="Напряжение" value={generator?.State?.Kv ? generator.State.Kv + ' кВ' : ''}></CardRow>
         <CardRow descr="Логическое. р. м." value={generator?.State?.Workstation}></CardRow>
-        <CardRow descr="Нагрев" value={generator?.State?.HeatStatus}></CardRow>
+        <CardRow descr="Нагрев" 
+          value={generator?.State?.HeatStatus === 2 ? "Высокий" : generator?.State?.HeatStatus === 3 ? "Критический" : "Норм"}
+          rightColor={generator?.State?.HeatStatus === 2 ? "yellow" : generator?.State?.HeatStatus === 3 ? "red" : "green"}
+        ></CardRow>
+        <CardRow descr="Фокус" value={
+          generator?.State?.Focus === 1 ? "Большой" : generator?.State?.Focus === 0 ? "Малый" : "Авто"
+        }></CardRow>
         <CardRow descr="Педаль" 
           value={ generator?.State?.PedalPressed === 1 ? "Графия" : generator?.State?.PedalPressed === 2 ? "Скопия" : "Не нажата"} 
           rightColor={generator?.State?.PedalPressed === 1 || generator?.State?.PedalPressed === 2? "green" : undefined }

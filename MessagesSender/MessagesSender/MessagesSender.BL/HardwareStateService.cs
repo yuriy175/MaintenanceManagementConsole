@@ -257,15 +257,23 @@ namespace MessagesSender.BL
                 state.Mas.HasValue ||
                 state.Workstation.HasValue ||
                 state.HeatStatus.HasValue ||
-                state.PedalPressed.HasValue
-            );
+                state.PedalPressed.HasValue ||
+				state.Focus.HasValue
+			);
 
         private bool CanSendStandState(StandState state) =>
             state != null && (
                 state.State.HasValue ||
                 state.Error != null ||
                 state.RasterState.HasValue ||
-                state.Position_Current.HasValue
+                state.Position_Current.HasValue ||
+
+				state.Mode.HasValue ||
+				state.Tube_Incline.HasValue ||
+				state.Deck_Incline.HasValue ||
+				state.Camera_Incline.HasValue ||
+				state.Ffd_Current.HasValue ||
+				state.Deck_Height.HasValue
             );
 
         private bool CanSendCollimatorStandState(CollimatorState state) =>

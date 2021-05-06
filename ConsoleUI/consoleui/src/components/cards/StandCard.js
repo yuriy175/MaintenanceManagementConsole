@@ -28,8 +28,14 @@ const StandCard = React.memo((props) => {
           value={stand?.State?.State > 0? "Готов" : "Не готов" }
           rightColor={stand?.State?.State > 0? "green" : "red"}
         ></CardRow>
+        <CardRow descr="Режим" value={stand?.State?.Mode}></CardRow>
         <CardRow descr="Растр" value={stand?.State?.RasterState}></CardRow>
         <CardRow descr="Позиция" value={stand?.State?.Position_Current}></CardRow>
+        <CardRow descr="Угол наклона трубки" value={stand?.State?.Tube_Incline}></CardRow>
+        <CardRow descr="Угол наклона деки" value={stand?.State?.Deck_Incline}></CardRow>
+        <CardRow descr="Угол наклона детектора" value={stand?.State?.Camera_Incline}></CardRow>
+        <CardRow descr="Фокусное расстояние" value={stand?.State?.Ffd_Current}></CardRow>
+        <CardRow descr="Высота стола" value={stand?.State?.Deck_Height}></CardRow>
         <CardRow descr="Ошибки" value={stand?.State?.ErrorDescriptions?.length}></CardRow>
       </CardContent>
     </Card>
