@@ -283,3 +283,10 @@ type EquipInfoModel struct {
 	HospitalLongitude string
 	HospitalLatitude  string
 }
+
+type RawDeviceInfoModel struct {
+	Id        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+	Data      string
+}

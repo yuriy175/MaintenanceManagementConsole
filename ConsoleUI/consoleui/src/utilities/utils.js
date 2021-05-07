@@ -22,4 +22,6 @@ export function getEquipFromTopic(topic ){
 	return equip;
 }
 
+export const parseLocalString = (value) => new Date(value).toLocaleString();
+
 export const sessionUid = generateSessionUid();

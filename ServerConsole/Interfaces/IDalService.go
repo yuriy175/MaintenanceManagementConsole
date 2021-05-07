@@ -12,10 +12,10 @@ type IDalService interface {
 	GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel
 	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel
 	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
-	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel
+	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel // GeneratorInfoModel
 	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel
 	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
-	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel
+	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel
 
 	GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel
 	GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel

@@ -21,6 +21,10 @@ const useStyles = makeStyles({
     color: 'white',
     background: 'red',
     margin: '0px',
+    wordWrap: 'break-word',
+  },
+  simpleCell:{
+    wordWrap: 'break-word',
   }
 });
 
@@ -51,7 +55,7 @@ export default function CommonTable(props) {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{ minWidth: column.minWidth, maxWidth: column.maxWidth}}  
                 >
                   {column.label}
                 </TableCell>
@@ -66,8 +70,9 @@ export default function CommonTable(props) {
                     const value = row[column.id];
                     return (
                       <TableCell key={column.id} align={column.align}
-                        className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : ''}
+                        className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : classes.simpleCell}
                       >
+                        <div style={{ maxWidth: column.maxWidth}}>
                         {column.checked ? 
                           <Checkbox
                             checked={value}
@@ -76,6 +81,7 @@ export default function CommonTable(props) {
                           /> : 
                           column.format ? column.format(value) : 
                             column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}
+                        </div>  
                       </TableCell>
                     );
                   })}

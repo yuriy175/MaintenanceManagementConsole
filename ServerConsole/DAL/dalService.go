@@ -24,6 +24,8 @@ type dalService struct {
 
 	_userRepository      *userRepository
 	_equipInfoRepository *equipInfoRepository
+	_generatorRepository *generatorRepository
+	_standRepository     *standRepository
 }
 
 func DalServiceNew(
@@ -41,6 +43,8 @@ func DalServiceNew(
 
 	service._userRepository = UserRepositoryNew(service, service._dbName, authService)
 	service._equipInfoRepository = EquipInfoRepositoryNew(service, service._dbName)
+	service._generatorRepository = GeneratorRepositoryNew(service, service._dbName)
+	service._standRepository = StandRepositoryNew(service, service._dbName)
 
 	return service
 }
@@ -55,13 +59,13 @@ func (service *dalService) Start() {
 	// deviceCollection := db.C(Models.DeviceConnectionsTableName)
 	studiesCollection := db.C(Models.StudyInWorkTableName)
 	organAutoCollection := db.C(Models.OrganAutoTableName)
-	genInfoCollection := db.C(Models.GeneratorInfoTableName)
+	// genInfoCollection := db.C(Models.GeneratorInfoTableName)
 	sysInfoCollection := db.C(Models.SystemInfoTableName)
 	sysVolatileInfoCollection := db.C(Models.SystemVolatileInfoTableName)
 	softwareInfoCollection := db.C(Models.SoftwareInfoTableName)
 	softwareVolatileInfoCollection := db.C(Models.SoftwareVolatileInfoTableName)
 	dicomInfoCollection := db.C(Models.DicomInfoTableName)
-	standInfoCollection := db.C(Models.StandInfoTableName)
+	// standInfoCollection := db.C(Models.StandInfoTableName)
 
 	service.ensureIndeces(sysInfoCollection, []string{"equipname", "datetime"})
 	service.ensureIndeces(sysVolatileInfoCollection, []string{"equipname", "datetime"})
@@ -89,13 +93,15 @@ func (service *dalService) Start() {
 
 				organAutoCollection.Insert(model)
 			} else if strings.Contains(d.Topic, "/generator/state") {
-				viewmodel := Models.GeneratorInfoViewModel{}
-				json.Unmarshal([]byte(d.Data), &viewmodel)
-				viewmodel.State.Id = bson.NewObjectId()
-				viewmodel.State.DateTime = time.Now()
-				viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
+				service._generatorRepository.InsertGeneratorInfo(Utils.GetEquipFromTopic(d.Topic), d.Data)
 
-				genInfoCollection.Insert(viewmodel.State)
+				// viewmodel := Models.GeneratorInfoViewModel{}
+				// json.Unmarshal([]byte(d.Data), &viewmodel)
+				// viewmodel.State.Id = bson.NewObjectId()
+				// viewmodel.State.DateTime = time.Now()
+				// viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				// genInfoCollection.Insert(viewmodel.State)
 			} else if strings.Contains(d.Topic, "/ARM/Hardware") {
 				viewmodel := Models.SystemInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
@@ -117,13 +123,14 @@ func (service *dalService) Start() {
 
 				dicomInfoCollection.Insert(model)
 			} else if strings.Contains(d.Topic, "/stand/state") {
-				viewmodel := Models.StandInfoViewModel{}
-				json.Unmarshal([]byte(d.Data), &viewmodel)
-				viewmodel.State.Id = bson.NewObjectId()
-				viewmodel.State.DateTime = time.Now()
-				viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
+				// viewmodel := Models.StandInfoViewModel{}
+				// json.Unmarshal([]byte(d.Data), &viewmodel)
+				// viewmodel.State.Id = bson.NewObjectId()
+				// viewmodel.State.DateTime = time.Now()
+				// viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
 
-				standInfoCollection.Insert(viewmodel.State)
+				// standInfoCollection.Insert(viewmodel.State)
+				service._standRepository.InsertStandInfo(Utils.GetEquipFromTopic(d.Topic), d.Data)
 			} else if strings.Contains(d.Topic, "/hospital") {
 				viewmodel := Models.EquipInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
@@ -143,7 +150,7 @@ func (service *dalService) GetStudiesInWork(equipName string, startDate time.Tim
 
 	studiesCollection := session.DB(service._dbName).C(Models.StudyInWorkTableName)
 
-	query := service.getQuery(equipName, startDate, endDate)
+	query := service.GetQuery(equipName, startDate, endDate)
 	// объект для сохранения результата
 	studies := []Models.StudyInWorkModel{}
 	err := studiesCollection.Find(query).Sort("-datetime").All(&studies)
@@ -160,7 +167,7 @@ func (service *dalService) GetSystemInfo(equipName string, startDate time.Time, 
 
 	sysVolatileInfoCollection := session.DB(service._dbName).C(Models.SystemVolatileInfoTableName)
 
-	query := service.getQuery(equipName, startDate, endDate)
+	query := service.GetQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
 	sysInfo := service.GetPermanentSystemInfo(equipName)
 	sysInfos := []Models.SystemInfoModel{*sysInfo}
@@ -177,7 +184,7 @@ func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Tim
 
 	organAutoCollection := session.DB(service._dbName).C(Models.OrganAutoTableName)
 
-	query := service.getQuery(equipName, startDate, endDate)
+	query := service.GetQuery(equipName, startDate, endDate)
 	// объект для сохранения результата
 	organAutos := []Models.OrganAutoInfoModel{}
 	organAutoCollection.Find(query).Sort("-datetime").All(&organAutos)
@@ -185,20 +192,8 @@ func (service *dalService) GetOrganAutoInfo(equipName string, startDate time.Tim
 	return organAutos
 }
 
-func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.GeneratorInfoModel {
-	session := service.CreateSession()
-	defer session.Close()
-
-	// drivesCollection := session.DB(Models.DBName).C(Models.HddDrivesInfoTableName)
-	genInfoCollection := session.DB(service._dbName).C(Models.GeneratorInfoTableName)
-
-	// // критерий выборки
-	query := service.getQuery(equipName, startDate, endDate)
-	// // объект для сохранения результата
-	genInfo := []Models.GeneratorInfoModel{}
-	genInfoCollection.Find(query).Sort("-datetime").All(&genInfo)
-
-	return genInfo
+func (service *dalService) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel {
+	return service._generatorRepository.GetGeneratorInfo(equipName, startDate, endDate)
 }
 
 func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel {
@@ -207,7 +202,7 @@ func (service *dalService) GetSoftwareInfo(equipName string, startDate time.Time
 
 	swVolatileInfoCollection := session.DB(service._dbName).C(Models.SystemVolatileInfoTableName)
 
-	query := service.getQuery(equipName, startDate, endDate)
+	query := service.GetQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
 	swInfo := service.GetPermanentSoftwareInfo(equipName)
 	swInfos := []Models.SoftwareInfoModel{*swInfo}
@@ -225,7 +220,7 @@ func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, e
 	dicomInfoCollection := session.DB(service._dbName).C(Models.DicomInfoTableName)
 
 	// // критерий выборки
-	query := service.getQuery(equipName, startDate, endDate)
+	query := service.GetQuery(equipName, startDate, endDate)
 
 	// // объект для сохранения результата
 	dicomInfo := []Models.DicomsInfoModel{}
@@ -234,20 +229,8 @@ func (service *dalService) GetDicomInfo(equipName string, startDate time.Time, e
 	return dicomInfo
 }
 
-func (service *dalService) GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.StandInfoModel {
-	session := service.CreateSession()
-	defer session.Close()
-
-	standInfoCollection := session.DB(service._dbName).C(Models.StandInfoTableName)
-
-	// // критерий выборки
-	query := service.getQuery(equipName, startDate, endDate)
-
-	// // объект для сохранения результата
-	standInfo := []Models.StandInfoModel{}
-	standInfoCollection.Find(query).Sort("-datetime").All(&standInfo)
-
-	return standInfo
+func (service *dalService) GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel {
+	return service._standRepository.GetStandInfo(equipName, startDate, endDate)
 }
 
 func (service *dalService) GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel {
@@ -276,7 +259,7 @@ func (service *dalService) GetPermanentSoftwareInfo(equipName string) *Models.So
 	return &softwareInfo
 }
 
-func (service *dalService) getQuery(equipName string, startDate time.Time, endDate time.Time) bson.M {
+func (service *dalService) GetQuery(equipName string, startDate time.Time, endDate time.Time) bson.M {
 	var query bson.M
 	query = bson.M{
 		"datetime": bson.M{

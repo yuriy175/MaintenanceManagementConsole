@@ -78,10 +78,21 @@ function reducer(state, action) {
       };
     }    
     case 'SETSTAND': {
-      return {
+      // return {
+      //   ...state,
+      //   stand: {Id: action.payload.Id, State: {...state.stand.State, ...action.payload.State}}
+      // };
+      const newState = {
         ...state,
         stand: {Id: action.payload.Id, State: {...state.stand.State, ...action.payload.State}}
       };
+      //
+      if(newState.stand?.State?.ErrorDescriptions && 
+        (!newState.stand?.State?.Error || newState.stand?.State?.Error[0] === 0)){
+        newState.stand.State.ErrorDescriptions = [];
+      }
+
+      return newState;
     }
     case 'SETDOSIMETER': {
       return {

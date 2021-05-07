@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
-import CardRow from './CardRow'
+import CardRow, {CardErrorRow} from './CardRow'
 
 const StandCard = React.memo((props) => {
 // export default function StandCard() {
@@ -37,6 +37,13 @@ const StandCard = React.memo((props) => {
         <CardRow descr="Фокусное расстояние" value={stand?.State?.Ffd_Current}></CardRow>
         <CardRow descr="Высота стола" value={stand?.State?.Deck_Height}></CardRow>
         <CardRow descr="Ошибки" value={stand?.State?.ErrorDescriptions?.length}></CardRow>
+        {stand?.State?.ErrorDescriptions?.length ? 
+          stand.State.ErrorDescriptions.map((i, ind) => (
+            <CardErrorRow key={ind.toString()}  descr={i.Code} value={i.Description} ></CardErrorRow>
+            ))
+            :
+            <></>          
+        }
       </CardContent>
     </Card>
   );
