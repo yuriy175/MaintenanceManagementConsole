@@ -1,5 +1,7 @@
 package Models
 
+import "time"
+
 /*type DeviceConnection struct {
 	DeviceId   int    `json:"id"`
 	Name       string `json:"name"`
@@ -152,4 +154,14 @@ type EquipInfoViewModel struct {
 	HospitalAddress   string
 	HospitalLongitude string
 	HospitalLatitude  string
+}
+
+type DetailedEquipInfoViewModel struct {
+	RegisterDate      time.Time
+	EquipName         string
+	HospitalName      string
+	HospitalAddress   string
+	HospitalLongitude string
+	HospitalLatitude  string
+	IsActive          bool
 }

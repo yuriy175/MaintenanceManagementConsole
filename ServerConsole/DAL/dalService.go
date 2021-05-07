@@ -131,11 +131,6 @@ func (service *dalService) Start() {
 
 				// standInfoCollection.Insert(viewmodel.State)
 				service._standRepository.InsertStandInfo(Utils.GetEquipFromTopic(d.Topic), d.Data)
-			} else if strings.Contains(d.Topic, "/hospital") {
-				viewmodel := Models.EquipInfoViewModel{}
-				json.Unmarshal([]byte(d.Data), &viewmodel)
-
-				service._equipInfoRepository.InsertEquipInfo(Utils.GetEquipFromTopic(d.Topic), &viewmodel)
 			}
 		}
 	}() //deviceCollection)
@@ -474,4 +469,8 @@ func (service *dalService) CheckEquipment(equipName string) bool {
 
 func (service *dalService) GetEquipInfos() []Models.EquipInfoModel {
 	return service._equipInfoRepository.GetEquipInfos()
+}
+
+func (service *dalService) InsertEquipInfo(equipName string, equipVM *Models.EquipInfoViewModel) *Models.EquipInfoModel {
+	return service._equipInfoRepository.InsertEquipInfo(equipName, equipVM)
 }

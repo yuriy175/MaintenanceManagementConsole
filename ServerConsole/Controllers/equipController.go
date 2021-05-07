@@ -14,6 +14,7 @@ type EquipController struct {
 	_mqttReceiverService Interfaces.IMqttReceiverService
 	_webSocketService    Interfaces.IWebSocketService
 	_dalService          Interfaces.IDalService
+	_equipsService       Interfaces.IEquipsService
 	_httpService         Interfaces.IHttpService
 }
 
@@ -21,6 +22,7 @@ func EquipControllerNew(
 	mqttReceiverService Interfaces.IMqttReceiverService,
 	webSocketService Interfaces.IWebSocketService,
 	dalService Interfaces.IDalService,
+	equipsService Interfaces.IEquipsService,
 	httpService Interfaces.IHttpService) *EquipController {
 	service := &EquipController{}
 
@@ -28,6 +30,7 @@ func EquipControllerNew(
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService
+	service._equipsService = equipsService
 
 	return service
 }
@@ -35,7 +38,7 @@ func EquipControllerNew(
 func (service *EquipController) Handle() {
 	mqttReceiverService := service._mqttReceiverService
 	webSocketService := service._webSocketService
-	dalService := service._dalService
+	equipsService := service._equipsService
 
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +99,7 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")
-		equipInfos := dalService.GetEquipInfos()
+		equipInfos := equipsService.GetEquipInfos()
 		json.NewEncoder(w).Encode(equipInfos)
 	})
 

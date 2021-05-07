@@ -3,6 +3,7 @@ package BL
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"../Interfaces"
 	"../Models"
@@ -16,6 +17,7 @@ type mqttClient struct {
 	_webSocketService    Interfaces.IWebSocketService
 	_dalCh               chan *Models.RawMqttMessage
 	_webSockCh           chan *Models.RawMqttMessage
+	_equipsCh            chan *Models.RawMqttMessage
 
 	_client      mqtt.Client
 	_topic       string
@@ -27,13 +29,15 @@ func MqttClientNew(
 	mqttReceiverService Interfaces.IMqttReceiverService,
 	webSocketService Interfaces.IWebSocketService,
 	dalCh chan *Models.RawMqttMessage,
-	webSockCh chan *Models.RawMqttMessage) Interfaces.IMqttClient {
+	webSockCh chan *Models.RawMqttMessage,
+	equipsCh chan *Models.RawMqttMessage) Interfaces.IMqttClient {
 	client := &mqttClient{}
 	client._settingsService = settingsService
 	client._mqttReceiverService = mqttReceiverService
 	client._webSocketService = webSocketService
 	client._dalCh = dalCh
 	client._webSockCh = webSockCh
+	client._equipsCh = equipsCh
 
 	return client
 }
@@ -89,13 +93,13 @@ func (client *mqttClient) Create(
 			go client._mqttReceiverService.UpdateMqttConnections(state)
 			go client._webSocketService.UpdateWebClients(state)
 		} else {
-			//content := Models.EquipmentMessage{}
-			//json.Unmarshal([]byte(payload), &content)
-			// equipDalCh <- &content
 			rawMsg := Models.RawMqttMessage{topic, string(payload)}
-			//json.Unmarshal([]byte(payload), &content)
+
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
+			if strings.Contains(topic, "/hospital") {
+				client._equipsCh <- &rawMsg
+			}
 		}
 	}
 

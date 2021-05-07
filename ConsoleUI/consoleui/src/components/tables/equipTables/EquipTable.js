@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import CommonTable from '../CommonTable'
 
 const columns = [
+  { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50 },
   { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
   { id: 'RegisterDate', label: 'Дата регистрации', minWidth: 170 },
   { id: 'HospitalName', label: 'ЛПУ', minWidth: 100 },

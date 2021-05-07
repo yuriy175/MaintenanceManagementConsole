@@ -15,10 +15,12 @@ func main() {
 	mqttReceiverService := ioc.GetMqttReceiverService()
 	webSocketService := ioc.GetWebSocketService()
 	dalService := ioc.GetDalService()
+	equipsService := ioc.GetEquipsService()
 	httpService := ioc.GetHttpService()
 	mqttReceiverService.CreateCommonConnections()
 
 	go dalService.Start()
+	go equipsService.Start()
 	// go BL.RabbitMqReceiver(mqttReceiverService, equipDalCh, equipWebSockCh)
 
 	go webSocketService.Start()
