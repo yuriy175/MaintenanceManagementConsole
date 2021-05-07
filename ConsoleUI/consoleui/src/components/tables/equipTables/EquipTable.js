@@ -1,5 +1,7 @@
 import React, {useContext} from 'react';
 import CommonTable from '../CommonTable'
+import { CurrentEquipContext } from '../../../context/currentEquip-context';
+import * as EquipWorker from '../../../workers/equipWorker'
 
 const columns = [
   { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50 },
@@ -14,18 +16,27 @@ const columns = [
 
 export default function EquipTable(props) {
   console.log("render EquipTable");
+  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
 
   const rows = props.data;
 
   const handleSelect = async (event, row) => {
-    // const Disabled = event.target.checked;//{id: "1", login, password, surname, email, role, disabled}
-    // const newRow = {...row, Disabled};
-    // const data = await AdminWorker.UpdateUser(newRow);
-    // const users = await AdminWorker.GetAllUsers();
-    // usersDispatch({ type: 'SETUSERS', payload: users }); 
+
+    const equipInfo = row.EquipName;
+    currEquipDispatch({ type: 'RESET', payload: true });    
+    currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
+
+    // new software & system info come very slowly
+    const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
+    currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
+
+    const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
+    currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
+
+    await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   };
 
   return (
-    <CommonTable columns={columns} rows={rows} onSelect={handleSelect}></CommonTable>
+    <CommonTable columns={columns} rows={rows} onRowClick={handleSelect}></CommonTable>
   );
 }

@@ -65,7 +65,7 @@ export default function CommonTable(props) {
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.code} onClick={(ev) => props.onRowClick(ev, row)} >
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (
