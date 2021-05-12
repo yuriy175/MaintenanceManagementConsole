@@ -10,11 +10,15 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import LocationOffOutlinedIcon from '@material-ui/icons/LocationOffOutlined';
+
+import "../../styles/styles.css";
 
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import { UsersContext } from '../../context/users-context';
+import {useSetCurrEquip} from '../../hooks/useSetCurrEquip'
 
 import * as EquipWorker from '../../workers/equipWorker'
 // import * as WebSocket from '../../workers/webSocket'
@@ -30,17 +34,16 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 220,
+    minWidth: 270,    
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
     color: "white",
     display: 'flex',
-
   },
   optionStyle:{
     backgroundColor: "#3f51b5",
-    color:"black",
+    color:"white",
   },
   userName:{
     // textAlign: "end",
@@ -55,8 +58,9 @@ export default function MainToolBar() {
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
-  const [currEquip, setCurrEquip] = useState('none');
+  // const [currEquip, setCurrEquip] = useState('none');
   const [userName, setUserName] = useState('');
+  const setCurrEquip = useSetCurrEquip();
 
   const handleEquipsChange = async (event) => {
     const select = event.target;
@@ -67,17 +71,18 @@ export default function MainToolBar() {
 
   const onEquipChanged = async equipInfo =>
   {
-    currEquipDispatch({ type: 'RESET', payload: true });    
-    currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
+    setCurrEquip(equipInfo, 'SETEQUIPINFO');
+    // currEquipDispatch({ type: 'RESET', payload: true });    
+    // currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
 
-    // new software & system info come very slowly
-    const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
-    currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
+    // // new software & system info come very slowly
+    // const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
+    // currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
 
-    const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
-    currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
+    // const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
+    // currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
 
-    await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
+    // await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   }
   
   // useEffect(() => {
@@ -127,13 +132,25 @@ export default function MainToolBar() {
             <FormControl className={classes.formControl}>
               <Select
                 labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                id="mainToolbarCombobox"
                 value={currEquipState.equipInfo}
                 onChange={handleEquipsChange}
                 className={classes.selectEmpty}
                 variant="outlined"
               >
-                {allEquipsState.equips?.map((i, ind) => (
+                <ListSubheader className={classes.optionStyle}>Выбрано</ListSubheader>
+                {allEquipsState.selectedEquips?.map((i, ind) => (
+                    <MenuItem key={ind.toString()} value={i} className={classes.optionStyle}>
+                      <ListItemIcon>
+                        {/* <LocationOffOutlinedIcon fontSize="small" /> */}
+                        <LocationOnOutlinedIcon fontSize="large" style={{ color: 'white' }}/>
+                      </ListItemIcon>
+                      <Typography variant="inherit">{i}</Typography>                      
+                    </MenuItem>
+                    ))
+                }
+                <ListSubheader className={classes.optionStyle}>Активно</ListSubheader>
+                {allEquipsState.connectedEquips?.map((i, ind) => (
                     <MenuItem key={ind.toString()} value={i} className={classes.optionStyle}>
                       <ListItemIcon>
                         {/* <LocationOffOutlinedIcon fontSize="small" /> */}

@@ -4,7 +4,8 @@ export const AllEquipsContext = createContext();
 
 const initialState = {
   allEquips: null,
-  equips: null,
+  connectedEquips: null,
+  selectedEquips: [],
 };
 
 function reducer(state, action) {
@@ -18,7 +19,13 @@ function reducer(state, action) {
     case 'SETCONNECTEDEQUIPS': {
       return {
         ...state,
-        equips: action.payload?.filter(p => p)
+        connectedEquips: action.payload?.filter(p => p)
+      };
+    }    
+    case 'ADDSELECTEDEQUIPS': {
+      return {
+        ...state,
+        selectedEquips: [...state.selectedEquips, action.payload]
       };
     }    
     case 'ADDEQUIP': {
@@ -28,18 +35,18 @@ function reducer(state, action) {
       };
     }
     case 'CONNECTIONCHANGED': {
-      let equips = state.equips ?? [];
+      let connectedEquips = state.connectedEquips ?? [];
       const equipName = action.payload.State.Name;
-      if(action.payload.State.Connected && !equips.includes(equipName)){
-        equips = [...equips, equipName]
+      if(action.payload.State.Connected && !connectedEquips.includes(equipName)){
+        connectedEquips = [...connectedEquips, equipName]
       }
-      else if(!action.payload.State.Connected && equips.includes(equipName)){
-        equips = equips.filter(p => p != equipName)
+      else if(!action.payload.State.Connected && connectedEquips.includes(equipName)){
+        connectedEquips = connectedEquips.filter(p => p != equipName)
       }
       
       return {
         ...state,
-        equips: equips
+        connectedEquips: connectedEquips
       };
     }    
     

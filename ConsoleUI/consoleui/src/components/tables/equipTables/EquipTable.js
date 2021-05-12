@@ -1,7 +1,9 @@
 import React, {useContext} from 'react';
 import CommonTable from '../CommonTable'
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
+import { AllEquipsContext } from '../../../context/allEquips-context';
 import * as EquipWorker from '../../../workers/equipWorker'
+import {useSetCurrEquip} from '../../../hooks/useSetCurrEquip'
 
 const columns = [
   { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50 },
@@ -16,24 +18,29 @@ const columns = [
 
 export default function EquipTable(props) {
   console.log("render EquipTable");
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  //const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+  const setCurrEquip = useSetCurrEquip();
 
   const rows = props.data;
 
   const handleSelect = async (event, row) => {
 
     const equipInfo = row.EquipName;
-    currEquipDispatch({ type: 'RESET', payload: true });    
-    currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
+    setCurrEquip(equipInfo, 'SETEQUIPINFO');
+    allEquipsDispatch({ type: 'ADDSELECTEDEQUIPS', payload: equipInfo }); 
+    
+    // currEquipDispatch({ type: 'RESET', payload: true });    
+    // currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
 
-    // new software & system info come very slowly
-    const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
-    currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
+    // // new software & system info come very slowly
+    // const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
+    // currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
 
-    const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
-    currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
+    // const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
+    // currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
 
-    await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
+    // await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   };
 
   return (

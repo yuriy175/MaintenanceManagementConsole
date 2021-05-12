@@ -1,0 +1,13 @@
+
+ul.MuiMenu-list{
+    background-color: #3f51b5;
+  }
+
+#mainToolbarCombobox {
+    padding: 6px 6px;
+    display: flex;
+}
+
+#mainToolbarCombobox > .MuiTypography-root{
+    align-self: center;
+}
