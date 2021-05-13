@@ -1,4 +1,4 @@
-﻿using MailKit.Net.Smtp;
+using MailKit.Net.Smtp;
 using MessagesSender.Core.Interfaces;
 using MessagesSender.MessagesSender.BL.Helpers;
 using MimeKit;

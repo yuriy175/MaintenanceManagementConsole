@@ -39,7 +39,8 @@ namespace MessagesSender.BL
 		private const string XiLogFileName = @"xilogs.zip";
 		private const string TaskManPath = @"C:\Windows\System32\Taskmgr.exe";
 		private const string TeamViewerProcessName = @"TeamViewer";
-		private const string TeamViewerPath = @"c:\Program Files (x86)\TeamViewer\TeamViewer.exe";//@"D:\res\SnapShot_src\SnapShot\SnapShot\bin\Debug\SnapShot.exe";
+		private const string TeamViewerPath = @"c:\Program Files\TeamViewer\TeamViewer.exe";
+		private const string AdditionalTeamViewerPath = @"c:\Program Files (x86)\TeamViewer\TeamViewer.exe";//@"D:\res\SnapShot_src\SnapShot\SnapShot\bin\Debug\SnapShot.exe";
 																				 //@"C:\Windows\System32\notepad.exe";
 		private const string XilogsFolder = @".\XiLogs\xilogs.exe";
 		private const string TeamViewerImagePath = @".\tvImage.jpeg";

@@ -50,7 +50,8 @@ func (service *equipsService) Start() {
 
 				service._mtx.Lock()
 				if _, ok := service._equips[equipName]; !ok {
-					service._dalService.InsertEquipInfo(equipName, &viewmodel)
+					equip := service._dalService.InsertEquipInfo(equipName, &viewmodel)
+					service._equips[equip.EquipName] = *equip
 				}
 				service._mtx.Unlock()
 			}
