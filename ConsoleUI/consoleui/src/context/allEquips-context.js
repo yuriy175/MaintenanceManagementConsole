@@ -25,7 +25,7 @@ function reducer(state, action) {
     case 'ADDSELECTEDEQUIPS': {
       return {
         ...state,
-        selectedEquips: [...state.selectedEquips, action.payload]
+        selectedEquips: [action.payload, ...state.selectedEquips.filter(p => p != action.payload)]
       };
     }    
     case 'ADDEQUIP': {
