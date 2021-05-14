@@ -17,5 +17,6 @@ namespace MessagesSender.Core.Model
         RemoteAccess,
 		ImagesInfo,
         HospitalInfo,
+        AllDBInfo,
     }
 }

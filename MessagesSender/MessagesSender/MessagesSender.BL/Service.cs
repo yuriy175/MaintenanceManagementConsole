@@ -23,7 +23,6 @@ namespace MessagesSender.BL
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;
-        private readonly IInfoEntityService _dbInfoEntityService;
         private readonly ILogger _logger;
         private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
@@ -36,7 +35,8 @@ namespace MessagesSender.BL
         private readonly IDicomStateService _dicomStateService;
         private readonly IRemoteControlService _remoteControlService;
 		private readonly IImagesWatchService _imagesWatchService;
-        private readonly IHospitalInfoService _hospitalInfoService;        
+        private readonly IHospitalInfoService _hospitalInfoService;
+        private readonly IDBDataService _dbDataService;        
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -65,10 +65,10 @@ namespace MessagesSender.BL
         /// <param name="remoteControlService">remote control service</param>
         /// <param name="imagesWatchService">images watch service</param>
         /// <param name="hospitalInfoService">hospital info service</param>
+        /// <param name="dbDataService">db raw data service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
-            IInfoEntityService dbInfoEntityService,
             ILogger logger,
             IEventPublisher eventPublisher,
             ISendingService sendingService,
@@ -81,11 +81,11 @@ namespace MessagesSender.BL
             IDicomStateService dicomStateService,
             IRemoteControlService remoteControlService,
 			IImagesWatchService imagesWatchService,
-            IHospitalInfoService hospitalInfoService)
+            IHospitalInfoService hospitalInfoService,
+            IDBDataService dbDataService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
-            _dbInfoEntityService = dbInfoEntityService;
             _logger = logger;
             _sendingService = sendingService;
             _mqService = mqService;
@@ -99,13 +99,13 @@ namespace MessagesSender.BL
             _remoteControlService = remoteControlService;
 			_imagesWatchService = imagesWatchService;
             _hospitalInfoService = hospitalInfoService;
+            _dbDataService = dbDataService;
 
             new Action[]
                 {
                     () => _ = SubscribeMQRecevers(),
                     async () =>
                     {
-                        await _dbInfoEntityService.GetAppParamAsync("");
                         await _sendingService.CreateAsync();
                         await OnServiceStateChangedAsync(true);
                     },

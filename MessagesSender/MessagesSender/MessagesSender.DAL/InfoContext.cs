@@ -86,6 +86,12 @@ namespace MessagesSender.DAL
         public virtual DbSet<HospitalInfo> HospitalInfos { get; set; }
 
         /// <summary>
+        /// set of Lan
+        /// </summary>
+        public virtual DbSet<Lan> Lans { get; set; }
+
+
+        /// <summary>
         /// Creates SettingsContext.
         /// </summary>
         /// <param name="connectionString">connection string to db</param>
@@ -112,7 +118,8 @@ namespace MessagesSender.DAL
             modelBuilder.Entity<DicomPrinter>().ToTable("dicom_printers");
             modelBuilder.Entity<HardDrive>().ToTable("hard_drive");
             modelBuilder.Entity<HospitalInfo>().ToTable("hospital_info");
-            
+            modelBuilder.Entity<Lan>().ToTable("lan");
+
             base.OnModelCreating(modelBuilder);
         }
 

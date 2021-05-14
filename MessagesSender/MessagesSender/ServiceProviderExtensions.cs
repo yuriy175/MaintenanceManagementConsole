@@ -80,7 +80,11 @@ namespace MessagesSender
 
             services.AddSingleton(
                typeof(IHospitalInfoService),
-               typeof(HospitalInfoService));            
+               typeof(HospitalInfoService));
+
+            services.AddSingleton(
+               typeof(IDBDataService),
+               typeof(DBDataService));
 
             return services.AddSingleton(
                typeof(IService),

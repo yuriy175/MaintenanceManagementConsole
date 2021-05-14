@@ -15,8 +15,7 @@ namespace MessagesSender.Core.Interfaces
 		/// <summary>
 		/// get app parameter by name
 		/// </summary>
-		/// <param name="appParam">app parameter name</param>
-		/// <returns>app parameter</returns>
-		Task<AppParam> GetAppParamAsync(string appParam);
+		/// <returns>all data</returns>
+		Task<(IEnumerable<HardDrive> HardDrives, IEnumerable<Lan> Lans)> GetAllDataAsync();
     }
 }

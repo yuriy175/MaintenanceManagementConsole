@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace MessagesSender.Core.Interfaces
 {
     /// <summary>
-    /// system watch service interface
+    /// db raw data service interface
     /// </summary>
-    public interface ISystemWatchService
+    public interface IDBDataService
     {
     }
 }

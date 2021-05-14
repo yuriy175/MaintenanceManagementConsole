@@ -36,26 +36,16 @@ namespace MessagesSender.DAL
             _logger = logger;
         }
 
-		/// <summary>
-		/// get app parameter by name
-		/// </summary>
-		/// <param name="appParam">app parameter name</param>
-		/// <returns>app parameter</returns>
-		public async Task<AppParam> GetAppParamAsync(string appParam)
+        /// <summary>
+        /// get app parameter by name
+        /// </summary>
+        /// <returns>all data</returns>
+        public async Task<(IEnumerable<HardDrive> HardDrives, IEnumerable<Lan> Lans)> GetAllDataAsync()
 		{
-            var tt2 = await GetManyAction<Dependency>(context => context.Dependencies);
+            var hardDrives = await GetManyAction<HardDrive>(context => context.HardDrives);
+            var lans = await GetManyAction<Lan>(context => context.Lans);
 
-            var tt3 = await GetManyAction<AspNetUser>(context => context.AspNetUsers);
-
-            var tt31 = await GetManyAction<AtlasSW>(context => context.Atlases);
-            var tt311 = await GetManyAction<HospitalInfo>(context => context.HospitalInfos);
-
-            var tt =  await GetManyAction<AppParam>(context => context.AppParams);
-            return tt?.FirstOrDefault();
-            // await GetAction<AppParam>(
-            //    context => context.AppParams);
-            // return await GetAction<AppParams>(
-            //				context => context.AppParams.FirstOrDefault(x => x.ParamName == appParam));
+            return (hardDrives, lans);
         }
 
         /// <summary>

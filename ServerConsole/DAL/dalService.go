@@ -131,6 +131,15 @@ func (service *dalService) Start() {
 
 				// standInfoCollection.Insert(viewmodel.State)
 				service._standRepository.InsertStandInfo(Utils.GetEquipFromTopic(d.Topic), d.Data)
+			} else if strings.Contains(d.Topic, "/ARM/AllDBInfo") {
+				viewmodel := Models.StandInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+				// viewmodel.State.Id = bson.NewObjectId()
+				// viewmodel.State.DateTime = time.Now()
+				// viewmodel.State.EquipName = Utils.GetEquipFromTopic(d.Topic)
+
+				// standInfoCollection.Insert(viewmodel.State)
+				// service._standRepository.InsertStandInfo(Utils.GetEquipFromTopic(d.Topic), d.Data)
 			}
 		}
 	}() //deviceCollection)
