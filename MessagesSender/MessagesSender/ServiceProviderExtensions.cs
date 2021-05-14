@@ -141,6 +141,10 @@ namespace MessagesSender
                 typeof(SettingsEntityService));
 
             services.AddSingleton(
+                typeof(IInfoEntityService),
+                typeof(InfoEntityService));
+
+            services.AddSingleton(
                 typeof(IObservationsEntityService),
                 typeof(ObservationsEntityService));
             

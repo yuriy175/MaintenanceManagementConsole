@@ -23,6 +23,7 @@ namespace MessagesSender.BL
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;
+        private readonly IInfoEntityService _dbInfoEntityService;
         private readonly ILogger _logger;
         private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
@@ -67,6 +68,7 @@ namespace MessagesSender.BL
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
+            IInfoEntityService dbInfoEntityService,
             ILogger logger,
             IEventPublisher eventPublisher,
             ISendingService sendingService,
@@ -83,6 +85,7 @@ namespace MessagesSender.BL
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
+            _dbInfoEntityService = dbInfoEntityService;
             _logger = logger;
             _sendingService = sendingService;
             _mqService = mqService;
@@ -102,6 +105,7 @@ namespace MessagesSender.BL
                     () => _ = SubscribeMQRecevers(),
                     async () =>
                     {
+                        await _dbInfoEntityService.GetAppParamAsync("");
                         await _sendingService.CreateAsync();
                         await OnServiceStateChangedAsync(true);
                     },
