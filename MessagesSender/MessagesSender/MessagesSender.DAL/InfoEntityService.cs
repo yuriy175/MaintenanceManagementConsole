@@ -44,6 +44,10 @@ namespace MessagesSender.DAL
 		{
             var hardDrives = await GetManyAction<HardDrive>(context => context.HardDrives);
             var lans = await GetManyAction<Lan>(context => context.Lans);
+            var logicalDisks = await GetManyAction<LogicalDisk>(context => context.LogicalDisks);
+            var modems = await GetManyAction<Modem>(context => context.Modems);
+            var monitors = await GetManyAction<Monitor>(context => context.Monitors);
+            var motherboards = await GetManyAction<Motherboard>(context => context.Motherboards);
 
             return (hardDrives, lans);
         }

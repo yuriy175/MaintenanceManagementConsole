@@ -90,6 +90,60 @@ namespace MessagesSender.DAL
         /// </summary>
         public virtual DbSet<Lan> Lans { get; set; }
 
+        /// <summary>
+        /// set of LogicalDisk
+        /// </summary>
+        public virtual DbSet<LogicalDisk> LogicalDisks { get; set; }
+
+        /// <summary>
+        /// set of Modem
+        /// </summary>
+        public virtual DbSet<Modem> Modems { get; set; }
+
+        /// <summary>
+        /// set of Monitor
+        /// </summary>
+        public virtual DbSet<Monitor> Monitors { get; set; }
+
+        /// <summary>
+        /// set of Motherboard
+        /// </summary>
+        public virtual DbSet<Motherboard> Motherboards { get; set; }
+
+        /// <summary>
+        /// set of OsInfo
+        /// </summary>
+        public virtual DbSet<OsInfo> OsInfos { get; set; }
+
+        /// <summary>
+        /// set of Printer
+        /// </summary>
+        public virtual DbSet<Printer> Printers { get; set; }
+
+        /// <summary>
+        /// set of RasterParam
+        /// </summary>
+        public virtual DbSet<RasterParam> RasterParams { get; set; }
+
+        /// <summary>
+        /// set of Screen
+        /// </summary>
+        public virtual DbSet<Screen> Screens { get; set; }
+
+        /// <summary>
+        /// set of SqlDatabase
+        /// </summary>
+        public virtual DbSet<SqlDatabase> SqlDatabases { get; set; }
+
+        /// <summary>
+        /// set of SqlService
+        /// </summary>
+        public virtual DbSet<SqlService> SqlServices { get; set; }
+
+        /// <summary>
+        /// set of VideoAdapter
+        /// </summary>
+        public virtual DbSet<VideoAdapter> VideoAdapters { get; set; }        
 
         /// <summary>
         /// Creates SettingsContext.
@@ -119,6 +173,13 @@ namespace MessagesSender.DAL
             modelBuilder.Entity<HardDrive>().ToTable("hard_drive");
             modelBuilder.Entity<HospitalInfo>().ToTable("hospital_info");
             modelBuilder.Entity<Lan>().ToTable("lan");
+            modelBuilder.Entity<LogicalDisk>().ToTable("logical_disks");
+            modelBuilder.Entity<Modem>().ToTable("modem");
+            modelBuilder.Entity<Motherboard>().ToTable("motherboard");
+            modelBuilder.Entity<OsInfo>().ToTable("os_info");
+            modelBuilder.Entity<SqlDatabase>().ToTable("sql_databases");
+            modelBuilder.Entity<SqlService>().ToTable("sql_service");
+            modelBuilder.Entity<VideoAdapter>().ToTable("videoadapter");            
 
             base.OnModelCreating(modelBuilder);
         }
