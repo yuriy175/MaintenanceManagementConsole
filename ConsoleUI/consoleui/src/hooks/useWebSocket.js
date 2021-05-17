@@ -155,6 +155,18 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETREMOTEACCESS', payload: values }); 
                 }
+                else if(path.startsWith('/ARM/AllDBInfo'))
+                {
+                    try
+                    {
+                        const values = data? JSON.parse(data.Data) : null;
+                        currEquipDispatch({ type: 'SETALLDB', payload: values }); 
+                    }
+                    catch(e)
+                    {
+                        console.log(e);  
+                    }                    
+                }
             };
         }
     }, [connection]);

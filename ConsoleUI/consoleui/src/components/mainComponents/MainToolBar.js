@@ -23,7 +23,7 @@ import {useSetCurrEquip} from '../../hooks/useSetCurrEquip'
 import * as EquipWorker from '../../workers/equipWorker'
 // import * as WebSocket from '../../workers/webSocket'
 import {sessionUid} from '../../utilities/utils'
-import { useWebSocket } from '../../workers/useWebSocket'
+import { useWebSocket } from '../../hooks/useWebSocket'
 
 const drawerWidth = 240;
 

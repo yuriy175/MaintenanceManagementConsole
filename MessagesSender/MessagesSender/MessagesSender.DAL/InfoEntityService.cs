@@ -37,10 +37,20 @@ namespace MessagesSender.DAL
         }
 
         /// <summary>
-        /// get app parameter by name
+        /// get system tables data
         /// </summary>
-        /// <returns>all data</returns>
-        public async Task<(IEnumerable<HardDrive> HardDrives, IEnumerable<Lan> Lans)> GetAllDataAsync()
+        /// <returns>system tables data</returns>
+        public async Task<(
+            IEnumerable<HardDrive> HardDrives, 
+            IEnumerable<Lan> Lans,
+            IEnumerable<LogicalDisk> LogicalDisks,
+            IEnumerable<Modem> Modems,
+            IEnumerable<Monitor> Monitors,
+            IEnumerable<Motherboard> Motherboards,
+            IEnumerable<Printer> Printers,
+            IEnumerable<Screen> Screens,
+            IEnumerable<VideoAdapter> VideoAdapters
+            )> GetSystemDataAsync()
 		{
             var hardDrives = await GetManyAction<HardDrive>(context => context.HardDrives);
             var lans = await GetManyAction<Lan>(context => context.Lans);
@@ -48,8 +58,71 @@ namespace MessagesSender.DAL
             var modems = await GetManyAction<Modem>(context => context.Modems);
             var monitors = await GetManyAction<Monitor>(context => context.Monitors);
             var motherboards = await GetManyAction<Motherboard>(context => context.Motherboards);
+            var printers = await GetManyAction<Printer>(context => context.Printers);
+            var screens = await GetManyAction<Screen>(context => context.Screens);
+            var videoadapters = await GetManyAction<VideoAdapter>(context => context.VideoAdapters);
 
-            return (hardDrives, lans);
+            return (hardDrives, lans, logicalDisks, modems, monitors, motherboards, printers, screens, videoadapters);
+        }
+
+        /// <summary>
+        /// get software tables data
+        /// </summary>
+        /// <returns>software tables data</returns>
+        public async Task<(
+            IEnumerable<AtlasSW> Atlas, 
+            IEnumerable<Dependency> Dependencies,
+            IEnumerable<Error> Errors,
+            IEnumerable<OsInfo> OsInfos,
+            IEnumerable<SqlDatabase> SqlDatabases, 
+            IEnumerable<SqlService> SqlServices
+            )> GetSoftwareDataAsync()
+        {
+            var atlas = await GetManyAction<AtlasSW>(context => context.Atlases);
+            var dependencies = await GetManyAction<Dependency>(context => context.Dependencies);
+            var errors = await GetManyAction<Error>(context => context.Errors);
+            var osInfos = await GetManyAction<OsInfo>(context => context.OsInfos);
+            var sqlDatabases = await GetManyAction<SqlDatabase>(context => context.SqlDatabases);
+            var sqlServices = await GetManyAction<SqlService>(context => context.SqlServices);
+
+            return (atlas, dependencies, errors, osInfos, sqlDatabases, sqlServices);
+        }
+
+        /// <summary>
+        /// get atlas tables data
+        /// </summary>
+        /// <returns>atlas tables data</returns>
+        public async Task<(
+            IEnumerable<AppParam> AppParams, 
+            IEnumerable<AspNetUser> AspNetUsers,
+            IEnumerable<Detector> Detectors,
+            IEnumerable<DetectorProcessing> DetectorProcessings,
+            IEnumerable<Dicom> Dicoms,
+            IEnumerable<DicomPrinter> DicomPrinters,
+            IEnumerable<HardwareParam> HardwareParams,
+            IEnumerable<RasterParam> RasterParams
+            )> GetAtlasDataAsync()
+        {
+            var appParams = await GetManyAction<AppParam>(context => context.AppParams);
+            var aspnetusers = await GetManyAction<AspNetUser>(context => context.AspNetUsers);
+            var detectors = await GetManyAction<Detector>(context => context.Detectors);
+            var detectorprocessings = await GetManyAction<DetectorProcessing>(context => context.DetectorProcessings);
+            var dicoms = await GetManyAction<Dicom>(context => context.Dicoms);
+            var dicomPrinters = await GetManyAction<DicomPrinter>(context => context.DicomPrinters);
+            var hardwareparams = await GetManyAction<HardwareParam>(context => context.HardwareParams);
+            var rasterParams = await GetManyAction<RasterParam>(context => context.RasterParams);
+            
+            return (appParams, aspnetusers, detectors, detectorprocessings, dicoms, dicomPrinters, 
+                hardwareparams, rasterParams);
+        }
+
+        /// <summary>
+        /// get hospital table data
+        /// </summary>
+        /// <returns>hospital table data</returns>
+        public async Task<IEnumerable<HospitalInfo>> GetHospitalDataAsync()
+        {
+            return await GetManyAction<HospitalInfo>(context => context.HospitalInfos);
         }
 
         /// <summary>

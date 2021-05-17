@@ -80,12 +80,20 @@ namespace MessagesSender.BL
 
         private async Task<bool> SendAllDBDataAsync()
         {
-            var data = await _dbInfoEntityService.GetAllDataAsync();
+            var atlasData = _dbInfoEntityService.GetAtlasDataAsync();
+            var hospitalData = _dbInfoEntityService.GetHospitalDataAsync();
+            var softwareData = _dbInfoEntityService.GetSoftwareDataAsync();
+            var systemData = _dbInfoEntityService.GetSystemDataAsync();
+
+            await Task.WhenAll(new[] { atlasData as Task, hospitalData, softwareData, systemData });
+
             _ = _sendingService.SendInfoToMqttAsync(MQMessages.AllDBInfo,
                     new
                     {
-                        data.HardDrives,
-                        data.Lans,
+                        Atlas = await atlasData,
+                        HospitalD = await hospitalData,
+                        Software = await softwareData,
+                        System = await systemData
                     });
 
 
