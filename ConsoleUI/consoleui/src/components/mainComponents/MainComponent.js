@@ -102,7 +102,7 @@ export default function MainComponent() {
         <List>
           {mainMenu.map((text, index) => (
             <ListItem button key={text}
-                selected={selectedIndex === selectedTab}
+                selected={selectedTab === index}
                 onClick={(event) => handleListItemClick(event, index)}
             >
               <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>

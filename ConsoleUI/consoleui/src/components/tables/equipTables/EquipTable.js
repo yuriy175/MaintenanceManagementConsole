@@ -15,7 +15,7 @@ const columns = [
   { id: 'HospitalName', label: 'ЛПУ', minWidth: 100 },
   { id: 'HospitalAddress', label: 'Адрес', minWidth: 100 },
   { id: 'HospitalLatitude', label: 'Широта', minWidth: 100 },
-  { id: 'HospitalLatitude', label: 'Долгота', minWidth: 100 },
+  { id: 'HospitalLongitude', label: 'Долгота', minWidth: 100 },
   // { id: 'Disabled', label: 'Удален', checked: true, minWidth: 100 },
 ];
 

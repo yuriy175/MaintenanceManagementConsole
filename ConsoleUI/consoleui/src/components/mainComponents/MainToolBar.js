@@ -16,7 +16,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import "../../styles/styles.css";
+import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex } from '../../model/constants';
 
+import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import { UsersContext } from '../../context/users-context';
@@ -62,12 +64,13 @@ export default function MainToolBar() {
   console.log(`! render MainToolBar ` + sessionUid);
 
   const classes = useStyles();
+  const [appState, appDispatch] = useContext(AppContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   // const [currEquip, setCurrEquip] = useState('none');
   const [userName, setUserName] = useState('');
-  const [tabIndex, setTabIndex] = useState(0);
+  //const [tabIndex, setTabIndex] = useState(0);
   const setCurrEquip = useSetCurrEquip();
 
   const handleEquipsChange = async (event) => {
@@ -94,8 +97,11 @@ export default function MainToolBar() {
     }
   );
 
+  const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
+  const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
   const onTabIndexChange = (event, newValue) => {
-    setTabIndex(newValue);
+    //setTabIndex(newValue);
+    appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
   };
 
   return (    
@@ -136,7 +142,7 @@ export default function MainToolBar() {
                 }
               </Select>
             </FormControl>
-            <Tabs value={tabIndex} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
+            <Tabs value={selectedTabPanel} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
               <Tab label="Главная" id= "mainTabPanel" />
               <Tab label="БД" id= "dbTabPanel" />
             </Tabs>

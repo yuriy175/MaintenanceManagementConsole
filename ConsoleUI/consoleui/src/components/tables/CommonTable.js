@@ -44,6 +44,10 @@ export default function CommonTable(props) {
 
   const rows = props.rows ? props.rows : [];
   const columns = props.columns;
+  let onRowClick = props.onRowClick;
+  if(!onRowClick){
+    onRowClick = (ev, row) => {};
+  }
 
   return (
     <Paper className={classes.root}>
@@ -65,7 +69,7 @@ export default function CommonTable(props) {
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code} onClick={(ev) => props.onRowClick(ev, row)} >
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.code} onClick={(ev) => onRowClick(ev, row)} >
                   {columns.map((column) => {
                     const value = row[column.id];
                     return (

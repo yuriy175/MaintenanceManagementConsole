@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { AppContext } from '../../context/app-context';
-import { SummaryTabIndex, EquipsTabIndex, MapTabIndex, EventsTabIndex, HistoryTabIndex, AdminTabIndex } from '../../model/constants';
+import { SummaryTabIndex, EquipsTabIndex, MapTabIndex, EventsTabIndex, HistoryTabIndex, AdminTabIndex, MainTabPanelIndex } from '../../model/constants';
 
 import SummaryTab from '../tabs/SummaryTab';
 import MapTab from '../tabs/MapTab';
@@ -16,9 +16,10 @@ export default function MainInfoComponent(props) {
   const [appState, appDispatch] = useContext(AppContext);
 
   const tabIndex = appState.currentTab?.tab ?? SummaryTabIndex;
+  const tabPanelIndex = appState.currentTab?.panel ?? MainTabPanelIndex;
   return (
     <div>
-      {tabIndex === SummaryTabIndex ? <SummaryTab panel={props.PanelIndex}></SummaryTab> : <></>}
+      {tabIndex === SummaryTabIndex ? <SummaryTab panel={tabPanelIndex}></SummaryTab> : <></>}
       {tabIndex === EquipsTabIndex ? <EquipsTab></EquipsTab> : <></>}
       {tabIndex === MapTabIndex ? <MapTab></MapTab> : <></>}
       {tabIndex === EventsTabIndex ? <EventsTab></EventsTab> : <></>}

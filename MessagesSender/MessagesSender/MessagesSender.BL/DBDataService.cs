@@ -80,20 +80,54 @@ namespace MessagesSender.BL
 
         private async Task<bool> SendAllDBDataAsync()
         {
-            var atlasData = _dbInfoEntityService.GetAtlasDataAsync();
-            var hospitalData = _dbInfoEntityService.GetHospitalDataAsync();
-            var softwareData = _dbInfoEntityService.GetSoftwareDataAsync();
-            var systemData = _dbInfoEntityService.GetSystemDataAsync();
+            var atlasTask = _dbInfoEntityService.GetAtlasDataAsync();
+            var hospitalTask = _dbInfoEntityService.GetHospitalDataAsync();
+            var softwareTask = _dbInfoEntityService.GetSoftwareDataAsync();
+            var systemTask = _dbInfoEntityService.GetSystemDataAsync();
 
-            await Task.WhenAll(new[] { atlasData as Task, hospitalData, softwareData, systemData });
+            await Task.WhenAll(new[] { atlasTask as Task, hospitalTask, softwareTask, systemTask });
+
+            var atlasData = await atlasTask;
+            var hospitalData = await hospitalTask;
+            var softwareData = await softwareTask;
+            var systemData = await systemTask;
 
             _ = _sendingService.SendInfoToMqttAsync(MQMessages.AllDBInfo,
                     new
                     {
-                        Atlas = await atlasData,
-                        HospitalD = await hospitalData,
-                        Software = await softwareData,
-                        System = await systemData
+                        Hospital = new { HospitalInfo = hospitalData?.ToArray() },
+                        Software = new
+                        {
+                            softwareData.Atlas,
+                            softwareData.Dependencies,
+                            softwareData.Errors,
+                            softwareData.OsInfos,
+                            softwareData.SqlDatabases,
+                            softwareData.SqlServices
+                        },
+                        System = new
+                        {
+                            systemData.HardDrives,
+                            systemData.Lans,
+                            systemData.LogicalDisks,
+                            systemData.Modems,
+                            systemData.Monitors,
+                            systemData.Motherboards,
+                            systemData.Printers,
+                            systemData.Screens,
+                            systemData.VideoAdapters
+                        },
+                        Atlas = new
+                        {
+                            atlasData.AppParams,
+                            atlasData.AspNetUsers,
+                            atlasData.Detectors,
+                            atlasData.DetectorProcessings,
+                            atlasData.Dicoms,
+                            atlasData.DicomPrinters,
+                            atlasData.HardwareParams,
+                            atlasData.RasterParams
+                        }
                     });
 
 
