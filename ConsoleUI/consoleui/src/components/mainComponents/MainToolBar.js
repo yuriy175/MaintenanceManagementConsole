@@ -12,6 +12,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import LocationOffOutlinedIcon from '@material-ui/icons/LocationOffOutlined';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 import "../../styles/styles.css";
 
@@ -24,6 +26,7 @@ import * as EquipWorker from '../../workers/equipWorker'
 // import * as WebSocket from '../../workers/webSocket'
 import {sessionUid} from '../../utilities/utils'
 import { useWebSocket } from '../../hooks/useWebSocket'
+import { SettingsBackupRestore } from '@material-ui/icons';
 
 const drawerWidth = 240;
 
@@ -35,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 270,    
+  },
+  tabControl: {
+    margin: theme.spacing(1),
+    minWidth: 340,    
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
@@ -60,6 +67,7 @@ export default function MainToolBar() {
   const [usersState, usersDispatch] = useContext(UsersContext);
   // const [currEquip, setCurrEquip] = useState('none');
   const [userName, setUserName] = useState('');
+  const [tabIndex, setTabIndex] = useState(0);
   const setCurrEquip = useSetCurrEquip();
 
   const handleEquipsChange = async (event) => {
@@ -72,30 +80,7 @@ export default function MainToolBar() {
   const onEquipChanged = async equipInfo =>
   {
     setCurrEquip(equipInfo, 'SETEQUIPINFO');
-    // currEquipDispatch({ type: 'RESET', payload: true });    
-    // currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
-
-    // // new software & system info come very slowly
-    // const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
-    // currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
-
-    // const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
-    // currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
-
-    // await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   }
-  
-  // useEffect(() => {
-  //     (async () => {
-  //         if(!allEquipsState.equips || currEquipState.equipInfo)
-  //         {
-  //           return;
-  //         }
-
-  //         const equipInfo = allEquipsState.equips[0];
-  //         onEquipChanged(equipInfo);
-  //     })();
-  // }, [allEquipsState.equips]);
 
   useEffect(() => {
     (async () => {
@@ -109,26 +94,15 @@ export default function MainToolBar() {
     }
   );
 
+  const onTabIndexChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
 
   return (    
     <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
             <Typography variant="h6" noWrap>
             </Typography>
-            {/* <FormControl className={classes.formControl}>
-              <NativeSelect
-                value={currEquipState.equipInfo}
-                onChange={handleEquipsChange}
-                name="equips"
-                className={classes.selectEmpty}
-                variant="outlined"
-              >
-                {allEquipsState.equips?.map((i, ind) => (
-                    <option key={ind.toString()} value={i} className={classes.optionStyle}>{i}</option>
-                    ))
-                }
-              </NativeSelect>
-            </FormControl> */}
             <FormControl className={classes.formControl}>
               <Select
                 labelId="demo-simple-select-label"
@@ -162,6 +136,10 @@ export default function MainToolBar() {
                 }
               </Select>
             </FormControl>
+            <Tabs value={tabIndex} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
+              <Tab label="Главная" id= "mainTabPanel" />
+              <Tab label="БД" id= "dbTabPanel" />
+            </Tabs>
             <Typography variant="h6" noWrap align="right"  className={classes.userName}> 
               {userName}
             </Typography>

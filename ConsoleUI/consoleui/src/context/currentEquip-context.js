@@ -16,6 +16,7 @@ const initialState = {
   remoteaccess:{},
   images:{},
   aecs:{},
+  allDBs:{},
 };
 
 function reducer(state, action) {
@@ -34,7 +35,13 @@ function reducer(state, action) {
         ...state,
         system: action.payload
       };
-    }    
+    }
+    case 'SETALLDB': {
+      return {
+        ...state,
+        allDBs: action.payload
+      };
+    }        
     case 'SETORGANAUTO': {
       return {
         ...state,

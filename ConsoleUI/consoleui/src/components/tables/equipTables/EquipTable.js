@@ -1,6 +1,9 @@
 import React, {useContext} from 'react';
 import CommonTable from '../CommonTable'
+
+import { SummaryTabIndex, MainTabPanelIndex } from '../../../model/constants';
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
+import { AppContext } from '../../../context/app-context';
 import { AllEquipsContext } from '../../../context/allEquips-context';
 import * as EquipWorker from '../../../workers/equipWorker'
 import {useSetCurrEquip} from '../../../hooks/useSetCurrEquip'
@@ -19,6 +22,7 @@ const columns = [
 export default function EquipTable(props) {
   console.log("render EquipTable");
   //const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  const [appState, appDispatch] = useContext(AppContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const setCurrEquip = useSetCurrEquip();
 
@@ -29,18 +33,7 @@ export default function EquipTable(props) {
     const equipInfo = row.EquipName;
     setCurrEquip(equipInfo, 'SETEQUIPINFO');
     allEquipsDispatch({ type: 'ADDSELECTEDEQUIPS', payload: equipInfo }); 
-    
-    // currEquipDispatch({ type: 'RESET', payload: true });    
-    // currEquipDispatch({ type: 'SETEQUIPINFO', payload: equipInfo }); 
-
-    // // new software & system info come very slowly
-    // const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
-    // currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
-
-    // const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
-    // currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
-
-    // await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
+    appDispatch({ type: 'SETTAB', payload: {tab: SummaryTabIndex, panel: MainTabPanelIndex} }); 
   };
 
   return (

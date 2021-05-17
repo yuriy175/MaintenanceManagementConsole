@@ -7,18 +7,21 @@ import App from './App';
 import { AllEquipsContextProvider } from './context/allEquips-context';
 import { CurrentEquipContextProvider } from './context/currentEquip-context';
 import { UsersContextProvider} from './context/users-context';
+import { AppContextProvider} from './context/app-context';
 
 ReactDOM.render(
   <React.StrictMode>
-    <UsersContextProvider>
-      <AllEquipsContextProvider>
-        <CurrentEquipContextProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </CurrentEquipContextProvider>
-      </AllEquipsContextProvider>
-    </UsersContextProvider>
+    <AppContextProvider>
+      <UsersContextProvider>
+        <AllEquipsContextProvider>
+          <CurrentEquipContextProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </CurrentEquipContextProvider>
+        </AllEquipsContextProvider>
+      </UsersContextProvider>
+    </AppContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -13,10 +13,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
+import { SummaryTabIndex, EquipsTabIndex, MainTabPanelIndex } from '../../model/constants';
+
 import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
 
 import { UsersContext } from '../../context/users-context';
+import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
 import * as AdminWorker from '../../workers/adminWorker'
 import * as EquipWorker from '../../workers/equipWorker'
@@ -53,6 +56,7 @@ export default function MainComponent() {
   const classes = useStyles();
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [appState, appDispatch] = useContext(AppContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
 
@@ -69,14 +73,17 @@ export default function MainComponent() {
   }, [usersState.users]);
 
   const handleListItemClick = async (event, index) => {
-    if(index === 1)
+    if(index === EquipsTabIndex)
     {
       const allEquips = await EquipWorker.GetAllEquips();
       allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips });  
     }
 
-    setSelectedIndex(index);
+    appDispatch({ type: 'SETTAB', payload: {tab: index, panel: MainTabPanelIndex} }); 
+    // setSelectedIndex(index);
   };
+
+  const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
 
   return (
     <div className={classes.root}>
@@ -95,7 +102,7 @@ export default function MainComponent() {
         <List>
           {mainMenu.map((text, index) => (
             <ListItem button key={text}
-                selected={selectedIndex === index}
+                selected={selectedIndex === selectedTab}
                 onClick={(event) => handleListItemClick(event, index)}
             >
               <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
@@ -105,7 +112,7 @@ export default function MainComponent() {
         </List>
       </Drawer>
       <main className={classes.content}>
-          <MainInfoComponent Title={mainMenu[selectedIndex]} Index={selectedIndex}></MainInfoComponent>
+          <MainInfoComponent Title={mainMenu[selectedIndex]}></MainInfoComponent>
       </main>
     </div>
   );
