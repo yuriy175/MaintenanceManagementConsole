@@ -9,12 +9,14 @@ import (
 	"../models"
 )
 
+// AdminController describes admin controller implementation type
 type AdminController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
 	_dalService          interfaces.IDalService
 }
 
+// AdminControllerNew creates an instance of webSock
 func AdminControllerNew(
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
@@ -28,6 +30,7 @@ func AdminControllerNew(
 	return service
 }
 
+// Handle handles incomming requests
 func (service *AdminController) Handle() {
 	//mqttReceiverService := service._mqttReceiverService
 	//webSocketService := service._webSocketService

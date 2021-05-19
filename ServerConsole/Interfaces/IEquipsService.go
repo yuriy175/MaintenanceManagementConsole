@@ -4,7 +4,7 @@ import (
 	"../models"
 )
 
-// equipment service interface
+// IEquipsService describes  equipment service interface
 type IEquipsService interface {
 	Start()
 

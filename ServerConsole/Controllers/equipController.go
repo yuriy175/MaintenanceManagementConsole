@@ -10,6 +10,7 @@ import (
 	interfaces "../interfaces"
 )
 
+// EquipController describes equipment controller implementation type
 type EquipController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
@@ -18,6 +19,7 @@ type EquipController struct {
 	_httpService         interfaces.IHttpService
 }
 
+// EquipControllerNew creates an instance of webSock
 func EquipControllerNew(
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
@@ -35,6 +37,7 @@ func EquipControllerNew(
 	return service
 }
 
+// Handle handles incomming requests
 func (service *EquipController) Handle() {
 	mqttReceiverService := service._mqttReceiverService
 	webSocketService := service._webSocketService

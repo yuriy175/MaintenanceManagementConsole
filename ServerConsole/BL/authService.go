@@ -6,7 +6,7 @@ import (
 	"../interfaces"
 )
 
-// auth service implementation type
+// authorization service implementation type
 type authService struct {
 }
 

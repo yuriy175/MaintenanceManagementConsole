@@ -9,11 +9,13 @@ import (
 	"../models"
 )
 
+// generator repository implementation type
 type generatorRepository struct {
 	_dalService *dalService
 	_dbName     string
 }
 
+// GeneratorRepositoryNew creates an instance of generatorRepository
 func GeneratorRepositoryNew(
 	dalService *dalService,
 	dbName string) *generatorRepository {
@@ -25,6 +27,7 @@ func GeneratorRepositoryNew(
 	return repository
 }
 
+// InsertGeneratorInfo inserts generator info into db
 func (repository *generatorRepository) InsertGeneratorInfo(equipName string, data string) *models.RawDeviceInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
@@ -33,7 +36,7 @@ func (repository *generatorRepository) InsertGeneratorInfo(equipName string, dat
 
 	model := models.RawDeviceInfoModel{}
 
-	model.Id = bson.NewObjectId()
+	model.ID = bson.NewObjectId()
 	model.DateTime = time.Now()
 	model.EquipName = equipName
 	model.Data = data
@@ -46,6 +49,7 @@ func (repository *generatorRepository) InsertGeneratorInfo(equipName string, dat
 	return &model
 }
 
+// GetGeneratorInfo returns generator info from db by equipment name and within the specified dates
 func (repository *generatorRepository) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel {
 	//[]Models.GeneratorInfoModel {
 	session := repository._dalService.CreateSession()

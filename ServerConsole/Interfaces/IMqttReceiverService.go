@@ -4,7 +4,7 @@ import (
 	"../models"
 )
 
-// mqtt receiver service interface
+// IMqttReceiverService describes mqtt receiver service interface
 type IMqttReceiverService interface {
 	///
 	UpdateMqttConnections(state *models.EquipConnectionState)

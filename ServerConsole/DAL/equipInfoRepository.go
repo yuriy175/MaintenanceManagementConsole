@@ -8,11 +8,13 @@ import (
 	"../models"
 )
 
+// equipment info repository implementation type
 type equipInfoRepository struct {
 	_dalService *dalService
 	_dbName     string
 }
 
+// EquipInfoRepositoryNew creates an instance of equipInfoRepository
 func EquipInfoRepositoryNew(
 	dalService *dalService,
 	dbName string) *equipInfoRepository {
@@ -24,6 +26,7 @@ func EquipInfoRepositoryNew(
 	return repository
 }
 
+// InsertEquipInfo inserts equipment info into db
 func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
@@ -32,7 +35,7 @@ func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM
 
 	model := models.EquipInfoModel{}
 
-	model.Id = bson.NewObjectId()
+	model.ID = bson.NewObjectId()
 	model.RegisterDate = time.Now()
 	model.EquipName = equipName
 
@@ -75,5 +78,5 @@ func (repository *equipInfoRepository) CheckEquipment(equipName string) bool {
 	equip := models.EquipInfoModel{}
 	equipCollection.Find(query).One(&equip)
 
-	return equip.Id != ""
+	return equip.ID != ""
 }

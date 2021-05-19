@@ -1,6 +1,6 @@
 package interfaces
 
-// http service interface
+// IHttpService describes http service interface
 type IHttpService interface {
 	Start()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type DeviceConnectionModel struct {
-	Id               bson.ObjectId `bson:"_id"`
+	ID               bson.ObjectId `bson:"_id"`
 	DateTime         time.Time
 	EquipNumber      string
 	EquipName        string
@@ -19,7 +19,7 @@ type DeviceConnectionModel struct {
 }
 
 type StudyInWorkModel struct {
-	Id            bson.ObjectId `bson:"_id"`
+	ID            bson.ObjectId `bson:"_id"`
 	DateTime      time.Time
 	EquipName     string
 	StudyId       float64
@@ -49,7 +49,7 @@ type RawMqttMessage struct {
 }
 
 type OrganAutoInfoModel struct {
-	Id           bson.ObjectId `bson:"_id"`
+	ID           bson.ObjectId `bson:"_id"`
 	DateTime     time.Time
 	EquipName    string
 	State        float64
@@ -66,7 +66,7 @@ type ErrorDescription struct {
 }
 
 type GeneratorInfoModel struct {
-	Id                bson.ObjectId `bson:"_id"`
+	ID                bson.ObjectId `bson:"_id"`
 	DateTime          time.Time
 	EquipName         string
 	State             float64
@@ -96,7 +96,7 @@ type DicomInfo struct {
 }
 
 type DicomsInfoModel struct {
-	Id        bson.ObjectId `bson:"_id"`
+	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
 	EquipName string
 	PACS      []DicomInfo
@@ -104,7 +104,7 @@ type DicomsInfoModel struct {
 }
 
 type StandInfoModel struct {
-	Id                bson.ObjectId `bson:"_id"`
+	ID                bson.ObjectId `bson:"_id"`
 	DateTime          time.Time
 	EquipName         string
 	State             float64
@@ -125,7 +125,7 @@ type HDDVolatileInfoModel struct {
 }
 
 type SystemVolatileInfoModel struct {
-	Id                    bson.ObjectId `bson:"_id"`
+	ID                    bson.ObjectId `bson:"_id"`
 	DateTime              time.Time
 	EquipName             string
 	HDD                   []HDDVolatileInfoModel
@@ -182,7 +182,7 @@ type PrinterInfoModel struct {
 ////
 
 type SystemInfoModel struct {
-	Id        bson.ObjectId `bson:"_id"`
+	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
 	EquipName string
 	//Parameter string
@@ -230,7 +230,7 @@ type AtlasInfoModel struct {
 }
 
 type SoftwareVolatileInfoModel struct {
-	Id               bson.ObjectId `bson:"_id"`
+	ID               bson.ObjectId `bson:"_id"`
 	DateTime         time.Time
 	EquipName        string
 	ErrorCode        string
@@ -238,7 +238,7 @@ type SoftwareVolatileInfoModel struct {
 }
 
 type SoftwareInfoModel struct {
-	Id        bson.ObjectId `bson:"_id"`
+	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
 	EquipName string
 	Sysinfo   SysInfoModel
@@ -253,7 +253,7 @@ type FullSoftwareInfoModel struct {
 }
 
 type UserModel struct {
-	Id           bson.ObjectId `bson:"_id"`
+	ID           bson.ObjectId `bson:"_id"`
 	DateTime     time.Time
 	Login        string
 	PasswordHash [32]byte
@@ -275,7 +275,7 @@ type MongoDBSettingsModel struct {
 }
 
 type EquipInfoModel struct {
-	Id                bson.ObjectId `bson:"_id"`
+	ID                bson.ObjectId `bson:"_id"`
 	RegisterDate      time.Time
 	EquipName         string
 	HospitalName      string
@@ -285,7 +285,7 @@ type EquipInfoModel struct {
 }
 
 type RawDeviceInfoModel struct {
-	Id        bson.ObjectId `bson:"_id"`
+	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
 	EquipName string
 	Data      string

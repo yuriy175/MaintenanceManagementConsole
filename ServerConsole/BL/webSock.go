@@ -100,9 +100,9 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 					log.Println("write:", err)
 					sock._mtx.Unlock()
 					return
-				} else {
-					log.Println("ping sent")
 				}
+
+				log.Println("ping sent")
 				sock._mtx.Unlock()
 				// case <-interrupt:
 				// 	log.Println("interrupt")
@@ -129,18 +129,18 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 }
 
 // WriteMessage write a message to the web socket
-func (ws *webSock) WriteMessage(data []byte) error {
-	ws._mtx.Lock()
-	defer ws._mtx.Unlock()
-	return ws._conn.WriteMessage(1, data)
+func (sock *webSock) WriteMessage(data []byte) error {
+	sock._mtx.Lock()
+	defer sock._mtx.Unlock()
+	return sock._conn.WriteMessage(1, data)
 }
 
 // IsValid checks if the web socket is valid
-func (ws *webSock) IsValid() bool {
-	return ws._conn != nil
+func (sock *webSock) IsValid() bool {
+	return sock._conn != nil
 }
 
-func (ws *webSock) onClose() {
-	ws._conn.Close()
-	ws._conn = nil
+func (sock *webSock) onClose() {
+	sock._conn.Close()
+	sock._conn = nil
 }

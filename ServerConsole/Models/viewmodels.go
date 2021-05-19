@@ -2,32 +2,13 @@ package models
 
 import "time"
 
-/*type DeviceConnection struct {
-	DeviceId   int    `json:"id"`
-	Name       string `json:"name"`
-	Type       string `json:"type"`
-	Connection int    `json:"connection"`
-}
-
-type EquipmentMessage struct {
-	EquipNumber string `json:"Number"`
-	EquipName   string `json:"Name"`
-	EquipIP     string `json:"ipAddress"`
-	MsgType     string `json:"msgType"`
-	//Info        map[string]interface{} `json:"info"` // Rest of the fields should go here.
-	Info json.RawMessage `json:"info"`
-	//Info string `json:"info"` // Rest of the fields should go here.
-	//Info string `json:"-"` // Rest of the fields should go here.
-}
-*/
-
 type GeneratorInfoViewModel struct {
-	Id    float64
+	ID    float64
 	State GeneratorInfoModel
 }
 
 type StandInfoViewModel struct {
-	Id    float64
+	ID    float64
 	State StandInfoModel
 }
 
@@ -140,7 +121,7 @@ type SoftwareMessageViewModel struct {
 }
 
 type UserViewModel struct {
-	Id       string
+	ID       string
 	Login    string
 	Password string
 	Surname  string

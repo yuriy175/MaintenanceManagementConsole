@@ -1,6 +1,6 @@
 package interfaces
 
-// IoC provider interface
+// IIoCProvider describes IoC provider interface
 type IIoCProvider interface {
 	GetMqttReceiverService() IMqttReceiverService
 	GetWebSocketService() IWebSocketService

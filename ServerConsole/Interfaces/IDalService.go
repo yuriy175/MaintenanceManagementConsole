@@ -6,7 +6,7 @@ import (
 	"../models"
 )
 
-// DAL service interface
+// IDalService describes DAL service interface
 type IDalService interface {
 	Start()
 	////

@@ -78,7 +78,7 @@ func (service *dalService) Start() {
 			if strings.Contains(d.Topic, "/study") {
 				model := models.StudyInWorkModel{}
 				json.Unmarshal([]byte(d.Data), &model)
-				model.Id = bson.NewObjectId()
+				model.ID = bson.NewObjectId()
 				model.DateTime = time.Now()
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 				model.State = 2
@@ -87,7 +87,7 @@ func (service *dalService) Start() {
 			} else if strings.Contains(d.Topic, "/organauto") {
 				model := models.OrganAutoInfoModel{}
 				json.Unmarshal([]byte(d.Data), &model)
-				model.Id = bson.NewObjectId()
+				model.ID = bson.NewObjectId()
 				model.DateTime = time.Now()
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 
@@ -109,7 +109,7 @@ func (service *dalService) Start() {
 			} else if strings.Contains(d.Topic, "/dicom") {
 				model := models.DicomsInfoModel{}
 				json.Unmarshal([]byte(d.Data), &model)
-				model.Id = bson.NewObjectId()
+				model.ID = bson.NewObjectId()
 				model.DateTime = time.Now()
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 
@@ -347,7 +347,7 @@ func (service *dalService) insertSystemInfo(
 		})
 	}
 
-	model.Id = bson.NewObjectId()
+	model.ID = bson.NewObjectId()
 	model.DateTime = dateTime
 	model.EquipName = equipName
 	model.HDD = hdds
@@ -361,7 +361,7 @@ func (service *dalService) insertSystemInfo(
 	//model.Printer           []PrinterInfoModel
 	sysInfoCollection.Insert(model)
 
-	volatileModel.Id = bson.NewObjectId()
+	volatileModel.ID = bson.NewObjectId()
 	volatileModel.DateTime = dateTime
 	volatileModel.EquipName = equipName
 	//HDD                   []HDDVolatileInfoModel
@@ -389,7 +389,7 @@ func (service *dalService) insertPermanentSoftwareInfo(
 		})
 	}
 
-	model.Id = bson.NewObjectId()
+	model.ID = bson.NewObjectId()
 	model.DateTime = dateTime
 	model.EquipName = equipName
 	model.Databases = dbs
@@ -422,7 +422,7 @@ func (service *dalService) insertVolatileSoftwareInfo(
 	dateTime := time.Now()
 	equipName := utils.GetEquipFromTopic(topic)
 	volatileModel := models.SoftwareVolatileInfoModel{}
-	volatileModel.Id = bson.NewObjectId()
+	volatileModel.ID = bson.NewObjectId()
 	volatileModel.DateTime = dateTime
 	volatileModel.EquipName = equipName
 	//volatileModel.ErrorCode = viewmodel.ErrorCode

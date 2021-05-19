@@ -4,7 +4,7 @@ import (
 	"../models"
 )
 
-// web socket service interface
+// IWebSocketService describes web socket service interface
 type IWebSocketService interface {
 	Start()
 	Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string)

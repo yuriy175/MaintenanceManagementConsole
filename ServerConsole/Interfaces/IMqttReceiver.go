@@ -1,6 +1,6 @@
 package interfaces
 
-// mqtt client interface
+// IMqttClient describes mqtt client interface
 type IMqttClient interface {
 	Create(rootTopic string, subTopics []string) IMqttClient
 	Disconnect()
