@@ -1,35 +1,36 @@
-package BL
+package bl
 
 import (
 	"fmt"
 	"sync"
 
-	"../Interfaces"
-	"../Models"
+	"../interfaces"
+	"../models"
+	Models "../models"
 )
 
 type mqttReceiverService struct {
 	_mtx              sync.RWMutex
-	_ioCProvider      Interfaces.IIoCProvider
-	_webSocketService Interfaces.IWebSocketService
-	_dalService       Interfaces.IDalService
-	_equipsService    Interfaces.IEquipsService
-	_dalCh            chan *Models.RawMqttMessage
-	_webSockCh        chan *Models.RawMqttMessage
-	_mqttConnections  map[string]Interfaces.IMqttClient
-	_topicStorage     Interfaces.ITopicStorage
+	_ioCProvider      interfaces.IIoCProvider
+	_webSocketService interfaces.IWebSocketService
+	_dalService       interfaces.IDalService
+	_equipsService    interfaces.IEquipsService
+	_dalCh            chan *models.RawMqttMessage
+	_webSockCh        chan *models.RawMqttMessage
+	_mqttConnections  map[string]interfaces.IMqttClient
+	_topicStorage     interfaces.ITopicStorage
 }
 
 //var mqttConnections = map[string]*MqttClient{}
 
 func MqttReceiverServiceNew(
-	ioCProvider Interfaces.IIoCProvider,
-	webSocketService Interfaces.IWebSocketService,
-	dalService Interfaces.IDalService,
-	equipsService Interfaces.IEquipsService,
-	topicStorage Interfaces.ITopicStorage,
-	dalCh chan *Models.RawMqttMessage,
-	webSockCh chan *Models.RawMqttMessage) Interfaces.IMqttReceiverService {
+	ioCProvider interfaces.IIoCProvider,
+	webSocketService interfaces.IWebSocketService,
+	dalService interfaces.IDalService,
+	equipsService interfaces.IEquipsService,
+	topicStorage interfaces.ITopicStorage,
+	dalCh chan *models.RawMqttMessage,
+	webSockCh chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
 	service := &mqttReceiverService{}
 
 	service._ioCProvider = ioCProvider
@@ -39,12 +40,12 @@ func MqttReceiverServiceNew(
 	service._topicStorage = topicStorage
 	service._dalCh = dalCh
 	service._webSockCh = webSockCh
-	service._mqttConnections = map[string]Interfaces.IMqttClient{}
+	service._mqttConnections = map[string]interfaces.IMqttClient{}
 
 	return service
 }
 
-func (service *mqttReceiverService) UpdateMqttConnections(state *Models.EquipConnectionState) {
+func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipConnectionState) {
 	rootTopic := state.Name
 	isOff := !state.Connected
 	topics := service._topicStorage.GetTopics()
@@ -92,8 +93,8 @@ func (service *mqttReceiverService) CreateCommonConnections() {
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
-	mqttConnections[Models.CommonTopicPath] = ioCProvider.GetMqttClient().Create(Models.CommonTopicPath, []string{})
-	mqttConnections[Models.BroadcastCommandsTopic] = ioCProvider.GetMqttClient().Create(Models.BroadcastCommandsTopic, []string{})
+	mqttConnections[Models.CommonTopicPath] = ioCProvider.GetMqttClient().Create(models.CommonTopicPath, []string{})
+	mqttConnections[Models.BroadcastCommandsTopic] = ioCProvider.GetMqttClient().Create(models.BroadcastCommandsTopic, []string{})
 
 	return
 }
@@ -115,7 +116,7 @@ func (service *mqttReceiverService) SendBroadcastCommand(command string) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	if client, ok := service._mqttConnections[Models.BroadcastCommandsTopic]; ok {
+	if client, ok := service._mqttConnections[models.BroadcastCommandsTopic]; ok {
 		go client.SendCommand(command)
 	}
 

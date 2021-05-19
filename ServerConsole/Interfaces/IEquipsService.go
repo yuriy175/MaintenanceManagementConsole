@@ -1,13 +1,14 @@
-package Interfaces
+package interfaces
 
 import (
-	"../Models"
+	"../models"
 )
 
+// equipment service interface
 type IEquipsService interface {
 	Start()
 
-	InsertEquipInfo(equipName string, equipVM *Models.EquipInfoViewModel) *Models.EquipInfoModel
+	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel
 	CheckEquipment(equipName string) bool
-	GetEquipInfos() []Models.EquipInfoModel
+	GetEquipInfos() []models.EquipInfoModel
 }

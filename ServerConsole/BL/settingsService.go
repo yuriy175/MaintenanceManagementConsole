@@ -1,20 +1,22 @@
-package BL
+package bl
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
 
-	"../Interfaces"
-	"../Models"
+	"../interfaces"
+	"../models"
 )
 
+// settings service implementation type
 type settingsService struct {
-	RabbitMQ Models.RabbitMQSettingsModel `json:"RabbitMQ"`
-	MongoDB  Models.MongoDBSettingsModel  `json:"MongoDB"`
+	RabbitMQ models.RabbitMQSettingsModel `json:"RabbitMQ"`
+	MongoDB  models.MongoDBSettingsModel  `json:"MongoDB"`
 }
 
-func SettingsServiceNew() Interfaces.ISettingsService {
+// SettingsServiceNew creates an instance of settingsService
+func SettingsServiceNew() interfaces.ISettingsService {
 	data, err := ioutil.ReadFile("settings.json")
 	var service settingsService // Models.RabbitMQSettingsModel //
 	json.Unmarshal(data, &service)
@@ -26,10 +28,12 @@ func SettingsServiceNew() Interfaces.ISettingsService {
 	return &service
 }
 
-func (service *settingsService) GetRabbitMQSettings() *Models.RabbitMQSettingsModel {
+// GetRabbitMQSettings returns rabbitMQ settings
+func (service *settingsService) GetRabbitMQSettings() *models.RabbitMQSettingsModel {
 	return &service.RabbitMQ
 }
 
-func (service *settingsService) GetMongoDBSettings() *Models.MongoDBSettingsModel {
+// GetMongoDBSettings returns mongodb settings
+func (service *settingsService) GetMongoDBSettings() *models.MongoDBSettingsModel {
 	return &service.MongoDB
 }

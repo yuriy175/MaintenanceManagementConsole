@@ -1,4 +1,4 @@
-package Controllers
+package controllers
 
 import (
 	"encoding/json"
@@ -7,23 +7,23 @@ import (
 	"net/http"
 	"time"
 
-	"../Interfaces"
+	interfaces "../interfaces"
 )
 
 type EquipController struct {
-	_mqttReceiverService Interfaces.IMqttReceiverService
-	_webSocketService    Interfaces.IWebSocketService
-	_dalService          Interfaces.IDalService
-	_equipsService       Interfaces.IEquipsService
-	_httpService         Interfaces.IHttpService
+	_mqttReceiverService interfaces.IMqttReceiverService
+	_webSocketService    interfaces.IWebSocketService
+	_dalService          interfaces.IDalService
+	_equipsService       interfaces.IEquipsService
+	_httpService         interfaces.IHttpService
 }
 
 func EquipControllerNew(
-	mqttReceiverService Interfaces.IMqttReceiverService,
-	webSocketService Interfaces.IWebSocketService,
-	dalService Interfaces.IDalService,
-	equipsService Interfaces.IEquipsService,
-	httpService Interfaces.IHttpService) *EquipController {
+	mqttReceiverService interfaces.IMqttReceiverService,
+	webSocketService interfaces.IWebSocketService,
+	dalService interfaces.IDalService,
+	equipsService interfaces.IEquipsService,
+	httpService interfaces.IHttpService) *EquipController {
 	service := &EquipController{}
 
 	service._httpService = httpService

@@ -1,40 +1,43 @@
-package BL
+package bl
 
 import (
 	"encoding/json"
 	"strings"
 	"sync"
 
-	"../Interfaces"
-	"../Models"
-	"../Utils"
+	"../interfaces"
+	"../models"
+	"../utils"
 )
 
+// equipment service implementation type
 type equipsService struct {
 	_mtx        sync.RWMutex
-	_dalService Interfaces.IDalService
-	_equips     map[string]Models.EquipInfoModel
-	_equipCh    chan *Models.RawMqttMessage
+	_dalService interfaces.IDalService
+	_equips     map[string]models.EquipInfoModel
+	_equipCh    chan *models.RawMqttMessage
 }
 
+// Creates an instance of equipsService
 func EquipsServiceNew(
-	dalService Interfaces.IDalService,
-	equipCh chan *Models.RawMqttMessage) Interfaces.IEquipsService {
+	dalService interfaces.IDalService,
+	equipCh chan *models.RawMqttMessage) interfaces.IEquipsService {
 	service := &equipsService{}
 
 	service._dalService = dalService
 	service._equipCh = equipCh
-	service._equips = map[string]Models.EquipInfoModel{}
+	service._equips = map[string]models.EquipInfoModel{}
 
 	return service
 }
 
+// Starts the service
 func (service *equipsService) Start() {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
 	equipInfos := service._dalService.GetEquipInfos()
-	service._equips = make(map[string]Models.EquipInfoModel, len(equipInfos))
+	service._equips = make(map[string]models.EquipInfoModel, len(equipInfos))
 
 	for _, equip := range equipInfos {
 		service._equips[equip.EquipName] = equip
@@ -43,10 +46,10 @@ func (service *equipsService) Start() {
 	go func() {
 		for d := range service._equipCh {
 			if strings.Contains(d.Topic, "/hospital") {
-				viewmodel := Models.EquipInfoViewModel{}
+				viewmodel := models.EquipInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
 
-				equipName := Utils.GetEquipFromTopic(d.Topic)
+				equipName := utils.GetEquipFromTopic(d.Topic)
 
 				service._mtx.Lock()
 				if _, ok := service._equips[equipName]; !ok {
@@ -59,6 +62,7 @@ func (service *equipsService) Start() {
 	}()
 }
 
+// Checks if the equipment exists
 func (service *equipsService) CheckEquipment(equipName string) bool {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
@@ -72,7 +76,8 @@ func (service *equipsService) CheckEquipment(equipName string) bool {
 	return ok
 }
 
-func (service *equipsService) InsertEquipInfo(equipName string, equipVM *Models.EquipInfoViewModel) *Models.EquipInfoModel {
+// Inserts a new equipment
+func (service *equipsService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
@@ -86,12 +91,13 @@ func (service *equipsService) InsertEquipInfo(equipName string, equipVM *Models.
 	return equip
 }
 
-func (service *equipsService) GetEquipInfos() []Models.EquipInfoModel {
+// Returns all equipments
+func (service *equipsService) GetEquipInfos() []models.EquipInfoModel {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
 	equips := service._equips
-	v := make([]Models.EquipInfoModel, 0, len(equips))
+	v := make([]models.EquipInfoModel, 0, len(equips))
 
 	for _, value := range equips {
 		v = append(v, value)

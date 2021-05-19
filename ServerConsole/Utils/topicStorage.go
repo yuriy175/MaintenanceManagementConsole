@@ -1,18 +1,20 @@
-package Utils
+package utils
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
 
-	"../Interfaces"
+	"../interfaces"
 )
 
+// topic storage implementation type
 type topicStorage struct {
 	Topics []string
 }
 
-func TopicStorageNew() Interfaces.ITopicStorage {
+// TopicStorageNew creates an instance of topicStorage
+func TopicStorageNew() interfaces.ITopicStorage {
 	data, err := ioutil.ReadFile("topics.json")
 	var storage topicStorage
 	json.Unmarshal(data, &storage)
@@ -24,6 +26,7 @@ func TopicStorageNew() Interfaces.ITopicStorage {
 	return &storage
 }
 
+// GetTopics returns all mqtt topics
 func (t *topicStorage) GetTopics() []string {
 	return t.Topics
 }

@@ -1,4 +1,4 @@
-package BL
+package bl
 
 import (
 	"encoding/json"
@@ -7,38 +7,41 @@ import (
 	"net/http"
 	"sync"
 
-	"../Interfaces"
-	"../Models"
-	"../Utils"
+	"../interfaces"
+	"../models"
+	"../utils"
 )
 
+// web socket service implementation type
 type webSocketService struct {
 	_mtx         sync.RWMutex
-	_ioCProvider Interfaces.IIoCProvider
-	_webSockCh   chan *Models.RawMqttMessage
+	_ioCProvider interfaces.IIoCProvider
+	_webSockCh   chan *models.RawMqttMessage
 	// keys - sessionUids
-	_webSocketConnections map[string]Interfaces.IWebSock
+	_webSocketConnections map[string]interfaces.IWebSock
 
 	// keys - main equipment topics
 	// values - slice of session uids
 	_topicConnections map[string][]string
 }
 
+// WebSocketServiceNew creates an instance of webSocketService
 func WebSocketServiceNew(
-	ioCProvider Interfaces.IIoCProvider,
-	webSockCh chan *Models.RawMqttMessage) Interfaces.IWebSocketService {
+	ioCProvider interfaces.IIoCProvider,
+	webSockCh chan *models.RawMqttMessage) interfaces.IWebSocketService {
 	service := &webSocketService{}
 
 	service._ioCProvider = ioCProvider
 	service._webSockCh = webSockCh
-	service._webSocketConnections = map[string]Interfaces.IWebSock{}
+	service._webSocketConnections = map[string]interfaces.IWebSock{}
 	service._topicConnections = map[string][]string{}
 
 	return service
 }
 
+// Start starts the service
 func (service *webSocketService) Start() {
-	http.HandleFunc(Models.WebSocketQueryString, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(models.WebSocketQueryString, func(w http.ResponseWriter, r *http.Request) {
 		uids, ok := r.URL.Query()["uid"]
 
 		if !ok || len(uids[0]) < 1 {
@@ -60,7 +63,7 @@ func (service *webSocketService) Start() {
 
 			//find equipment name of a new message
 			//topicParts := strings.Split(d.Topic, "/")
-			activatedEquipInfo := Utils.GetEquipFromTopic(d.Topic) //strings.Join([]string{topicParts[0], topicParts[1]}, "/")
+			activatedEquipInfo := utils.GetEquipFromTopic(d.Topic) //strings.Join([]string{topicParts[0], topicParts[1]}, "/")
 
 			service._mtx.Lock()
 
@@ -99,8 +102,8 @@ func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo 
 	return
 }
 
-func (service *webSocketService) UpdateWebClients(state *Models.EquipConnectionState) {
-	stateVM := &Models.EquipConnectionStateViewModel{Models.CommonTopicPath, *state}
+func (service *webSocketService) UpdateWebClients(state *models.EquipConnectionState) {
+	stateVM := &models.EquipConnectionStateViewModel{models.CommonTopicPath, *state}
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()

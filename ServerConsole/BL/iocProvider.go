@@ -1,21 +1,22 @@
-package BL
+package bl
 
 import (
-	"../DAL"
-	"../Interfaces"
-	"../Models"
-	"../Utils"
+	"../dal"
+	"../interfaces"
+	"../models"
+	Models "../models"
+	"../utils"
 )
 
 type types struct {
-	_authService         Interfaces.IAuthService
-	_mqttReceiverService Interfaces.IMqttReceiverService
-	_webSocketService    Interfaces.IWebSocketService
-	_dalService          Interfaces.IDalService
-	_httpService         Interfaces.IHttpService
-	_topicStorage        Interfaces.ITopicStorage
-	_settingsService     Interfaces.ISettingsService
-	_equipsService       Interfaces.IEquipsService
+	_authService         interfaces.IAuthService
+	_mqttReceiverService interfaces.IMqttReceiverService
+	_webSocketService    interfaces.IWebSocketService
+	_dalService          interfaces.IDalService
+	_httpService         interfaces.IHttpService
+	_topicStorage        interfaces.ITopicStorage
+	_settingsService     interfaces.ISettingsService
+	_equipsService       interfaces.IEquipsService
 	_dalCh               chan *Models.RawMqttMessage
 	_webSockCh           chan *Models.RawMqttMessage
 	_equipsCh            chan *Models.RawMqttMessage
@@ -23,16 +24,16 @@ type types struct {
 
 var _types = &types{}
 
-func InitIoc() Interfaces.IIoCProvider {
-	dalCh := make(chan *Models.RawMqttMessage)
-	webSockCh := make(chan *Models.RawMqttMessage)
-	equipsCh := make(chan *Models.RawMqttMessage)
+func InitIoc() interfaces.IIoCProvider {
+	dalCh := make(chan *models.RawMqttMessage)
+	webSockCh := make(chan *models.RawMqttMessage)
+	equipsCh := make(chan *models.RawMqttMessage)
 
 	authService := AuthServiceNew()
-	topicStorage := Utils.TopicStorageNew()
+	topicStorage := utils.TopicStorageNew()
 	settingsService := SettingsServiceNew()
 
-	dalService := DAL.DalServiceNew(authService, settingsService, dalCh)
+	dalService := dal.DalServiceNew(authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(dalService, equipsCh)
 	webSocketService := WebSocketServiceNew(_types, webSockCh)
 	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalService, equipsService, topicStorage, dalCh, webSockCh)
@@ -53,30 +54,30 @@ func InitIoc() Interfaces.IIoCProvider {
 	return _types
 }
 
-func (t *types) GetMqttReceiverService() Interfaces.IMqttReceiverService {
+func (t *types) GetMqttReceiverService() interfaces.IMqttReceiverService {
 	return t._mqttReceiverService
 }
 
-func (t *types) GetWebSocketService() Interfaces.IWebSocketService {
+func (t *types) GetWebSocketService() interfaces.IWebSocketService {
 	return t._webSocketService
 }
 
-func (t *types) GetDalService() Interfaces.IDalService {
+func (t *types) GetDalService() interfaces.IDalService {
 	return t._dalService
 }
 
-func (t *types) GetEquipsService() Interfaces.IEquipsService {
+func (t *types) GetEquipsService() interfaces.IEquipsService {
 	return t._equipsService
 }
 
-func (t *types) GetHttpService() Interfaces.IHttpService {
+func (t *types) GetHttpService() interfaces.IHttpService {
 	return t._httpService
 }
 
-func (t *types) GetWebSocket() Interfaces.IWebSock {
+func (t *types) GetWebSocket() interfaces.IWebSock {
 	return WebSockNew(t._webSocketService)
 }
 
-func (t *types) GetMqttClient() Interfaces.IMqttClient {
+func (t *types) GetMqttClient() interfaces.IMqttClient {
 	return MqttClientNew(t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh)
 }

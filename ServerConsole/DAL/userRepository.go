@@ -1,24 +1,24 @@
-package DAL
+package dal
 
 import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../Interfaces"
-	"../Models"
+	"../interfaces"
+	"../models"
 )
 
 type userRepository struct {
 	_dalService  *dalService
 	_dbName      string
-	_authService Interfaces.IAuthService
+	_authService interfaces.IAuthService
 }
 
 func UserRepositoryNew(
 	dalService *dalService,
 	dbName string,
-	authService Interfaces.IAuthService) *userRepository {
+	authService interfaces.IAuthService) *userRepository {
 	repository := &userRepository{}
 
 	repository._dalService = dalService
@@ -28,13 +28,13 @@ func UserRepositoryNew(
 	return repository
 }
 
-func (repository *userRepository) UpdateUser(userVM *Models.UserViewModel) *Models.UserModel {
+func (repository *userRepository) UpdateUser(userVM *models.UserViewModel) *models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	userCollection := session.DB(repository._dbName).C(Models.UsersTableName)
+	userCollection := session.DB(repository._dbName).C(models.UsersTableName)
 
-	model := Models.UserModel{}
+	model := models.UserModel{}
 
 	model.Login = userVM.Login
 	model.Surname = userVM.Surname
@@ -60,27 +60,27 @@ func (repository *userRepository) UpdateUser(userVM *Models.UserViewModel) *Mode
 	return &model
 }
 
-func (repository *userRepository) GetUsers() []Models.UserModel {
+func (repository *userRepository) GetUsers() []models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	userCollection := session.DB(repository._dbName).C(Models.UsersTableName)
+	userCollection := session.DB(repository._dbName).C(models.UsersTableName)
 
 	// // критерий выборки
 	query := bson.M{}
 
 	// // объект для сохранения результата
-	users := []Models.UserModel{}
+	users := []models.UserModel{}
 	userCollection.Find(query).Sort("-datetime").All(&users)
 
 	return users
 }
 
-func (repository *userRepository) GetUserByName(login string, email string, password string) *Models.UserModel {
+func (repository *userRepository) GetUserByName(login string, email string, password string) *models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	userCollection := session.DB(repository._dbName).C(Models.UsersTableName)
+	userCollection := session.DB(repository._dbName).C(models.UsersTableName)
 
 	// // критерий выборки
 	query := bson.M{"login": login}
@@ -89,7 +89,7 @@ func (repository *userRepository) GetUserByName(login string, email string, pass
 	}
 
 	// // объект для сохранения результата
-	user := Models.UserModel{}
+	user := models.UserModel{}
 	userCollection.Find(query).One(&user)
 
 	if ok := repository._authService.CheckSum(password, user.PasswordHash); ok && !user.Disabled {

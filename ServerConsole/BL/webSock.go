@@ -1,4 +1,4 @@
-package BL
+package bl
 
 import (
 	"fmt"
@@ -7,19 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"../Interfaces"
+	"../interfaces"
 	"github.com/gorilla/websocket"
 )
 
-func WebSockNew(webSocketService Interfaces.IWebSocketService) Interfaces.IWebSock {
-	webSock := &webSock{}
-	webSock._webSocketService = webSocketService
-
-	return webSock
-}
-
+// web socket client implementation type
 type webSock struct {
-	_webSocketService Interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 	_uid              string
 	_conn             *websocket.Conn
 	_mtx              sync.RWMutex
@@ -30,7 +24,16 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) Interfaces.IWebSock {
+// WebSockNew creates an instance of webSock
+func WebSockNew(webSocketService interfaces.IWebSocketService) interfaces.IWebSock {
+	webSock := &webSock{}
+	webSock._webSocketService = webSocketService
+
+	return webSock
+}
+
+// Create initializes an instance of webSock
+func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) interfaces.IWebSock {
 	//timeoutDuration := 60 * time.Second
 	timeoutDuration := 2 * time.Minute
 
@@ -85,39 +88,39 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 		defer ticker.Stop()
 		for {
 			select {
-				case _ = <-ticker.C:
-					sock._mtx.Lock()
-					if sock._conn == nil {
-						sock._mtx.Unlock()
-						return
-					}
-
-					err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
-					if err != nil {
-						log.Println("write:", err)
-						sock._mtx.Unlock()
-						return
-					} else {
-						log.Println("ping sent")
-					}
+			case _ = <-ticker.C:
+				sock._mtx.Lock()
+				if sock._conn == nil {
 					sock._mtx.Unlock()
-					// case <-interrupt:
-					// 	log.Println("interrupt")
-					// 	// To cleanly close a connection, a client should send a close
-					// 	// frame and wait for the server to close the connection.
-					// 	err := c.WriteMessage(
-					// 		websocket.CloseMessage,
-					// 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-					// 	if err != nil {
-					// 		log.Println("write close:", err)
-					// 		return
-					// 	}
-					// 	select {
-					// 	case <-done:
-					// 	case <-time.After(time.Second):
-					// 	}
-					// 	c.Close()
-					// 	return
+					return
+				}
+
+				err := sock._conn.WriteMessage(websocket.PingMessage, []byte{})
+				if err != nil {
+					log.Println("write:", err)
+					sock._mtx.Unlock()
+					return
+				} else {
+					log.Println("ping sent")
+				}
+				sock._mtx.Unlock()
+				// case <-interrupt:
+				// 	log.Println("interrupt")
+				// 	// To cleanly close a connection, a client should send a close
+				// 	// frame and wait for the server to close the connection.
+				// 	err := c.WriteMessage(
+				// 		websocket.CloseMessage,
+				// 		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				// 	if err != nil {
+				// 		log.Println("write close:", err)
+				// 		return
+				// 	}
+				// 	select {
+				// 	case <-done:
+				// 	case <-time.After(time.Second):
+				// 	}
+				// 	c.Close()
+				// 	return
 			}
 		}
 	}()
@@ -125,12 +128,14 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 	return sock
 }
 
+// WriteMessage write a message to the web socket
 func (ws *webSock) WriteMessage(data []byte) error {
 	ws._mtx.Lock()
 	defer ws._mtx.Unlock()
 	return ws._conn.WriteMessage(1, data)
 }
 
+// IsValid checks if the web socket is valid
 func (ws *webSock) IsValid() bool {
 	return ws._conn != nil
 }

@@ -1,19 +1,19 @@
-package BL
+package bl
 
 import (
 	"fmt"
 	"log"
 
-	"../Interfaces"
-	"../Models"
+	"../interfaces"
+	"../models"
 	"github.com/streadway/amqp"
 )
 
 func RabbitMqReceiver(
-	settingsService Interfaces.ISettingsService,
-	mqttReceiverService *Interfaces.IMqttReceiverService,
-	equipDalCh chan *Models.RawMqttMessage,
-	equipWebSockCh chan *Models.RawMqttMessage) {
+	settingsService interfaces.ISettingsService,
+	mqttReceiverService *interfaces.IMqttReceiverService,
+	equipDalCh chan *models.RawMqttMessage,
+	equipWebSockCh chan *models.RawMqttMessage) {
 	quitCh := make(chan int)
 
 	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
@@ -29,7 +29,7 @@ func RabbitMqReceiver(
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		Models.MQInfoQueueName, // name
+		models.MQInfoQueueName, // name
 		false,                  // durable
 		false,                  // delete when unused
 		false,                  // exclusive

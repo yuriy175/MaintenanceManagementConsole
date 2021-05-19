@@ -1,4 +1,4 @@
-package DAL
+package dal
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../Models"
+	"../models"
 )
 
 type generatorRepository struct {
@@ -25,13 +25,13 @@ func GeneratorRepositoryNew(
 	return repository
 }
 
-func (repository *generatorRepository) InsertGeneratorInfo(equipName string, data string) *Models.RawDeviceInfoModel {
+func (repository *generatorRepository) InsertGeneratorInfo(equipName string, data string) *models.RawDeviceInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	genInfoCollection := session.DB(repository._dbName).C(Models.GeneratorInfoTableName)
+	genInfoCollection := session.DB(repository._dbName).C(models.GeneratorInfoTableName)
 
-	model := Models.RawDeviceInfoModel{}
+	model := models.RawDeviceInfoModel{}
 
 	model.Id = bson.NewObjectId()
 	model.DateTime = time.Now()
@@ -46,17 +46,17 @@ func (repository *generatorRepository) InsertGeneratorInfo(equipName string, dat
 	return &model
 }
 
-func (repository *generatorRepository) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel {
+func (repository *generatorRepository) GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel {
 	//[]Models.GeneratorInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	genInfoCollection := session.DB(repository._dbName).C(Models.GeneratorInfoTableName)
+	genInfoCollection := session.DB(repository._dbName).C(models.GeneratorInfoTableName)
 
 	// // критерий выборки
 	query := repository._dalService.GetQuery(equipName, startDate, endDate)
 	// // объект для сохранения результата
-	genInfo := []Models.RawDeviceInfoModel{} // GeneratorInfoModel{}
+	genInfo := []models.RawDeviceInfoModel{} // GeneratorInfoModel{}
 	genInfoCollection.Find(query).Sort("-datetime").All(&genInfo)
 
 	return genInfo

@@ -1,30 +1,32 @@
-package BL
+package bl
 
 import (
 	"fmt"
 	"net/http"
 
-	"../Controllers"
-	"../Interfaces"
-	"../Models"
+	"../controllers"
+	"../interfaces"
+	"../models"
 )
 
+// http service implementation type
 type httpService struct {
-	_authService         Interfaces.IAuthService
-	_mqttReceiverService Interfaces.IMqttReceiverService
-	_webSocketService    Interfaces.IWebSocketService
-	_dalService          Interfaces.IDalService
-	_equipsService       Interfaces.IEquipsService
-	_equipController     *Controllers.EquipController
-	_adminController     *Controllers.AdminController
+	_authService         interfaces.IAuthService
+	_mqttReceiverService interfaces.IMqttReceiverService
+	_webSocketService    interfaces.IWebSocketService
+	_dalService          interfaces.IDalService
+	_equipsService       interfaces.IEquipsService
+	_equipController     *controllers.EquipController
+	_adminController     *controllers.AdminController
 }
 
+// Creates an instance of httpService
 func HttpServiceNew(
-	mqttReceiverService Interfaces.IMqttReceiverService,
-	webSocketService Interfaces.IWebSocketService,
-	dalService Interfaces.IDalService,
-	equipsService Interfaces.IEquipsService,
-	authService Interfaces.IAuthService) Interfaces.IHttpService {
+	mqttReceiverService interfaces.IMqttReceiverService,
+	webSocketService interfaces.IWebSocketService,
+	dalService interfaces.IDalService,
+	equipsService interfaces.IEquipsService,
+	authService interfaces.IAuthService) interfaces.IHttpService {
 	service := &httpService{}
 
 	service._mqttReceiverService = mqttReceiverService
@@ -33,12 +35,13 @@ func HttpServiceNew(
 	service._equipsService = equipsService
 	service._authService = authService
 
-	service._equipController = Controllers.EquipControllerNew(mqttReceiverService, webSocketService, dalService, equipsService, service)
-	service._adminController = Controllers.AdminControllerNew(mqttReceiverService, webSocketService, dalService)
+	service._equipController = controllers.EquipControllerNew(mqttReceiverService, webSocketService, dalService, equipsService, service)
+	service._adminController = controllers.AdminControllerNew(mqttReceiverService, webSocketService, dalService)
 
 	return service
 }
 
+// Starts the service
 func (service *httpService) Start() {
 	// mqttReceiverService := service._mqttReceiverService
 	// webSocketService := service._webSocketService
@@ -47,7 +50,7 @@ func (service *httpService) Start() {
 	service._equipController.Handle()
 	service._adminController.Handle()
 
-	address := Models.HttpServerAddress
+	address := models.HttpServerAddress
 	fmt.Println("http server is listening... " + address)
 	http.ListenAndServe(address, nil)
 }

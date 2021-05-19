@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"log"
 
-	"./BL"
+	"./bl"
 )
 
 func main() {
 
 	intCh := make(chan int)
 
-	ioc := BL.InitIoc()
+	ioc := bl.InitIoc()
 	mqttReceiverService := ioc.GetMqttReceiverService()
 	webSocketService := ioc.GetWebSocketService()
 	dalService := ioc.GetDalService()

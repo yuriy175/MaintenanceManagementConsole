@@ -1,10 +1,11 @@
-package Interfaces
+package interfaces
 
 import (
-	"../Models"
+	"../models"
 )
 
+// settings service interface
 type ISettingsService interface {
-	GetMongoDBSettings() *Models.MongoDBSettingsModel
-	GetRabbitMQSettings() *Models.RabbitMQSettingsModel
+	GetMongoDBSettings() *models.MongoDBSettingsModel
+	GetRabbitMQSettings() *models.RabbitMQSettingsModel
 }

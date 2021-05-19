@@ -1,11 +1,11 @@
-package DAL
+package dal
 
 import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../Models"
+	"../models"
 )
 
 type equipInfoRepository struct {
@@ -24,13 +24,13 @@ func EquipInfoRepositoryNew(
 	return repository
 }
 
-func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM *Models.EquipInfoViewModel) *Models.EquipInfoModel {
+func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	equipInfoCollection := session.DB(repository._dbName).C(Models.EquipmentTableName)
+	equipInfoCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
 
-	model := Models.EquipInfoModel{}
+	model := models.EquipInfoModel{}
 
 	model.Id = bson.NewObjectId()
 	model.RegisterDate = time.Now()
@@ -46,17 +46,17 @@ func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM
 	return &model
 }
 
-func (repository *equipInfoRepository) GetEquipInfos() []Models.EquipInfoModel {
+func (repository *equipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	equipInfoCollection := session.DB(repository._dbName).C(Models.EquipmentTableName)
+	equipInfoCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
 
 	// // критерий выборки
 	query := bson.M{}
 
 	// // объект для сохранения результата
-	equipInfos := []Models.EquipInfoModel{}
+	equipInfos := []models.EquipInfoModel{}
 	equipInfoCollection.Find(query).Sort("-registerdate").All(&equipInfos)
 
 	return equipInfos
@@ -66,13 +66,13 @@ func (repository *equipInfoRepository) CheckEquipment(equipName string) bool {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	equipCollection := session.DB(repository._dbName).C(Models.EquipmentTableName)
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
 
 	// // критерий выборки
 	query := bson.M{"equipname": equipName}
 
 	// // объект для сохранения результата
-	equip := Models.EquipInfoModel{}
+	equip := models.EquipInfoModel{}
 	equipCollection.Find(query).One(&equip)
 
 	return equip.Id != ""

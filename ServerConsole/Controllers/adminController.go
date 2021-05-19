@@ -1,24 +1,24 @@
-package Controllers
+package controllers
 
 import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
-	"../Interfaces"
-	"../Models"
+	"../interfaces"
+	"../models"
 )
 
 type AdminController struct {
-	_mqttReceiverService Interfaces.IMqttReceiverService
-	_webSocketService    Interfaces.IWebSocketService
-	_dalService          Interfaces.IDalService
+	_mqttReceiverService interfaces.IMqttReceiverService
+	_webSocketService    interfaces.IWebSocketService
+	_dalService          interfaces.IDalService
 }
 
 func AdminControllerNew(
-	mqttReceiverService Interfaces.IMqttReceiverService,
-	webSocketService Interfaces.IWebSocketService,
-	dalService Interfaces.IDalService) *AdminController {
+	mqttReceiverService interfaces.IMqttReceiverService,
+	webSocketService interfaces.IWebSocketService,
+	dalService interfaces.IDalService) *AdminController {
 	service := &AdminController{}
 
 	service._mqttReceiverService = mqttReceiverService
@@ -48,7 +48,7 @@ func (service *AdminController) Handle() {
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
-		var userVM = &Models.UserViewModel{}
+		var userVM = &models.UserViewModel{}
 		json.Unmarshal(bodyBytes, &userVM)
 
 		user := dalService.UpdateUser(userVM)
@@ -64,7 +64,7 @@ func (service *AdminController) Handle() {
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
-		var userVM = &Models.UserViewModel{}
+		var userVM = &models.UserViewModel{}
 		json.Unmarshal(bodyBytes, &userVM)
 
 		user := dalService.GetUserByName(userVM.Login, userVM.Email, userVM.Password)

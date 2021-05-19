@@ -1,32 +1,33 @@
-package Interfaces
+package interfaces
 
 import (
 	"time"
 
-	"../Models"
+	"../models"
 )
 
+// DAL service interface
 type IDalService interface {
 	Start()
 	////
-	GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []Models.StudyInWorkModel
-	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSystemInfoModel
-	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []Models.OrganAutoInfoModel
-	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel // GeneratorInfoModel
-	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *Models.FullSoftwareInfoModel
-	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []Models.DicomsInfoModel
-	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []Models.RawDeviceInfoModel
+	GetStudiesInWork(equipName string, startDate time.Time, endDate time.Time) []models.StudyInWorkModel
+	GetSystemInfo(equipName string, startDate time.Time, endDate time.Time) *models.FullSystemInfoModel
+	GetOrganAutoInfo(equipName string, startDate time.Time, endDate time.Time) []models.OrganAutoInfoModel
+	GetGeneratorInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel // GeneratorInfoModel
+	GetSoftwareInfo(equipName string, startDate time.Time, endDate time.Time) *models.FullSoftwareInfoModel
+	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []models.DicomsInfoModel
+	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel
 
-	GetPermanentSystemInfo(equipName string) *Models.SystemInfoModel
-	GetPermanentSoftwareInfo(equipName string) *Models.SoftwareInfoModel
+	GetPermanentSystemInfo(equipName string) *models.SystemInfoModel
+	GetPermanentSoftwareInfo(equipName string) *models.SoftwareInfoModel
 
 	//user repository
-	UpdateUser(user *Models.UserViewModel) *Models.UserModel
-	GetUsers() []Models.UserModel
-	GetUserByName(surname string, email string, password string) *Models.UserModel
+	UpdateUser(user *models.UserViewModel) *models.UserModel
+	GetUsers() []models.UserModel
+	GetUserByName(surname string, email string, password string) *models.UserModel
 
 	//equip info repository
 	CheckEquipment(equipName string) bool
-	InsertEquipInfo(equipName string, equipVM *Models.EquipInfoViewModel) *Models.EquipInfoModel
-	GetEquipInfos() []Models.EquipInfoModel
+	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel
+	GetEquipInfos() []models.EquipInfoModel
 }

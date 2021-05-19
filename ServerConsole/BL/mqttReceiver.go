@@ -1,36 +1,38 @@
-package BL
+package bl
 
 import (
 	"encoding/json"
 	"fmt"
 	"strings"
 
-	"../Interfaces"
-	"../Models"
+	"../interfaces"
+	"../models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
 
+// mqtt client implementation type
 type mqttClient struct {
-	_settingsService     Interfaces.ISettingsService
-	_mqttReceiverService Interfaces.IMqttReceiverService
-	_webSocketService    Interfaces.IWebSocketService
-	_dalCh               chan *Models.RawMqttMessage
-	_webSockCh           chan *Models.RawMqttMessage
-	_equipsCh            chan *Models.RawMqttMessage
+	_settingsService     interfaces.ISettingsService
+	_mqttReceiverService interfaces.IMqttReceiverService
+	_webSocketService    interfaces.IWebSocketService
+	_dalCh               chan *models.RawMqttMessage
+	_webSockCh           chan *models.RawMqttMessage
+	_equipsCh            chan *models.RawMqttMessage
 
 	_client      mqtt.Client
 	_topic       string
 	_isEquipment bool
 }
 
+// MqttClientNew creates an instance of mqttClient
 func MqttClientNew(
-	settingsService Interfaces.ISettingsService,
-	mqttReceiverService Interfaces.IMqttReceiverService,
-	webSocketService Interfaces.IWebSocketService,
-	dalCh chan *Models.RawMqttMessage,
-	webSockCh chan *Models.RawMqttMessage,
-	equipsCh chan *Models.RawMqttMessage) Interfaces.IMqttClient {
+	settingsService interfaces.ISettingsService,
+	mqttReceiverService interfaces.IMqttReceiverService,
+	webSocketService interfaces.IWebSocketService,
+	dalCh chan *models.RawMqttMessage,
+	webSockCh chan *models.RawMqttMessage,
+	equipsCh chan *models.RawMqttMessage) interfaces.IMqttClient {
 	client := &mqttClient{}
 	client._settingsService = settingsService
 	client._mqttReceiverService = mqttReceiverService
@@ -42,9 +44,10 @@ func MqttClientNew(
 	return client
 }
 
+// Create initializes an instance of mqttClient
 func (client *mqttClient) Create(
 	rootTopic string,
-	subTopics []string) Interfaces.IMqttClient {
+	subTopics []string) interfaces.IMqttClient {
 	//quitCh := make(chan int)
 
 	var reconnectingHandler mqtt.ReconnectHandler = func(client mqtt.Client, optins *mqtt.ClientOptions) {
@@ -74,7 +77,7 @@ func (client *mqttClient) Create(
 		payload := msg.Payload()
 		topic := msg.Topic()
 		//fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
-		if topic == Models.CommonTopicPath {
+		if topic == models.CommonTopicPath {
 			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
 
 			var content = map[string]string{}
@@ -88,12 +91,12 @@ func (client *mqttClient) Create(
 			}
 
 			isOn := data == "on"
-			state := &Models.EquipConnectionState{newRootTopic, isOn}
+			state := &models.EquipConnectionState{newRootTopic, isOn}
 
 			go client._mqttReceiverService.UpdateMqttConnections(state)
 			go client._webSocketService.UpdateWebClients(state)
 		} else {
-			rawMsg := Models.RawMqttMessage{topic, string(payload)}
+			rawMsg := models.RawMqttMessage{topic, string(payload)}
 
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
@@ -124,7 +127,7 @@ func (client *mqttClient) Create(
 
 	client._client = c
 	client._topic = rootTopic
-	client._isEquipment = rootTopic != Models.CommonTopicPath && rootTopic != Models.BroadcastCommandsTopic
+	client._isEquipment = rootTopic != models.CommonTopicPath && rootTopic != models.BroadcastCommandsTopic
 
 	// go func() {
 	// 	var topics = map[string]byte{}
@@ -141,16 +144,19 @@ func (client *mqttClient) Create(
 	return client
 }
 
+// Disconnect disconnects the client
 func (client *mqttClient) Disconnect() {
 	client._client.Disconnect(0)
 }
 
+// SendCommand send command to a command topic
 func (client *mqttClient) SendCommand(command string) {
 	commandTopic := client._topic + "/command"
 	client._client.Publish(commandTopic, 0, false, command)
 	fmt.Println("Sent command " + commandTopic + " " + command)
 }
 
+// IsEquipTopic checks if root topic isn't common or broadcast
 func (client *mqttClient) IsEquipTopic() bool {
 	return client._isEquipment
 }

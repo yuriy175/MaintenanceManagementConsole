@@ -1,4 +1,4 @@
-package Models
+package models
 
 const (
 	HttpServerAddress = ":8181" // "localhost:8181"
