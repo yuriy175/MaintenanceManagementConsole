@@ -2,16 +2,19 @@ package models
 
 import "time"
 
+// GeneratorInfoViewModel describes generator info view model from equipment
 type GeneratorInfoViewModel struct {
 	ID    float64
 	State GeneratorInfoModel
 }
 
+// StandInfoViewModel describes stand info view model from equipment
 type StandInfoViewModel struct {
 	ID    float64
 	State StandInfoModel
 }
 
+// EquipConnectionStateViewModel describes connection state view model to websocket
 type EquipConnectionStateViewModel struct {
 	Topic string
 	State EquipConnectionState
@@ -24,8 +27,8 @@ type HddDriveInfoViewModel struct {
 }
 
 type ProcessorInfoViewModel struct {
-	Model    string
-	CPU_Load string
+	Model   string
+	CPULoad string
 }
 
 type MotherboardInfoViewModel struct {
@@ -33,8 +36,8 @@ type MotherboardInfoViewModel struct {
 }
 
 type MemoryInfoViewModel struct {
-	Memory_total_Gb string
-	Memory_free_Gb  string
+	MemoryTotalGb string
+	MemoryFreeGb  string
 }
 
 type NetworkInfoViewModel struct {
@@ -43,26 +46,26 @@ type NetworkInfoViewModel struct {
 }
 
 type VGAInfoViewModel struct {
-	Card_Name      string
-	Driver_Version string
-	Memory_Gb      string
+	CardName      string
+	DriverVersion string
+	MemoryGb      string
 }
 
 type MonitorInfoViewModel struct {
-	Device_Name string `json:"Device_Name"`
-	Width       string `json:"Width"`
-	Height      string `json:"Height"`
+	DeviceName string `json:"Device_Name"`
+	Width      string `json:"Width"`
+	Height     string `json:"Height"`
 }
 
 type PhysicalDiskInfoViewModel struct {
 	FriendlyName string
 	MediaType    string
-	Size_Gb      string
+	SizeGb       string
 }
 
 type PrinterInfoViewModel struct {
-	Printer_Name string
-	Port_Name    string
+	PrinterName string
+	PortName    string
 }
 
 type SystemInfoViewModel struct {
@@ -90,17 +93,17 @@ type MSSQLInfoViewModel struct {
 }
 
 type DatabasesViewModel struct {
-	DB_name        string
-	DB_Status      string
-	DB_compability string
+	DBName        string
+	DBStatus      string
+	DBCompability string
 }
 
 type AtlasInfoViewModel struct {
-	Atlas_Version  string
-	Complex_type   string
-	Language       string
-	Multimonitor   string
-	XiLibs_Version string
+	AtlasVersion  string
+	ComplexType   string
+	Language      string
+	Multimonitor  string
+	XiLibsVersion string
 }
 
 type SoftwareInfoViewModel struct {

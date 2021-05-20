@@ -50,7 +50,7 @@ namespace MessagesSender.Core.Interfaces
             IEnumerable<AspNetUser> AspNetUsers,
             IEnumerable<Detector> Detectors,
             IEnumerable<DetectorProcessing> DetectorProcessings,
-            IEnumerable<Dicom> Dicoms,
+            IEnumerable<DicomService> DicomServices,
             IEnumerable<DicomPrinter> DicomPrinters,
             IEnumerable<HardwareParam> HardwareParams,
             IEnumerable<RasterParam> RasterParams

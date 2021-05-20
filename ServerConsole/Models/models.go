@@ -125,12 +125,12 @@ type HDDVolatileInfoModel struct {
 }
 
 type SystemVolatileInfoModel struct {
-	ID                    bson.ObjectId `bson:"_id"`
-	DateTime              time.Time
-	EquipName             string
-	HDD                   []HDDVolatileInfoModel
-	Processor_CPU_Load    string
-	Memory_Memory_free_Gb string
+	ID                 bson.ObjectId `bson:"_id"`
+	DateTime           time.Time
+	EquipName          string
+	HDD                []HDDVolatileInfoModel
+	ProcessorCPULoad   string
+	MemoryMemoryFreeGb string
 }
 
 ////
@@ -148,7 +148,7 @@ type MotherboardInfoModel struct {
 }
 
 type MemoryInfoModel struct {
-	Memory_total_Gb string
+	MemoryTotalGb string
 }
 
 type NetworkInfoModel struct {
@@ -157,26 +157,26 @@ type NetworkInfoModel struct {
 }
 
 type VGAInfoModel struct {
-	Card_Name      string
-	Driver_Version string
-	Memory_Gb      string
+	CardName      string
+	DriverVersion string
+	MemoryGb      string
 }
 
 type MonitorInfoModel struct {
-	Device_Name string
-	Width       string
-	Height      string
+	DeviceName string
+	Width      string
+	Height     string
 }
 
 type PhysicalDiskInfoModel struct {
 	FriendlyName string
 	MediaType    string
-	Size_Gb      string
+	SizeGb       string
 }
 
 type PrinterInfoModel struct {
-	Printer_Name string
-	Port_Name    string
+	PrinterName string
+	Port_Name   string
 }
 
 ////
@@ -216,17 +216,17 @@ type MSSQLInfoModel struct {
 }
 
 type DatabasesModel struct {
-	DB_name        string
-	DB_Status      string
-	DB_compability string
+	DBName        string
+	DBStatus      string
+	DBCompability string
 }
 
 type AtlasInfoModel struct {
-	Atlas_Version  string
-	Complex_type   string
-	Language       string
-	Multimonitor   string
-	XiLibs_Version string
+	AtlasVersion  string
+	ComplexType   string
+	Language      string
+	Multimonitor  string
+	XiLibsVersion string
 }
 
 type SoftwareVolatileInfoModel struct {

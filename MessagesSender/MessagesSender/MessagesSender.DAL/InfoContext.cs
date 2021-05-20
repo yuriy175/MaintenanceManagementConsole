@@ -1,4 +1,4 @@
-﻿using MessagesSender.DAL.Model;
+using MessagesSender.DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using CommonDAL = Atlas.Common.DAL;
@@ -53,7 +53,7 @@ namespace MessagesSender.DAL
         /// <summary>
         /// set of Dicom
         /// </summary>
-        public virtual DbSet<Dicom> Dicoms { get; set; }        
+        public virtual DbSet<DicomService> DicomServices { get; set; }        
 
         /// <summary>
         /// set of DetectorProcessing
@@ -168,7 +168,7 @@ namespace MessagesSender.DAL
             modelBuilder.Entity<Dependency>().ToTable("dependencies");
             modelBuilder.Entity<AtlasSW>().ToTable("atlas");
             modelBuilder.Entity<Detector>().ToTable("detector");
-            modelBuilder.Entity<Dicom>().ToTable("dicom");
+            // modelBuilder.Entity<Dicom>().ToTable("dicom");
             modelBuilder.Entity<DicomPrinter>().ToTable("dicom_printers");
             modelBuilder.Entity<HardDrive>().ToTable("hard_drive");
             modelBuilder.Entity<HospitalInfo>().ToTable("hospital_info");

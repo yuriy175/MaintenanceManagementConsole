@@ -123,7 +123,7 @@ namespace MessagesSender.BL
                             atlasData.AspNetUsers,
                             atlasData.Detectors,
                             atlasData.DetectorProcessings,
-                            atlasData.Dicoms,
+                            atlasData.DicomServices,
                             atlasData.DicomPrinters,
                             atlasData.HardwareParams,
                             atlasData.RasterParams

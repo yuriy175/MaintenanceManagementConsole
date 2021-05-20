@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace MessagesSender.DAL.Model
 {
-    public class Dicom
+    public class DicomService
     {
         public int Id { get; set; }
         public string LogicalName { get; set; }
         public string AeTitle { get; set; }
         public string IPAddress { get; set; }
-        public int Port { get; set; }
+        public string Port { get; set; }
         public int PduSize { get; set; }
         public int Timeout { get; set; }
         public Nullable<int> ListenPort { get; set; }

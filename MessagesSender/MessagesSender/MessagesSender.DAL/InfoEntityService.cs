@@ -97,17 +97,17 @@ namespace MessagesSender.DAL
             IEnumerable<AspNetUser> AspNetUsers,
             IEnumerable<Detector> Detectors,
             IEnumerable<DetectorProcessing> DetectorProcessings,
-            IEnumerable<Dicom> Dicoms,
+            IEnumerable<DicomService> DicomServices,
             IEnumerable<DicomPrinter> DicomPrinters,
             IEnumerable<HardwareParam> HardwareParams,
             IEnumerable<RasterParam> RasterParams
             )> GetAtlasDataAsync()
         {
             var appParams = await GetManyAction<AppParam>(context => context.AppParams);
-            var aspnetusers = await GetManyAction<AspNetUser>(context => context.AspNetUsers);
+			var aspnetusers = new AspNetUser[] { }; // await GetManyAction<AspNetUser>(context => context.AspNetUsers);
             var detectors = await GetManyAction<Detector>(context => context.Detectors);
             var detectorprocessings = await GetManyAction<DetectorProcessing>(context => context.DetectorProcessings);
-            var dicoms = await GetManyAction<Dicom>(context => context.Dicoms);
+            var dicoms = await GetManyAction<DicomService>(context => context.DicomServices);
             var dicomPrinters = await GetManyAction<DicomPrinter>(context => context.DicomPrinters);
             var hardwareparams = await GetManyAction<HardwareParam>(context => context.HardwareParams);
             var rasterParams = await GetManyAction<RasterParam>(context => context.RasterParams);
