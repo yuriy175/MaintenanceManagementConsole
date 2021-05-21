@@ -104,8 +104,9 @@ namespace MessagesSender.DAL
             )> GetAtlasDataAsync()
         {
             var appParams = await GetManyAction<AppParam>(context => context.AppParams);
-			var aspnetusers = new AspNetUser[] { }; // await GetManyAction<AspNetUser>(context => context.AspNetUsers);
-            var detectors = await GetManyAction<Detector>(context => context.Detectors);
+			// var aspnetusers = new AspNetUser[] { }; // await GetManyAction<AspNetUser>(context => context.AspNetUsers);
+			var aspnetusers = await GetManyAction<AspNetUser>(context => context.AspNetUsers);
+			var detectors = await GetManyAction<Detector>(context => context.Detectors);
             var detectorprocessings = await GetManyAction<DetectorProcessing>(context => context.DetectorProcessings);
             var dicoms = await GetManyAction<DicomService>(context => context.DicomServices);
             var dicomPrinters = await GetManyAction<DicomPrinter>(context => context.DicomPrinters);

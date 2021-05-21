@@ -24,6 +24,7 @@ type types struct {
 
 var _types = &types{}
 
+// InitIoc initializes all services
 func InitIoc() interfaces.IIoCProvider {
 	dalCh := make(chan *models.RawMqttMessage)
 	webSockCh := make(chan *models.RawMqttMessage)
@@ -54,30 +55,37 @@ func InitIoc() interfaces.IIoCProvider {
 	return _types
 }
 
+// GetMqttReceiverService returns IMqttReceiverService service
 func (t *types) GetMqttReceiverService() interfaces.IMqttReceiverService {
 	return t._mqttReceiverService
 }
 
+// GetWebSocketService returns IWebSocketService service
 func (t *types) GetWebSocketService() interfaces.IWebSocketService {
 	return t._webSocketService
 }
 
+// GetDalService returns IDalService service
 func (t *types) GetDalService() interfaces.IDalService {
 	return t._dalService
 }
 
+// GetEquipsService returns IEquipsService service
 func (t *types) GetEquipsService() interfaces.IEquipsService {
 	return t._equipsService
 }
 
-func (t *types) GetHttpService() interfaces.IHttpService {
+// GetHTTPService returns IHttpService service
+func (t *types) GetHTTPService() interfaces.IHttpService {
 	return t._httpService
 }
 
+// GetWebSocket returns a new IWebSock instance
 func (t *types) GetWebSocket() interfaces.IWebSock {
 	return WebSockNew(t._webSocketService)
 }
 
+// GetMqttClient returns a new IMqttClient instance
 func (t *types) GetMqttClient() interfaces.IMqttClient {
 	return MqttClientNew(t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh)
 }

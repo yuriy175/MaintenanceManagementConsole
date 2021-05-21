@@ -16,7 +16,7 @@ func main() {
 	webSocketService := ioc.GetWebSocketService()
 	dalService := ioc.GetDalService()
 	equipsService := ioc.GetEquipsService()
-	httpService := ioc.GetHttpService()
+	httpService := ioc.GetHTTPService()
 	mqttReceiverService.CreateCommonConnections()
 
 	go dalService.Start()

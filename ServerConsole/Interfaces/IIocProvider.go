@@ -6,7 +6,7 @@ type IIoCProvider interface {
 	GetWebSocketService() IWebSocketService
 	GetDalService() IDalService
 	GetEquipsService() IEquipsService
-	GetHttpService() IHttpService
+	GetHTTPService() IHttpService
 	GetWebSocket() IWebSock
 	GetMqttClient() IMqttClient
 }

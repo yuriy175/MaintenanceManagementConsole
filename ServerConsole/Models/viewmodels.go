@@ -20,54 +20,64 @@ type EquipConnectionStateViewModel struct {
 	State EquipConnectionState
 }
 
+// HddDriveInfoViewModel describes HDD info view model from equipment
 type HddDriveInfoViewModel struct {
 	Letter    string `json:"Letter"`
 	TotalSize string `json:"TotalSize"`
 	FreeSize  string `json:"FreeSize"`
 }
 
+// ProcessorInfoViewModel describes CPU info view model from equipment
 type ProcessorInfoViewModel struct {
 	Model   string
 	CPULoad string
 }
 
+// MotherboardInfoViewModel describes motherboard info view model from equipment
 type MotherboardInfoViewModel struct {
 	Model string
 }
 
+// MemoryInfoViewModel describes memory info view model from equipment
 type MemoryInfoViewModel struct {
 	MemoryTotalGb string
 	MemoryFreeGb  string
 }
 
+// NetworkInfoViewModel describes LAN adapters info view model from equipment
 type NetworkInfoViewModel struct {
 	NIC string
 	IP  string
 }
 
+// VGAInfoViewModel describes videoadapters info view model from equipment
 type VGAInfoViewModel struct {
 	CardName      string
 	DriverVersion string
 	MemoryGb      string
 }
 
+// MonitorInfoViewModel describes monitors info view model from equipment
 type MonitorInfoViewModel struct {
 	DeviceName string `json:"Device_Name"`
 	Width      string `json:"Width"`
 	Height     string `json:"Height"`
 }
 
+// PhysicalDiskInfoViewModel describes HDD info view model from equipment
 type PhysicalDiskInfoViewModel struct {
 	FriendlyName string
 	MediaType    string
 	SizeGb       string
 }
 
+// PrinterInfoViewModel describes printers info view model from equipment
 type PrinterInfoViewModel struct {
 	PrinterName string
 	PortName    string
 }
 
+// SystemInfoViewModel describes all system hardware view model from equipment
 type SystemInfoViewModel struct {
 	HDD           []HddDriveInfoViewModel
 	PhysicalDisks []PhysicalDiskInfoViewModel
@@ -80,24 +90,28 @@ type SystemInfoViewModel struct {
 	Printer       []PrinterInfoViewModel
 }
 
+// SysInfoViewModel describes OS info view model from equipment
 type SysInfoViewModel struct {
-	OS           string
-	Version      string
-	Build_Number string
+	OS          string
+	Version     string
+	BuildNumber string
 }
 
+// MSSQLInfoViewModel describes MSSQL info view model from equipment
 type MSSQLInfoViewModel struct {
 	SQL     string
 	Version string
 	Status  string
 }
 
+// DatabasesViewModel describes a database info view model from equipment
 type DatabasesViewModel struct {
 	DBName        string
 	DBStatus      string
 	DBCompability string
 }
 
+// AtlasInfoViewModel describes Atlas info view model from equipment
 type AtlasInfoViewModel struct {
 	AtlasVersion  string
 	ComplexType   string
@@ -106,6 +120,7 @@ type AtlasInfoViewModel struct {
 	XiLibsVersion string
 }
 
+// SoftwareInfoViewModel describes all software info view model from equipment
 type SoftwareInfoViewModel struct {
 	Sysinfo   SysInfoViewModel
 	MSSQL     MSSQLInfoViewModel
@@ -113,16 +128,19 @@ type SoftwareInfoViewModel struct {
 	Atlas     AtlasInfoViewModel
 }
 
+// MessageViewModel describes a message view model from equipment
 type MessageViewModel struct {
 	Code        string
 	Description string
 }
 
+// SoftwareMessageViewModel describes a software message view model from equipment
 type SoftwareMessageViewModel struct {
 	ErrorDescriptions      []MessageViewModel
 	AtlasErrorDescriptions []MessageViewModel
 }
 
+// UserViewModel describes user info view model to UI
 type UserViewModel struct {
 	ID       string
 	Login    string
@@ -133,6 +151,7 @@ type UserViewModel struct {
 	Disabled bool
 }
 
+// EquipInfoViewModel describes hospital info view model from equipment
 type EquipInfoViewModel struct {
 	HospitalName      string
 	HospitalAddress   string
@@ -140,6 +159,7 @@ type EquipInfoViewModel struct {
 	HospitalLatitude  string
 }
 
+// DetailedEquipInfoViewModel describes hospital info view model to UI
 type DetailedEquipInfoViewModel struct {
 	RegisterDate      time.Time
 	EquipName         string

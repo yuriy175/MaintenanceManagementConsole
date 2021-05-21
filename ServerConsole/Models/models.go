@@ -6,43 +6,18 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type DeviceConnectionModel struct {
-	ID               bson.ObjectId `bson:"_id"`
-	DateTime         time.Time
-	EquipNumber      string
-	EquipName        string
-	EquipIP          string
-	DeviceId         float64
-	DeviceName       string
-	DeviceType       string
-	DeviceConnection float64
-}
-
+// StudyInWorkModel describes study in work model
 type StudyInWorkModel struct {
 	ID            bson.ObjectId `bson:"_id"`
 	DateTime      time.Time
 	EquipName     string
-	StudyId       float64
-	StudyDicomUid string
+	StudyID       float64
+	StudyDicomUID string
 	StudyName     string
 	State         float64
 }
 
-/*
-type SystemInfoModel struct {
-	Id        bson.ObjectId `bson:"_id"`
-	DateTime  time.Time
-	EquipName string
-		State         float64
-		CPU_Load      float64
-		TotalMemory   float64
-		AvailableSize float64
-		HddName       string
-		HddTotalSpace float64
-		HddFreeSpace  float64
-}
-*/
-
+// RawMqttMessage describes a raw mqtt message from equipment
 type RawMqttMessage struct {
 	Topic string
 	Data  string
@@ -56,7 +31,7 @@ type OrganAutoInfoModel struct {
 	Name         string
 	Projection   string
 	Direction    string
-	AgeId        float64
+	AgeID        float64
 	Constitution float64
 }
 
@@ -203,24 +178,28 @@ type FullSystemInfoModel struct {
 	VolatileInfo  []SystemVolatileInfoModel
 }
 
+// SysInfoModel describes OS info model from equipment
 type SysInfoModel struct {
-	OS           string
-	Version      string
-	Build_Number string
+	OS          string
+	Version     string
+	BuildNumber string
 }
 
+// MSSQLInfoModel describes general MSSQL info model from equipment
 type MSSQLInfoModel struct {
 	SQL     string
 	Version string
 	Status  string
 }
 
+// DatabasesModel describes a database info model from equipment
 type DatabasesModel struct {
 	DBName        string
 	DBStatus      string
 	DBCompability string
 }
 
+// AtlasInfoModel describes Atlas info model from equipment
 type AtlasInfoModel struct {
 	AtlasVersion  string
 	ComplexType   string
@@ -229,6 +208,7 @@ type AtlasInfoModel struct {
 	XiLibsVersion string
 }
 
+// SoftwareVolatileInfoModel describes software volatile info DB model
 type SoftwareVolatileInfoModel struct {
 	ID               bson.ObjectId `bson:"_id"`
 	DateTime         time.Time
@@ -237,6 +217,7 @@ type SoftwareVolatileInfoModel struct {
 	ErrorDescription string
 }
 
+// SoftwareInfoModel describes software permanent info DB model
 type SoftwareInfoModel struct {
 	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
@@ -247,11 +228,13 @@ type SoftwareInfoModel struct {
 	Atlas     AtlasInfoModel
 }
 
+// FullSoftwareInfoModel describes full software info DB model
 type FullSoftwareInfoModel struct {
 	PermanentInfo []SoftwareInfoModel
 	VolatileInfo  []SoftwareVolatileInfoModel
 }
 
+// UserModel describes user info DB model
 type UserModel struct {
 	ID           bson.ObjectId `bson:"_id"`
 	DateTime     time.Time
@@ -274,6 +257,7 @@ type MongoDBSettingsModel struct {
 	DBName           string
 }
 
+// EquipInfoModel describes hospital info DB model
 type EquipInfoModel struct {
 	ID                bson.ObjectId `bson:"_id"`
 	RegisterDate      time.Time
@@ -284,6 +268,7 @@ type EquipInfoModel struct {
 	HospitalLatitude  string
 }
 
+// RawDeviceInfoModel describes raw device data from equipment info DB model
 type RawDeviceInfoModel struct {
 	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time

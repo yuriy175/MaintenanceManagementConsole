@@ -50,7 +50,7 @@ func (service *httpService) Start() {
 	service._equipController.Handle()
 	service._adminController.Handle()
 
-	address := models.HttpServerAddress
+	address := models.HTTPServerAddress
 	fmt.Println("http server is listening... " + address)
 	http.ListenAndServe(address, nil)
 }

@@ -317,7 +317,7 @@ func (service *dalService) insertSystemInfo(
 		phyDisks = append(phyDisks, models.PhysicalDiskInfoModel{
 			FriendlyName: value.FriendlyName,
 			MediaType:    value.MediaType,
-			Size_Gb:      value.Size_Gb,
+			SizeGb:       value.SizeGb,
 		})
 	}
 
@@ -332,18 +332,18 @@ func (service *dalService) insertSystemInfo(
 	vgas := []models.VGAInfoModel{}
 	for _, value := range viewmodel.VGA {
 		vgas = append(vgas, models.VGAInfoModel{
-			Card_Name:      value.Card_Name,
-			Driver_Version: value.Driver_Version,
-			Memory_Gb:      value.Memory_Gb,
+			CardName:      value.CardName,
+			DriverVersion: value.DriverVersion,
+			MemoryGb:      value.MemoryGb,
 		})
 	}
 
 	monitors := []models.MonitorInfoModel{}
 	for _, value := range viewmodel.Monitor {
 		monitors = append(monitors, models.MonitorInfoModel{
-			Device_Name: value.Device_Name,
-			Width:       value.Width,
-			Height:      value.Height,
+			DeviceName: value.DeviceName,
+			Width:      value.Width,
+			Height:     value.Height,
 		})
 	}
 
@@ -354,7 +354,7 @@ func (service *dalService) insertSystemInfo(
 	model.PhysicalDisks = phyDisks
 	model.Processor = models.ProcessorInfoModel{Model: viewmodel.Processor.Model}
 	model.Motherboard = models.MotherboardInfoModel{Model: viewmodel.Motherboard.Model}
-	model.Memory = models.MemoryInfoModel{Memory_total_Gb: viewmodel.Memory.Memory_total_Gb}
+	model.Memory = models.MemoryInfoModel{MemoryTotalGb: viewmodel.Memory.MemoryTotalGb}
 	model.Network = nets
 	model.VGA = vgas
 	model.Monitor = monitors
@@ -365,8 +365,8 @@ func (service *dalService) insertSystemInfo(
 	volatileModel.DateTime = dateTime
 	volatileModel.EquipName = equipName
 	//HDD                   []HDDVolatileInfoModel
-	volatileModel.Processor_CPU_Load = viewmodel.Processor.CPU_Load
-	volatileModel.Memory_Memory_free_Gb = viewmodel.Memory.Memory_free_Gb
+	volatileModel.ProcessorCPULoad = viewmodel.Processor.CPULoad
+	volatileModel.MemoryMemoryFreeGb = viewmodel.Memory.MemoryFreeGb
 	sysVolatileInfoCollection.Insert(volatileModel)
 }
 
@@ -383,9 +383,9 @@ func (service *dalService) insertPermanentSoftwareInfo(
 	dbs := []models.DatabasesModel{}
 	for _, value := range viewmodel.Databases {
 		dbs = append(dbs, models.DatabasesModel{
-			DB_name:        value.DB_name,
-			DB_Status:      value.DB_Status,
-			DB_compability: value.DB_compability,
+			DBName:        value.DBName,
+			DBStatus:      value.DBStatus,
+			DBCompability: value.DBCompability,
 		})
 	}
 
@@ -395,9 +395,9 @@ func (service *dalService) insertPermanentSoftwareInfo(
 	model.Databases = dbs
 
 	model.Sysinfo = models.SysInfoModel{
-		OS:           viewmodel.Sysinfo.OS,
-		Version:      viewmodel.Sysinfo.Version,
-		Build_Number: viewmodel.Sysinfo.Build_Number,
+		OS:          viewmodel.Sysinfo.OS,
+		Version:     viewmodel.Sysinfo.Version,
+		BuildNumber: viewmodel.Sysinfo.BuildNumber,
 	}
 	model.MSSQL = models.MSSQLInfoModel{
 		SQL:     viewmodel.MSSQL.SQL,
@@ -405,11 +405,11 @@ func (service *dalService) insertPermanentSoftwareInfo(
 		Status:  viewmodel.MSSQL.Status,
 	}
 	model.Atlas = models.AtlasInfoModel{
-		Atlas_Version:  viewmodel.Atlas.Atlas_Version,
-		Complex_type:   viewmodel.Atlas.Complex_type,
-		Language:       viewmodel.Atlas.Language,
-		Multimonitor:   viewmodel.Atlas.Multimonitor,
-		XiLibs_Version: viewmodel.Atlas.XiLibs_Version,
+		AtlasVersion:  viewmodel.Atlas.AtlasVersion,
+		ComplexType:   viewmodel.Atlas.ComplexType,
+		Language:      viewmodel.Atlas.Language,
+		Multimonitor:  viewmodel.Atlas.Multimonitor,
+		XiLibsVersion: viewmodel.Atlas.XiLibsVersion,
 	}
 
 	swInfoCollection.Insert(model)

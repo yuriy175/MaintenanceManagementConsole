@@ -1,32 +1,45 @@
 package models
 
 const (
-	HttpServerAddress = ":8181" // "localhost:8181"
-	AppTasksNumber    = 2
-	//MongoDBConnectionString       = "mongodb://127.0.0.1"
-	//DBName                        = "test"
-	EquipmentTableName            = "Equipment"
-	DeviceConnectionsTableName    = "DeviceConnections"
-	StudyInWorkTableName          = "StudyInWork"
-	SystemInfoTableName           = "SystemInfo"
-	SystemVolatileInfoTableName   = "SystemVolatileInfo"
-	SoftwareInfoTableName         = "SoftwareInfo"
+	// HTTPServerAddress is a connecting string for a local http server
+	HTTPServerAddress = ":8181" // "localhost:8181"
+
+	// EquipmentTableName is Equipment table name
+	EquipmentTableName = "Equipment"
+
+	// DeviceConnectionsTableName is DeviceConnections table name
+	DeviceConnectionsTableName = "DeviceConnections"
+
+	// StudyInWorkTableName is StudyInWork table name
+	StudyInWorkTableName = "StudyInWork"
+
+	// SystemInfoTableName is SystemInfo table name
+	SystemInfoTableName = "SystemInfo"
+
+	// SystemVolatileInfoTableName is SystemVolatileInfo table name
+	SystemVolatileInfoTableName = "SystemVolatileInfo"
+
+	// SoftwareInfoTableName is SoftwareInfo table name
+	SoftwareInfoTableName = "SoftwareInfo"
+
+	// SoftwareVolatileInfoTableName is SoftwareVolatileInfo table name
 	SoftwareVolatileInfoTableName = "SoftwareVolatileInfo"
-	DicomInfoTableName            = "DicomInfo"
-	OrganAutoTableName            = "OrganAuto"
-	GeneratorInfoTableName        = "GeneratorInfo"
-	StandInfoTableName            = "StandInfo"
-	DetectorInfoTableName         = "DetectorInfo"
-	DosimeterInfoTableName        = "DosimeterInfo"
+
+	// DicomInfoTableName is DicomInfo table name
+	DicomInfoTableName = "DicomInfo"
+
+	// OrganAutoTableName is OrganAuto table name
+	OrganAutoTableName = "OrganAuto"
+
+	// GeneratorInfoTableName is GeneratorInfo table name
+	GeneratorInfoTableName = "GeneratorInfo"
+	StandInfoTableName     = "StandInfo"
+	DetectorInfoTableName  = "DetectorInfo"
+	DosimeterInfoTableName = "DosimeterInfo"
 
 	RolesTableName = "Roles"
 	UsersTableName = "Users"
 
-	//RabbitMQConnectionString = "amqp://guest:guest@localhost:5672/"
-	//"Server=mprom.ml;User=client1;Password=medtex"
-	//RabbitMQHost          = "mprom.ml" // "localhost"
-	//RabbitMQUser          = "client1"  // "guest"
-	//RabbitMQPassword      = "medtex"   // "guest"
 	MQConnectionStateName = "HwConnectionStateArrived"
 	MQInfoQueueName       = "SystemInfoQueue"
 
