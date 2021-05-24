@@ -15,6 +15,9 @@
 	"/images",
 	"/aec/state",
 	"/hospital",
-	"/ARM/AllDBInfo"
+	"/ARM/AllDBInfo",
+	"/ARM/Hardware/HDD",
+	"/ARM/Hardware/Processor",
+	"/ARM/Hardware/Memory"
 	]
 }

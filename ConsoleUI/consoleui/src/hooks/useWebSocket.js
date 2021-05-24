@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
+import { SystemVolatileContext } from '../context/systemVolatile-context';
 import { AllEquipsContext } from '../context/allEquips-context';
 import * as EquipWorker from '../workers/equipWorker'
 
@@ -11,6 +12,7 @@ export function useWebSocket(props) {
 
     const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
     const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+    const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
     const [connection, setConnection] = useState(null);
     const equipInfo = useRef(currEquipState.equipInfo);
     
@@ -83,7 +85,7 @@ export function useWebSocket(props) {
                 }
 
                 const path = data.Topic.replace(equip, '');
-                if(path.startsWith('/ARM/Hardware'))
+                if(path.startsWith('/ARM/Hardware/Complex'))
                 {
                     try
                     {
@@ -155,17 +157,24 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETREMOTEACCESS', payload: values }); 
                 }
-                else if(path.startsWith('/ARM/AllDBInfo'))
+                // else if(path.startsWith('/ARM/AllDBInfo'))
+                // {
+                //     try
+                //     {
+                //         const values = data? JSON.parse(data.Data) : null;
+                //         currEquipDispatch({ type: 'SETALLDB', payload: values }); 
+                //     }
+                //     catch(e)
+                //     {
+                //         console.log(e);  
+                //     }                    
+                // }
+                else if(path.startsWith('/ARM/Hardware/Processor') ||
+                        path.startsWith('/ARM/Hardware/HDD') || 
+                        path.startsWith('/ARM/Hardware/Memory'))
                 {
-                    try
-                    {
-                        const values = data? JSON.parse(data.Data) : null;
-                        currEquipDispatch({ type: 'SETALLDB', payload: values }); 
-                    }
-                    catch(e)
-                    {
-                        console.log(e);  
-                    }                    
+                    const values = data? JSON.parse(data.Data) : null;
+                    systemVolatileDispatch({ type: 'SETVOLATILE', payload: values }); 
                 }
             };
         }

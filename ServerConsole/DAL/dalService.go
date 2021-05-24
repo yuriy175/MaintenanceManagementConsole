@@ -26,6 +26,7 @@ type dalService struct {
 	_equipInfoRepository *equipInfoRepository
 	_generatorRepository *generatorRepository
 	_standRepository     *standRepository
+	_dbInfoRepository *dbInfoRepository
 }
 
 func DalServiceNew(
@@ -45,6 +46,7 @@ func DalServiceNew(
 	service._equipInfoRepository = EquipInfoRepositoryNew(service, service._dbName)
 	service._generatorRepository = GeneratorRepositoryNew(service, service._dbName)
 	service._standRepository = StandRepositoryNew(service, service._dbName)
+	service._dbInfoRepository = DbInfoRepositoryNew(service, service._dbName)
 
 	return service
 }
@@ -117,8 +119,7 @@ func (service *dalService) Start() {
 			} else if strings.Contains(d.Topic, "/stand/state") {
 				service._standRepository.InsertStandInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			} else if strings.Contains(d.Topic, "/ARM/AllDBInfo") {
-				viewmodel := models.StandInfoViewModel{}
-				json.Unmarshal([]byte(d.Data), &viewmodel)
+				service._dbInfoRepository.InsertDbInfoInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			}
 		}
 	}() //deviceCollection)
@@ -461,4 +462,13 @@ func (service *dalService) GetEquipInfos() []models.EquipInfoModel {
 
 func (service *dalService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	return service._equipInfoRepository.InsertEquipInfo(equipName, equipVM)
+}
+
+
+func (service *dalService) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {
+	return service._dbInfoRepository.GetAllTableNamesInfo(equipName)
+}
+
+func (service *dalService) GetTableContent(equipName string, tableType string, tableName string) string {
+	return service._dbInfoRepository.GetTableContent(equipName, tableType, tableName)
 }

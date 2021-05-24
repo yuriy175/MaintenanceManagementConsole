@@ -99,8 +99,12 @@ export default function MainToolBar() {
 
   const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
   const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
-  const onTabIndexChange = (event, newValue) => {
-    //setTabIndex(newValue);
+  const onTabIndexChange = async (event, newValue) => {
+    if(SummaryDBTabPanelIndex === newValue && currEquipState.equipInfo){
+      const allTables = await EquipWorker.GetAllTables(currEquipState.equipInfo);
+      currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
+    }
+
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
   };
 

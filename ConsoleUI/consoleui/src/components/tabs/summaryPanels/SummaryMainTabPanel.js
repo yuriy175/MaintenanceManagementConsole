@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
+import { SystemVolatileContext } from '../../../context/systemVolatile-context';
 
 import DetectorCard from '../../cards/DetectorCard'
 import GeneratorCard from '../../cards/GeneratorCard'
@@ -31,13 +32,14 @@ export default function SummaryMainTabPanel(props) {
 
   const classes = useStyles();
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
 
   const notifyText = currEquipState.remoteaccess?.FtpSendResult;
   return (
     <div className={classes.root}>
       <div className={classes.column}>
         <EquipImageCard equipInfo={currEquipState.equipInfo}></EquipImageCard>
-        <SystemCard system={currEquipState.system}></SystemCard>
+        <SystemCard system={currEquipState.system} volatile={systemVolatileState.currentVolatile}></SystemCard>
         {/* <HddCard></HddCard> */}
       </div>
       <div className={classes.column}>

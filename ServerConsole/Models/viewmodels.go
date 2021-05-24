@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import 
+(
+	"time"
+	"encoding/json"
+)
 
 // GeneratorInfoViewModel describes generator info view model from equipment
 type GeneratorInfoViewModel struct {
@@ -168,4 +172,12 @@ type DetailedEquipInfoViewModel struct {
 	HospitalLongitude string
 	HospitalLatitude  string
 	IsActive          bool
+}
+
+// AllDBInfoViewModel describes all db info view model from equipment
+type AllDBInfoViewModel struct {
+	Hospital      map[string]json.RawMessage//[]byte
+	Software   map[string]json.RawMessage//string
+	System map[string]json.RawMessage//string
+	Atlas  map[string]json.RawMessage//string
 }

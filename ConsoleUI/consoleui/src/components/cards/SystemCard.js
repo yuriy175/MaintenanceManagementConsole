@@ -18,25 +18,26 @@ const SystemCard = React.memo((props) => {
   const bull = <span className={classes.bullet}>•</span>;
 
   const system = props.system;
+  const volatile = props.volatile;
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        {system?.Processor?.Model || system?.Processor?.CPU_Load ? 
+        {system?.Processor?.Model || volatile?.Processor?.CPULoad ? 
           <>
             <CardRow descr="Модель" value={system?.Processor?.Model} rightWidth={'100%'}></CardRow>
-            <CardRow descr="Загрузка" value={system?.Processor?.CPU_Load+'%'}></CardRow>
+            <CardRow descr="Загрузка" value={volatile?.Processor?.CPULoad+'%'}></CardRow>
           </> : <></>}
 
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        {system?.Memory?.Memory_total_Gb || system?.Memory?.Memory_free_Gb ? 
+        {system?.Memory?.MemoryTotalGb || volatile?.Memory?.MemoryFreeGb ? 
           <>
-            <CardRow descr="Всего" value={system?.Memory?.Memory_total_Gb+' Гб'}></CardRow>
-            <CardRow descr="Доступно" value={system?.Memory?.Memory_free_Gb+' Гб'}></CardRow>
+            <CardRow descr="Всего" value={system?.Memory?.MemoryTotalGb+' Гб'}></CardRow>
+            <CardRow descr="Доступно" value={volatile?.Memory?.MemoryFreeGb+' Гб'}></CardRow>
           </> : <></>}
 
         <Typography variant="h5" component="h2">
@@ -63,7 +64,7 @@ const SystemCard = React.memo((props) => {
             <Typography variant="h6" component="h2">
               {bull}Диск {i.MediaType}
             </Typography>
-            <CardRow descr={i.FriendlyName+' Гб'} value={i.Size_Gb+' Гб'}></CardRow>
+            <CardRow descr={i.FriendlyName+' Гб'} value={i.SizeGb+' Гб'}></CardRow>
           </div>
           ))
         } 
@@ -81,9 +82,9 @@ const SystemCard = React.memo((props) => {
         </Typography>
         {system?.VGA?.map((i, ind) => (
           <div key={ind.toString()} >
-            <CardRow descr="Имя" value={i.Card_Name} rightWidth={'100%'}></CardRow>
-            <CardRow descr="Память" value={i.Memory_Gb+' Гб'}></CardRow>
-            <CardRow descr="Драйвер" value={i.Driver_Version}></CardRow>
+            <CardRow descr="Имя" value={i.CardName} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Память" value={i.MemoryGb+' Гб'}></CardRow>
+            <CardRow descr="Драйвер" value={i.DriverVersion}></CardRow>
           </div>
           ))
         } 

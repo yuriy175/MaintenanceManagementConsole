@@ -143,7 +143,12 @@ namespace MessagesSender.DAL
         /// <summary>
         /// set of VideoAdapter
         /// </summary>
-        public virtual DbSet<VideoAdapter> VideoAdapters { get; set; }        
+        public virtual DbSet<VideoAdapter> VideoAdapters { get; set; }
+
+        /// <summary>
+        /// set of News
+        /// </summary>
+        public virtual DbSet<News> News { get; set; }
 
         /// <summary>
         /// Creates SettingsContext.
@@ -179,7 +184,8 @@ namespace MessagesSender.DAL
             modelBuilder.Entity<OsInfo>().ToTable("os_info");
             modelBuilder.Entity<SqlDatabase>().ToTable("sql_databases");
             modelBuilder.Entity<SqlService>().ToTable("sql_service");
-            modelBuilder.Entity<VideoAdapter>().ToTable("videoadapter");            
+            modelBuilder.Entity<VideoAdapter>().ToTable("videoadapter");
+            modelBuilder.Entity<News>().ToTable("news");
 
             base.OnModelCreating(modelBuilder);
         }

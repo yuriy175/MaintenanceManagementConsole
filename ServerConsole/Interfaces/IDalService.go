@@ -30,4 +30,8 @@ type IDalService interface {
 	CheckEquipment(equipName string) bool
 	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel
 	GetEquipInfos() []models.EquipInfoModel
+
+	//all db repository
+	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel
+	GetTableContent(equipName string, tableType string, tableName string) string
 }

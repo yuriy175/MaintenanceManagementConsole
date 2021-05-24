@@ -127,6 +127,15 @@ namespace MessagesSender.DAL
         }
 
         /// <summary>
+        /// get news table data
+        /// </summary>
+        /// <returns>news table data</returns>
+        public async Task<IEnumerable<News>> GetNewsDataAsync()
+        {
+            return await GetManyAction<News>(context => context.News);
+        }
+
+        /// <summary>
         /// Create context.
         /// </summary>
         /// <param name="logger">logger.</param>

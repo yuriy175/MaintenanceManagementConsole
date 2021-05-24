@@ -61,5 +61,11 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <returns>hospital table data</returns>
         Task<IEnumerable<HospitalInfo>> GetHospitalDataAsync();
+
+        /// <summary>
+        /// get news table data
+        /// </summary>
+        /// <returns>news table data</returns>
+        Task<IEnumerable<News>> GetNewsDataAsync();
     }
 }

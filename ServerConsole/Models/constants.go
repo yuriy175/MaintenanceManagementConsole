@@ -33,11 +33,23 @@ const (
 
 	// GeneratorInfoTableName is GeneratorInfo table name
 	GeneratorInfoTableName = "GeneratorInfo"
+
+	// StandInfoTableName is StandInfo table name
 	StandInfoTableName     = "StandInfo"
+
+	// DetectorInfoTableName is DetectorInfo table name
 	DetectorInfoTableName  = "DetectorInfo"
+
+	// DosimeterInfoTableName is DosimeterInfoT table name
 	DosimeterInfoTableName = "DosimeterInfo"
 
+	// AllDBInfoTableName is AllDBInfo table name
+	AllDBInfoTableName  = "AllDBInfo"
+
+	// RolesTableName is Roles table name
 	RolesTableName = "Roles"
+
+	// UsersTableName is Users table name
 	UsersTableName = "Users"
 
 	MQConnectionStateName = "HwConnectionStateArrived"

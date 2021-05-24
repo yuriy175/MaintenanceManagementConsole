@@ -113,7 +113,8 @@ namespace MessagesSender.BL
 				var hddDrives = await GetDriveInfosAsync();
 				if (hddDrives != null)
 				{
-					_ = _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
+					_ = _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, 
+                        new { HDD = hddDrives });
 				}
 
 				await Task.Yield();
@@ -126,7 +127,12 @@ namespace MessagesSender.BL
 				if (ramInfo.HasValue)
 				{
 					_ = _sendingService.SendInfoToMqttAsync(MQMessages.MemoryInfo,
-						new { ramInfo.Value.AvailableSize, TotalMemory = ramInfo.Value.TotalSize });
+						new
+                        {
+                            Memory = new { 
+                                MemoryFreeGb = ramInfo.Value.AvailableSize, 
+                                MemoryTotalGb = ramInfo.Value.TotalSize }
+                        });
 				}
 
 				await Task.Yield();
@@ -139,7 +145,10 @@ namespace MessagesSender.BL
 				if (ramInfo.HasValue)
 				{
 					_ = _sendingService.SendInfoToMqttAsync(MQMessages.CPUInfo,
-						new { cpuInfo.Value.Model, cpuInfo.Value.CPU_Load });
+						new
+                        {
+                            Processor = new { cpuInfo.Value.Model, cpuInfo.Value.CPULoad }
+                        });
 				}
 				if (!_isActivated)
 				{
@@ -169,7 +178,7 @@ namespace MessagesSender.BL
                 }).ToArray();
         }
 
-        private async Task<(string Model, long CPU_Load)?> GetCpuInfoAsync()
+        private async Task<(string Model, long CPULoad)?> GetCpuInfoAsync()
         {
             try
             {

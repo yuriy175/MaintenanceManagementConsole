@@ -95,3 +95,21 @@ export async function GetAllEquips() {
         return response.data;
     });
 };
+
+export async function GetAllTables(equipName) {
+    return await HandlerWrapper('GetAllDBTableNames', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController + 
+            '/GetAllDBTableNames?equipName=' + equipName);
+        return response.data;
+    });
+};
+
+export async function GetTableContent(equipName, tableType, tableName) {
+    return await HandlerWrapper('GetTableContent', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController +
+            '/GetTableContent?equipName=' + equipName+
+            '&tableType=' + tableType+
+            '&tableName=' + tableName);
+        return response.data;
+    });
+};

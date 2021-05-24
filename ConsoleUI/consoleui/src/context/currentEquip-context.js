@@ -17,6 +17,7 @@ const initialState = {
   images:{},
   aecs:{},
   allDBs:{},
+  allDBTables:{},
 };
 
 function reducer(state, action) {
@@ -41,7 +42,14 @@ function reducer(state, action) {
         ...state,
         allDBs: action.payload
       };
-    }        
+    }    
+    case 'SETALLDBTABLES': {
+      return {
+        ...state,
+        allDBTables: action.payload
+      };
+    }    
+        
     case 'SETORGANAUTO': {
       return {
         ...state,

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
+	"encoding/json"
 )
 
 // StudyInWorkModel describes study in work model
@@ -274,4 +275,24 @@ type RawDeviceInfoModel struct {
 	DateTime  time.Time
 	EquipName string
 	Data      string
+}
+
+// AllDBInfoModel describes all db info from equipment info DB model
+type AllDBInfoModel struct {
+	ID        bson.ObjectId `bson:"_id"`
+	DateTime  time.Time
+	EquipName string
+	Hospital      map[string]json.RawMessage//[]byte
+	Software   map[string]json.RawMessage//string
+	System map[string]json.RawMessage//string
+	Atlas  map[string]json.RawMessage//string
+}
+
+// AllDBInfoModel describes all db info from equipment info DB model
+type AllDBTablesModel struct {
+	EquipName string
+	Hospital      []string
+	Software   []string
+	System []string
+	Atlas  []string
 }

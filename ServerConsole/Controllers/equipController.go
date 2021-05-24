@@ -42,6 +42,7 @@ func (service *EquipController) Handle() {
 	mqttReceiverService := service._mqttReceiverService
 	webSocketService := service._webSocketService
 	equipsService := service._equipsService
+	dalService := service._dalService
 
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
@@ -186,6 +187,59 @@ func (service *EquipController) Handle() {
 		log.Println("Url is: %s %s %s", equipType, startDate, endDate)
 
 		service.sendSearchResults(w, equipType, equipName, startDate, endDate)
+	})
+
+	http.HandleFunc("/equips/GetAllDBTableNames", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+		queryString := r.URL.Query()
+
+		equipNames, ok := queryString["equipName"]
+		if !ok {
+			log.Println("Url Param 'equipName' is missing")
+			return
+		}
+		equipName := equipNames[0]
+		tables := dalService.GetAllTableNamesInfo(equipName)
+
+		json.NewEncoder(w).Encode(tables)
+	})
+	
+	http.HandleFunc("/equips/GetTableContent", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+		queryString := r.URL.Query()
+
+		equipNames, ok := queryString["equipName"]
+		if !ok {
+			log.Println("Url Param 'equipName' is missing")
+			return
+		}
+		equipName := equipNames[0]
+
+		tableTypes, ok := queryString["tableType"]
+		if !ok {
+			log.Println("Url Param 'tableType' is missing")
+			return
+		}
+		tableType := tableTypes[0]
+
+		tableNames, ok := queryString["tableName"]
+		if !ok {
+			log.Println("Url Param 'tableName' is missing")
+			return
+		}
+		tableName := tableNames[0]
+
+		tables := dalService.GetTableContent(equipName, tableType, tableName)
+
+		json.NewEncoder(w).Encode(tables)
 	})
 
 	http.HandleFunc("/equips/GetPermanentData", func(w http.ResponseWriter, r *http.Request) {
