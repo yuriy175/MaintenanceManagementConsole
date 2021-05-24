@@ -25,6 +25,7 @@ const SystemCard = React.memo((props) => {
   const vgas = system?.VideoAdapters; // VGA
   const monitors = system?.Monitors; // Monitor
   const printers = system?.Printers; //Printer
+  const processor = system?.Motherboards ? system?.Motherboards[0] : undefined; // Processor
   //
   return (
     <Card className={classes.root}>
@@ -32,9 +33,9 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        {system?.Processor?.Model || volatile?.Processor?.CPULoad ? 
+        {processor?.Cpu || volatile?.Processor?.CPULoad ? 
           <>
-            <CardRow descr="Модель" value={system?.Processor?.Model} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Модель" value={processor?.Cpu} rightWidth={'100%'}></CardRow>
             <CardRow descr="Загрузка" value={volatile?.Processor?.CPULoad+'%'}></CardRow>
           </> : <></>}
 
