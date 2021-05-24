@@ -472,3 +472,12 @@ func (service *dalService) GetAllTableNamesInfo(equipName string) *models.AllDBT
 func (service *dalService) GetTableContent(equipName string, tableType string, tableName string) string {
 	return service._dbInfoRepository.GetTableContent(equipName, tableType, tableName)
 }
+
+func (service *dalService) GetDBSystemInfo(equipName string) map[string]json.RawMessage  {
+	return service._dbInfoRepository.GetDBSystemInfo(equipName) 
+}
+
+func (service *dalService) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
+	return service._dbInfoRepository.GetDBSoftwareInfo(equipName) 
+}
+	

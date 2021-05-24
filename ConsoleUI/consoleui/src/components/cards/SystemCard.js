@@ -19,6 +19,13 @@ const SystemCard = React.memo((props) => {
 
   const system = props.system;
   const volatile = props.volatile;
+  const logicalDisks = system?.LogicalDisks; // HDD
+  const physicalDisks = system?.HardDrives;  // PhysicalDisks
+  const lans = system?.Lans; // Network
+  const vgas = system?.VideoAdapters; // VGA
+  const monitors = system?.Monitors; // Monitor
+  const printers = system?.Printers; //Printer
+  //
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -34,9 +41,9 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}Память
         </Typography>
-        {system?.Memory?.MemoryTotalGb || volatile?.Memory?.MemoryFreeGb ? 
+        {volatile?.Memory?.MemoryTotalGb || volatile?.Memory?.MemoryFreeGb ? 
           <>
-            <CardRow descr="Всего" value={system?.Memory?.MemoryTotalGb+' Гб'}></CardRow>
+            <CardRow descr="Всего" value={volatile?.Memory?.MemoryTotalGb+' Гб'}></CardRow>
             <CardRow descr="Доступно" value={volatile?.Memory?.MemoryFreeGb+' Гб'}></CardRow>
           </> : <></>}
 
@@ -46,7 +53,7 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h6" component="h2">
               {bull}Логические диски
         </Typography>
-        {system?.HDD?.map((i, ind) => (
+        {logicalDisks?.map((i, ind) => (
           <div key={ind.toString()} >
             <Typography variant="h6" component="h2">
               {bull}Диск {i.Letter}
@@ -59,10 +66,10 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h6" component="h2">
               {bull}Физические диски
         </Typography>
-        {system?.PhysicalDisks?.map((i, ind) => (
+        {physicalDisks?.map((i, ind) => (
           <div key={ind.toString()} >
             <Typography variant="h6" component="h2">
-              {bull}Диск {i.MediaType}
+              {bull}Диск {i.mediatype}
             </Typography>
             <CardRow descr={i.FriendlyName+' Гб'} value={i.SizeGb+' Гб'}></CardRow>
           </div>
@@ -72,19 +79,19 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}Сеть
         </Typography>
-        {system?.Network?.filter(i => i.NIC).map((i, ind) => (
-          <CardRow key={ind.toString()} descr={i.NIC} value={i.IP}></CardRow>
+        {lans?.filter(i => i.Adapter).map((i, ind) => (
+          <CardRow key={ind.toString()} descr={i.Adapter} value={i.Ip}></CardRow>
           ))
         } 
 
         <Typography variant="h5" component="h2">
           {bull}Видеоадаптеры
         </Typography>
-        {system?.VGA?.map((i, ind) => (
+        {vgas?.map((i, ind) => (
           <div key={ind.toString()} >
             <CardRow descr="Имя" value={i.CardName} rightWidth={'100%'}></CardRow>
             <CardRow descr="Память" value={i.MemoryGb+' Гб'}></CardRow>
-            <CardRow descr="Драйвер" value={i.DriverVersion}></CardRow>
+            <CardRow descr="Драйвер" value={i.DrvDate} rightWidth={'100%'}></CardRow>
           </div>
           ))
         } 
@@ -92,18 +99,19 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}Мониторы
         </Typography>
-        {system?.Monitor?.map((i, ind) => (
-          <CardRow key={ind.toString()} descr={i.Device_Name} value={i.Width+'x'+i.Height}></CardRow>
+        {monitors?.map((i, ind) => (
+          // <CardRow key={ind.toString()} descr={i.MonitorName} value={i.Width+'x'+i.Height}></CardRow>
+          <CardRow key={ind.toString()} descr={i.MonitorName} value={i.SerialNumber} rightWidth={'100%'}></CardRow>
           ))
         } 
 
         <Typography variant="h5" component="h2">
           {bull}Принтеры
         </Typography>
-        {system?.Printer?.map((i, ind) => (
+        {printers?.map((i, ind) => (
           <div key={ind.toString()} >
-            <CardRow descr="Имя" value={i.Printer_Name} rightWidth={'100%'}></CardRow>
-            <CardRow descr="Порт" value={i.Port_Name} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Имя" value={i.PrinterName} rightWidth={'100%'}></CardRow>
+            <CardRow descr="Порт" value={i.PrinterPort} rightWidth={'100%'}></CardRow>
           </div>
           ))
         } 

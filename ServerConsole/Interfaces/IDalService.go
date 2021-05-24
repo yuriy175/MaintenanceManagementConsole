@@ -2,7 +2,8 @@ package interfaces
 
 import (
 	"time"
-
+	"encoding/json"
+	
 	"../models"
 )
 
@@ -18,6 +19,7 @@ type IDalService interface {
 	GetDicomInfo(equipName string, startDate time.Time, endDate time.Time) []models.DicomsInfoModel
 	GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel
 
+	// obsolete
 	GetPermanentSystemInfo(equipName string) *models.SystemInfoModel
 	GetPermanentSoftwareInfo(equipName string) *models.SoftwareInfoModel
 
@@ -34,4 +36,6 @@ type IDalService interface {
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel
 	GetTableContent(equipName string, tableType string, tableName string) string
+	GetDBSystemInfo(equipName string) map[string]json.RawMessage 
+	GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel
 }

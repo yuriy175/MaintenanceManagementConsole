@@ -149,3 +149,24 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	return ""
 }
+
+func (repository *dbInfoRepository) GetDBSystemInfo(equipName string) map[string]json.RawMessage {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
+
+	query := bson.M{"equipname": equipName}
+
+	allInfo := models.AllDBInfoModel{}
+	allInfoCollection.Find(query).Sort("-datetime").One(&allInfo)
+
+	return allInfo.System
+}
+
+func (repository *dbInfoRepository) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
+	swInfo := models.DBSoftwareInfoModel{}
+
+	return &swInfo
+}
+	

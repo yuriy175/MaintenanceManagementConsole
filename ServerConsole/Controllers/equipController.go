@@ -315,10 +315,12 @@ func (service *EquipController) sendPermanentSearchResults(
 
 	dalService := service._dalService
 	if equipType == "SystemInfo" {
-		sysInfo := dalService.GetPermanentSystemInfo(equipName)
+		// sysInfo := dalService.GetPermanentSystemInfo(equipName)
+		sysInfo := dalService.GetDBSystemInfo(equipName)
 		json.NewEncoder(w).Encode(sysInfo)
 	} else if equipType == "Software" {
-		swInfo := dalService.GetPermanentSoftwareInfo(equipName)
+		// swInfo := dalService.GetPermanentSoftwareInfo(equipName)
+		swInfo := dalService.GetDBSoftwareInfo(equipName)
 		json.NewEncoder(w).Encode(swInfo)
 	}
 }

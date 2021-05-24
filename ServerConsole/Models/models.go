@@ -296,3 +296,9 @@ type AllDBTablesModel struct {
 	System []string
 	Atlas  []string
 }
+
+// DBSoftwareInfoModel describes both general and atlas software permanent info DB model
+type DBSoftwareInfoModel struct {
+	Software string
+	Atlas     string
+}
