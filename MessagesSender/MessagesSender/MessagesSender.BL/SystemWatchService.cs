@@ -22,6 +22,7 @@ using System.Diagnostics;
 using Atlas.Common.Core.Interfaces;
 using MessagesSender.BL.BusWrappers.Helpers;
 using System.Reflection;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.BL
 {
@@ -34,6 +35,7 @@ namespace MessagesSender.BL
         private const string MQTTsysinfoCommandLine = "{0} {1} {2} {3}";
         private const long Megabyte = 1024 * 1024;
         private const long Gigabyte = 1024 * 1024 * 1024;
+		private const int WatchInterval = 5000;
 
         private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger; 
@@ -45,6 +47,7 @@ namespace MessagesSender.BL
         private readonly PerformanceCounter _idleCpu = new PerformanceCounter("Process", "% Processor Time", "Idle");
 
         private (string HostName, string UserName, string Password)? _connectionProps;
+		private bool _isActivated = false;
 
         /// <summary>
         /// public constructor
@@ -87,7 +90,7 @@ namespace MessagesSender.BL
                 return false;
             }
 
-            RunCommand(
+			/*RunCommand(
                 MQTTsysinfoFolder, 
                 string.Format(
                     MQTTsysinfoCommandLine,
@@ -96,30 +99,48 @@ namespace MessagesSender.BL
                     _connectionProps.Value.UserName,
                     _connectionProps.Value.Password,
                     await _topicService.GetTopicAsync()
-                    ));
-            /*var hddDrives = await GetDriveInfosAsync();
-            if (hddDrives != null)
-            {
-                _ = _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
-            }
+                    ));*/
 
-            await Task.Yield();
+			while (_isActivated)
+			{
+				var hddDrives = await GetDriveInfosAsync();
+				if (hddDrives != null)
+				{
+					_ = _sendingService.SendInfoToMqttAsync(MQMessages.HddDrivesInfo, hddDrives);
+				}
 
-            var ramInfo = await GetRamInfoAsync();
-            if (ramInfo.HasValue)
-            {
-                _ = _sendingService.SendInfoToMqttAsync(MQMessages.MemoryInfo,
-                    new { ramInfo.Value.AvailableSize, TotalMemory = ramInfo.Value.TotalSize });
-            }
+				await Task.Yield();
+				if (!_isActivated)
+				{
+					break;
+				}
 
-            await Task.Yield();
+				var ramInfo = await GetRamInfoAsync();
+				if (ramInfo.HasValue)
+				{
+					_ = _sendingService.SendInfoToMqttAsync(MQMessages.MemoryInfo,
+						new { ramInfo.Value.AvailableSize, TotalMemory = ramInfo.Value.TotalSize });
+				}
 
-            var cpuInfo = await GetCpuInfoAsync();
-            if (ramInfo.HasValue)
-            {
-                _ = _sendingService.SendInfoToMqttAsync(MQMessages.CPUInfo,
-                    new { cpuInfo.Value.Model, cpuInfo.Value.CPU_Load });
-            }*/
+				await Task.Yield();
+				if (!_isActivated)
+				{
+					break;
+				}
+
+				var cpuInfo = await GetCpuInfoAsync();
+				if (ramInfo.HasValue)
+				{
+					_ = _sendingService.SendInfoToMqttAsync(MQMessages.CPUInfo,
+						new { cpuInfo.Value.Model, cpuInfo.Value.CPU_Load });
+				}
+				if (!_isActivated)
+				{
+					break;
+				}
+
+				await Task.Delay(WatchInterval);
+			}
 
             return false;
         }
