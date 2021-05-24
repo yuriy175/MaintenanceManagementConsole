@@ -80,17 +80,24 @@ namespace MessagesSender.BL
 
         private void OnDeactivateArrivedAsync()
         {
-            
+            _isActivated = false;
         }
 
         private async Task<bool> OnActivateArrivedAsync()
         {
+            if (_isActivated)
+            {
+                return true;
+            }
+
             if (!_connectionProps.HasValue) 
             {
                 return false;
             }
 
-			/*RunCommand(
+            _isActivated = true;
+
+            /*RunCommand(
                 MQTTsysinfoFolder, 
                 string.Format(
                     MQTTsysinfoCommandLine,
@@ -101,7 +108,7 @@ namespace MessagesSender.BL
                     await _topicService.GetTopicAsync()
                     ));*/
 
-			while (_isActivated)
+            while (_isActivated)
 			{
 				var hddDrives = await GetDriveInfosAsync();
 				if (hddDrives != null)
