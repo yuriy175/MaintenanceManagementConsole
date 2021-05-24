@@ -48,6 +48,12 @@ func (service *AdminController) Handle() {
 	})
 
 	http.HandleFunc("/equips/UpdateUser", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
