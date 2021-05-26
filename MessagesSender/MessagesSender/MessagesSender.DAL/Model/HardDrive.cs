@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -7,7 +8,10 @@ namespace MessagesSender.DAL.Model
 {
     public class HardDrive
     {
-        public string Id { get; set; }
+		[Key]
+		[Column("rowid")]
+		public int RowId { get; set; }
+		public string Id { get; set; }
         [Column("device_id")]
         public string DeviceId { get; set; }
         [Column("friendly_name")]

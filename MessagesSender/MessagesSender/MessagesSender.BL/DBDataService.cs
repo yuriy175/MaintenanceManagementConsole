@@ -84,15 +84,17 @@ namespace MessagesSender.BL
             var hospitalTask = _dbInfoEntityService.GetHospitalDataAsync();
             var softwareTask = _dbInfoEntityService.GetSoftwareDataAsync();
             var systemTask = _dbInfoEntityService.GetSystemDataAsync();
+			var newsTask = _dbInfoEntityService.GetNewsDataAsync();
 
-            await Task.WhenAll(new[] { atlasTask as Task, hospitalTask, softwareTask, systemTask });
+			await Task.WhenAll(new[] { atlasTask as Task, hospitalTask, softwareTask, systemTask });
 
             var atlasData = await atlasTask;
             var hospitalData = await hospitalTask;
             var softwareData = await softwareTask;
             var systemData = await systemTask;
+			var newsData = await newsTask;
 
-            _ = _sendingService.SendInfoToMqttAsync(MQMessages.AllDBInfo,
+			_ = _sendingService.SendInfoToMqttAsync(MQMessages.AllDBInfo,
                     new
                     {
                         Hospital = new { HospitalInfo = hospitalData?.ToArray() },

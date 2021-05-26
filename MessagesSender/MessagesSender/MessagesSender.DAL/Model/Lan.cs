@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -7,7 +8,10 @@ namespace MessagesSender.DAL.Model
 {
     public class Lan
     {
-        public string Id { get; set; }
+		[Key]
+		[Column("rowid")]
+		public int RowId { get; set; }
+		public string Id { get; set; }
         public string Adapter { get; set; }
         public string Ip { get; set; }
         [Column("default_gateway")]
