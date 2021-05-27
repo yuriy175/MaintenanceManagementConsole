@@ -13,10 +13,17 @@ import (
 
 // web socket client implementation type
 type webSock struct {
+	// web socket service
 	_webSocketService interfaces.IWebSocketService
-	_uid              string
-	_conn             *websocket.Conn
-	_mtx              sync.RWMutex
+
+	// web socket uid
+	_uid string
+
+	// web socket connection
+	_conn *websocket.Conn
+
+	// synchronization mutex
+	_mtx sync.RWMutex
 }
 
 var upgrader = websocket.Upgrader{

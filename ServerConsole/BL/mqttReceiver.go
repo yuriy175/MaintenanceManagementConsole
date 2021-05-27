@@ -13,7 +13,9 @@ import (
 
 // mqtt client implementation type
 type mqttClient struct {
-	_settingsService     interfaces.ISettingsService
+	_settingsService interfaces.ISettingsService
+
+	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
 	_dalCh               chan *models.RawMqttMessage

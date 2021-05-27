@@ -11,8 +11,13 @@ import (
 
 // user repository implementation type
 type userRepository struct {
-	_dalService  *dalService
-	_dbName      string
+	// DAL service
+	_dalService *dalService
+
+	// mongodb db name
+	_dbName string
+
+	// authorization service
 	_authService interfaces.IAuthService
 }
 

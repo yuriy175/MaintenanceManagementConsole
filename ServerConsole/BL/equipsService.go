@@ -12,13 +12,14 @@ import (
 
 // equipment service implementation type
 type equipsService struct {
+	// synchronization mutex
 	_mtx        sync.RWMutex
 	_dalService interfaces.IDalService
 	_equips     map[string]models.EquipInfoModel
 	_equipCh    chan *models.RawMqttMessage
 }
 
-// Creates an instance of equipsService
+// EquipsServiceNew creates an instance of equipsService
 func EquipsServiceNew(
 	dalService interfaces.IDalService,
 	equipCh chan *models.RawMqttMessage) interfaces.IEquipsService {

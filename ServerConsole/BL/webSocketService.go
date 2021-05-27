@@ -14,7 +14,9 @@ import (
 
 // web socket service implementation type
 type webSocketService struct {
-	_mtx         sync.RWMutex
+	// synchronization mutex
+	_mtx sync.RWMutex
+
 	_ioCProvider interfaces.IIoCProvider
 	_webSockCh   chan *models.RawMqttMessage
 	// keys - sessionUids

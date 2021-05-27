@@ -9,10 +9,13 @@ import (
 	"../models"
 )
 
-// generator repository implementation type
+// generator info repository implementation type
 type generatorRepository struct {
+	// DAL service
 	_dalService *dalService
-	_dbName     string
+
+	// mongodb db name
+	_dbName string
 }
 
 // GeneratorRepositoryNew creates an instance of generatorRepository

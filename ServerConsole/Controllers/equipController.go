@@ -14,9 +14,11 @@ import (
 type EquipController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
-	_dalService          interfaces.IDalService
-	_equipsService       interfaces.IEquipsService
-	_httpService         interfaces.IHttpService
+
+	// DAL service
+	_dalService    interfaces.IDalService
+	_equipsService interfaces.IEquipsService
+	_httpService   interfaces.IHttpService
 }
 
 // EquipControllerNew creates an instance of webSock
@@ -58,7 +60,7 @@ func (service *EquipController) Handle() {
 			log.Println("Url Param 'sessionUid' is missing")
 			return
 		}
-		sessionUid := sessionUids[0]
+		sessionUID := sessionUids[0]
 
 		activatedEquipInfos, ok := queryString["activatedEquipInfo"]
 
@@ -79,11 +81,11 @@ func (service *EquipController) Handle() {
 			deactivatedEquipInfo = deactivatedEquipInfos[0]
 		}
 
-		log.Println("Url is: %s %s %s", sessionUid, activatedEquipInfo, deactivatedEquipInfo)
+		log.Println("Url is: %s %s %s", sessionUID, activatedEquipInfo, deactivatedEquipInfo)
 		if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo {
 			mqttReceiverService.SendCommand(deactivatedEquipInfo, "deactivate")
 		}
-		webSocketService.Activate(sessionUid, activatedEquipInfo, deactivatedEquipInfo)
+		webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
 		mqttReceiverService.SendCommand(activatedEquipInfo, "activate")
 	})
 
@@ -207,7 +209,7 @@ func (service *EquipController) Handle() {
 
 		json.NewEncoder(w).Encode(tables)
 	})
-	
+
 	http.HandleFunc("/equips/GetTableContent", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
 		w.Header().Set("Access-Control-Allow-Origin", "*")

@@ -9,6 +9,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+//RabbitMqReceiver creates rabbit mq receiver
 func RabbitMqReceiver(
 	settingsService interfaces.ISettingsService,
 	mqttReceiverService *interfaces.IMqttReceiverService,
@@ -59,24 +60,6 @@ func RabbitMqReceiver(
 	if msgs == nil {
 
 	}
-	/*go func() {
-		for d := range msgs {
-			log.Printf(" [x] %s", d.Body)
-			content := Models.EquipmentMessage{}
-			json.Unmarshal([]byte(d.Body), &content)
-
-			fmt.Printf("%+v\n", content)
-
-			if content.MsgType == Models.MsgTypeInstanceOn || content.MsgType == Models.MsgTypeInstanceOff {
-				//rootTopic := fmt.Sprintf("%s/%s", content.EquipName, content.EquipNumber)
-				//mqttReceiverService.UpdateMqtt(equipDalCh, rootTopic)
-			} else {
-				equipDalCh <- &content
-			}
-
-			d.Ack(false)
-		}
-	}()*/
 
 	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
 

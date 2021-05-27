@@ -11,8 +11,11 @@ import (
 
 // stand repository implementation type
 type standRepository struct {
+	// DAL service
 	_dalService *dalService
-	_dbName     string
+
+	// mongodb db name
+	_dbName string
 }
 
 // StandRepositoryNew creates an instance of standRepository

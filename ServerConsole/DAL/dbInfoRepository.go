@@ -36,12 +36,12 @@ func (repository *dbInfoRepository) InsertDbInfoInfo(equipName string, data stri
 	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
 
 	model := models.AllDBInfoModel{}
-	
+
 	// // критерий выборки
 	query := bson.M{"equipname": equipName}
 	allInfoCollection.Find(query).One(&model)
 
-	if model.ID != ""{
+	if model.ID != "" {
 		return &model
 	}
 
@@ -60,7 +60,6 @@ func (repository *dbInfoRepository) InsertDbInfoInfo(equipName string, data stri
 
 	return &model
 }
-
 
 // GetAllTableNamesInfo returns all table names from db for equipment name
 func (repository *dbInfoRepository) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {
@@ -113,7 +112,7 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	if tableType == "Hospital" {
 		for k, v := range allInfo.Hospital {
-			if k == tableName{
+			if k == tableName {
 				content := string(v)
 				return content
 			}
@@ -122,7 +121,7 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	if tableType == "System" {
 		for k, v := range allInfo.System {
-			if k == tableName{
+			if k == tableName {
 				content := string(v)
 				return content
 			}
@@ -131,7 +130,7 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	if tableType == "Software" {
 		for k, v := range allInfo.Software {
-			if k == tableName{
+			if k == tableName {
 				content := string(v)
 				return content
 			}
@@ -140,7 +139,7 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	if tableType == "Atlas" {
 		for k, v := range allInfo.Atlas {
-			if k == tableName{
+			if k == tableName {
 				content := string(v)
 				return content
 			}
@@ -169,4 +168,3 @@ func (repository *dbInfoRepository) GetDBSoftwareInfo(equipName string) *models.
 
 	return &swInfo
 }
-	

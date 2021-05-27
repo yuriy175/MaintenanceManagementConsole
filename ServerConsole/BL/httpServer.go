@@ -11,17 +11,20 @@ import (
 
 // http service implementation type
 type httpService struct {
+	// authorization service
 	_authService         interfaces.IAuthService
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
-	_dalService          interfaces.IDalService
-	_equipsService       interfaces.IEquipsService
-	_equipController     *controllers.EquipController
-	_adminController     *controllers.AdminController
+
+	// DAL service
+	_dalService      interfaces.IDalService
+	_equipsService   interfaces.IEquipsService
+	_equipController *controllers.EquipController
+	_adminController *controllers.AdminController
 }
 
-// Creates an instance of httpService
-func HttpServiceNew(
+// HTTPServiceNew creates an instance of httpService
+func HTTPServiceNew(
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,

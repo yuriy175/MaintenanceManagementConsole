@@ -14,21 +14,38 @@ import (
 	"../utils"
 )
 
+// DAL service implementation type
 type dalService struct {
-	_dalCh           chan *models.RawMqttMessage
-	_authService     interfaces.IAuthService
+	// chanel for DAL communications
+	_dalCh chan *models.RawMqttMessage
+
+	// authorization service
+	_authService interfaces.IAuthService
+
+	// settings service
 	_settingsService interfaces.ISettingsService
 
-	_dbName           string
+	// mongodb db name
+	_dbName string
+
+	// mongodb connection string
 	_connectionString string
 
-	_userRepository      *userRepository
+	// user repository
+	_userRepository *userRepository
+
+	// equipment db info repository
 	_equipInfoRepository *equipInfoRepository
+
+	// generator info repository
 	_generatorRepository *generatorRepository
-	_standRepository     *standRepository
+
+	// stand info repository
+	_standRepository  *standRepository
 	_dbInfoRepository *dbInfoRepository
 }
 
+// DalServiceNew creates an instance of dalService
 func DalServiceNew(
 	authService interfaces.IAuthService,
 	settingsService interfaces.ISettingsService,
@@ -51,6 +68,7 @@ func DalServiceNew(
 	return service
 }
 
+// Start starts the service
 func (service *dalService) Start() {
 	quitCh := make(chan int)
 
@@ -464,7 +482,6 @@ func (service *dalService) InsertEquipInfo(equipName string, equipVM *models.Equ
 	return service._equipInfoRepository.InsertEquipInfo(equipName, equipVM)
 }
 
-
 func (service *dalService) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {
 	return service._dbInfoRepository.GetAllTableNamesInfo(equipName)
 }
@@ -473,11 +490,10 @@ func (service *dalService) GetTableContent(equipName string, tableType string, t
 	return service._dbInfoRepository.GetTableContent(equipName, tableType, tableName)
 }
 
-func (service *dalService) GetDBSystemInfo(equipName string) map[string]json.RawMessage  {
-	return service._dbInfoRepository.GetDBSystemInfo(equipName) 
+func (service *dalService) GetDBSystemInfo(equipName string) map[string]json.RawMessage {
+	return service._dbInfoRepository.GetDBSystemInfo(equipName)
 }
 
 func (service *dalService) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
-	return service._dbInfoRepository.GetDBSoftwareInfo(equipName) 
+	return service._dbInfoRepository.GetDBSoftwareInfo(equipName)
 }
-	

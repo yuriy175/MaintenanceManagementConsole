@@ -10,8 +10,11 @@ import (
 
 // equipment info repository implementation type
 type equipInfoRepository struct {
+	// DAL service
 	_dalService *dalService
-	_dbName     string
+
+	// mongodb db name
+	_dbName string
 }
 
 // EquipInfoRepositoryNew creates an instance of equipInfoRepository

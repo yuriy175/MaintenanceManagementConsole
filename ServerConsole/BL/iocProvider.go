@@ -8,20 +8,33 @@ import (
 	"../utils"
 )
 
+// IoC provider implementation type
 type types struct {
-	_authService         interfaces.IAuthService
+	// authorization service
+	_authService interfaces.IAuthService
+
+	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
 	_dalService          interfaces.IDalService
 	_httpService         interfaces.IHttpService
 	_topicStorage        interfaces.ITopicStorage
-	_settingsService     interfaces.ISettingsService
-	_equipsService       interfaces.IEquipsService
-	_dalCh               chan *Models.RawMqttMessage
-	_webSockCh           chan *Models.RawMqttMessage
-	_equipsCh            chan *Models.RawMqttMessage
+
+	// settings service
+	_settingsService interfaces.ISettingsService
+	_equipsService   interfaces.IEquipsService
+
+	// chanel for DAL communications
+	_dalCh chan *Models.RawMqttMessage
+
+	// chanel for communications with websocket services
+	_webSockCh chan *Models.RawMqttMessage
+
+	// chanel for communications with equipment service
+	_equipsCh chan *Models.RawMqttMessage
 }
 
+// types instance
 var _types = &types{}
 
 // InitIoc initializes all services
@@ -38,7 +51,7 @@ func InitIoc() interfaces.IIoCProvider {
 	equipsService := EquipsServiceNew(dalService, equipsCh)
 	webSocketService := WebSocketServiceNew(_types, webSockCh)
 	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalService, equipsService, topicStorage, dalCh, webSockCh)
-	httpService := HttpServiceNew(mqttReceiverService, webSocketService, dalService, equipsService, authService)
+	httpService := HTTPServiceNew(mqttReceiverService, webSocketService, dalService, equipsService, authService)
 
 	_types._authService = authService
 	_types._mqttReceiverService = mqttReceiverService

@@ -13,7 +13,9 @@ import (
 type AdminController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 	_webSocketService    interfaces.IWebSocketService
-	_dalService          interfaces.IDalService
+
+	// DAL service
+	_dalService interfaces.IDalService
 }
 
 // AdminControllerNew creates an instance of webSock

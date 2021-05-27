@@ -9,20 +9,27 @@ import (
 	Models "../models"
 )
 
+// mqtt receiver service implementation type
 type mqttReceiverService struct {
+	// synchronization mutex
 	_mtx              sync.RWMutex
 	_ioCProvider      interfaces.IIoCProvider
 	_webSocketService interfaces.IWebSocketService
-	_dalService       interfaces.IDalService
-	_equipsService    interfaces.IEquipsService
-	_dalCh            chan *models.RawMqttMessage
-	_webSockCh        chan *models.RawMqttMessage
-	_mqttConnections  map[string]interfaces.IMqttClient
-	_topicStorage     interfaces.ITopicStorage
+
+	// DAL service
+	_dalService    interfaces.IDalService
+	_equipsService interfaces.IEquipsService
+	_dalCh         chan *models.RawMqttMessage
+	_webSockCh     chan *models.RawMqttMessage
+
+	// mqtt connections map
+	// key - topic
+	// value - mqtt client
+	_mqttConnections map[string]interfaces.IMqttClient
+	_topicStorage    interfaces.ITopicStorage
 }
 
-//var mqttConnections = map[string]*MqttClient{}
-
+// MqttReceiverServiceNew creates an instance of mqttReceiverService
 func MqttReceiverServiceNew(
 	ioCProvider interfaces.IIoCProvider,
 	webSocketService interfaces.IWebSocketService,
@@ -45,6 +52,7 @@ func MqttReceiverServiceNew(
 	return service
 }
 
+//UpdateMqttConnections updates mqtt connections map for an equipment connection state
 func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipConnectionState) {
 	rootTopic := state.Name
 	isOff := !state.Connected
@@ -87,6 +95,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	fmt.Println(rootTopic + " created")
 }
 
+// CreateCommonConnections reates common mqtt connections
 func (service *mqttReceiverService) CreateCommonConnections() {
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
@@ -99,6 +108,7 @@ func (service *mqttReceiverService) CreateCommonConnections() {
 	return
 }
 
+// SendCommand sends a command to equipment via mqtt
 func (service *mqttReceiverService) SendCommand(equipment string, command string) {
 	fmt.Printf("SendCommand from topic: %s %s\n", equipment, command)
 
@@ -112,6 +122,7 @@ func (service *mqttReceiverService) SendCommand(equipment string, command string
 	return
 }
 
+// SendCommand sends a broadcast command to equipments via mqtt
 func (service *mqttReceiverService) SendBroadcastCommand(command string) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
@@ -123,6 +134,7 @@ func (service *mqttReceiverService) SendBroadcastCommand(command string) {
 	return
 }
 
+// GetConnectionNames returns connected equipment names
 func (service *mqttReceiverService) GetConnectionNames() []string {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()

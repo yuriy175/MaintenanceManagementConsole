@@ -35,16 +35,16 @@ const (
 	GeneratorInfoTableName = "GeneratorInfo"
 
 	// StandInfoTableName is StandInfo table name
-	StandInfoTableName     = "StandInfo"
+	StandInfoTableName = "StandInfo"
 
 	// DetectorInfoTableName is DetectorInfo table name
-	DetectorInfoTableName  = "DetectorInfo"
+	DetectorInfoTableName = "DetectorInfo"
 
 	// DosimeterInfoTableName is DosimeterInfoT table name
 	DosimeterInfoTableName = "DosimeterInfo"
 
 	// AllDBInfoTableName is AllDBInfo table name
-	AllDBInfoTableName  = "AllDBInfo"
+	AllDBInfoTableName = "AllDBInfo"
 
 	// RolesTableName is Roles table name
 	RolesTableName = "Roles"
@@ -52,17 +52,15 @@ const (
 	// UsersTableName is Users table name
 	UsersTableName = "Users"
 
-	MQConnectionStateName = "HwConnectionStateArrived"
-	MQInfoQueueName       = "SystemInfoQueue"
+	// rabbit mq queue name
+	MQInfoQueueName = "SystemInfoQueue"
 
-	MsgTypeInstanceOn               = "InstanceOn"
-	MsgTypeInstanceOff              = "InstanceOff"
-	MsgTypeStudyInWork              = "StudyInWork"
-	MsgTypeNewImageCreated          = "NewImageCreated"
-	MsgTypeHwConnectionStateArrived = "HwConnectionStateArrived"
-	MsgTypeHddDrivesInfo            = "HddDrivesInfo"
+	// common mqtt topic
+	CommonTopicPath = "Subscribe"
 
-	CommonTopicPath        = "Subscribe"
+	// broadcasting command mqtt topic
 	BroadcastCommandsTopic = "Broadcast"
-	WebSocketQueryString   = "/websocket"
+
+	// websocket url query subpath
+	WebSocketQueryString = "/websocket"
 )
