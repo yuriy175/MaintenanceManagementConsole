@@ -12,8 +12,9 @@ import (
 
 // equipment db info repository implementation type
 type dbInfoRepository struct {
+	// DAL service
 	_dalService *dalService
-	_dbName     string
+	_dbName string
 }
 
 // DbInfoRepositoryNew creates an instance of dbInfoRepository
@@ -76,19 +77,19 @@ func (repository *dbInfoRepository) GetAllTableNamesInfo(equipName string) *mode
 	tablesModel := models.AllDBTablesModel{}
 	tablesModel.EquipName = allInfo.EquipName
 
-	for k, _ := range allInfo.Hospital {
+	for k := range allInfo.Hospital {
 		tablesModel.Hospital = append(tablesModel.Hospital, k)
 	}
 
-	for k, _ := range allInfo.Software {
+	for k := range allInfo.Software {
 		tablesModel.Software = append(tablesModel.Software, k)
 	}
 
-	for k, _ := range allInfo.System {
+	for k := range allInfo.System {
 		tablesModel.System = append(tablesModel.System, k)
 	}
 
-	for k, _ := range allInfo.Atlas {
+	for k := range allInfo.Atlas {
 		tablesModel.Atlas = append(tablesModel.Atlas, k)
 	}
 

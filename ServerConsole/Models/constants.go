@@ -52,15 +52,15 @@ const (
 	// UsersTableName is Users table name
 	UsersTableName = "Users"
 
-	// rabbit mq queue name
+	// MQInfoQueueName is rabbit mq queue name
 	MQInfoQueueName = "SystemInfoQueue"
 
-	// common mqtt topic
+	// CommonTopicPath is common mqtt topic
 	CommonTopicPath = "Subscribe"
 
-	// broadcasting command mqtt topic
+	// BroadcastCommandsTopic is broadcasting command mqtt topic
 	BroadcastCommandsTopic = "Broadcast"
 
-	// websocket url query subpath
+	// WebSocketQueryString is websocket url query subpath
 	WebSocketQueryString = "/websocket"
 )

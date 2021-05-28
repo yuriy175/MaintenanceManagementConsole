@@ -90,14 +90,14 @@ func (service *webSocketService) Start() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func (service *webSocketService) Activate(sessionUid string, activatedEquipInfo string, deactivatedEquipInfo string) {
+func (service *webSocketService) Activate(sessionUID string, activatedEquipInfo string, deactivatedEquipInfo string) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	service.removeFromTopicMap(deactivatedEquipInfo, sessionUid)
+	service.removeFromTopicMap(deactivatedEquipInfo, sessionUID)
 	topicConnections := service._topicConnections
 
-	topicConnections[activatedEquipInfo] = append(topicConnections[activatedEquipInfo], sessionUid)
+	topicConnections[activatedEquipInfo] = append(topicConnections[activatedEquipInfo], sessionUID)
 
 	fmt.Printf("websocket Activate %s\n", activatedEquipInfo)
 
