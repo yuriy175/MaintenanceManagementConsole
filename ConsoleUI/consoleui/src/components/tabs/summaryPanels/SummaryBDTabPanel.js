@@ -44,11 +44,28 @@ export default function SummaryBDTabPanel(props) {
   const allDBs = currEquipState.allDBs;
   const allDBTables = currEquipState.allDBTables;
 
-  const getColumn = (key) => { return { id: key, label: key, minWidth: 100, maxWidth: 300 }}
+  const getColumn = (key) => { 
+    if(key.toLowerCase() === 'active')
+    {
+      return { 
+        id: key, label: key, minWidth: 100, maxWidth: 100,
+        format: (value) => value ? '+' : '-'
+      }
+    }
+
+    return { id: key, label: key, minWidth: 100, maxWidth: 300 }
+  }
 
   const handleListItemClick = async (event, index, type, text) => {
     const content = await EquipWorker.GetTableContent(currEquipState.equipInfo, type, text);
-    const values = content? JSON.parse(content) : null;
+    let values = []
+    if(Array.isArray(content)){
+      values = content.map(c => JSON.parse(c)).flat(1);
+    }
+    else{
+      values = content? JSON.parse(content) : null;
+    }
+    
     setTableContent(values);
   };
 

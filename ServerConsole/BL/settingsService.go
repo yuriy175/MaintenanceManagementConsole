@@ -11,7 +11,10 @@ import (
 
 // settings service implementation type
 type settingsService struct {
+	//rabbitMQ settings
 	RabbitMQ models.RabbitMQSettingsModel `json:"RabbitMQ"`
+
+	//mongodb settings
 	MongoDB  models.MongoDBSettingsModel  `json:"MongoDB"`
 }
 

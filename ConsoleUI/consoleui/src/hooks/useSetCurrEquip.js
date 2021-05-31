@@ -17,7 +17,7 @@ export function useSetCurrEquip() {
 
     // new software & system info come very slowly
     const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
-    currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo }); 
+    currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo[0] }); 
 
     const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
     currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 

@@ -490,7 +490,7 @@ func (service *dalService) GetTableContent(equipName string, tableType string, t
 	return service._dbInfoRepository.GetTableContent(equipName, tableType, tableName)
 }
 
-func (service *dalService) GetDBSystemInfo(equipName string) map[string]json.RawMessage {
+func (service *dalService) GetDBSystemInfo(equipName string) []map[string]json.RawMessage {
 	return service._dbInfoRepository.GetDBSystemInfo(equipName)
 }
 

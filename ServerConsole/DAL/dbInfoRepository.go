@@ -105,52 +105,59 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	query := bson.M{"equipname": equipName}
 
-	allInfo := []models.AllDBInfoModel{}
-	allInfoCollection.Find(query).Sort("datetime").All(&allInfo)
+	allInfos := []models.AllDBInfoModel{}
+	allInfoCollection.Find(query).Sort("datetime").All(&allInfos)
 
 	tablesModel := models.AllDBTablesModel{}
-	tablesModel.EquipName = allInfo.EquipName
+	tablesModel.EquipName = equipName
 
+	contents := []string{}
 	if tableType == "Hospital" {
-		for k, v := range allInfo.Hospital {
-			if k == tableName {
-				content := string(v)
-				return content
+		for _, allInfo := range allInfos {
+			for k, v := range allInfo.Hospital {
+				if k == tableName {
+					content := string(v)
+					contents = append(contents, content)
+					break
+				}
+			}
+		}
+	} else if tableType == "System" {
+		for _, allInfo := range allInfos {
+			for k, v := range allInfo.System {
+				if k == tableName {
+					content := string(v)
+					contents = append(contents, content)
+					break
+				}
+			}
+		}
+	} else if tableType == "Software" {
+		for _, allInfo := range allInfos {
+			for k, v := range allInfo.Software {
+				if k == tableName {
+					content := string(v)
+					contents = append(contents, content)
+					break
+				}
+			}
+		}
+	} else if tableType == "Atlas" {
+		for _, allInfo := range allInfos {
+			for k, v := range allInfo.Atlas {
+				if k == tableName {
+					content := string(v)
+					contents = append(contents, content)
+					break
+				}
 			}
 		}
 	}
 
-	if tableType == "System" {
-		for k, v := range allInfo.System {
-			if k == tableName {
-				content := string(v)
-				return content
-			}
-		}
-	}
-
-	if tableType == "Software" {
-		for k, v := range allInfo.Software {
-			if k == tableName {
-				content := string(v)
-				return content
-			}
-		}
-	}
-
-	if tableType == "Atlas" {
-		for k, v := range allInfo.Atlas {
-			if k == tableName {
-				content := string(v)
-				return content
-			}
-		}
-	}
-
-	return ""
+	return contents
 }
 
-func (repository *dbInfoRepository) GetDBSystemInfo(equipName string) map[string]json.RawMessage {
+func (repository *dbInfoRepository) GetDBSystemInfo(equipName string) []map[string]json.RawMessage {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -158,10 +165,15 @@ func (repository *dbInfoRepository) GetDBSystemInfo(equipName string) map[string
 
 	query := bson.M{"equipname": equipName}
 
-	allInfo := models.AllDBInfoModel{}
-	allInfoCollection.Find(query).Sort("-datetime").One(&allInfo)
+	maps := []map[string]json.RawMessage{}
+	allInfos := []models.AllDBInfoModel{}
+	allInfoCollection.Find(query).Sort("datetime").All(&allInfos)
 
-	return allInfo.System
+	for _, allInfo := range allInfos {
+		maps = append(maps, allInfo.System)
+	}
+
+	return maps
 }
 
 func (repository *dbInfoRepository) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {

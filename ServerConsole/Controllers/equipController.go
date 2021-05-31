@@ -17,6 +17,8 @@ type EquipController struct {
 
 	// DAL service
 	_dalService    interfaces.IDalService
+
+	// equipment service
 	_equipsService interfaces.IEquipsService
 
 	// http service
