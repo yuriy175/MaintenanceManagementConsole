@@ -17,11 +17,17 @@ type webSocketService struct {
 	// synchronization mutex
 	_mtx sync.RWMutex
 
+	// IoC provider
 	_ioCProvider interfaces.IIoCProvider
-	_webSockCh   chan *models.RawMqttMessage
+
+	// chanel for communications with websocket services
+	_webSockCh chan *models.RawMqttMessage
+
+	// map of active websocket connections
 	// keys - sessionUids
 	_webSocketConnections map[string]interfaces.IWebSock
 
+	// map of active equipment topics connections
 	// keys - main equipment topics
 	// values - slice of session uids
 	_topicConnections map[string][]string
@@ -90,6 +96,7 @@ func (service *webSocketService) Start() {
 	http.ListenAndServe(":8080", nil)
 }
 
+// Activate activates a specified connection to equipment and deactivates the other
 func (service *webSocketService) Activate(sessionUID string, activatedEquipInfo string, deactivatedEquipInfo string) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
@@ -104,6 +111,7 @@ func (service *webSocketService) Activate(sessionUID string, activatedEquipInfo 
 	return
 }
 
+// UpdateWebClients notifies UI of a new equipment connection
 func (service *webSocketService) UpdateWebClients(state *models.EquipConnectionState) {
 	stateVM := &models.EquipConnectionStateViewModel{models.CommonTopicPath, *state}
 
@@ -116,11 +124,13 @@ func (service *webSocketService) UpdateWebClients(state *models.EquipConnectionS
 	}
 }
 
+// HasActiveClients checks if there is an active connections
 func (service *webSocketService) HasActiveClients(topic string) bool {
 	_, ok := service._topicConnections[topic]
 	return ok
 }
 
+// ClientClosed removes web socket connection
 func (service *webSocketService) ClientClosed(uid string) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()

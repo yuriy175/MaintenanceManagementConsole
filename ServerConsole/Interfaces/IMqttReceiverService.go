@@ -6,11 +6,18 @@ import (
 
 // IMqttReceiverService describes mqtt receiver service interface
 type IMqttReceiverService interface {
-	///
+	//UpdateMqttConnections updates mqtt connections map for an equipment connection state
 	UpdateMqttConnections(state *models.EquipConnectionState)
+
+	// CreateCommonConnections reates common mqtt connections
 	CreateCommonConnections()
+
+	// SendCommand sends a command to equipment via mqtt
 	SendCommand(equipment string, command string)
+
+	// SendCommand sends a broadcast command to equipments via mqtt
 	SendBroadcastCommand(command string)
+
+	// GetConnectionNames returns connected equipment names
 	GetConnectionNames() []string
-	///
 }
