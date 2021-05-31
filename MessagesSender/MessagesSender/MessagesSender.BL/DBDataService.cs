@@ -80,11 +80,20 @@ namespace MessagesSender.BL
 
         private async Task<bool> SendAllDBDataAsync()
         {
-            var atlasTask = _dbInfoEntityService.GetAtlasDataAsync();
-            var hospitalTask = _dbInfoEntityService.GetHospitalDataAsync();
-            var softwareTask = _dbInfoEntityService.GetSoftwareDataAsync();
-            var systemTask = _dbInfoEntityService.GetSystemDataAsync();
-			var newsTask = _dbInfoEntityService.GetNewsDataAsync();
+			var newsData = await _dbInfoEntityService.GetNewsDataAsync();
+            if (!newsData.Any())
+            {
+                return true;
+            }
+
+            var newTables = newsData
+                .GroupBy(n => n.Tbl)
+                .ToDictionary(n => n.Key, n => n.Select(e => e.RowId).ToArray());
+
+            var atlasTask = _dbInfoEntityService.GetAtlasDataAsync(newTables);
+            var hospitalTask = _dbInfoEntityService.GetHospitalDataAsync(newTables);
+            var softwareTask = _dbInfoEntityService.GetSoftwareDataAsync(newTables);
+            var systemTask = _dbInfoEntityService.GetSystemDataAsync(newTables);
 
 			await Task.WhenAll(new[] { atlasTask as Task, hospitalTask, softwareTask, systemTask });
 
@@ -92,7 +101,6 @@ namespace MessagesSender.BL
             var hospitalData = await hospitalTask;
             var softwareData = await softwareTask;
             var systemData = await systemTask;
-			var newsData = await newsTask;
 
 			_ = _sendingService.SendInfoToMqttAsync(MQMessages.AllDBInfo,
                     new
@@ -132,6 +140,7 @@ namespace MessagesSender.BL
                         }
                     });
 
+            await _dbInfoEntityService.SetNewsDataSentAsync();
 
             return true;
         }

@@ -52,6 +52,7 @@ func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM
 	return &model
 }
 
+// GetEquipInfos returns all equipment infos from db
 func (repository *equipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
@@ -68,6 +69,7 @@ func (repository *equipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 	return equipInfos
 }
 
+// CheckEquipment checks if the equipment exists in db
 func (repository *equipInfoRepository) CheckEquipment(equipName string) bool {
 	session := repository._dalService.CreateSession()
 	defer session.Close()

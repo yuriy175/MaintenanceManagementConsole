@@ -14,6 +14,8 @@ import (
 type equipsService struct {
 	// synchronization mutex
 	_mtx        sync.RWMutex
+
+	// DAL service
 	_dalService interfaces.IDalService
 	_equips     map[string]models.EquipInfoModel
 	_equipCh    chan *models.RawMqttMessage

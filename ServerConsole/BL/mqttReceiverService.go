@@ -13,11 +13,17 @@ import (
 type mqttReceiverService struct {
 	// synchronization mutex
 	_mtx              sync.RWMutex
+
+	// IoC provider
 	_ioCProvider      interfaces.IIoCProvider
+
+	// web socket service
 	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
 	_dalService    interfaces.IDalService
+
+	// equipment service
 	_equipsService interfaces.IEquipsService
 	_dalCh         chan *models.RawMqttMessage
 	_webSockCh     chan *models.RawMqttMessage

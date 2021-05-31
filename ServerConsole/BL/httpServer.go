@@ -14,6 +14,8 @@ type httpService struct {
 	// authorization service
 	_authService         interfaces.IAuthService
 	_mqttReceiverService interfaces.IMqttReceiverService
+
+	// web socket service
 	_webSocketService    interfaces.IWebSocketService
 
 	// DAL service

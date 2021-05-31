@@ -15,6 +15,7 @@ namespace MessagesSender.Core.Interfaces
         /// <summary>
         /// get system tables data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>system tables data</returns>
         Task<(
             IEnumerable<HardDrive> HardDrives,
@@ -26,11 +27,12 @@ namespace MessagesSender.Core.Interfaces
             IEnumerable<Printer> Printers,
             IEnumerable<Screen> Screens,
             IEnumerable<VideoAdapter> VideoAdapters
-            )> GetSystemDataAsync();
+            )> GetSystemDataAsync(Dictionary<string, int[]> news);
 
         /// <summary>
         /// get software tables data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>software tables data</returns>
         Task<(
             IEnumerable<AtlasSW> Atlas,
@@ -39,11 +41,12 @@ namespace MessagesSender.Core.Interfaces
             IEnumerable<OsInfo> OsInfos,
             IEnumerable<SqlDatabase> SqlDatabases,
             IEnumerable<SqlService> SqlServices
-            )> GetSoftwareDataAsync();
+            )> GetSoftwareDataAsync(Dictionary<string, int[]> news);
 
         /// <summary>
         /// get atlas tables data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>atlas tables data</returns>
         Task<(
             IEnumerable<AppParam> AppParams,
@@ -54,18 +57,25 @@ namespace MessagesSender.Core.Interfaces
             IEnumerable<DicomPrinter> DicomPrinters,
             IEnumerable<HardwareParam> HardwareParams,
             IEnumerable<RasterParam> RasterParams
-            )> GetAtlasDataAsync();
+            )> GetAtlasDataAsync(Dictionary<string, int[]> news);
 
         /// <summary>
         /// get hospital table data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>hospital table data</returns>
-        Task<IEnumerable<HospitalInfo>> GetHospitalDataAsync();
+        Task<IEnumerable<HospitalInfo>> GetHospitalDataAsync(Dictionary<string, int[]> news);
 
         /// <summary>
         /// get news table data
         /// </summary>
         /// <returns>news table data</returns>
         Task<IEnumerable<News>> GetNewsDataAsync();
+
+        /// <summary>
+        /// set news table data sent
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> SetNewsDataSentAsync();
     }
 }

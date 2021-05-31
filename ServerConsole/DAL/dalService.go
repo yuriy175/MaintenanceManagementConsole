@@ -486,7 +486,7 @@ func (service *dalService) GetAllTableNamesInfo(equipName string) *models.AllDBT
 	return service._dbInfoRepository.GetAllTableNamesInfo(equipName)
 }
 
-func (service *dalService) GetTableContent(equipName string, tableType string, tableName string) string {
+func (service *dalService) GetTableContent(equipName string, tableType string, tableName string) []string {
 	return service._dbInfoRepository.GetTableContent(equipName, tableType, tableName)
 }
 

@@ -19,6 +19,32 @@ namespace MessagesSender.DAL
     public class InfoEntityService
         : EntityServiceBase<InfoContext>, IInfoEntityService
     {
+        private const string HardDriveTableName = "hard_drive";
+        private const string PrintersTableName = "printers";
+        private const string AppParamTableName = "appparam";
+        private const string AspNetUsersTableName = "aspnetusers";
+        private const string AtlasTableName = "atlas";
+        private const string DependenciesTableName = "dependencies";
+        private const string DetectorTableName = "detector";
+        private const string DetectorProcessingsTableName = "detectorprocessings";
+        private const string DicomPrintersTableName = "dicom_printers";
+        private const string DicomServicesTableName = "dicomservices";
+        private const string ErrorsTableName = "errors";
+        private const string HardwareParamsTableName = "hardwareparams";
+        private const string HospitalInfoTableName = "hospital_info";
+        private const string LanTableName = "lan";
+        private const string LogicalDisksTableName = "logical_disks";
+        private const string MemoryTableName = "memory";
+        private const string ModemTableName = "modem";
+        private const string MonitorsTableName = "monitors";
+        private const string MotherboardTableName = "motherboard";
+        private const string OsInfoTableName = "os_info";
+        private const string RasterParamsTableName = "rasterparams";
+        private const string ScreensTableName = "screens";
+        private const string SqlDatabasesTableName = "sql_databases";
+        private const string SqlServiceTableName = "sql_service";
+        private const string VideoadapterTableName = "videoadapter";
+
         private readonly IConfigurationService _configurationService = null;
         private readonly ILogger _logger;
 
@@ -39,6 +65,7 @@ namespace MessagesSender.DAL
         /// <summary>
         /// get system tables data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>system tables data</returns>
         public async Task<(
             IEnumerable<HardDrive> HardDrives, 
@@ -50,17 +77,27 @@ namespace MessagesSender.DAL
             IEnumerable<Printer> Printers,
             IEnumerable<Screen> Screens,
             IEnumerable<VideoAdapter> VideoAdapters
-            )> GetSystemDataAsync()
+            )> GetSystemDataAsync(Dictionary<string, int[]> news)
 		{
-            var hardDrives = await GetManyAction<HardDrive>(context => context.HardDrives);
-            var lans = await GetManyAction<Lan>(context => context.Lans);
-            var logicalDisks = await GetManyAction<LogicalDisk>(context => context.LogicalDisks);
-            var modems = await GetManyAction<Modem>(context => context.Modems);
-            var monitors = await GetManyAction<Monitor>(context => context.Monitors);
-            var motherboards = await GetManyAction<Motherboard>(context => context.Motherboards);
-            var printers = await GetManyAction<Printer>(context => context.Printers);
-            var screens = await GetManyAction<Screen>(context => context.Screens);
-            var videoadapters = await GetManyAction<VideoAdapter>(context => context.VideoAdapters);
+            var hardDrives = await GetNewRowsAsync(news, HardDriveTableName,
+                (context, rows) => context.HardDrives.Where(e => rows.Contains(e.RowId)));
+            var lans = await GetNewRowsAsync(news, LanTableName,
+                (context, rows) => context.Lans.Where(e => rows.Contains(e.RowId)));
+            var logicalDisks = await GetNewRowsAsync(news, LogicalDisksTableName,
+                (context, rows) => context.LogicalDisks.Where(e => rows.Contains(e.RowId)));
+            var modems = await GetNewRowsAsync(news, ModemTableName,
+                (context, rows) => context.Modems.Where(e => rows.Contains(e.RowId)));
+            var monitors = await GetNewRowsAsync(news, MonitorsTableName,
+                (context, rows) => context.Monitors.Where(e => rows.Contains(e.RowId)));
+            var motherboards = await GetNewRowsAsync(news, MotherboardTableName,
+                (context, rows) => context.Motherboards.Where(e => rows.Contains(e.RowId)));
+            var printers = await GetNewRowsAsync(news, PrintersTableName,
+                (context, rows) => context.Printers.Where(e => rows.Contains(e.RowId)));
+
+            var screens = await GetNewRowsAsync(news, ScreensTableName,
+                (context, rows) => context.Screens.Where(e => rows.Contains(e.RowId)));
+            var videoadapters = await GetNewRowsAsync(news, VideoadapterTableName,
+                (context, rows) => context.VideoAdapters.Where(e => rows.Contains(e.RowId)));
 
             return (hardDrives, lans, logicalDisks, modems, monitors, motherboards, printers, screens, videoadapters);
         }
@@ -68,6 +105,7 @@ namespace MessagesSender.DAL
         /// <summary>
         /// get software tables data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>software tables data</returns>
         public async Task<(
             IEnumerable<AtlasSW> Atlas, 
@@ -76,14 +114,20 @@ namespace MessagesSender.DAL
             IEnumerable<OsInfo> OsInfos,
             IEnumerable<SqlDatabase> SqlDatabases, 
             IEnumerable<SqlService> SqlServices
-            )> GetSoftwareDataAsync()
+            )> GetSoftwareDataAsync(Dictionary<string, int[]> news)
         {
-            var atlas = await GetManyAction<AtlasSW>(context => context.Atlases);
-            var dependencies = await GetManyAction<Dependency>(context => context.Dependencies);
-            var errors = await GetManyAction<Error>(context => context.Errors);
-            var osInfos = await GetManyAction<OsInfo>(context => context.OsInfos);
-            var sqlDatabases = await GetManyAction<SqlDatabase>(context => context.SqlDatabases);
-            var sqlServices = await GetManyAction<SqlService>(context => context.SqlServices);
+            var atlas = await GetNewRowsAsync(news, AtlasTableName,
+                (context, rows) => context.Atlases.Where(e => rows.Contains(e.RowId)));
+            var dependencies = await GetNewRowsAsync(news, DependenciesTableName,
+                (context, rows) => context.Dependencies.Where(e => rows.Contains(e.RowId)));
+            var errors = await GetNewRowsAsync(news, ErrorsTableName,
+                (context, rows) => context.Errors.Where(e => rows.Contains(e.RowId)));
+            var osInfos = await GetNewRowsAsync(news, OsInfoTableName,
+                (context, rows) => context.OsInfos.Where(e => rows.Contains(e.RowId)));
+            var sqlDatabases = await GetNewRowsAsync(news, SqlDatabasesTableName,
+                (context, rows) => context.SqlDatabases.Where(e => rows.Contains(e.RowId)));
+            var sqlServices = await GetNewRowsAsync(news, SqlServiceTableName,
+                (context, rows) => context.SqlServices.Where(e => rows.Contains(e.RowId)));
 
             return (atlas, dependencies, errors, osInfos, sqlDatabases, sqlServices);
         }
@@ -91,6 +135,7 @@ namespace MessagesSender.DAL
         /// <summary>
         /// get atlas tables data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>atlas tables data</returns>
         public async Task<(
             IEnumerable<AppParam> AppParams, 
@@ -101,18 +146,25 @@ namespace MessagesSender.DAL
             IEnumerable<DicomPrinter> DicomPrinters,
             IEnumerable<HardwareParam> HardwareParams,
             IEnumerable<RasterParam> RasterParams
-            )> GetAtlasDataAsync()
+            )> GetAtlasDataAsync(Dictionary<string, int[]> news)
         {
-            var appParams = await GetManyAction<AppParam>(context => context.AppParams);
-			// var aspnetusers = new AspNetUser[] { }; // await GetManyAction<AspNetUser>(context => context.AspNetUsers);
-			var aspnetusers = await GetManyAction<AspNetUser>(context => context.AspNetUsers);
-			var detectors = await GetManyAction<Detector>(context => context.Detectors);
-            var detectorprocessings = await GetManyAction<DetectorProcessing>(context => context.DetectorProcessings);
-            var dicoms = await GetManyAction<DicomService>(context => context.DicomServices);
-            var dicomPrinters = await GetManyAction<DicomPrinter>(context => context.DicomPrinters);
-            var hardwareparams = await GetManyAction<HardwareParam>(context => context.HardwareParams);
-            var rasterParams = await GetManyAction<RasterParam>(context => context.RasterParams);
-            
+            var appParams = await GetNewRowsAsync(news, AppParamTableName,
+                (context, rows) => context.AppParams.Where(e => rows.Contains(e.RowId)));
+            var aspnetusers = await GetNewRowsAsync(news, AspNetUsersTableName,
+                (context, rows) => context.AspNetUsers.Where(e => rows.Contains(e.RowId)));
+            var detectors = await GetNewRowsAsync(news, DetectorTableName,
+                (context, rows) => context.Detectors.Where(e => rows.Contains(e.RowId)));
+            var detectorprocessings = await GetNewRowsAsync(news, DetectorProcessingsTableName,
+                (context, rows) => context.DetectorProcessings.Where(e => rows.Contains(e.RowId)));
+            var dicoms = await GetNewRowsAsync(news, DicomServicesTableName,
+                (context, rows) => context.DicomServices.Where(e => rows.Contains(e.RowId)));
+            var dicomPrinters = await GetNewRowsAsync(news, DicomPrintersTableName,
+                (context, rows) => context.DicomPrinters.Where(e => rows.Contains(e.RowId)));
+            var hardwareparams = await GetNewRowsAsync(news, HardwareParamsTableName,
+                (context, rows) => context.HardwareParams.Where(e => rows.Contains(e.RowId)));
+            var rasterParams = await GetNewRowsAsync(news, RasterParamsTableName,
+                (context, rows) => context.RasterParams.Where(e => rows.Contains(e.RowId)));
+
             return (appParams, aspnetusers, detectors, detectorprocessings, dicoms, dicomPrinters, 
                 hardwareparams, rasterParams);
         }
@@ -120,10 +172,13 @@ namespace MessagesSender.DAL
         /// <summary>
         /// get hospital table data
         /// </summary>
+        /// <param name="news">news data</param>
         /// <returns>hospital table data</returns>
-        public async Task<IEnumerable<HospitalInfo>> GetHospitalDataAsync()
+        public async Task<IEnumerable<HospitalInfo>> GetHospitalDataAsync(
+            Dictionary<string, int[]> news)
         {
-            return await GetManyAction<HospitalInfo>(context => context.HospitalInfos);
+            return await GetNewRowsAsync(news, HospitalInfoTableName,
+                (context, rows) => context.HospitalInfos.Where(e => rows.Contains(e.RowId))); 
         }
 
         /// <summary>
@@ -132,7 +187,25 @@ namespace MessagesSender.DAL
         /// <returns>news table data</returns>
         public async Task<IEnumerable<News>> GetNewsDataAsync()
         {
-            return await GetManyAction<News>(context => context.News);
+            return await GetManyAction<News>(context => context.News.Where(n => n.Active));
+        }
+
+        /// <summary>
+        /// set news table data sent
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> SetNewsDataSentAsync()
+        {
+            using (var context = CreateContext())
+            {
+                foreach(var news in context.News.Where(n => n.Active).ToList())
+                {
+                    news.Active = false;
+                }
+                
+                await context.SaveChangesAsync();
+                return true;
+            }
         }
 
         /// <summary>
@@ -144,5 +217,20 @@ namespace MessagesSender.DAL
             InfoContext.Create(
                     _configurationService?["ConnectionStrings", "InfoConnection"],
                     _logger);
+
+        private async Task<IEnumerable<T>> GetNewRowsAsync<T>(
+            Dictionary<string, int[]> news,
+            string tableName,
+            Func<InfoContext, int[], IQueryable<T>> action)
+            where T : class
+        {
+            if (!news.ContainsKey(tableName))
+            {
+                return new T[]{ };
+            }
+
+            var rowIds = news[tableName];
+            return await GetManyAction<T>(context => action(context, rowIds));
+        }
     }
 }

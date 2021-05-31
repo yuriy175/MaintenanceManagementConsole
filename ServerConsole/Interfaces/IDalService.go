@@ -35,7 +35,7 @@ type IDalService interface {
 
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel
-	GetTableContent(equipName string, tableType string, tableName string) string
+	GetTableContent(equipName string, tableType string, tableName string) []string
 	GetDBSystemInfo(equipName string) map[string]json.RawMessage 
 	GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel
 }

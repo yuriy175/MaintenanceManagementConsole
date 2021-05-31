@@ -15,13 +15,23 @@ type types struct {
 
 	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
+
+	// web socket service
 	_webSocketService    interfaces.IWebSocketService
+
+	// DAL service
 	_dalService          interfaces.IDalService
+
+	// http service
 	_httpService         interfaces.IHttpService
+
+	// topic storage
 	_topicStorage        interfaces.ITopicStorage
 
 	// settings service
 	_settingsService interfaces.ISettingsService
+
+	// equipment service
 	_equipsService   interfaces.IEquipsService
 
 	// chanel for DAL communications

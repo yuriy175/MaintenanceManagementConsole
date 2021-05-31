@@ -39,12 +39,12 @@ func (repository *dbInfoRepository) InsertDbInfoInfo(equipName string, data stri
 	model := models.AllDBInfoModel{}
 
 	// // критерий выборки
-	query := bson.M{"equipname": equipName}
+	/*query := bson.M{"equipname": equipName}
 	allInfoCollection.Find(query).One(&model)
 
 	if model.ID != "" {
 		return &model
-	}
+	}*/
 
 	// viewmodel := models.AllDBInfoViewModel{}
 	json.Unmarshal([]byte(data), &model)
@@ -97,7 +97,7 @@ func (repository *dbInfoRepository) GetAllTableNamesInfo(equipName string) *mode
 }
 
 // GetTableContent returns the content of the specified table from equipment
-func (repository *dbInfoRepository) GetTableContent(equipName string, tableType string, tableName string) string {
+func (repository *dbInfoRepository) GetTableContent(equipName string, tableType string, tableName string) []string {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -105,8 +105,8 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 
 	query := bson.M{"equipname": equipName}
 
-	allInfo := models.AllDBInfoModel{}
-	allInfoCollection.Find(query).Sort("datetime").One(&allInfo)
+	allInfo := []models.AllDBInfoModel{}
+	allInfoCollection.Find(query).Sort("datetime").All(&allInfo)
 
 	tablesModel := models.AllDBTablesModel{}
 	tablesModel.EquipName = allInfo.EquipName
