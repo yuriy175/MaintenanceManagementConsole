@@ -8,8 +8,8 @@ import (
 	"../models"
 )
 
-// equipment info repository implementation type
-type equipInfoRepository struct {
+// EquipInfoRepository describes equipment info repository implementation type
+type EquipInfoRepository struct {
 	// DAL service
 	_dalService *dalService
 
@@ -17,11 +17,11 @@ type equipInfoRepository struct {
 	_dbName string
 }
 
-// EquipInfoRepositoryNew creates an instance of equipInfoRepository
+// EquipInfoRepositoryNew creates an instance of EquipInfoRepository
 func EquipInfoRepositoryNew(
 	dalService *dalService,
-	dbName string) *equipInfoRepository {
-	repository := &equipInfoRepository{}
+	dbName string) *EquipInfoRepository {
+	repository := &EquipInfoRepository{}
 
 	repository._dalService = dalService
 	repository._dbName = dbName
@@ -30,7 +30,7 @@ func EquipInfoRepositoryNew(
 }
 
 // InsertEquipInfo inserts equipment info into db
-func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
+func (repository *EquipInfoRepository) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -53,7 +53,7 @@ func (repository *equipInfoRepository) InsertEquipInfo(equipName string, equipVM
 }
 
 // GetEquipInfos returns all equipment infos from db
-func (repository *equipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
+func (repository *EquipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -70,7 +70,7 @@ func (repository *equipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 }
 
 // CheckEquipment checks if the equipment exists in db
-func (repository *equipInfoRepository) CheckEquipment(equipName string) bool {
+func (repository *EquipInfoRepository) CheckEquipment(equipName string) bool {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 

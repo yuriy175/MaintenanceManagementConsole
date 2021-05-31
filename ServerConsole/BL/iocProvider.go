@@ -57,7 +57,7 @@ func InitIoc() interfaces.IIoCProvider {
 	topicStorage := utils.TopicStorageNew()
 	settingsService := SettingsServiceNew()
 
-	dalService := dal.DalServiceNew(authService, settingsService, dalCh)
+	dalService := dal.DataLayerServiceNew(authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(dalService, equipsCh)
 	webSocketService := WebSocketServiceNew(_types, webSockCh)
 	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalService, equipsService, topicStorage, dalCh, webSockCh)

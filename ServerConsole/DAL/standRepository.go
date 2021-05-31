@@ -9,8 +9,8 @@ import (
 	"../models"
 )
 
-// stand repository implementation type
-type standRepository struct {
+// StandRepository describes stand repository implementation type
+type StandRepository struct {
 	// DAL service
 	_dalService *dalService
 
@@ -21,8 +21,8 @@ type standRepository struct {
 // StandRepositoryNew creates an instance of standRepository
 func StandRepositoryNew(
 	dalService *dalService,
-	dbName string) *standRepository {
-	repository := &standRepository{}
+	dbName string) *StandRepository {
+	repository := &StandRepository{}
 
 	repository._dalService = dalService
 	repository._dbName = dbName
@@ -31,7 +31,7 @@ func StandRepositoryNew(
 }
 
 // InsertStandInfo inserts stand info into db
-func (repository *standRepository) InsertStandInfo(equipName string, data string) *models.RawDeviceInfoModel {
+func (repository *StandRepository) InsertStandInfo(equipName string, data string) *models.RawDeviceInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -53,7 +53,7 @@ func (repository *standRepository) InsertStandInfo(equipName string, data string
 }
 
 // GetStandInfo returns stand info from db by equipment name and within the specified dates
-func (repository *standRepository) GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel {
+func (repository *StandRepository) GetStandInfo(equipName string, startDate time.Time, endDate time.Time) []models.RawDeviceInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 

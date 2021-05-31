@@ -32,21 +32,23 @@ type dalService struct {
 	_connectionString string
 
 	// user repository
-	_userRepository *userRepository
+	_userRepository *UserRepository
 
 	// equipment db info repository
-	_equipInfoRepository *equipInfoRepository
+	_equipInfoRepository *EquipInfoRepository
 
 	// generator info repository
-	_generatorRepository *generatorRepository
+	_generatorRepository *GeneratorRepository
 
 	// stand info repository
-	_standRepository  *standRepository
-	_dbInfoRepository *dbInfoRepository
+	_standRepository  *StandRepository
+
+	// equipment db info repository
+	_dbInfoRepository *DbInfoRepository
 }
 
-// DalServiceNew creates an instance of dalService
-func DalServiceNew(
+// DataLayerServiceNew creates an instance of dalService
+func DataLayerServiceNew(
 	authService interfaces.IAuthService,
 	settingsService interfaces.ISettingsService,
 	dalCh chan *models.RawMqttMessage) interfaces.IDalService {
@@ -490,10 +492,12 @@ func (service *dalService) GetTableContent(equipName string, tableType string, t
 	return service._dbInfoRepository.GetTableContent(equipName, tableType, tableName)
 }
 
+// GetDBSystemInfo returns permanent system info from db
 func (service *dalService) GetDBSystemInfo(equipName string) []map[string]json.RawMessage {
 	return service._dbInfoRepository.GetDBSystemInfo(equipName)
 }
 
+// GetDBSoftwareInfo returns permanent software info from db
 func (service *dalService) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
 	return service._dbInfoRepository.GetDBSoftwareInfo(equipName)
 }

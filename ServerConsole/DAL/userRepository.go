@@ -9,8 +9,8 @@ import (
 	"../models"
 )
 
-// user repository implementation type
-type userRepository struct {
+// UserRepository describes user repository implementation type
+type UserRepository struct {
 	// DAL service
 	_dalService *dalService
 
@@ -21,12 +21,12 @@ type userRepository struct {
 	_authService interfaces.IAuthService
 }
 
-// UserRepositoryNew creates an instance of userRepository
+// UserRepositoryNew creates an instance of UserRepository
 func UserRepositoryNew(
 	dalService *dalService,
 	dbName string,
-	authService interfaces.IAuthService) *userRepository {
-	repository := &userRepository{}
+	authService interfaces.IAuthService) *UserRepository {
+	repository := &UserRepository{}
 
 	repository._dalService = dalService
 	repository._dbName = dbName
@@ -36,7 +36,7 @@ func UserRepositoryNew(
 }
 
 // UpdateUser upserts user info into db
-func (repository *userRepository) UpdateUser(userVM *models.UserViewModel) *models.UserModel {
+func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -69,7 +69,7 @@ func (repository *userRepository) UpdateUser(userVM *models.UserViewModel) *mode
 }
 
 // GetUsers returns all users from db
-func (repository *userRepository) GetUsers() []models.UserModel {
+func (repository *UserRepository) GetUsers() []models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -86,7 +86,7 @@ func (repository *userRepository) GetUsers() []models.UserModel {
 }
 
 // GetUserByName returns a valid user by login or email or nil
-func (repository *userRepository) GetUserByName(login string, email string, password string) *models.UserModel {
+func (repository *UserRepository) GetUserByName(login string, email string, password string) *models.UserModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 

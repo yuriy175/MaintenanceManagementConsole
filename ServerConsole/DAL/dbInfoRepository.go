@@ -10,8 +10,8 @@ import (
 	"../models"
 )
 
-// equipment db info repository implementation type
-type dbInfoRepository struct {
+// DbInfoRepository describes equipment db info repository implementation type
+type DbInfoRepository struct {
 	// DAL service
 	_dalService *dalService
 	_dbName string
@@ -20,8 +20,8 @@ type dbInfoRepository struct {
 // DbInfoRepositoryNew creates an instance of dbInfoRepository
 func DbInfoRepositoryNew(
 	dalService *dalService,
-	dbName string) *dbInfoRepository {
-	repository := &dbInfoRepository{}
+	dbName string) *DbInfoRepository {
+	repository := &DbInfoRepository{}
 
 	repository._dalService = dalService
 	repository._dbName = dbName
@@ -30,7 +30,7 @@ func DbInfoRepositoryNew(
 }
 
 // InsertDbInfoInfo inserts equipment db info into db
-func (repository *dbInfoRepository) InsertDbInfoInfo(equipName string, data string) *models.AllDBInfoModel {
+func (repository *DbInfoRepository) InsertDbInfoInfo(equipName string, data string) *models.AllDBInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -63,7 +63,7 @@ func (repository *dbInfoRepository) InsertDbInfoInfo(equipName string, data stri
 }
 
 // GetAllTableNamesInfo returns all table names from db for equipment name
-func (repository *dbInfoRepository) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {
+func (repository *DbInfoRepository) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -97,7 +97,7 @@ func (repository *dbInfoRepository) GetAllTableNamesInfo(equipName string) *mode
 }
 
 // GetTableContent returns the content of the specified table from equipment
-func (repository *dbInfoRepository) GetTableContent(equipName string, tableType string, tableName string) []string {
+func (repository *DbInfoRepository) GetTableContent(equipName string, tableType string, tableName string) []string {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -157,7 +157,8 @@ func (repository *dbInfoRepository) GetTableContent(equipName string, tableType 
 	return contents
 }
 
-func (repository *dbInfoRepository) GetDBSystemInfo(equipName string) []map[string]json.RawMessage {
+// GetDBSystemInfo returns permanent system info from db
+func (repository *DbInfoRepository) GetDBSystemInfo(equipName string) []map[string]json.RawMessage {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -176,7 +177,8 @@ func (repository *dbInfoRepository) GetDBSystemInfo(equipName string) []map[stri
 	return maps
 }
 
-func (repository *dbInfoRepository) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
+// GetDBSoftwareInfo returns permanent software info from db
+func (repository *DbInfoRepository) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
 	swInfo := models.DBSoftwareInfoModel{}
 
 	return &swInfo
