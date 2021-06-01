@@ -3,8 +3,9 @@ package models
 import (
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
 	"encoding/json"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 // StudyInWorkModel describes study in work model
@@ -24,6 +25,7 @@ type RawMqttMessage struct {
 	Data  string
 }
 
+// OrganAutoInfoModel describes organ auto info model from equipment
 type OrganAutoInfoModel struct {
 	ID           bson.ObjectId `bson:"_id"`
 	DateTime     time.Time
@@ -36,11 +38,13 @@ type OrganAutoInfoModel struct {
 	Constitution float64
 }
 
+// ErrorDescription describes error message from equipment
 type ErrorDescription struct {
 	Code        string
 	Description string
 }
 
+// GeneratorInfoModel describes generator info model from equipment
 type GeneratorInfoModel struct {
 	ID                bson.ObjectId `bson:"_id"`
 	DateTime          time.Time
@@ -54,23 +58,14 @@ type GeneratorInfoModel struct {
 	ErrorDescriptions []ErrorDescription
 }
 
-// type SoftwareInfoModel struct {
-// 	Id                bson.ObjectId `bson:"_id"`
-// 	DateTime          time.Time
-// 	EquipName         string
-// 	SettingsDB        bool
-// 	ObservationsDB    bool
-// 	Version           string
-// 	XilibVersion      string
-// 	ErrorDescriptions []ErrorDescription
-// }
-
+// DicomInfo describes dicom connection model from equipment
 type DicomInfo struct {
 	Name  string
 	IP    string
 	State float64
 }
 
+// DicomsInfoModel describes all dicom connections model from equipment
 type DicomsInfoModel struct {
 	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
@@ -79,6 +74,7 @@ type DicomsInfoModel struct {
 	WorkList  []DicomInfo
 }
 
+// StandInfoModel describes stand info model from equipment
 type StandInfoModel struct {
 	ID                bson.ObjectId `bson:"_id"`
 	DateTime          time.Time
@@ -86,20 +82,23 @@ type StandInfoModel struct {
 	State             float64
 	Errors            []string
 	RasterState       float64
-	Position_Current  float64
+	PositionCurrent   float64
 	ErrorDescriptions []ErrorDescription
 }
 
+// EquipConnectionState describes connection state model to websocket
 type EquipConnectionState struct {
 	Name      string
 	Connected bool
 }
 
+// HDDVolatileInfoModel describes HDD volatile info model from equipment
 type HDDVolatileInfoModel struct {
 	Letter   string
 	FreeSize string
 }
 
+// SystemVolatileInfoModel describes system volatile hardware info model from equipment
 type SystemVolatileInfoModel struct {
 	ID                 bson.ObjectId `bson:"_id"`
 	DateTime           time.Time
@@ -109,54 +108,61 @@ type SystemVolatileInfoModel struct {
 	MemoryMemoryFreeGb string
 }
 
-////
+// HddDriveInfoModel describes HDD info model from equipment
 type HddDriveInfoModel struct {
 	Letter    string
 	TotalSize string
 }
 
+// ProcessorInfoModel describes CPU info model from equipment
 type ProcessorInfoModel struct {
 	Model string
 }
 
+// MotherboardInfoModel describes motherboard info model from equipment
 type MotherboardInfoModel struct {
 	Model string
 }
 
+// MemoryInfoModel describes memory info model from equipment
 type MemoryInfoModel struct {
 	MemoryTotalGb string
 }
 
+// NetworkInfoModel describes LAN adapters info model from equipment
 type NetworkInfoModel struct {
 	NIC string
 	IP  string
 }
 
+// VGAInfoModel describes videoadapters info model from equipment
 type VGAInfoModel struct {
 	CardName      string
 	DriverVersion string
 	MemoryGb      string
 }
 
+// MonitorInfoModel describes monitors info model from equipment
 type MonitorInfoModel struct {
 	DeviceName string
 	Width      string
 	Height     string
 }
 
+// PhysicalDiskInfoModel describes HDD info model from equipment
 type PhysicalDiskInfoModel struct {
 	FriendlyName string
 	MediaType    string
 	SizeGb       string
 }
 
+// PrinterInfoModel describes printers info model from equipment
 type PrinterInfoModel struct {
 	PrinterName string
-	Port_Name   string
+	PortName    string
 }
 
-////
-
+// SystemInfoModel describes system permanent hardware info model from equipment
 type SystemInfoModel struct {
 	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
@@ -174,6 +180,7 @@ type SystemInfoModel struct {
 	Printer       []PrinterInfoModel
 }
 
+// FullSystemInfoModel describes full system hardware model from equipment
 type FullSystemInfoModel struct {
 	PermanentInfo []SystemInfoModel
 	VolatileInfo  []SystemVolatileInfoModel
@@ -247,12 +254,14 @@ type UserModel struct {
 	Disabled     bool
 }
 
+// RabbitMQSettingsModel describes rabbitMQ settings model
 type RabbitMQSettingsModel struct {
 	Host     string
 	User     string
 	Password string
 }
 
+// MongoDBSettingsModel describes mongodb settings model
 type MongoDBSettingsModel struct {
 	ConnectionString string
 	DBName           string
@@ -282,23 +291,23 @@ type AllDBInfoModel struct {
 	ID        bson.ObjectId `bson:"_id"`
 	DateTime  time.Time
 	EquipName string
-	Hospital      map[string]json.RawMessage//[]byte
-	Software   map[string]json.RawMessage//string
-	System map[string]json.RawMessage//string
-	Atlas  map[string]json.RawMessage//string
+	Hospital  map[string]json.RawMessage //[]byte
+	Software  map[string]json.RawMessage //string
+	System    map[string]json.RawMessage //string
+	Atlas     map[string]json.RawMessage //string
 }
 
-// AllDBInfoModel describes all db info from equipment info DB model
+// AllDBTablesModel describes all db info from equipment info DB model
 type AllDBTablesModel struct {
 	EquipName string
-	Hospital      []string
-	Software   []string
-	System []string
-	Atlas  []string
+	Hospital  []string
+	Software  []string
+	System    []string
+	Atlas     []string
 }
 
 // DBSoftwareInfoModel describes both general and atlas software permanent info DB model
 type DBSoftwareInfoModel struct {
 	Software string
-	Atlas     string
+	Atlas    string
 }
