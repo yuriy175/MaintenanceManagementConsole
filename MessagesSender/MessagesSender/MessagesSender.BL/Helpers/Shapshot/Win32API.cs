@@ -11,101 +11,19 @@ using System.Text;
 namespace MessagesSender.MessagesSender.BL.Helpers
 {
     /// <summary>
-    /// rectangle struct
+    /// Win32API wrapper
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    struct RECT
-    {
-        /// <summary>
-        /// Left
-        /// </summary>
-        internal int Left;
-
-        /// <summary>
-        /// Top
-        /// </summary>
-        internal int Top;
-
-        /// <summary>
-        /// Right
-        /// </summary>
-        internal int Right;
-
-        /// <summary>
-        /// Bottom
-        /// </summary>
-        internal int Bottom;
-
-        /// <summary>
-        /// Width
-        /// </summary>
-        internal int Width
-        {
-            get { return Math.Abs(Right - Left); }
-        }
-
-        /// <summary>
-        /// Height
-        /// </summary>
-        internal int Height
-        {
-            get { return Math.Abs(Bottom - Top); }
-        }
-
-        /// <summary>
-        /// string presentation
-        /// </summary>
-        /// <returns>string</returns>
-        public override string ToString()
-        {
-            return string.Format(
-                "Left = {0}, Top = {1}, Right = {2}, Bottom ={3}",
-                Left, Top, Right, Bottom);
-        }
-    }
-
     internal static class Win32API
-    {
-        internal const int SRCCOPY = 13369376;
+	{
+		internal const int WM_SYSCOMMAND = 0x112;
+		internal const int MF_SEPARATOR = 0x800;
+		internal const int MF_STRING = 0x0;
 
-        [DllImport("User32.Dll")]
-        internal static extern void GetClassName(IntPtr hWnd, System.Text.StringBuilder param, int length);
+		internal const int SRCCOPY = 13369376;
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        internal static extern int GetWindowTextLength(IntPtr hWnd);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-        internal delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        internal static extern bool EnumThreadWindows(uint dwThreadId, Win32API.EnumThreadDelegate lpfn, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
-
-        [DllImport("user32.dll")]
-        internal static extern bool AppendMenu(IntPtr hMenu, int wFlags, int wIDNewItem,string lpNewItem);
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool ShowWindow(IntPtr hWnd, WindowShowStyle nCmdShow);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool IsRectEmpty([In] ref RECT lprc);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool ClientToScreen(IntPtr hwnd, ref Point lpPoint);
-
-        internal const int WM_SYSCOMMAND = 0x112;
-        internal const int MF_SEPARATOR = 0x800;
-        internal const int MF_STRING = 0x0;
-
-        /// <summary>Enumeration of the different ways of showing a window using 
-        /// ShowWindow</summary>
-        internal enum WindowShowStyle : uint
+		/// <summary>Enumeration of the different ways of showing a window using 
+		/// ShowWindow</summary>
+		internal enum WindowShowStyle : uint
         {
             /// <summary>Hides the window and activates another window.</summary>
             /// <remarks>See SW_HIDE</remarks>
@@ -174,7 +92,38 @@ namespace MessagesSender.MessagesSender.BL.Helpers
             /// minimizing windows from a different thread.</summary>
             /// <remarks>See SW_FORCEMINIMIZE</remarks>
             ForceMinimized = 11
-        }
+		}
+
+		internal delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+
+		[DllImport("User32.Dll")]
+        internal static extern void GetClassName(IntPtr hWnd, System.Text.StringBuilder param, int length);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll")]
+        internal static extern bool EnumThreadWindows(uint dwThreadId, Win32API.EnumThreadDelegate lpfn, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("user32.dll")]
+        internal static extern bool AppendMenu(IntPtr hMenu, int wFlags, int wIDNewItem,string lpNewItem);
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool ShowWindow(IntPtr hWnd, WindowShowStyle nCmdShow);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool IsRectEmpty([In] ref RECT lprc);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool ClientToScreen(IntPtr hwnd, ref Point lpPoint);
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -192,7 +141,7 @@ namespace MessagesSender.MessagesSender.BL.Helpers
         internal static extern IntPtr DeleteObject(IntPtr hDc);
 
         [DllImport("gdi32.dll", EntryPoint = "BitBlt")]
-        internal static extern bool BitBlt(IntPtr hdcDest, int xDest, int yDest, int wDest, int hDest, IntPtr hdcSource, int xSrc, int ySrc, int RasterOp);
+        internal static extern bool BitBlt(IntPtr hdcDest, int xDest, int yDest, int wDest, int hDest, IntPtr hdcSource, int xSrc, int ySrc, int rasterOp);
 
         [DllImport("gdi32.dll", EntryPoint = "CreateCompatibleBitmap")]
         internal static extern IntPtr CreateCompatibleBitmap(IntPtr hdc, int nWidth, int nHeight);
@@ -237,6 +186,59 @@ namespace MessagesSender.MessagesSender.BL.Helpers
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool IntersectRect(out RECT lprcDst, [In] ref RECT lprcSrc1,
            [In] ref RECT lprcSrc2);
-            
+    }
+
+    /// <summary>
+    /// rectangle struct
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct RECT
+    {
+        /// <summary>
+        /// Left
+        /// </summary>
+        internal int Left;
+
+        /// <summary>
+        /// Top
+        /// </summary>
+        internal int Top;
+
+        /// <summary>
+        /// Right
+        /// </summary>
+        internal int Right;
+
+        /// <summary>
+        /// Bottom
+        /// </summary>
+        internal int Bottom;
+
+        /// <summary>
+        /// Width
+        /// </summary>
+        internal int Width
+        {
+            get { return Math.Abs(Right - Left); }
+        }
+
+        /// <summary>
+        /// Height
+        /// </summary>
+        internal int Height
+        {
+            get { return Math.Abs(Bottom - Top); }
+        }
+
+        /// <summary>
+        /// string presentation
+        /// </summary>
+        /// <returns>string</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                "Left = {0}, Top = {1}, Right = {2}, Bottom ={3}",
+                Left, Top, Right, Bottom);
+        }
     }
 }

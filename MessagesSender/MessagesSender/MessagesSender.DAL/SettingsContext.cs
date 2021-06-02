@@ -1,4 +1,4 @@
-using MessagesSender.DAL.Model;
+﻿using MessagesSender.DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using CommonDAL = Atlas.Common.DAL;

@@ -15,10 +15,10 @@ using Serilog;
 
 namespace MessagesSender.BL.Remoting
 {
-	/// <summary>
-	/// RabbitMQ mqtt sender class
-	/// </summary>
-	public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
+    /// <summary>
+    /// RabbitMQ mqtt sender class
+    /// </summary>
+    public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
     {
         private const string CommonTopic = "Subscribe";
         private const string CommandSubTopic = "/command";
@@ -63,7 +63,8 @@ namespace MessagesSender.BL.Remoting
             IConfigurationService configurationService,
             ILogger logger,
             IEventPublisher eventPublisher,
-            ITopicService topicService) : base(configurationService, logger)
+            ITopicService topicService)
+            : base(configurationService, logger)
         {
             _logger = logger;
             _eventPublisher = eventPublisher;

@@ -115,6 +115,7 @@ namespace MessagesSender.BL
             ConnectionState,
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _ = OnServiceStateChangedAsync(false).Result;
@@ -135,9 +136,6 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnServiceStateChangedAsync(bool isOn)
         {
-            //return await _sendingService.SendInfoToWorkQueueAsync(
-            //   isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
-            //   new { });
             return await _sendingService.SendInfoToCommonMqttAsync(
                isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
                new { });

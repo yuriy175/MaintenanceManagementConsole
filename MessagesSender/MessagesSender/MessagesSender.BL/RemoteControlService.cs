@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
@@ -27,6 +27,9 @@ using Serilog;
 
 namespace MessagesSender.BL
 {
+    /// <summary>
+    /// remote control service interface implementation
+    /// </summary>
     public class RemoteControlService : IRemoteControlService
     {
         private const string InstallPathName = "InstallPath";
@@ -60,10 +63,6 @@ namespace MessagesSender.BL
         private readonly string _installPath = string.Empty;
         private bool _xilibState = false;
         private string _xilog = string.Empty;
-
-        private enum XilogModes { Normal, Detailed }
-
-        private enum XilogLevels { Info, Verbose }
 
         /// <summary>
         /// public constructor
@@ -116,13 +115,17 @@ namespace MessagesSender.BL
             });
 
             _logger.Information("RemoteControlService started");
-        }
+		}
 
-        /// <summary>
-        /// runs TeamViewer
-        /// </summary>
-        /// <returns>result</returns>
-        public async Task<bool> RunTeamViewerAsync()
+		private enum XilogModes { Normal, Detailed }
+
+		private enum XilogLevels { Info, Verbose }
+
+		/// <summary>
+		/// runs TeamViewer
+		/// </summary>
+		/// <returns>result</returns>
+		public async Task<bool> RunTeamViewerAsync()
         {
             Process process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == TeamViewerProcessName);
             Process oldProc = null;
@@ -211,11 +214,11 @@ namespace MessagesSender.BL
                         xilog += @"\xilogs" + DateTime.Now.ToString("_dd_MM_yyyy_HH_mm_ss") + ".etl";
                         await _dbSettingsEntityService.UpsertAppParamAsync(EtlXilibLogsEnabledName, true);
 
+                        // xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
                         RunCommand(
                             XilogsFolder,
                             string.Format(
                                 XilogsCommandLineFormat,
-                                //xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
                                 "1",
                                 XilogModes.Normal,
                                 XilogLevels.Info,

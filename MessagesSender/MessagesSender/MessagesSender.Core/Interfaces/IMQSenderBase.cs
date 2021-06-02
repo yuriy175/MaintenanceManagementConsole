@@ -19,16 +19,10 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <typeparam name="TMsg">message type</typeparam>
         /// <typeparam name="T">entity type</typeparam>
+        /// <param name="msgType">message type</param>
         /// <param name="payload">entity</param>
         /// <returns>result</returns>
         Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload);
-    }
-
-    /// <summary>
-    /// work queue sender interface
-    /// </summary>
-    public interface IWorkqueueSender : IMQSenderBase
-    {
     }
 
     /// <summary>
@@ -47,8 +41,16 @@ namespace MessagesSender.Core.Interfaces
         /// sends a message to a common mqtt
         /// </summary>
         /// <typeparam name="T">entity type</typeparam>
+        /// <param name="msgType">message type</param>
         /// <param name="payload">entity</param>
         /// <returns>result</returns>
         Task<bool> SendCommonAsync<T>(MQMessages msgType, T payload);
+    }
+
+    /// <summary>
+    /// work queue sender interface
+    /// </summary>
+    public interface IWorkqueueSender : IMQSenderBase
+    {
     }
 }

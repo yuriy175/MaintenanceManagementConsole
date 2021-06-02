@@ -7,31 +7,40 @@ using System.Text;
 
 namespace MessagesSender.MessagesSender.BL.Helpers
 {
+    /// <summary>
+    /// WindowSnapshot helper
+    /// </summary>
     internal class WindowSnapshotHelper
     {
-        public static Bitmap MakeSnapshot(IntPtr AppWndHandle, bool IsClientWnd, Win32API.WindowShowStyle nCmdShow)
+        /// <summary>
+        /// Make a window snapshot
+        /// </summary>
+        /// <param name="appWndHandle">window handler</param>
+        /// <param name="isClientWnd">if window client</param>
+        /// <param name="nCmdShow">show style</param>
+        /// <returns>bitmap</returns>
+        public static Bitmap MakeSnapshot(IntPtr appWndHandle, bool isClientWnd, Win32API.WindowShowStyle nCmdShow)
         {
-
-            if (AppWndHandle == IntPtr.Zero || !Win32API.IsWindow(AppWndHandle) || !Win32API.IsWindowVisible(AppWndHandle))
+            if (appWndHandle == IntPtr.Zero || !Win32API.IsWindow(appWndHandle) || !Win32API.IsWindowVisible(appWndHandle))
                 return null;
-            if (Win32API.IsIconic(AppWndHandle))
-                Win32API.ShowWindow(AppWndHandle, nCmdShow);//show it
-            if (!Win32API.SetForegroundWindow(AppWndHandle))
-                return null;//can't bring it to front
-            System.Threading.Thread.Sleep(1000);//give it some time to redraw
+            if (Win32API.IsIconic(appWndHandle))
+                Win32API.ShowWindow(appWndHandle, nCmdShow);
+            if (!Win32API.SetForegroundWindow(appWndHandle))
+                return null;
+            System.Threading.Thread.Sleep(1000);
             RECT appRect;
-            bool res = IsClientWnd ? Win32API.GetClientRect(AppWndHandle, out appRect) : Win32API.GetWindowRect(AppWndHandle, out appRect);
+            bool res = isClientWnd ? Win32API.GetClientRect(appWndHandle, out appRect) : Win32API.GetWindowRect(appWndHandle, out appRect);
             if (!res || appRect.Height == 0 || appRect.Width == 0)
             {
-                return null;//some hidden window
+                return null;
             }
 
-            if (IsClientWnd)
+            if (isClientWnd)
             {
                 Point lt = new Point(appRect.Left, appRect.Top);
                 Point rb = new Point(appRect.Right, appRect.Bottom);
-                Win32API.ClientToScreen(AppWndHandle, ref lt);
-                Win32API.ClientToScreen(AppWndHandle, ref rb);
+                Win32API.ClientToScreen(appWndHandle, ref lt);
+                Win32API.ClientToScreen(appWndHandle, ref rb);
                 appRect.Left = lt.X;
                 appRect.Top = lt.Y;
                 appRect.Right = rb.X;
@@ -61,7 +70,7 @@ namespace MessagesSender.MessagesSender.BL.Helpers
                 Bitmap clsRet = null;
 
                 // get device context of the window...
-                hdcFrom = IsClientWnd ? Win32API.GetDC(AppWndHandle) : Win32API.GetWindowDC(AppWndHandle);
+                hdcFrom = isClientWnd ? Win32API.GetDC(appWndHandle) : Win32API.GetWindowDC(appWndHandle);
 
                 // create dc that we can draw to...
                 hdcTo = Win32API.CreateCompatibleDC(hdcFrom);
@@ -87,7 +96,7 @@ namespace MessagesSender.MessagesSender.BL.Helpers
             {
                 // release ...
                 if (hdcFrom != IntPtr.Zero)
-                    Win32API.ReleaseDC(AppWndHandle, hdcFrom);
+                    Win32API.ReleaseDC(appWndHandle, hdcFrom);
                 if (hdcTo != IntPtr.Zero)
                     Win32API.DeleteDC(hdcTo);
                 if (hBitmap != IntPtr.Zero)
@@ -95,6 +104,11 @@ namespace MessagesSender.MessagesSender.BL.Helpers
             }
         }
 
+        /// <summary>
+        /// Return window handler
+        /// </summary>
+        /// <param name="proc">process</param>
+        /// <returns>window window</returns>
         public static IntPtr GetWindowHandler(System.Diagnostics.Process proc)
         {
             var realWnd = IntPtr.Zero;

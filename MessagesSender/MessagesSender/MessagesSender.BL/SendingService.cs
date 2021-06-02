@@ -109,7 +109,7 @@ namespace MessagesSender.BL
         /// </summary>
         /// <typeparam name="TMsgType">message type</typeparam>
         /// <typeparam name="T">info type</typeparam>
-        /// <param name="msgType">info type</param>
+        /// <param name="msgType">message type</param>
         /// <param name="info">info</param>
         /// <returns>result</returns>
         public async Task<bool> SendInfoToMqttAsync<TMsgType, T>(TMsgType msgType, T info)
@@ -121,7 +121,7 @@ namespace MessagesSender.BL
         /// sends info to common mqtt
         /// </summary>
         /// <typeparam name="T">info type</typeparam>
-        /// <param name="msgType">info type</param>
+        /// <param name="msgType">message type</param>
         /// <param name="info">info</param>
         /// <returns>result</returns>
         public async Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info)
@@ -147,6 +147,7 @@ namespace MessagesSender.BL
             {
                 return;
             }
+
             IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
             _ipAddress = host
                .AddressList

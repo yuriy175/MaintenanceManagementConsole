@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +18,9 @@ namespace MessagesSender.BL.Remoting
     /// </summary>
     public class RabbitMQWorkqueueSender : IWorkqueueSender
     {
+        /// <summary>
+        /// RabbitMQ connection string name
+        /// </summary>
         protected const string RabbitMQConnectionStringName = "ConsoleRabbitMQConnectionString";
 
         private readonly IConfigurationService _configurationService;
@@ -64,41 +67,11 @@ namespace MessagesSender.BL.Remoting
         protected bool Created { get; set; }
 
         /// <summary>
-        /// creates queue
-        /// </summary>
-        /// <param name="exchangeName">queue name</param>
-        /// <returns>result</returns>
-        protected virtual bool CreateAsync()
-        {
-            _connection = CreateConnection(new ConnectionFactory());
-            if (_connection == null)
-            {
-                _logger.Error("No connection");
-                return false;
-            }
-
-            _channel = _connection.CreateModel();
-            if (_channel == null)
-            {
-                _logger.Error("No channel");
-                return false;
-            }
-
-            _channel.QueueDeclare(queue: _queueName,
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-            Created = true;
-
-            return Created;
-        }
-
-        /// <summary>
         /// sends a message
         /// </summary>
         /// <typeparam name="TMsg">message type</typeparam>
         /// <typeparam name="T">entity type</typeparam>
+        /// <param name="msgType">message type</param>
         /// <param name="payload">entity</param>
         /// <returns>result</returns>
         public Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
@@ -136,6 +109,38 @@ namespace MessagesSender.BL.Remoting
             }
         }
 
+        /// <summary>
+        /// creates queue
+        /// </summary>
+        /// <param name="exchangeName">queue name</param>
+        /// <returns>result</returns>
+        protected virtual bool CreateAsync()
+        {
+            _connection = CreateConnection(new ConnectionFactory());
+            if (_connection == null)
+            {
+                _logger.Error("No connection");
+                return false;
+            }
+
+            _channel = _connection.CreateModel();
+            if (_channel == null)
+            {
+                _logger.Error("No channel");
+                return false;
+            }
+
+            _channel.QueueDeclare(
+                queue: _queueName,
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+            Created = true;
+
+            return Created;
+        }
+
         private IConnection CreateConnection(ConnectionFactory connectionFactory)
         {
             // Server=medprom.ml;User=user;Password=medtex
@@ -150,7 +155,7 @@ namespace MessagesSender.BL.Remoting
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"MQ connection error: { connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); 
+                _logger.Error(ex, $"MQ connection error: {connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); 
                 return null;
             }
         }

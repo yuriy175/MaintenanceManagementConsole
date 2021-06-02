@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
@@ -78,7 +78,7 @@ namespace MessagesSender.BL
 
             _logger.Information("SoftwareWatchService started");
         }
-        
+
         public void Dispose()
         {
             // Stop listening to events
@@ -111,7 +111,7 @@ namespace MessagesSender.BL
         {
             try
             {
-                var version = _configurationService.Get<string>(AtlasInstanceVersionName, @"");
+                var version = _configurationService.Get<string>(AtlasInstanceVersionName, string.Empty);
                 if (string.IsNullOrEmpty(version))
                 {
                     var installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
@@ -136,7 +136,6 @@ namespace MessagesSender.BL
             try
             {
                 EventLogQuery subscriptionQuery = new EventLogQuery(
-                    //"Security",
                     "Application",
                     PathType.LogName
                     );
@@ -198,7 +197,7 @@ namespace MessagesSender.BL
 
         private async void OnUserLogIn((string UserName, IEnumerable<string> UserRoles) userProps)
         {
-            _ = _sendingService.SendInfoToMqttAsync(                
+            _ = _sendingService.SendInfoToMqttAsync(
                     MQMessages.SoftwareInfo,
                     new
                     {

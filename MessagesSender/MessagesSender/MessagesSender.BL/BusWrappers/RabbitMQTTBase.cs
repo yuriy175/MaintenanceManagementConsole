@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -84,7 +84,9 @@ namespace MessagesSender.BL.Remoting
             return Created;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Dispose resources
+        /// </summary>
         public virtual void Dispose()
         {
             using (_mqttClient)
@@ -176,7 +178,7 @@ namespace MessagesSender.BL.Remoting
 
                 _mqttClient = null;
 
-                _logger.Error(ex, $"MQ connection error: { connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); ;
+                _logger.Error(ex, $"MQ connection error: {connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); 
                 return _mqttClient;
             }
 
@@ -197,17 +199,3 @@ namespace MessagesSender.BL.Remoting
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

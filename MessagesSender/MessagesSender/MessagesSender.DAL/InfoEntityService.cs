@@ -193,12 +193,12 @@ namespace MessagesSender.DAL
         /// <summary>
         /// set news table data sent
         /// </summary>
-        /// <returns></returns>
+        /// <returns>result</returns>
         public async Task<bool> SetNewsDataSentAsync()
         {
             using (var context = CreateContext())
             {
-                foreach(var news in context.News.Where(n => n.Active).ToList())
+                foreach (var news in context.News.Where(n => n.Active).ToList())
                 {
                     news.Active = false;
                 }
@@ -226,7 +226,9 @@ namespace MessagesSender.DAL
         {
             if (!news.ContainsKey(tableName))
             {
-                return new T[]{ };
+                return new T[]
+                {
+                };
             }
 
             var rowIds = news[tableName];

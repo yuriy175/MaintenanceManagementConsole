@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -168,6 +168,7 @@ namespace MessagesSender.BL
         }
 
         #region depricated region
+
         /// <summary>
         /// gets hdd drives info
         /// </summary>
@@ -191,12 +192,12 @@ namespace MessagesSender.BL
                 await Task.Yield();
                 float prevLoad = _totalCpu.NextValue();
                 float prevIdle = _idleCpu.NextValue();
-                System.Threading.Thread.Sleep(1000); //This avoid that answer always 0
+                System.Threading.Thread.Sleep(1000); 
                 float load = _totalCpu.NextValue();
                 float idle = _idleCpu.NextValue();
-                var diff = (load - idle) / Environment.ProcessorCount;
+                var diff = Math.Abs(load - idle) / Environment.ProcessorCount;
 
-                Console.WriteLine("total "+ load + " idle" + idle + " cpu load " + diff);
+                Console.WriteLine("total " + load + " idle" + idle + " cpu load " + diff);
 
                 return (string.Empty, (long)diff);
             }
@@ -214,7 +215,7 @@ namespace MessagesSender.BL
                 var gcMemoryInfo = GC.GetGCMemoryInfo();
 
                 var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-                return ((long)(gcMemoryInfo.TotalAvailableMemoryBytes / Megabyte), (long)(ramCounter.NextValue()));
+                return ((long)(gcMemoryInfo.TotalAvailableMemoryBytes / Megabyte), (long)ramCounter.NextValue());
             }
             catch (Exception ex)
             {
@@ -242,7 +243,6 @@ namespace MessagesSender.BL
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), exePath);
             var processStartInfo = new ProcessStartInfo(
                 path, 
-                // @"D:\Gits\MaintenanceManagementConsole\MessagesSender\MessagesSender\bin\Debug\netcoreapp3.1\MQTTsysinfo\MQTTsysinfo.exe",
                 args);
             processStartInfo.WorkingDirectory = Path.GetDirectoryName(path);
             

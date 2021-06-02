@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -86,9 +86,8 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
-                //_mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
+                // _mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
                 //   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
-
                 _mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
                             (MQCommands.ProcessDoseArrived, state => OnDosimeterState(state)));
 
@@ -244,7 +243,7 @@ namespace MessagesSender.BL
             result = await _webClientService.SendAsync<bool>(
                 "Dosimeter",
                 "RequestDose",
-                new Dictionary<string, string> { { "dosimeterId", "1"} });
+                new Dictionary<string, string> { { "dosimeterId", "1" } });
 
             return true;
         }

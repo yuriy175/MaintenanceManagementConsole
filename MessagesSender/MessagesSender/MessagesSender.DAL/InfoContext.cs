@@ -165,31 +165,7 @@ namespace MessagesSender.DAL
 
             return new InfoContext(_options, logger);
         }
-
-        /// <inheritdoc/>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<AppParam>().ToTable("appparam");
-            modelBuilder.Entity<Dependency>().ToTable("dependencies");
-            modelBuilder.Entity<AtlasSW>().ToTable("atlas");
-            modelBuilder.Entity<Detector>().ToTable("detector");
-            // modelBuilder.Entity<Dicom>().ToTable("dicom");
-            modelBuilder.Entity<DicomPrinter>().ToTable("dicom_printers");
-            modelBuilder.Entity<HardDrive>().ToTable("hard_drive");
-            modelBuilder.Entity<HospitalInfo>().ToTable("hospital_info");
-            modelBuilder.Entity<Lan>().ToTable("lan");
-            modelBuilder.Entity<LogicalDisk>().ToTable("logical_disks");
-            modelBuilder.Entity<Modem>().ToTable("modem");
-            modelBuilder.Entity<Motherboard>().ToTable("motherboard");
-            modelBuilder.Entity<OsInfo>().ToTable("os_info");
-            modelBuilder.Entity<SqlDatabase>().ToTable("sql_databases");
-            modelBuilder.Entity<SqlService>().ToTable("sql_service");
-            modelBuilder.Entity<VideoAdapter>().ToTable("videoadapter");
-            modelBuilder.Entity<News>().ToTable("news");
-
-            base.OnModelCreating(modelBuilder);
-        }
-
+        
         /// <summary>
         /// creates db options
         /// </summary>
@@ -204,13 +180,35 @@ namespace MessagesSender.DAL
         {
             return new DbContextOptionsBuilder<T>()
                        .UseSqlite(
-
-                            // "Filename=TestDatabase.db", options =>
-                            connectionString, options =>
+                            connectionString,
+                            options =>
                             {
                             }
                        )
                        .Options;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppParam>().ToTable("appparam");
+            modelBuilder.Entity<Dependency>().ToTable("dependencies");
+            modelBuilder.Entity<AtlasSW>().ToTable("atlas");
+            modelBuilder.Entity<Detector>().ToTable("detector");
+            modelBuilder.Entity<DicomPrinter>().ToTable("dicom_printers");
+            modelBuilder.Entity<HardDrive>().ToTable("hard_drive");
+            modelBuilder.Entity<HospitalInfo>().ToTable("hospital_info");
+            modelBuilder.Entity<Lan>().ToTable("lan");
+            modelBuilder.Entity<LogicalDisk>().ToTable("logical_disks");
+            modelBuilder.Entity<Modem>().ToTable("modem");
+            modelBuilder.Entity<Motherboard>().ToTable("motherboard");
+            modelBuilder.Entity<OsInfo>().ToTable("os_info");
+            modelBuilder.Entity<SqlDatabase>().ToTable("sql_databases");
+            modelBuilder.Entity<SqlService>().ToTable("sql_service");
+            modelBuilder.Entity<VideoAdapter>().ToTable("videoadapter");
+            modelBuilder.Entity<News>().ToTable("news");
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

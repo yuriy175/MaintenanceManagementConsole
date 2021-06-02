@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -75,7 +75,6 @@ namespace MessagesSender.BL.Remoting
                 {
                     using (Stream requestStream = request.GetRequestStream())
                     {
-                        //requestStream.Write(fileContents, 0, fileContents.Length);
                         var buffer = new byte[4096 * 2];
                         int nRead = 0;
                         while ((nRead = sourceStream.Read(buffer, 0, buffer.Length)) != 0)
