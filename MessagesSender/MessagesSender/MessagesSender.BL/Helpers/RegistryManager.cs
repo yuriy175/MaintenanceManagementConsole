@@ -8,10 +8,20 @@ using Microsoft.Win32;
 
 namespace MessagesSender.BL.Helpers
 {
+    /// <summary>
+    /// Registry manager
+    /// </summary>
     internal sealed class RegistryManager
     {
+        /// <summary>
+        /// Registry policies key
+        /// </summary>
         public const string RegistryPoliciesKey = @"Software\Microsoft\Windows\CurrentVersion\Policies";
 
+        /// <summary>
+        /// Set policy if disable taskmanager
+        /// </summary>
+        /// <param name="disableTaskManager">if disable taskmanager</param>
         public static void SetPolicies(bool disableTaskManager)
         {
             try

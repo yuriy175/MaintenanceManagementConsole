@@ -94,8 +94,18 @@ namespace MessagesSender.BL.Remoting
             }
         }
 
+        /// <summary>
+        /// Get topic
+        /// </summary>
+        /// <param name="equipInfo">equipment info</param>
+        /// <returns></returns>
         protected abstract Task<string> GetTopicAsync((string Name, string Number) equipInfo);
 
+        /// <summary>
+        /// Create connection
+        /// </summary>
+        /// <param name="connectionFactory">connection factory</param>
+        /// <returns></returns>
         protected virtual async Task<IManagedMqttClient> CreateConnection(ConnectionFactory connectionFactory)
         {
             CreateConnectionProps();

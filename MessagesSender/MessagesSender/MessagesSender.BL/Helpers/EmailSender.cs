@@ -39,22 +39,7 @@ namespace MessagesSender.BL.Helpers
             _logger = logger;
             _topicService = topicService;
         }
-
-        /// <summary>
-        /// sends file
-        /// </summary>
-        /// <param name="logPath">log file path</param>
-        /// <returns>result</returns>
-        /*public static async Task<bool> SendAtlasLogsAsync(string logPath)
-        {
-            
-
-            var emailMessage = CreateMessage(clientInfo.EmailFrom, clientInfo.EmailTo, $"Логи Атлас", $"Логи Атлас", logPath);
-            await SendEmailAsync(clientInfo.Smtp, clientInfo.EmailFrom, clientInfo.Password, emailMessage);
-
-            return true;
-        }*/
-
+        
         /// <summary>
         /// sends teamviewer file
         /// </summary>

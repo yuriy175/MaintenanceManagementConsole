@@ -10,9 +10,13 @@ namespace MessagesSender.Core.Model
     internal class Constants
     {
         /// <summary>
-        /// RabbitMQConnectionString
+        /// RabbitMQ connection string
         /// </summary>
         public const string RabbitMQConnectionStringName = "ConsoleRabbitMQConnectionString";
+
+        /// <summary>
+        /// FtpClient connection sring
+        /// </summary>
         public const string FtpClientConnectionStringName = "FtpClientConnectionString";        
     }
 }

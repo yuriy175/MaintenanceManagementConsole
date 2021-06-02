@@ -76,7 +76,7 @@ namespace MessagesSender.BL.Remoting
         /// </summary>
         /// <typeparam name="TMsg">message type</typeparam>
         /// <typeparam name="T">entity type</typeparam>
-        /// <param name="msgType">message type</param>
+        /// <param name="msgType">messge type</param>
         /// <param name="payload">entity</param>
         /// <returns>result</returns>
         public async Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)

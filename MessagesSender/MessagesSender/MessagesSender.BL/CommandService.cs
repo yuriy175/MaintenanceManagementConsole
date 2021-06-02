@@ -21,6 +21,9 @@ using Serilog;
 
 namespace MessagesSender.BL
 {
+    /// <summary>
+    /// command service
+    /// </summary>
     public class CommandService : ICommandService
     {
         private const string ActivateCommandName = "activate";

@@ -79,6 +79,9 @@ namespace MessagesSender.BL
             _logger.Information("SoftwareWatchService started");
         }
 
+        /// <summary>
+        /// Dispose resources
+        /// </summary>
         public void Dispose()
         {
             // Stop listening to events

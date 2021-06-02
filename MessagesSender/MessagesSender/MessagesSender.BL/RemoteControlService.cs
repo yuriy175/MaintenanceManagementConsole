@@ -74,7 +74,7 @@ namespace MessagesSender.BL
         /// <param name="eventPublisher">event publisher service</param>
         /// <param name="sendingService">sending service</param>
         /// <param name="zipService">zip service</param>
-        /// <param name="emailSender"></param>
+        /// <param name="emailSender">email sender</param>
         /// <param name="ftpClient">ftp client</param>
         /// <param name="topicService">topic service</param>
         public RemoteControlService(

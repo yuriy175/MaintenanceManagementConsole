@@ -19,6 +19,9 @@ using Serilog;
 
 namespace MessagesSender.BL
 {
+    /// <summary>
+    /// topic service interface implementation
+    /// </summary>
     public class TopicService : ITopicService
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;  
