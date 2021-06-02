@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
@@ -115,17 +115,17 @@ namespace MessagesSender.BL
             });
 
             _logger.Information("RemoteControlService started");
-		}
+        }
 
-		private enum XilogModes { Normal, Detailed }
+        private enum XilogModes { Normal, Detailed }
 
-		private enum XilogLevels { Info, Verbose }
+        private enum XilogLevels { Info, Verbose }
 
-		/// <summary>
-		/// runs TeamViewer
-		/// </summary>
-		/// <returns>result</returns>
-		public async Task<bool> RunTeamViewerAsync()
+        /// <summary>
+        /// runs TeamViewer
+        /// </summary>
+        /// <returns>result</returns>
+        public async Task<bool> RunTeamViewerAsync()
         {
             Process process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == TeamViewerProcessName);
             Process oldProc = null;

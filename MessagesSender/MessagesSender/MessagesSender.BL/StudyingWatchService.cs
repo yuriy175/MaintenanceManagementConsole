@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -103,7 +103,7 @@ namespace MessagesSender.BL
             return await _sendingService.SendInfoToMqttAsync(
                 MQCommands.SetOrganAuto,
                 new
-				{ 
+                { 
                     organAuto.OrganAuto.Name, 
                     organAuto.OrganAuto.Laterality,
                     organAuto.OrganAuto.Projection,
