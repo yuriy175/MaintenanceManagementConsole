@@ -1,10 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace MessagesSender.BL.BusWrappers.Helpers
 {
+    /// <summary>
+    /// Connection properties creator
+    /// </summary>
     internal static class ConnectionPropsCreator
     {
         private const string ConnectionStringValuesSeparator = ";";
