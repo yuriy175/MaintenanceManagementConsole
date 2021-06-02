@@ -1,21 +1,21 @@
-using System;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -34,18 +34,12 @@ namespace MessagesSender.BL
         private readonly IEventPublisher _eventPublisher;
         private readonly IDicomStateService _dicomStateService;
         private readonly IRemoteControlService _remoteControlService;
-		private readonly IImagesWatchService _imagesWatchService;
+        private readonly IImagesWatchService _imagesWatchService;
         private readonly IHospitalInfoService _hospitalInfoService;
         private readonly IDBDataService _dbDataService;        
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
-
-        private enum MessageType
-        {
-            StudyInWork = 1,
-            ConnectionState,
-        }
 
         /// <summary>
         /// public constructor
@@ -80,7 +74,7 @@ namespace MessagesSender.BL
             ISoftwareWatchService softwareWatchService,
             IDicomStateService dicomStateService,
             IRemoteControlService remoteControlService,
-			IImagesWatchService imagesWatchService,
+            IImagesWatchService imagesWatchService,
             IHospitalInfoService hospitalInfoService,
             IDBDataService dbDataService)
         {
@@ -97,7 +91,7 @@ namespace MessagesSender.BL
             _softwareWatchService = softwareWatchService;
             _dicomStateService = dicomStateService;
             _remoteControlService = remoteControlService;
-			_imagesWatchService = imagesWatchService;
+            _imagesWatchService = imagesWatchService;
             _hospitalInfoService = hospitalInfoService;
             _dbDataService = dbDataService;
 
@@ -113,6 +107,12 @@ namespace MessagesSender.BL
                 }.RunTasksAsync();
 
             _logger.Information("Main service started");
+        }
+        
+        private enum MessageType
+        {
+            StudyInWork = 1,
+            ConnectionState,
         }
 
         public void Dispose()

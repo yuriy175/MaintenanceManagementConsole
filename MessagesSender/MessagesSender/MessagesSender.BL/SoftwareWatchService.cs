@@ -1,26 +1,26 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Core.Interfaces;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
-using System.Collections.Generic;
-using System.IO;
-using System.Diagnostics;
-using Atlas.Common.Core.Interfaces;
-using System.Diagnostics.Eventing.Reader;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -78,6 +78,17 @@ namespace MessagesSender.BL
 
             _logger.Information("SoftwareWatchService started");
         }
+        
+        public void Dispose()
+        {
+            // Stop listening to events
+            if (_watcher != null)
+            {
+                _watcher.Enabled = false;
+            }
+
+            _watcher?.Dispose();
+        }
 
         private void OnDeactivateArrivedAsync()
         {            
@@ -85,7 +96,8 @@ namespace MessagesSender.BL
 
         private Task<bool> OnActivateArrivedAsync()
         {
-            return _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
+            return _sendingService.SendInfoToMqttAsync(
+                MQMessages.SoftwareInfo,
                 new
                 {
                     SettingsDB = true,
@@ -151,22 +163,22 @@ namespace MessagesSender.BL
         private void EventLogEventRead(object obj, EventRecordWrittenEventArgs arg)
         {
             var eventRecord = arg.EventRecord;
-			try
-			{
-				// Make sure there was no error reading the event.
-				if (eventRecord != null && eventRecord.Level == 2)
-				{
+            try
+            {
+                // Make sure there was no error reading the event.
+                if (eventRecord != null && eventRecord.Level == 2)
+                {
                     SendCommonErrorAsync(eventRecord.LevelDisplayName, eventRecord.ProviderName);
-				}
-				else
-				{
-					_logger.Error("The event instance was null.");
-				}
-			}
-			catch (Exception ex)
-			{
-				_logger.Error(ex, "EventLogEventRead error");
-			}
+                }
+                else
+                {
+                    _logger.Error("The event instance was null.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "EventLogEventRead error");
+            }
         }
 
         private Task SubscribeMQRecevers()
@@ -186,53 +198,50 @@ namespace MessagesSender.BL
 
         private async void OnUserLogIn((string UserName, IEnumerable<string> UserRoles) userProps)
         {
-            _ = _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareInfo,
+            _ = _sendingService.SendInfoToMqttAsync(                
+                    MQMessages.SoftwareInfo,
                     new
                     {
                         Atlas_User = new
                         {
                             User = userProps.UserName,
                             Role = userProps.UserRoles?.FirstOrDefault(),
-                        }
+                        },
                     });
         }
 
         private void SendCommonErrorAsync(string code, string description)
         {
-            _ = _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareMsgInfo,
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.SoftwareMsgInfo,
                     new
                     {
-                        ErrorDescriptions = new[] {
-                        new {
-                            Code = code,
-                            Description = description,
-                        }
-                    }
+                        ErrorDescriptions = new[]
+                        {
+                            new
+                            {
+                                Code = code,
+                                Description = description,
+                            }
+                        },
                     });
         }
 
         private void SendAtlasErrorAsync(int code, string description)
         {
-            _ = _sendingService.SendInfoToMqttAsync(MQMessages.SoftwareMsgInfo,
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.SoftwareMsgInfo,
                     new
                     {
-                        AtlasErrorDescriptions = new[] {
-                        new {
-                            Code = code,
-                            Description = description,
-                        }
-                    }
+                        AtlasErrorDescriptions = new[]
+                        {
+                            new
+                            {
+                                Code = code,
+                                Description = description,
+                            }
+                        },
                     });
-        }
-
-        public void Dispose()
-        {
-            // Stop listening to events
-            if (_watcher != null)
-            {
-                _watcher.Enabled = false;
-            }
-            _watcher?.Dispose();
         }
     }
 }

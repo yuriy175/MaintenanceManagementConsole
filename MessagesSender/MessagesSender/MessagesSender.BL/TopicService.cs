@@ -1,21 +1,21 @@
-using System;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -47,7 +47,7 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<string> GetTopicAsync()
         {
-            if(string.IsNullOrEmpty(_mainTopic))
+            if (string.IsNullOrEmpty(_mainTopic))
             {
                 var equipInfo = await _dbSettingsEntityService.GetEquipmentInfoAsync();
                 _mainTopic = $"{equipInfo.Name}/{equipInfo.Number}";

@@ -1,4 +1,4 @@
-﻿using MessagesSender.DAL.Model;
+using MessagesSender.DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using CommonDAL = Atlas.Common.DAL;
@@ -35,7 +35,7 @@ namespace MessagesSender.DAL
         /// <param name="connectionString">connection string to db</param>
         /// <param name="logger">logger.</param>
         /// <returns>context</returns>
-        public new static SettingsContext Create(
+        public static new SettingsContext Create(
             string connectionString,
             ILogger logger)
         {

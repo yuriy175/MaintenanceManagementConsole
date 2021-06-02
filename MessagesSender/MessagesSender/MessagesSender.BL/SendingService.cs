@@ -1,21 +1,21 @@
-using System;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -64,7 +64,7 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> CreateAsync()
         {
-            await Task.WhenAll(new []
+            await Task.WhenAll(new[]
                 {
                     Task.Run(async () =>
                     {
@@ -87,21 +87,21 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> SendInfoToWorkQueueAsync<TMsgType, T>(TMsgType msgType, T info)
         {
-			if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
-			{
-				_logger.Error($"wrong equipment props {_equipmentInfo.Number} {_equipmentInfo.Name}");
-				return false;
-			}
+            if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
+            {
+                _logger.Error($"wrong equipment props {_equipmentInfo.Number} {_equipmentInfo.Name}");
+                return false;
+            }
 
-			return await SendInfoAsync(_wqSender, msgType,
-				new
-				{
-					_equipmentInfo.Number,
-					_equipmentInfo.Name,
-					ipAddress = _ipAddress?.ToString(),
-					msgType = msgType.ToString(),
-					info,
-				});
+            return await SendInfoAsync(_wqSender, msgType,
+                new
+                {
+                    _equipmentInfo.Number,
+                    _equipmentInfo.Name,
+                    ipAddress = _ipAddress?.ToString(),
+                    msgType = msgType.ToString(),
+                    info,
+                });
         }
 
         /// <summary>
@@ -117,24 +117,24 @@ namespace MessagesSender.BL
             return await SendInfoAsync(_mqttSender, msgType, info);
         }
 
-		/// <summary>
-		/// sends info to common mqtt
-		/// </summary>
-		/// <typeparam name="T">info type</typeparam>
-		/// <param name="msgType">info type</param>
-		/// <param name="info">info</param>
-		/// <returns>result</returns>
-		public async Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info)
-		{
-			return await _mqttSender.SendCommonAsync(msgType, info);
-		}
-
-		private async Task<bool> SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
+        /// <summary>
+        /// sends info to common mqtt
+        /// </summary>
+        /// <typeparam name="T">info type</typeparam>
+        /// <param name="msgType">info type</param>
+        /// <param name="info">info</param>
+        /// <returns>result</returns>
+        public async Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info)
         {
-			return await sender.SendAsync(
-				msgType,
-				info);
-		}
+            return await _mqttSender.SendCommonAsync(msgType, info);
+        }
+
+        private async Task<bool> SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
+        {
+            return await sender.SendAsync(
+                msgType,
+                info);
+        }
 
         private async Task GetEquipmentInfoAsync()
         {

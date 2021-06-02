@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,7 +78,7 @@ namespace MessagesSender.DAL
             IEnumerable<Screen> Screens,
             IEnumerable<VideoAdapter> VideoAdapters
             )> GetSystemDataAsync(Dictionary<string, int[]> news)
-		{
+        {
             var hardDrives = await GetNewRowsAsync(news, HardDriveTableName,
                 (context, rows) => context.HardDrives.Where(e => rows.Contains(e.RowId)));
             var lans = await GetNewRowsAsync(news, LanTableName,

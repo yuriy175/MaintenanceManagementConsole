@@ -1,22 +1,22 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
-using System.Collections.Generic;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -30,35 +30,35 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
-		private readonly IWebClientService _webClientService;
+        private readonly IWebClientService _webClientService;
 
-		private bool _isActivated = false;
+        private bool _isActivated = false;
 
-		/// <summary>
-		/// public constructor
-		/// </summary>
-		/// <param name="logger">logger</param>
-		/// <param name="dbObservationsEntityService">observations database connector</param>
-		/// <param name="mqService">MQ service</param>
-		/// <param name="eventPublisher">event publisher service</param>
-		/// <param name="sendingService">sending service</param>
-		/// <param name="webClientService">web client service</param>
-		public StudyingWatchService(
+        /// <summary>
+        /// public constructor
+        /// </summary>
+        /// <param name="logger">logger</param>
+        /// <param name="dbObservationsEntityService">observations database connector</param>
+        /// <param name="mqService">MQ service</param>
+        /// <param name="eventPublisher">event publisher service</param>
+        /// <param name="sendingService">sending service</param>
+        /// <param name="webClientService">web client service</param>
+        public StudyingWatchService(
             ILogger logger,
             IObservationsEntityService dbObservationsEntityService,
             IMQCommunicationService mqService,
             IEventPublisher eventPublisher,
             ISendingService sendingService,
-			IWebClientService webClientService)
+            IWebClientService webClientService)
         {
             _logger = logger;
             _dbObservationsEntityService = dbObservationsEntityService;
             _mqService = mqService;
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
-			_webClientService = webClientService;
+            _webClientService = webClientService;
 
-			_eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
+            _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
             SubscribeMQRecevers();
@@ -80,12 +80,6 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnStudyInWorkAsync(int studyId)
         {
-            // always send study changes
-            //if (!_isActivated)
-            //{
-            //    return true;
-            //}
-
             var studyProps = await _dbObservationsEntityService.GetStudyInfoByIdAsync(studyId);
             if (!studyProps.HasValue)
             {
@@ -100,12 +94,6 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnOrganAutoAsync((OrganAuto OrganAuto, int LogicalWsId) organAuto)
         {
-            // always send organ auto changes
-            //if (!_isActivated)
-            //{
-            //    return true;
-            //}
-
             if (organAuto.OrganAuto == null)
             {
                 _logger.Error("OnOrganAutoAsync error : no OrganAuto arrived");
@@ -120,7 +108,7 @@ namespace MessagesSender.BL
                     organAuto.OrganAuto.Projection,
                     organAuto.OrganAuto.Direction,
                     organAuto.OrganAuto.AgeId,
-                    organAuto.OrganAuto.Constitution
+                    organAuto.OrganAuto.Constitution,
                 });
         }
 
@@ -133,17 +121,17 @@ namespace MessagesSender.BL
         {
             _isActivated = true;
 
-			var organAuto = await _webClientService.SendAsync<OrganAuto>(
-				"OrganAutoManipulation",
-				"GetCurrentOrganAuto",
-				new Dictionary<string, string> { });
+            var organAuto = await _webClientService.SendAsync<OrganAuto>(
+                "OrganAutoManipulation",
+                "GetCurrentOrganAuto",
+                new Dictionary<string, string> { });
 
-			if (organAuto != null)
-			{
-				return await OnOrganAutoAsync((organAuto, 1));
-			}
+            if (organAuto != null)
+            {
+                return await OnOrganAutoAsync((organAuto, 1));
+            }
 
-			return false;
+            return false;
         }
     }
 }

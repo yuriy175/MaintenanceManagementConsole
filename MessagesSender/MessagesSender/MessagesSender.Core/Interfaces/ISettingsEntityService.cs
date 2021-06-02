@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,20 +23,20 @@ namespace MessagesSender.Core.Interfaces
         /// <returns>dicom info</returns>
         Task<IEnumerable<(int Id, string Name, string IP, int ServiceRole)>> GetDicomServicesAsync();
 
-		/// <summary>
-		/// inserts or updates app parameter
-		/// </summary>
-		/// <param name="appParam">app parameter name</param>
-		/// <param name="value">value</param>
-		/// <returns>new app parameter</returns>
-		Task<AppParams> UpsertAppParamAsync<T>(string appParam, T value);
+        /// <summary>
+        /// inserts or updates app parameter
+        /// </summary>
+        /// <param name="appParam">app parameter name</param>
+        /// <param name="value">value</param>
+        /// <returns>new app parameter</returns>
+        Task<AppParams> UpsertAppParamAsync<T>(string appParam, T value);
 
-		/// <summary>
-		/// get app parameter by name
-		/// </summary>
-		/// <param name="appParam">app parameter name</param>
-		/// <returns>app parameter</returns>
-		Task<AppParams> GetAppParamAsync(string appParam);
+        /// <summary>
+        /// get app parameter by name
+        /// </summary>
+        /// <param name="appParam">app parameter name</param>
+        /// <returns>app parameter</returns>
+        Task<AppParams> GetAppParamAsync(string appParam);
 
         /// <summary>
         /// Get hospital info info.

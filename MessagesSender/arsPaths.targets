@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BinariesRoot>$(SolutionDir)\Binaries</BinariesRoot>
+    <SourceRoot>$(BinariesRoot)\..\Source</SourceRoot>
+    <AtlasRoot>$(BinariesRoot)\..\</AtlasRoot>
+  </PropertyGroup>
+</Project>

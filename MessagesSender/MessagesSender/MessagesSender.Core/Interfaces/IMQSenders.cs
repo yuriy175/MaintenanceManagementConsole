@@ -1,11 +1,11 @@
+﻿using System;
+using System.Text;
+using System.Threading.Tasks;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
+using MessagesSender.Core.Model;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using Serilog;
-using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Text;
-using MessagesSender.Core.Model;
 
 namespace MessagesSender.Core.Interfaces
 {
@@ -14,14 +14,14 @@ namespace MessagesSender.Core.Interfaces
     /// </summary>
     public interface IMQSenderBase : IDisposable
     {
-		/// <summary>
-		/// sends a message
-		/// </summary>
-		/// <typeparam name="TMsg">message type</typeparam>
-		/// <typeparam name="T">entity type</typeparam>
-		/// <param name="payload">entity</param>
-		/// <returns>result</returns>
-		Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload);
+        /// <summary>
+        /// sends a message
+        /// </summary>
+        /// <typeparam name="TMsg">message type</typeparam>
+        /// <typeparam name="T">entity type</typeparam>
+        /// <param name="payload">entity</param>
+        /// <returns>result</returns>
+        Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload);
     }
 
     /// <summary>
@@ -43,12 +43,12 @@ namespace MessagesSender.Core.Interfaces
         /// <returns>result</returns>
         Task<bool> CreateAsync((string Name, string Number) equipInfo);
 
-		/// <summary>
-		/// sends a message to a common mqtt
-		/// </summary>
-		/// <typeparam name="T">entity type</typeparam>
-		/// <param name="payload">entity</param>
-		/// <returns>result</returns>
-		Task<bool> SendCommonAsync<T>(MQMessages msgType, T payload);
-	}
+        /// <summary>
+        /// sends a message to a common mqtt
+        /// </summary>
+        /// <typeparam name="T">entity type</typeparam>
+        /// <param name="payload">entity</param>
+        /// <returns>result</returns>
+        Task<bool> SendCommonAsync<T>(MQMessages msgType, T payload);
+    }
 }

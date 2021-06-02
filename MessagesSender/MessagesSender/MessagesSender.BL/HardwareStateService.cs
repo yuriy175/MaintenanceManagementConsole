@@ -1,22 +1,22 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
-using System.Collections.Generic;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -62,7 +62,7 @@ namespace MessagesSender.BL
             _sendingService = sendingService;
             _webClientService = webClientService;
 
-			_eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
+            _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
             SubscribeMQRecevers();
@@ -86,15 +86,15 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
-				//_mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
-				//   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
+                //_mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
+                //   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
 
-				_mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
+                _mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
                             (MQCommands.ProcessDoseArrived, state => OnDosimeterState(state)));
 
-				_mqService.Subscribe<MQCommands, (int Id, string Type, AecState State)>(
-							(MQCommands.AecStateArrived, state => OnAecState(state)));
-			});
+                _mqService.Subscribe<MQCommands, (int Id, string Type, AecState State)>(
+                            (MQCommands.AecStateArrived, state => OnAecState(state)));
+            });
         }
 
         private void OnStandState((int Id, StandState State) state)
@@ -171,15 +171,15 @@ namespace MessagesSender.BL
                 new { state.Id, state.State });
         }
 
-		private void OnAecState((int Id, string Type, AecState State) state)
-		{
-			if (_isActivated)
-			{
-				_sendingService.SendInfoToMqttAsync(
-					MQCommands.AecStateArrived,
-					new { state.Id, state.Type, state.State });
-			}
-		}
+        private void OnAecState((int Id, string Type, AecState State) state)
+        {
+            if (_isActivated)
+            {
+                _sendingService.SendInfoToMqttAsync(
+                    MQCommands.AecStateArrived,
+                    new { state.Id, state.Type, state.State });
+            }
+        }
 
         private void OnDetectorStateChanged((int DetectorId, string DetectorName, DetectorState State) state)
         {
@@ -191,17 +191,17 @@ namespace MessagesSender.BL
             }
         }
 
-		private void OnDetectorFieldChanged((int DetectorId, int? DetectorField) state)
-		{
-			if (_isActivated)
-			{
-				_sendingService.SendInfoToMqttAsync(
-					MQCommands.DetectorStateArrived,
-					new { state.DetectorId, state.DetectorField });
-			}
-		}
+        private void OnDetectorFieldChanged((int DetectorId, int? DetectorField) state)
+        {
+            if (_isActivated)
+            {
+                _sendingService.SendInfoToMqttAsync(
+                    MQCommands.DetectorStateArrived,
+                    new { state.DetectorId, state.DetectorField });
+            }
+        }
 
-		private void OnDeactivateArrivedAsync()
+        private void OnDeactivateArrivedAsync()
         {
             _isActivated = false;
         }
@@ -258,8 +258,8 @@ namespace MessagesSender.BL
                 state.Workstation.HasValue ||
                 state.HeatStatus.HasValue ||
                 state.PedalPressed.HasValue ||
-				state.Focus.HasValue
-			);
+                state.Focus.HasValue
+            );
 
         private bool CanSendStandState(StandState state) =>
             state != null && (
@@ -268,12 +268,12 @@ namespace MessagesSender.BL
                 state.RasterState.HasValue ||
                 state.Position_Current.HasValue ||
 
-				state.Mode.HasValue ||
-				state.Tube_Incline.HasValue ||
-				state.Deck_Incline.HasValue ||
-				state.Camera_Incline.HasValue ||
-				state.Ffd_Current.HasValue ||
-				state.Deck_Height.HasValue
+                state.Mode.HasValue ||
+                state.Tube_Incline.HasValue ||
+                state.Deck_Incline.HasValue ||
+                state.Camera_Incline.HasValue ||
+                state.Ffd_Current.HasValue ||
+                state.Deck_Height.HasValue
             );
 
         private bool CanSendCollimatorStandState(CollimatorState state) =>

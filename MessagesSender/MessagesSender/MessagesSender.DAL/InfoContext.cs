@@ -1,4 +1,4 @@
-using MessagesSender.DAL.Model;
+﻿using MessagesSender.DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using CommonDAL = Atlas.Common.DAL;
@@ -156,7 +156,7 @@ namespace MessagesSender.DAL
         /// <param name="connectionString">connection string to db</param>
         /// <param name="logger">logger.</param>
         /// <returns>context</returns>
-        public new static InfoContext Create(
+        public static new InfoContext Create(
             string connectionString,
             ILogger logger)
         {
@@ -197,17 +197,17 @@ namespace MessagesSender.DAL
         /// <param name="connectionString">connection string to db</param>
         /// <param name="logger">logger</param>
         /// <returns>db options</returns>
-        protected new static DbContextOptions<T> CreateOptions<T>(
+        protected static new DbContextOptions<T> CreateOptions<T>(
             string connectionString,
             ILogger logger)
             where T : CommonDAL.DbContextBase
         {
             return new DbContextOptionsBuilder<T>()
-                       .UseSqlite( 
-                                   // "Filename=TestDatabase.db", options =>
-                                   connectionString, options =>
-                                   {
-                                // options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+                       .UseSqlite(
+
+                            // "Filename=TestDatabase.db", options =>
+                            connectionString, options =>
+                            {
                             }
                        )
                        .Options;

@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MessagesSender.Core.Model
 {
-    class Constants
+    internal class Constants
     {
         public const string RabbitMQConnectionStringName = "ConsoleRabbitMQConnectionString";
-		public const string FtpClientConnectionStringName = "FtpClientConnectionString";		
-	}
+        public const string FtpClientConnectionStringName = "FtpClientConnectionString";        
+    }
 }

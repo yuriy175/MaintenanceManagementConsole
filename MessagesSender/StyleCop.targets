@@ -1,0 +1,15 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition="'$(ExcludeFromAnalyzers)'!='True'">
+    <Analyzer Include="$(BinariesRoot)\StyleCop.Analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="$(BinariesRoot)\StyleCop.Analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+    <AdditionalFiles Include="$(BinariesRoot)\stylecop.json" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(BinariesRoot)\Atlas.StyleCop.ruleset</CodeAnalysisRuleSet>
+
+    <CodeAnalysisRuleSet
+       Condition="'$(Configuration)'=='Release' and '$(SkipCheckDocs)'!='True'"
+       >$(BinariesRoot)\Atlas.StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+</Project>

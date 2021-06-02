@@ -1,20 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MessagesSender.Core.Interfaces;
 using MessagesSender.MessagesSender.BL.Helpers;
 using MimeKit;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MessagesSender.BL.Helpers
 {
     /// <summary>
-	/// email service
-	/// </summary>
-    class EmailSender : IEmailSender
+    /// email service
+    /// </summary>
+    internal class EmailSender : IEmailSender
     {
         private readonly ILogger _logger;
         private readonly ITopicService _topicService;
@@ -24,7 +24,6 @@ namespace MessagesSender.BL.Helpers
                 (
                       "smtp.mail.ru",
                       "yuriy_nv@mail.ru",
-                      //"yuri.vorobyev@mskorp.ru",
                       "sergey.nikiforov@mskorp.ru",
                       "psw");
 
@@ -63,7 +62,7 @@ namespace MessagesSender.BL.Helpers
         /// <returns>result</returns>
         public async Task<bool> SendTeamViewerAsync(string tvPath)
         {
-            if(!File.Exists(tvPath))
+            if (!File.Exists(tvPath))
             {
                 _logger.Error($"SendTeamViewerAsync error : {tvPath} doesn't exists");
             }
@@ -79,13 +78,8 @@ namespace MessagesSender.BL.Helpers
             var emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress("MMC", emailFrom));
-            emailMessage.To.Add(new MailboxAddress("", emailTo));
+            emailMessage.To.Add(new MailboxAddress(string.Empty, emailTo));
             emailMessage.Subject = subject;
-            //emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            //{
-            //    Text = body,
-            //};
-            // create our message text, just like before (except don't set it as the message.Body)
 
             var builder = new BodyBuilder();
 

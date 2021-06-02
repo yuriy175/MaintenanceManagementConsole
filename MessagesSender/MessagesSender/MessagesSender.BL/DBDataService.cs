@@ -1,28 +1,28 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Core.Interfaces;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
+using MessagesSender.BL.BusWrappers.Helpers;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
+using Serilog;
 using MessagesSenderModel = MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
-using System.Collections.Generic;
-using System.IO;
-using System.Diagnostics;
-using Atlas.Common.Core.Interfaces;
-using MessagesSender.BL.BusWrappers.Helpers;
-using System.Reflection;
-using MessagesSender.Core.Model;
 
 namespace MessagesSender.BL
 {
@@ -69,8 +69,7 @@ namespace MessagesSender.BL
         }
 
         private void OnDeactivateArrivedAsync()
-        {
-            
+        {            
         }
 
         private Task<bool> OnActivateArrivedAsync()
@@ -80,7 +79,7 @@ namespace MessagesSender.BL
 
         private async Task<bool> SendAllDBDataAsync()
         {
-			var newsData = await _dbInfoEntityService.GetNewsDataAsync();
+            var newsData = await _dbInfoEntityService.GetNewsDataAsync();
             if (!newsData.Any())
             {
                 return true;
@@ -95,14 +94,15 @@ namespace MessagesSender.BL
             var softwareTask = _dbInfoEntityService.GetSoftwareDataAsync(newTables);
             var systemTask = _dbInfoEntityService.GetSystemDataAsync(newTables);
 
-			await Task.WhenAll(new[] { atlasTask as Task, hospitalTask, softwareTask, systemTask });
+            await Task.WhenAll(new[] { atlasTask as Task, hospitalTask, softwareTask, systemTask });
 
             var atlasData = await atlasTask;
             var hospitalData = await hospitalTask;
             var softwareData = await softwareTask;
             var systemData = await systemTask;
 
-			_ = _sendingService.SendInfoToMqttAsync(MQMessages.AllDBInfo,
+            _ = _sendingService.SendInfoToMqttAsync(
+                MQMessages.AllDBInfo,
                     new
                     {
                         Hospital = new { HospitalInfo = hospitalData?.ToArray() },

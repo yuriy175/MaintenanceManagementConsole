@@ -1,4 +1,4 @@
-using Atlas.Common.Core.Interfaces;
+﻿using Atlas.Common.Core.Interfaces;
 using Atlas.Common.Impls;
 using Atlas.Remoting.Core.Interfaces;
 using Atlas.Remoting.Impls;
@@ -26,17 +26,17 @@ namespace MessagesSender
         /// <returns>updated service collection.</returns>
         public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
-			services.AddSingleton(
-			   typeof(IEventPublisher),
-			   typeof(EventPublisher));
+            services.AddSingleton(
+               typeof(IEventPublisher),
+               typeof(EventPublisher));
             
             services.AddSingleton(
                typeof(ITopicService),
                typeof(TopicService));
 
-			services.AddSingleton(
-			   typeof(IZipService),
-			   typeof(ZipService));
+            services.AddSingleton(
+               typeof(IZipService),
+               typeof(ZipService));
 
             services.AddSingleton(
                typeof(IEmailSender),
@@ -62,11 +62,11 @@ namespace MessagesSender
                typeof(IDicomStateService),
                typeof(DicomStateService));
 
-			services.AddSingleton(
-			   typeof(IImagesWatchService),
-			   typeof(ImagesWatchService));
+            services.AddSingleton(
+               typeof(IImagesWatchService),
+               typeof(ImagesWatchService));
 
-			services.AddSingleton(
+            services.AddSingleton(
                typeof(IStudyingWatchService),
                typeof(StudyingWatchService));
 
@@ -162,11 +162,11 @@ namespace MessagesSender
         /// <returns>updated service collection.</returns>
         public static IServiceCollection AddRemotingServices(this IServiceCollection services)
         {
-			services.AddSingleton(
-			   typeof(IFtpClient),
-			   typeof(FtpClient));
+            services.AddSingleton(
+               typeof(IFtpClient),
+               typeof(FtpClient));
 
-			services.AddSingleton(
+            services.AddSingleton(
                typeof(IWebClientService),
                typeof(WebClientService));
             

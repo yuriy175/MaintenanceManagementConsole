@@ -1,15 +1,15 @@
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Atlas.Common.Core.Interfaces;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
+using MessagesSender.BL.BusWrappers.Helpers;
+using MessagesSender.Core.Interfaces;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using Serilog;
-using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Text;
-using MessagesSender.Core.Interfaces;
-using Atlas.Common.Core.Interfaces;
-using System.Linq;
-using System.IO;
-using MessagesSender.BL.BusWrappers.Helpers;
 
 namespace MessagesSender.BL.Remoting
 {
@@ -94,15 +94,15 @@ namespace MessagesSender.BL.Remoting
             return Created;
         }
 
-		/// <summary>
-		/// sends a message
-		/// </summary>
-		/// <typeparam name="TMsg">message type</typeparam>
-		/// <typeparam name="T">entity type</typeparam>
-		/// <param name="payload">entity</param>
-		/// <returns>result</returns>
-		public Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
-		{
+        /// <summary>
+        /// sends a message
+        /// </summary>
+        /// <typeparam name="TMsg">message type</typeparam>
+        /// <typeparam name="T">entity type</typeparam>
+        /// <param name="payload">entity</param>
+        /// <returns>result</returns>
+        public Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload)
+        {
             if (!Created)
             {
                 return Task.FromResult(false);
@@ -110,14 +110,16 @@ namespace MessagesSender.BL.Remoting
 
             IBasicProperties basicProperties = _channel.CreateBasicProperties();
             basicProperties.Persistent = false;
-            var content = JsonConvert.SerializeObject(payload,
+            var content = JsonConvert.SerializeObject(
+                payload,
                 new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var body = Encoding.UTF8.GetBytes(content);
 
-            _channel.BasicPublish(exchange: "",
-                                 routingKey: _queueName,
-                                 basicProperties: basicProperties,
-                                 body: body);
+            _channel.BasicPublish(
+                exchange: string.Empty,
+                routingKey: _queueName,
+                basicProperties: basicProperties,
+                body: body);
 
             return Task.FromResult(true);
         }
@@ -136,7 +138,7 @@ namespace MessagesSender.BL.Remoting
 
         private IConnection CreateConnection(ConnectionFactory connectionFactory)
         {
-            //Server=medprom.ml;User=user;Password=medtex
+            // Server=medprom.ml;User=user;Password=medtex
             CreateConnectionProps();
             connectionFactory.HostName = _connectionProps?.HostName ?? "localhost";
             connectionFactory.UserName = _connectionProps?.UserName ?? "guest";
@@ -148,7 +150,7 @@ namespace MessagesSender.BL.Remoting
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"MQ connection error: { connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); ;
+                _logger.Error(ex, $"MQ connection error: { connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); 
                 return null;
             }
         }

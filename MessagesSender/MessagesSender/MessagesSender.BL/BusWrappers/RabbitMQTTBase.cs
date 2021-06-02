@@ -1,20 +1,20 @@
-using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
-using RabbitMQ.Client;
-using Serilog;
 using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Text;
-using MessagesSender.Core.Interfaces;
-using Atlas.Common.Core.Interfaces;
-using System.Linq;
 using System.IO;
-using MQTTnet.Extensions.ManagedClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Atlas.Common.Core.Interfaces;
+using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
+using MessagesSender.BL.BusWrappers.Helpers;
+using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
-using MessagesSender.BL.BusWrappers.Helpers;
-using MessagesSender.Core.Model;
+using MQTTnet.Extensions.ManagedClient;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
+using Serilog;
 
 namespace MessagesSender.BL.Remoting
 {
@@ -134,7 +134,7 @@ namespace MessagesSender.BL.Remoting
                 {
                     Console.WriteLine("Disconnected from MQTT Brokers." + connectionFactory.HostName);
                 });
-				                
+                                
                 /*var options = new ManagedMqttClientOptionsBuilder()
                        .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
                        .WithClientOptions(new MqttClientOptionsBuilder()
@@ -170,7 +170,10 @@ namespace MessagesSender.BL.Remoting
             }
             catch (Exception ex)
             {
-                using (_mqttClient) ;
+                using (_mqttClient)
+                {
+                }
+
                 _mqttClient = null;
 
                 _logger.Error(ex, $"MQ connection error: { connectionFactory.HostName}, {connectionFactory.UserName}, {connectionFactory.Password}."); ;

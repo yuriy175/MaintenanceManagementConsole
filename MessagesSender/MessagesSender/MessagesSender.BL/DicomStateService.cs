@@ -1,22 +1,22 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
+using Atlas.Acquisitions.Common.Core;
+using Atlas.Acquisitions.Common.Core.Model;
+using Atlas.Common.Impls.Helpers;
 using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
 using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Serilog;
-using Atlas.Common.Impls.Helpers;
-using System.Net;
-using System.Linq;
-using System.Net.Sockets;
-using Atlas.Acquisitions.Common.Core;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using MessagesSender.Core.Model;
-using Atlas.Acquisitions.Common.Core.Model;
-using System.Collections.Generic;
+using Serilog;
 
 namespace MessagesSender.BL
 {
@@ -82,20 +82,20 @@ namespace MessagesSender.BL
 
             await SendDicomServicesAsync();
 
-			_dicomServices.Where(d => (d.ServiceRole & PACSServiceRole) > 0 || (d.ServiceRole & WorkListServiceRole) > 0)
-				.ToList()
-				.ForEach(d =>
-				{
-					Task.Run(async () =>
-					{
-						var state = await _webClientService.SendAsync<bool>(
-							"Verify",
-							"CheckService",
-							new Dictionary<string, string> { { "serviceId", d.Id.ToString() } });
+            _dicomServices.Where(d => (d.ServiceRole & PACSServiceRole) > 0 || (d.ServiceRole & WorkListServiceRole) > 0)
+                .ToList()
+                .ForEach(d =>
+                {
+                    Task.Run(async () =>
+                    {
+                        var state = await _webClientService.SendAsync<bool>(
+                            "Verify",
+                            "CheckService",
+                            new Dictionary<string, string> { { "serviceId", d.Id.ToString() } });
 
-						await SendDicomServiceStateAsync(d, state);
-					});
-				});
+                        await SendDicomServiceStateAsync(d, state);
+                    });
+                });
 
             return true;
         }
@@ -115,19 +115,20 @@ namespace MessagesSender.BL
                     });
             }
         }
-		private async Task SendDicomServiceStateAsync((int Id, string Name, string IP, int ServiceRole) dicomService, bool state)
-		{
-			if (_isActivated)
-			{
-				var isWL = (dicomService.ServiceRole & WorkListServiceRole) > 0;
-				await _sendingService.SendInfoToMqttAsync(
-					MQMessages.DicomInfo,					
-					new
-					{
-						WorkList = isWL ? new[] { new { dicomService.Name, dicomService.IP, State = state } } : null,
-						PACS = isWL ? null : new[] { new { dicomService.Name, dicomService.IP, State = state }},
-					});
-			}
-		}
-	}
+
+        private async Task SendDicomServiceStateAsync((int Id, string Name, string IP, int ServiceRole) dicomService, bool state)
+        {
+            if (_isActivated)
+            {
+                var isWL = (dicomService.ServiceRole & WorkListServiceRole) > 0;
+                await _sendingService.SendInfoToMqttAsync(
+                    MQMessages.DicomInfo,                    
+                    new
+                    {
+                        WorkList = isWL ? new[] { new { dicomService.Name, dicomService.IP, State = state } } : null,
+                        PACS = isWL ? null : new[] { new { dicomService.Name, dicomService.IP, State = state } },
+                    });
+            }
+        }
+    }
 }

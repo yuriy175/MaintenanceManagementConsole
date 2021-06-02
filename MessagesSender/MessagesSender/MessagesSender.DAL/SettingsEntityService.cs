@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -88,51 +88,51 @@ namespace MessagesSender.DAL
         /// <param name="value">value</param>
         /// <returns>new app parameter</returns>
         public async Task<AppParams> UpsertAppParamAsync<T>(string appParam, T value)
-		{
-			AppParams appParams = null;
-			var paramVal = value.ToString();
+        {
+            AppParams appParams = null;
+            var paramVal = value.ToString();
 
-			await UpsertAction(
-				context =>
-				{
-					return context.AppParams.FirstOrDefault(a => a.ParamName == appParam);
-				},
-				context =>
-				{
-					appParams = new AppParams
-					{
-						ParamName = appParam,
-						ParamValue = paramVal,
-						Comment = appParam,
-					};
-					context.AppParams.Add(appParams);
-				},
-				(context, dbAppParams) =>
-				{
-					appParams = dbAppParams;
-					dbAppParams.ParamValue = paramVal;
-				});
+            await UpsertAction(
+                context =>
+                {
+                    return context.AppParams.FirstOrDefault(a => a.ParamName == appParam);
+                },
+                context =>
+                {
+                    appParams = new AppParams
+                    {
+                        ParamName = appParam,
+                        ParamValue = paramVal,
+                        Comment = appParam,
+                    };
+                    context.AppParams.Add(appParams);
+                },
+                (context, dbAppParams) =>
+                {
+                    appParams = dbAppParams;
+                    dbAppParams.ParamValue = paramVal;
+                });
 
-			return appParams;
-		}
+            return appParams;
+        }
 
-		/// <summary>
-		/// get app parameter by name
-		/// </summary>
-		/// <param name="appParam">app parameter name</param>
-		/// <returns>app parameter</returns>
-		public async Task<AppParams> GetAppParamAsync(string appParam)
-		{
-			return await GetAction<AppParams>(
-							context => context.AppParams.FirstOrDefault(x => x.ParamName == appParam));
-		}
+        /// <summary>
+        /// get app parameter by name
+        /// </summary>
+        /// <param name="appParam">app parameter name</param>
+        /// <returns>app parameter</returns>
+        public async Task<AppParams> GetAppParamAsync(string appParam)
+        {
+            return await GetAction<AppParams>(
+                            context => context.AppParams.FirstOrDefault(x => x.ParamName == appParam));
+        }
 
-		/// <summary>
-		/// Create context.
-		/// </summary>
-		/// <param name="logger">logger.</param>
-		/// <returns>settings context.</returns>
-		protected override SettingsContext CreateContext() =>
+        /// <summary>
+        /// Create context.
+        /// </summary>
+        /// <param name="logger">logger.</param>
+        /// <returns>settings context.</returns>
+        protected override SettingsContext CreateContext() =>
             SettingsContext.Create(
                     _configurationService?["ConnectionStrings", "SettingsConnection"],
                     _logger);

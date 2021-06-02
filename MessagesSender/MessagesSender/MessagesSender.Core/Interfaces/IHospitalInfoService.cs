@@ -1,8 +1,8 @@
-using MessagesSender.Core.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.Core.Interfaces
 {
