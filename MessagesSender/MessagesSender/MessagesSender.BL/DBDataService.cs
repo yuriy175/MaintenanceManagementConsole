@@ -62,19 +62,22 @@ namespace MessagesSender.BL
             _sendingService = sendingService;
             _topicService = topicService;
 
-            _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
-            _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
-
+            // _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
+            // _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
             _logger.Information("DBDataService started");
+        }
+
+        /// <summary>
+        /// Updates db info
+        /// </summary>
+        /// <returns>result</returns>
+        public Task<bool> UpdateDBInfoAsync()
+        {
+            return SendAllDBDataAsync();
         }
 
         private void OnDeactivateArrivedAsync()
         {            
-        }
-
-        private Task<bool> OnActivateArrivedAsync()
-        {
-            return SendAllDBDataAsync();
         }
 
         private async Task<bool> SendAllDBDataAsync()

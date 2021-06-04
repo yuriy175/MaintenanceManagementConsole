@@ -26,6 +26,7 @@ namespace MessagesSender.BL
             XilibLogsOn, 
             Reconnect,
             GetHospitalInfo,
+            UpdateDBInfo,
         }
 
         /// <summary>
@@ -180,6 +181,23 @@ namespace MessagesSender.BL
         public void RegisterGetHospitalInfoCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.GetHospitalInfo].Add(handler);
+        }
+
+        /// <summary>
+        /// UpdateDBInfo command arrived
+        /// </summary>
+        public void UpdateDBInfoCommandArrived()
+        {
+            _eventHandlers[EventTypes.UpdateDBInfo].ForEach(h => (h as Action)());
+        }
+
+        /// <summary>
+        /// register UpdateDBInfo command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>    
+        public void RegisterUpdateDBInfoCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.UpdateDBInfo].Add(handler);
         }
     }
 }

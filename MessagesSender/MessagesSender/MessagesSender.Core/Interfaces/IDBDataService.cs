@@ -12,5 +12,10 @@ namespace MessagesSender.Core.Interfaces
     /// </summary>
     public interface IDBDataService
     {
+        /// <summary>
+        /// Updates db info
+        /// </summary>
+        /// <returns>result</returns>
+        Task<bool> UpdateDBInfoAsync();
     }
 }

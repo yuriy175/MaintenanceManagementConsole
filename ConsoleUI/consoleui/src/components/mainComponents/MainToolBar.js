@@ -14,6 +14,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import LocationOffOutlinedIcon from '@material-ui/icons/LocationOffOutlined';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
 import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex } from '../../model/constants';
@@ -57,7 +58,11 @@ const useStyles = makeStyles((theme) => ({
   userName:{
     // textAlign: "end",
     width: `calc(100% - 180px)`,
-  }
+  },
+  button: {
+    marginRight: '0.5em',
+    width:'30%',
+  },
 }));
 
 export default function MainToolBar() {
@@ -97,17 +102,25 @@ export default function MainToolBar() {
     }
   );
 
+  const equipInfo = currEquipState.equipInfo;
   const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
   const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
   const onTabIndexChange = async (event, newValue) => {
-    if(SummaryDBTabPanelIndex === newValue && currEquipState.equipInfo){
-      const allTables = await EquipWorker.GetAllTables(currEquipState.equipInfo);
+    if(SummaryDBTabPanelIndex === newValue && equipInfo){
+      const allTables = await EquipWorker.GetAllTables(equipInfo);
       currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
   };
 
+  const onUpdateDBInfo = async () =>{
+    if(equipInfo){
+      const res = await EquipWorker.UpdateDBInfo(equipInfo);
+    }
+  }
+
+  const isDBInfoStateUpdating = currEquipState.remoteaccess?.DBInfoStateUpdating;
   return (    
     <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -148,8 +161,19 @@ export default function MainToolBar() {
             </FormControl>
             <Tabs value={selectedTabPanel} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
               <Tab label="Главная" id= "mainTabPanel" />
-              <Tab label="БД" id= "dbTabPanel" />
+              {selectedTab === SummaryTabIndex?
+                <Tab label="БД" id= "dbTabPanel" /> : <></>
+              }
             </Tabs>
+            {selectedTab === SummaryTabIndex?
+                <Button variant="contained" 
+                    color={isDBInfoStateUpdating ? "secondary" : "primary"}
+                    className={classes.button} 
+                    onClick={onUpdateDBInfo} 
+                >
+                  {isDBInfoStateUpdating ? 'Обновляется' : 'Обновить'}
+                </Button> : <></>
+            }
             <Typography variant="h6" noWrap align="right"  className={classes.userName}> 
               {userName}
             </Typography>

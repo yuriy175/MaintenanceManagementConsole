@@ -34,7 +34,8 @@ namespace MessagesSender.BL
         private const string XilibLogsOnCommandName = "xilibLogsOn";
         private const string ReconnectCommandName = "reconnect";
         private const string EquipInfoCommandName = "equipInfo";
-
+        private const string UpdateDBInfoCommandName = "updateDBInfo";
+        
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
 
@@ -64,6 +65,7 @@ namespace MessagesSender.BL
                 { XilibLogsOnCommandName, () => OnXilibLogsOnCommandAsync() },
                 { ReconnectCommandName, () => OnReconnectCommand() },
                 { EquipInfoCommandName, () => OnEquipInfoCommand() },
+                { UpdateDBInfoCommandName, () => OnUpdateDBInfoCommand() },
             };
 
             _eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
@@ -127,6 +129,11 @@ namespace MessagesSender.BL
         private void OnEquipInfoCommand()
         {
             _eventPublisher.GetHospitalInfoCommandArrived();
-        }        
+        }
+
+        private void OnUpdateDBInfoCommand()
+        {
+            _eventPublisher.UpdateDBInfoCommandArrived();
+        }
     }
 }

@@ -224,7 +224,7 @@ namespace MessagesSender.BL
                             {
                                 Code = code,
                                 Description = description,
-                            }
+                            },
                         },
                     });
         }
@@ -241,7 +241,7 @@ namespace MessagesSender.BL
                             {
                                 Code = code,
                                 Description = description,
-                            }
+                            },
                         },
                     });
         }

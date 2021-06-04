@@ -75,7 +75,7 @@ namespace MessagesSender.Core.Interfaces
         /// <summary>
         /// set news table data sent
         /// </summary>
-        /// <returns></returns>
+        /// <returns>result</returns>
         Task<bool> SetNewsDataSentAsync();
     }
 }

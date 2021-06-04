@@ -133,6 +133,10 @@ func (service *EquipController) Handle() {
 		service.sendCommand(w, r, "sendAtlasLogs")
 	})
 
+	http.HandleFunc("/equips/UpdateDBInfo", func(w http.ResponseWriter, r *http.Request) {
+		service.sendCommand(w, r, "updateDBInfo")
+	})
+
 	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {
 		queryString := r.URL.Query()
 

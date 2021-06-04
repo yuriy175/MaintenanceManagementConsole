@@ -106,5 +106,16 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <param name="handler">command handler</param>
         void RegisterGetHospitalInfoCommandArrivedEvent(Action handler);
+
+        /// <summary>
+        /// UpdateDBInfo command arrived
+        /// </summary>
+        void UpdateDBInfoCommandArrived();
+
+        /// <summary>
+        /// register UpdateDBInfo command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>    
+        void RegisterUpdateDBInfoCommandArrivedEvent(Action handler);
     }
 }

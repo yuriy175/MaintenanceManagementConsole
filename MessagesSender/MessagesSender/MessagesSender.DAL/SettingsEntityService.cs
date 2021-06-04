@@ -84,6 +84,7 @@ namespace MessagesSender.DAL
         /// <summary>
         /// inserts or updates app parameter
         /// </summary>
+        /// <typeparam name="T">value type</typeparam>
         /// <param name="appParam">app parameter name</param>
         /// <param name="value">value</param>
         /// <returns>new app parameter</returns>

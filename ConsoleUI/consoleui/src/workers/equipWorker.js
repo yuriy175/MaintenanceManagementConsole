@@ -113,3 +113,11 @@ export async function GetTableContent(equipName, tableType, tableName) {
         return response.data;
     });
 };
+
+export async function UpdateDBInfo(activatedEquipInfo) {
+    return await HandlerWrapper('UpdateDBInfo', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/UpdateDBInfo?activatedEquipInfo=' + activatedEquipInfo);
+        return response.data;
+    });
+};

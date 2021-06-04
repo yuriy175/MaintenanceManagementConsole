@@ -237,16 +237,5 @@ namespace MessagesSender.BL
                 _logger.Error(ex, "Rabbit MQ work queue wrong connection string");
             }
         }
-
-        private void RunCommand(string exePath, string args)
-        {
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), exePath);
-            var processStartInfo = new ProcessStartInfo(
-                path, 
-                args);
-            processStartInfo.WorkingDirectory = Path.GetDirectoryName(path);
-            
-            var process = Process.Start(processStartInfo);
-        }
     }
 }

@@ -2,27 +2,14 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Atlas.Acquisitions.Common.Core;
-using Atlas.Acquisitions.Common.Core.Model;
 using Atlas.Common.Core.Interfaces;
 using Atlas.Common.Impls.Helpers;
-using Atlas.Remoting.BusWrappers.RabbitMQ.Model;
-using Atlas.Remoting.Core.Interfaces;
 using MessagesSender.BL.Helpers;
 using MessagesSender.Core.Interfaces;
 using MessagesSender.Core.Model;
 using MessagesSender.MessagesSender.BL.Helpers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using Serilog;
 
 namespace MessagesSender.BL
@@ -47,6 +34,8 @@ namespace MessagesSender.BL
         private const string XilogsFolder = @".\XiLogs\xilogs.exe";
         private const string TeamViewerImagePath = @".\tvImage.jpeg";
         private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
+        private const string SqlInfoExePath = @".\SqlInfo\sqlinfo.exe";
+        private const string SqlInfoCommandLine = "";
 
         private readonly IConfigurationService _configurationService;
         private readonly ISettingsEntityService _dbSettingsEntityService;
@@ -58,11 +47,13 @@ namespace MessagesSender.BL
         private readonly IFtpClient _ftpClient;
         private readonly ITopicService _topicService;
         private readonly IEmailSender _emailSender;
+        private readonly IDBDataService _dbDataService;
 
         private readonly AsyncLock _xilibSync = new AsyncLock();
         private readonly string _installPath = string.Empty;
         private bool _xilibState = false;
         private string _xilog = string.Empty;
+        private bool _isDBInfoUpdating = false;
 
         /// <summary>
         /// public constructor
@@ -77,6 +68,7 @@ namespace MessagesSender.BL
         /// <param name="emailSender">email sender</param>
         /// <param name="ftpClient">ftp client</param>
         /// <param name="topicService">topic service</param>
+        /// <param name="dbDataService">db raw data service</param>
         public RemoteControlService(
             IConfigurationService configurationService,
             ISettingsEntityService dbSettingsEntityService,
@@ -87,7 +79,8 @@ namespace MessagesSender.BL
             IZipService zipService,
             IEmailSender emailSender,
             IFtpClient ftpClient,
-            ITopicService topicService)
+            ITopicService topicService,
+            IDBDataService dbDataService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -99,22 +92,26 @@ namespace MessagesSender.BL
             _emailSender = emailSender;
             _ftpClient = ftpClient;
             _topicService = topicService;
+            _dbDataService = dbDataService;
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterRunTVCommandArrivedEvent(() => RunTeamViewerAsync());
             _eventPublisher.RegisterRunTaskManCommandEvent(() => RunTaskManagerAsync());
             _eventPublisher.RegisterSendAtlasLogsCommandArrivedEvent(() => SendAtlasLogsAsync());
             _eventPublisher.RegisterXilibLogsOnCommandArrivedEvent(() => XilibLogsOnAsync());
+            _eventPublisher.RegisterUpdateDBInfoCommandArrivedEvent(() => OnUpdateDBInfoAsync());
 
             _installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
 
-            Task.Run(async () =>
-            {
-                var appParam = await _dbSettingsEntityService.GetAppParamAsync(EtlXilibLogsEnabledName);
-                _xilibState = appParam == null ? false : Convert.ToBoolean(appParam.ParamValue);
-            });
-
-            _logger.Information("RemoteControlService started");
+            new Action[]
+                {
+                    async () => _ = await OnUpdateDBInfoAsync(),
+                    async () =>
+                    {
+                        var appParam = await _dbSettingsEntityService.GetAppParamAsync(EtlXilibLogsEnabledName);
+                        _xilibState = appParam == null ? false : Convert.ToBoolean(appParam.ParamValue);
+                    },
+                }.RunTasksAsync();
         }
 
         private enum XilogModes { Normal, Detailed }
@@ -130,10 +127,11 @@ namespace MessagesSender.BL
             Process process = Process.GetProcesses().FirstOrDefault(p => p.ProcessName == TeamViewerProcessName);
             Process oldProc = null;
 
+            var teamViewerPath = File.Exists(TeamViewerPath) ? TeamViewerPath : AdditionalTeamViewerPath;
             if ((process != null && !WindowSnapshotHelper.IsValidUIWnd(process.MainWindowHandle)) || process == null)
             {
                 oldProc = process;
-                process = Process.Start(TeamViewerPath);
+                process = Process.Start(teamViewerPath);
             }
 
             await Task.Delay(2000);
@@ -215,7 +213,7 @@ namespace MessagesSender.BL
                         await _dbSettingsEntityService.UpsertAppParamAsync(EtlXilibLogsEnabledName, true);
 
                         // xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
-                        RunCommand(
+                        ProcessHelper.ProcessRunAndWait(
                             XilogsFolder,
                             string.Format(
                                 XilogsCommandLineFormat,
@@ -231,7 +229,7 @@ namespace MessagesSender.BL
                     }
                     else
                     {
-                        RunCommand(
+                        ProcessHelper.ProcessRunAndWait(
                             XilogsFolder,
                             string.Format(
                                 XilogsCommandLineFormat,
@@ -281,18 +279,24 @@ namespace MessagesSender.BL
             return true;
         }
 
-        private void RunCommand(string exePath, string args)
+        private async Task<bool> OnUpdateDBInfoAsync()
         {
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), exePath);
-            var processStartInfo = new ProcessStartInfo(
-                path,
-                args
-                );
-            processStartInfo.WorkingDirectory = Path.GetDirectoryName(path);
+            if (_isDBInfoUpdating)
+            {
+                await SendDBInfoStateAsync();
+                return true;
+            }
 
-            var process = Process.Start(processStartInfo);
+            _isDBInfoUpdating = true;
+            await SendDBInfoStateAsync();
 
-            process.WaitForExit();
+            ProcessHelper.ProcessRunAndWait(SqlInfoExePath, SqlInfoCommandLine);
+            await _dbDataService.UpdateDBInfoAsync();
+
+            _isDBInfoUpdating = false;
+            await SendDBInfoStateAsync();
+
+            return true;
         }
 
         private async Task SendXilogsStateAsync(bool? ftpSendResult = null)
@@ -323,6 +327,16 @@ namespace MessagesSender.BL
                 new
                 {
                     EmailSendResult = emailSendResult,
+                });
+        }
+
+        private async Task SendDBInfoStateAsync()
+        {
+            await _sendingService.SendInfoToMqttAsync(
+                MQMessages.RemoteAccess,
+                new
+                {
+                    DBInfoStateUpdating = _isDBInfoUpdating,
                 });
         }
     }
