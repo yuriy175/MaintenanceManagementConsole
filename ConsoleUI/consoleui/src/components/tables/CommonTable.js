@@ -25,7 +25,15 @@ const useStyles = makeStyles({
   },
   simpleCell:{
     wordWrap: 'break-word',
-  }
+  },
+  boldCell:{
+    wordWrap: 'break-word',
+    fontWeight: 'bolder',
+    fontSize: 'larger',
+  },  
+  checkBox:{
+    color: 'green',
+  },  
 });
 
 export default function CommonTable(props) {
@@ -49,6 +57,7 @@ export default function CommonTable(props) {
   if(!onRowClick){
     onRowClick = (ev, row) => {};
   }
+  const isRowBold = props.isRowBold;
 
   return (
     <Paper className={classes.root}>
@@ -79,14 +88,24 @@ export default function CommonTable(props) {
                     onClick={(ev) => onRowClick(ev, row)} >
                   {columns.map((column) => {
                     const value = row[column.id];
+                    const checked = column.format ? column.format(row) : value;
                     return (
                       <TableCell key={column.id} align={column.align}
-                        className={column.hasErrors && column.hasErrors(value) ? classes.errorCell : classes.simpleCell}
+                        className={
+                          column.hasErrors && column.hasErrors(value) ? 
+                            classes.errorCell : 
+                            isRowBold && isRowBold(row) ?
+                              classes.boldCell :
+                              classes.simpleCell
+                        }
                       >
                         <div style={{ maxWidth: column.maxWidth}}>
                         {column.checked ? 
                           <Checkbox
-                            checked={column.format ? column.format(row) : value}
+                            style ={{
+                              color: checked ? 'green' : 'gray', //"#00e676",
+                            }}
+                            checked={checked}
                             onChange={(ev) => props.onSelect ? props.onSelect(ev, row) : false}
                             inputProps={{ 'aria-label': 'select all desserts' }}
                           /> : 

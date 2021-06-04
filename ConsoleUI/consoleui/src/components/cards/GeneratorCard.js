@@ -18,6 +18,7 @@ const GeneratorCard = React.memo((props) => {
   const bull = <span className={classes.bullet}>•</span>;
 
   const generator = props.generator;
+  const heatStatus = generator?.State?.HeatStatus;
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -32,11 +33,11 @@ const GeneratorCard = React.memo((props) => {
         <CardRow descr="Напряжение" value={generator?.State?.Kv ? generator.State.Kv + ' кВ' : ''}></CardRow>
         <CardRow descr="Логическое. р. м." value={generator?.State?.Workstation}></CardRow>
         <CardRow descr="Нагрев" 
-          value={generator?.State?.HeatStatus === 2 ? "Высокий" : generator?.State?.HeatStatus === 3 ? "Критический" : "Норм"}
-          rightColor={generator?.State?.HeatStatus === 2 ? "yellow" : generator?.State?.HeatStatus === 3 ? "red" : "green"}
+          value={heatStatus === 2 ? "Высокий" : heatStatus === 3 ? "Критический" : heatStatus === 1 ? "Норм" : ""}
+          rightColor={heatStatus === 2 ? "yellow" : heatStatus === 3 ? "red" :  heatStatus === 1 ? "green" : "gray"}
         ></CardRow>
         <CardRow descr="Фокус" value={
-          generator?.State?.Focus === 1 ? "Большой" : generator?.State?.Focus === 0 ? "Малый" : "Авто"
+          generator?.State?.Focus === 1 ? "Большой" : generator?.State?.Focus === 0 ? "Малый" : ""
         }></CardRow>
         <CardRow descr="Педаль" 
           value={ generator?.State?.PedalPressed === 1 ? "Графия" : generator?.State?.PedalPressed === 2 ? "Скопия" : "Не нажата"} 

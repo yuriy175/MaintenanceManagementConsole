@@ -69,6 +69,11 @@ export default function SummaryBDTabPanel(props) {
     setTableContent(values);
   };
 
+  const isRowBold = (row) =>
+  {
+    return row.Active
+  }
+  
   const columns = tableContent.length === 0 ? [] : Object.keys(tableContent[0]).map(k => getColumn(k));
   const rows = tableContent.length === 0 ? [] : tableContent;
 
@@ -132,36 +137,10 @@ export default function SummaryBDTabPanel(props) {
         <>  
                    <CommonTable 
                      columns={columns} 
-                     rows={rows} ></CommonTable>
+                     rows={rows} 
+                     isRowBold = {isRowBold}></CommonTable>
         </>
       </main>
     </div>
   );
-  // return (
-  //   <div className={classes.root}>
-  //     {
-  //       allDBs ?
-  //         Object.entries(allDBs).map((tableType, ind) => (
-  //           <>
-  //           <Typography variant="h5" component="h2">
-  //             {tableType[0]}
-  //           </Typography>
-  //           {
-  //             Object.entries(tableType[1]).map((table, ind) => (
-  //               <>
-  //                 <Typography variant="h6" component="h2">
-  //                   {table[0]}
-  //                 </Typography>
-  //                 <CommonTable key={ind.toString()} 
-  //                   columns={table[1].length === 0 ? [] : Object.keys(table[1][0]).map(k => getColumn(k))} 
-  //                   rows={table[1].length === 0 ? [] : table[1]} ></CommonTable>
-  //               </>
-  //             ))
-  //           }
-  //           </>
-  //           ))  : 
-  //         <></>    
-  //     }
-  //   </div>
-  // );
 }
