@@ -20,7 +20,8 @@ export function useSetCurrEquip() {
     currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo[0] }); 
 
     const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
-    currEquipDispatch({ type: 'SETSOFTWARE', payload: swInfo }); 
+    currEquipDispatch({ type: 'SETSOFTWARE', 
+      payload: {Atlas: swInfo.Atlas[0], Software: swInfo.Software[0]} }); 
 
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   };

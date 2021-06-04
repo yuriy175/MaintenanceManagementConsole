@@ -308,6 +308,6 @@ type AllDBTablesModel struct {
 
 // DBSoftwareInfoModel describes both general and atlas software permanent info DB model
 type DBSoftwareInfoModel struct {
-	Software string
-	Atlas    string
+	Software []map[string]json.RawMessage
+	Atlas    []map[string]json.RawMessage
 }

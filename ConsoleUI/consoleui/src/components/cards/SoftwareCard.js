@@ -17,17 +17,22 @@ const SoftwareCard = React.memo((props) => {
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
-  const software = props.software;
+  const software = props.software?.Software;
+  const atlas = Array.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;
   const atlasUser = software?.Atlas?.Atlas_User;
+  const osInfo = Array.isArray(software?.OsInfos) ? software?.OsInfos[0] : null; 
+  const sql = Array.isArray(software?.SqlServices) ? software?.SqlServices[0] : null; 
+  const databases = software?.SqlDatabases;
+  
   return (
     <Card className={classes.root}>
       <CardContent>
         <Typography variant="h5" component="h2">
           {bull}Software
         </Typography>
-        <CardRow descr={software?.Sysinfo?.OS} value={software?.Sysinfo?.Version}></CardRow>
-        <CardRow descr={software?.MSSQL?.SQL} value={software?.MSSQL?.Version}></CardRow>
-        <CardRow descr={'Пользователь'} value={software?.User?.Current_user}></CardRow>
+        <CardRow descr={osInfo?.OsCaption} value={osInfo?.OsVersion}></CardRow>
+        <CardRow descr={sql?.SqlName} value={sql?.SqlVersion}></CardRow>
+        <CardRow descr={'Пользователь'} value={osInfo?.CurrentUser}></CardRow>
         <CardRow descr="Ошибки" value={''}></CardRow>
         {software?.ErrorDescriptions?.length ? 
           software.ErrorDescriptions.map((i, ind) => (
@@ -40,9 +45,9 @@ const SoftwareCard = React.memo((props) => {
         <Typography variant="h6" component="h2">
           {bull}Базы данных
         </Typography>
-        {software?.Databases?.length ? 
-          software.Databases.map((i, ind) => (
-            <CardRow key={ind.toString()} descr={i.DB_name} value={i.DB_Status}></CardRow>
+        {databases?.length ? 
+          databases.map((i, ind) => (
+            <CardRow key={ind.toString()} descr={i.Name} value={i.Status}></CardRow>
             ))
             :
             <></>          
@@ -51,11 +56,11 @@ const SoftwareCard = React.memo((props) => {
         <Typography variant="h6" component="h2">
           {bull}Атлас
         </Typography>
-        <CardRow descr="Версия" value={software?.Atlas?.Atlas_Version}></CardRow>
-        <CardRow descr="Xilib" value={software?.Atlas?.XiLibs_Version}></CardRow>
-        <CardRow descr="Конфигурация" value={software?.Atlas?.Complex_type}></CardRow>
-        <CardRow descr="Язык" value={software?.Atlas?.Complex_type}></CardRow>
-        <CardRow descr="Multimonitor" value={software?.Atlas?.Multimonitor}></CardRow>
+        <CardRow descr="Версия" value={atlas?.AtlasVersion}></CardRow>
+        <CardRow descr="Xilib" value={atlas?.XilibsVersion}></CardRow>
+        <CardRow descr="Конфигурация" value={atlas?.ComplexType}></CardRow>
+        <CardRow descr="Язык" value={atlas?.Language}></CardRow>
+        <CardRow descr="Multimonitor" value={atlas?.Multimonitor}></CardRow>
         <CardRow descr={atlasUser?.User ? atlasUser?.Role : 'Пользователь'} 
           value={atlasUser?.User ? atlasUser?.User : 'Не авторизован'}
           rightWidth={'100%'}

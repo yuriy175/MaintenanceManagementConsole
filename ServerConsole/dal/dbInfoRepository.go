@@ -189,5 +189,20 @@ func (repository *DbInfoRepository) GetDBSystemInfo(equipName string) []map[stri
 func (repository *DbInfoRepository) GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel {
 	swInfo := models.DBSoftwareInfoModel{}
 
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
+
+	query := bson.M{"equipname": equipName}
+
+	allInfos := []models.AllDBInfoModel{}
+	allInfoCollection.Find(query).Sort("datetime").All(&allInfos)
+
+	for _, allInfo := range allInfos {
+		swInfo.Software = append(swInfo.Software, allInfo.Software)
+		swInfo.Atlas = append(swInfo.Atlas, allInfo.Atlas)
+	}
+
 	return &swInfo
 }
