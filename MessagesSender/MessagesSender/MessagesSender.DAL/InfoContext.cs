@@ -14,7 +14,7 @@ namespace MessagesSender.DAL
         private static DbContextOptions<InfoContext> _options = null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsContext"/> class.
+        /// Initializes a new instance of the <see cref="MasterContext"/> class.
         /// </summary>
         /// <param name="options">options.</param>
         /// <param name="logger">logger.</param>

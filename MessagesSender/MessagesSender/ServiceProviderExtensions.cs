@@ -151,7 +151,11 @@ namespace MessagesSender
             services.AddSingleton(
                 typeof(IObservationsEntityService),
                 typeof(ObservationsEntityService));
-            
+
+            services.AddSingleton(
+                typeof(IMasterEntityService),
+                typeof(MasterEntityService));
+
             return services;
         }
 

@@ -40,6 +40,7 @@ namespace MessagesSender.BL
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
         private readonly IMQCommunicationService _mqService;
+        private readonly IMasterEntityService _dbMasterEntityService;
 
         private (string Version, string XilibVersion) _versions = (string.Empty, string.Empty);
         private EventLogWatcher _watcher = null;
@@ -50,18 +51,21 @@ namespace MessagesSender.BL
         /// <param name="configurationService">configuration service</param>
         /// <param name="logger">logger</param>
         /// <param name="eventPublisher">event publisher service</param>
+        /// <param name="dbMasterEntityService">master database connector</param>
         /// <param name="sendingService">sending service</param>
         /// <param name="mqService">MQ service</param>
         public SoftwareWatchService(
             IConfigurationService configurationService,
             ILogger logger,
             IEventPublisher eventPublisher,
+            IMasterEntityService dbMasterEntityService,
             ISendingService sendingService,
             IMQCommunicationService mqService)
         {
             _configurationService = configurationService;
             _logger = logger;
             _eventPublisher = eventPublisher;
+            _dbMasterEntityService = dbMasterEntityService;
             _sendingService = sendingService;
             _mqService = mqService;
 
@@ -69,6 +73,7 @@ namespace MessagesSender.BL
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
+            _eventPublisher.RegisterUpdateDBInfoCommandArrivedEvent(() => OnUpdateDBInfoAsync());
 
             new Action[]
                 {
@@ -198,13 +203,24 @@ namespace MessagesSender.BL
             });
         }
 
+        private async Task<bool> OnUpdateDBInfoAsync()
+        {
+            var dbStates = await _dbMasterEntityService.GetDatabasesStatesAsync();
+            if (dbStates != null)
+            {
+                SendDBStatesAsync(dbStates);
+            }
+
+            return true;
+        }
+
         private async void OnUserLogIn((string UserName, IEnumerable<string> UserRoles) userProps)
         {
             _ = _sendingService.SendInfoToMqttAsync(
                     MQMessages.SoftwareInfo,
                     new
                     {
-                        Atlas_User = new
+                        AtlasUser = new
                         {
                             User = userProps.UserName,
                             Role = userProps.UserRoles?.FirstOrDefault(),
@@ -226,6 +242,21 @@ namespace MessagesSender.BL
                                 Description = description,
                             },
                         },
+                    });
+        }
+
+        private void SendDBStatesAsync(IEnumerable<(string Name, string State)> dbStates)
+        {
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.SoftwareMsgInfo,
+                    new
+                    {
+                        DBStates = dbStates.Select(s =>
+                            new
+                            {
+                                Name = s.Name,
+                                Status = s.State,
+                            }),
                     });
         }
 
