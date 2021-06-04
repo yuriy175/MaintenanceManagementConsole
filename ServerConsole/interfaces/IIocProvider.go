@@ -2,6 +2,9 @@ package interfaces
 
 // IIoCProvider describes IoC provider interface
 type IIoCProvider interface {
+	// GetLogger returns ILogger service
+	GetLogger() ILogger 
+
 	// GetMqttReceiverService returns IMqttReceiverService service
 	GetMqttReceiverService() IMqttReceiverService
 

@@ -6,11 +6,15 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"../interfaces"
 	"../models"
 )
 
 // GeneratorRepository describes generator info repository implementation type
 type GeneratorRepository struct {
+	//logger
+	_log interfaces.ILogger
+
 	// DAL service
 	_dalService *dalService
 
@@ -20,10 +24,12 @@ type GeneratorRepository struct {
 
 // GeneratorRepositoryNew creates an instance of generatorRepository
 func GeneratorRepositoryNew(
+	log interfaces.ILogger,
 	dalService *dalService,
 	dbName string) *GeneratorRepository {
 	repository := &GeneratorRepository{}
 
+	repository._log = log
 	repository._dalService = dalService
 	repository._dbName = dbName
 

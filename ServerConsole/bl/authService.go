@@ -8,11 +8,14 @@ import (
 
 // authorization service implementation type
 type authService struct {
+	//logger
+	_log interfaces.ILogger
 }
 
 // AuthServiceNew creates an instance of authService
-func AuthServiceNew() interfaces.IAuthService {
+func AuthServiceNew(log interfaces.ILogger) interfaces.IAuthService {
 	service := &authService{}
+	service._log = log
 
 	return service
 }

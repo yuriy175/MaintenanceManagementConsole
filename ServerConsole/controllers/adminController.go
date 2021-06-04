@@ -11,7 +11,13 @@ import (
 
 // AdminController describes admin controller implementation type
 type AdminController struct {
+	//logger
+	_log interfaces.ILogger
+
+	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
+
+	// web socket service
 	_webSocketService    interfaces.IWebSocketService
 
 	// DAL service
@@ -20,11 +26,13 @@ type AdminController struct {
 
 // AdminControllerNew creates an instance of webSock
 func AdminControllerNew(
+	log interfaces.ILogger,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService) *AdminController {
 	service := &AdminController{}
 
+	service._log = log
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService

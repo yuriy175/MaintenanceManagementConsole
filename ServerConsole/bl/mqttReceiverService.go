@@ -11,6 +11,9 @@ import (
 
 // mqtt receiver service implementation type
 type mqttReceiverService struct {
+	//logger
+	_log interfaces.ILogger
+
 	// synchronization mutex
 	_mtx              sync.RWMutex
 
@@ -25,7 +28,11 @@ type mqttReceiverService struct {
 
 	// equipment service
 	_equipsService interfaces.IEquipsService
+
+	// chanel for DAL communications
 	_dalCh         chan *models.RawMqttMessage
+
+	// chanel for communications with websocket services
 	_webSockCh     chan *models.RawMqttMessage
 
 	// mqtt connections map
@@ -37,6 +44,7 @@ type mqttReceiverService struct {
 
 // MqttReceiverServiceNew creates an instance of mqttReceiverService
 func MqttReceiverServiceNew(
+	log interfaces.ILogger,
 	ioCProvider interfaces.IIoCProvider,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
@@ -46,6 +54,7 @@ func MqttReceiverServiceNew(
 	webSockCh chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
 	service := &mqttReceiverService{}
 
+	service._log = log
 	service._ioCProvider = ioCProvider
 	service._webSocketService = webSocketService
 	service._dalService = dalService

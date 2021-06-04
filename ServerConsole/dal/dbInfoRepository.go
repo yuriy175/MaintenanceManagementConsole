@@ -7,22 +7,30 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"../interfaces"
 	"../models"
 )
 
 // DbInfoRepository describes equipment db info repository implementation type
 type DbInfoRepository struct {
+	//logger
+	_log interfaces.ILogger
+
 	// DAL service
 	_dalService *dalService
+
+	//mongodb db name
 	_dbName string
 }
 
 // DbInfoRepositoryNew creates an instance of dbInfoRepository
 func DbInfoRepositoryNew(
+	log interfaces.ILogger,
 	dalService *dalService,
 	dbName string) *DbInfoRepository {
 	repository := &DbInfoRepository{}
 
+	repository._log = log
 	repository._dalService = dalService
 	repository._dbName = dbName
 

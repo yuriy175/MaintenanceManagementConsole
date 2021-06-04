@@ -14,6 +14,9 @@ import (
 
 // web socket service implementation type
 type webSocketService struct {
+	//logger
+	_log interfaces.ILogger
+
 	// synchronization mutex
 	_mtx sync.RWMutex
 
@@ -35,10 +38,12 @@ type webSocketService struct {
 
 // WebSocketServiceNew creates an instance of webSocketService
 func WebSocketServiceNew(
+	log interfaces.ILogger,
 	ioCProvider interfaces.IIoCProvider,
 	webSockCh chan *models.RawMqttMessage) interfaces.IWebSocketService {
 	service := &webSocketService{}
 
+	service._log = log
 	service._ioCProvider = ioCProvider
 	service._webSockCh = webSockCh
 	service._webSocketConnections = map[string]interfaces.IWebSock{}

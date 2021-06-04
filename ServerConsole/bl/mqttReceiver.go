@@ -13,22 +13,37 @@ import (
 
 // mqtt client implementation type
 type mqttClient struct {
+	//logger
+	_log interfaces.ILogger
+
 	_settingsService interfaces.ISettingsService
 
 	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
+
+	// web socket service
 	_webSocketService    interfaces.IWebSocketService
+
+	// chanel for DAL communications
 	_dalCh               chan *models.RawMqttMessage
+
+	// chanel for communications with websocket services
 	_webSockCh           chan *models.RawMqttMessage
 	_equipsCh            chan *models.RawMqttMessage
 
+	// mqtt client
 	_client      mqtt.Client
+
+	// main topic
 	_topic       string
+
+	// is topic equipment
 	_isEquipment bool
 }
 
 // MqttClientNew creates an instance of mqttClient
 func MqttClientNew(
+	log interfaces.ILogger,
 	settingsService interfaces.ISettingsService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
@@ -36,6 +51,8 @@ func MqttClientNew(
 	webSockCh chan *models.RawMqttMessage,
 	equipsCh chan *models.RawMqttMessage) interfaces.IMqttClient {
 	client := &mqttClient{}
+	
+	client._log = log
 	client._settingsService = settingsService
 	client._mqttReceiverService = mqttReceiverService
 	client._webSocketService = webSocketService

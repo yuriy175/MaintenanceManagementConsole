@@ -5,11 +5,15 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"../interfaces"
 	"../models"
 )
 
 // EquipInfoRepository describes equipment info repository implementation type
 type EquipInfoRepository struct {
+	//logger
+	_log interfaces.ILogger
+
 	// DAL service
 	_dalService *dalService
 
@@ -19,10 +23,12 @@ type EquipInfoRepository struct {
 
 // EquipInfoRepositoryNew creates an instance of EquipInfoRepository
 func EquipInfoRepositoryNew(
+	log interfaces.ILogger,
 	dalService *dalService,
 	dbName string) *EquipInfoRepository {
 	repository := &EquipInfoRepository{}
 
+	repository._log = log
 	repository._dalService = dalService
 	repository._dbName = dbName
 

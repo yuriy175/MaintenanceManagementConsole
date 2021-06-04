@@ -16,6 +16,9 @@ import (
 
 // DAL service implementation type
 type dalService struct {
+	//logger
+	_log interfaces.ILogger
+
 	// chanel for DAL communications
 	_dalCh chan *models.RawMqttMessage
 
@@ -49,11 +52,13 @@ type dalService struct {
 
 // DataLayerServiceNew creates an instance of dalService
 func DataLayerServiceNew(
+	log interfaces.ILogger,
 	authService interfaces.IAuthService,
 	settingsService interfaces.ISettingsService,
 	dalCh chan *models.RawMqttMessage) interfaces.IDalService {
 	service := &dalService{}
 
+	service._log = log
 	service._authService = authService
 	service._settingsService = settingsService
 	service._dalCh = dalCh
@@ -61,11 +66,11 @@ func DataLayerServiceNew(
 	service._dbName = settingsService.GetMongoDBSettings().DBName
 	service._connectionString = settingsService.GetMongoDBSettings().ConnectionString
 
-	service._userRepository = UserRepositoryNew(service, service._dbName, authService)
-	service._equipInfoRepository = EquipInfoRepositoryNew(service, service._dbName)
-	service._generatorRepository = GeneratorRepositoryNew(service, service._dbName)
-	service._standRepository = StandRepositoryNew(service, service._dbName)
-	service._dbInfoRepository = DbInfoRepositoryNew(service, service._dbName)
+	service._userRepository = UserRepositoryNew(log, service, service._dbName, authService)
+	service._equipInfoRepository = EquipInfoRepositoryNew(log, service, service._dbName)
+	service._generatorRepository = GeneratorRepositoryNew(log, service, service._dbName)
+	service._standRepository = StandRepositoryNew(log, service, service._dbName)
+	service._dbInfoRepository = DbInfoRepositoryNew(log, service, service._dbName)
 
 	return service
 }

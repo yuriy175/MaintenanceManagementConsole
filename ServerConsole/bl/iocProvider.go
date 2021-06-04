@@ -10,6 +10,9 @@ import (
 
 // IoC provider implementation type
 type types struct {
+	//logger
+	_log interfaces.ILogger
+
 	// authorization service
 	_authService interfaces.IAuthService
 
@@ -53,16 +56,18 @@ func InitIoc() interfaces.IIoCProvider {
 	webSockCh := make(chan *models.RawMqttMessage)
 	equipsCh := make(chan *models.RawMqttMessage)
 
-	authService := AuthServiceNew()
-	topicStorage := utils.TopicStorageNew()
-	settingsService := SettingsServiceNew()
+	log := utils.LoggerNew()
+	authService := AuthServiceNew(log)
+	topicStorage := utils.TopicStorageNew(log)
+	settingsService := SettingsServiceNew(log)
 
-	dalService := dal.DataLayerServiceNew(authService, settingsService, dalCh)
-	equipsService := EquipsServiceNew(dalService, equipsCh)
-	webSocketService := WebSocketServiceNew(_types, webSockCh)
-	mqttReceiverService := MqttReceiverServiceNew(_types, webSocketService, dalService, equipsService, topicStorage, dalCh, webSockCh)
-	httpService := HTTPServiceNew(mqttReceiverService, webSocketService, dalService, equipsService, authService)
+	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
+	equipsService := EquipsServiceNew(log, dalService, equipsCh)
+	webSocketService := WebSocketServiceNew(log, _types, webSockCh)
+	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, topicStorage, dalCh, webSockCh)
+	httpService := HTTPServiceNew(log, mqttReceiverService, webSocketService, dalService, equipsService, authService)
 
+	_types._log = log
 	_types._authService = authService
 	_types._mqttReceiverService = mqttReceiverService
 	_types._webSocketService = webSocketService
@@ -76,6 +81,11 @@ func InitIoc() interfaces.IIoCProvider {
 	_types._equipsCh = equipsCh
 
 	return _types
+}
+
+// GetLogger returns ILogger service
+func (t *types) GetLogger() interfaces.ILogger {
+	return t._log
 }
 
 // GetMqttReceiverService returns IMqttReceiverService service
@@ -105,10 +115,10 @@ func (t *types) GetHTTPService() interfaces.IHttpService {
 
 // GetWebSocket returns a new IWebSock instance
 func (t *types) GetWebSocket() interfaces.IWebSock {
-	return WebSockNew(t._webSocketService)
+	return WebSockNew(t._log, t._webSocketService)
 }
 
 // GetMqttClient returns a new IMqttClient instance
 func (t *types) GetMqttClient() interfaces.IMqttClient {
-	return MqttClientNew(t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh)
+	return MqttClientNew(t._log, t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh)
 }

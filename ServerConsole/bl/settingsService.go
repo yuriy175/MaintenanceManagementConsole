@@ -3,7 +3,6 @@ package bl
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 
 	"../interfaces"
 	"../models"
@@ -11,6 +10,9 @@ import (
 
 // settings service implementation type
 type settingsService struct {
+	//logger
+	_log interfaces.ILogger
+
 	//rabbitMQ settings
 	RabbitMQ models.RabbitMQSettingsModel `json:"RabbitMQ"`
 
@@ -19,15 +21,16 @@ type settingsService struct {
 }
 
 // SettingsServiceNew creates an instance of settingsService
-func SettingsServiceNew() interfaces.ISettingsService {
+func SettingsServiceNew(log interfaces.ILogger) interfaces.ISettingsService {
 	data, err := ioutil.ReadFile("settings.json")
 	var service settingsService // Models.RabbitMQSettingsModel //
 	json.Unmarshal(data, &service)
 
 	if err != nil {
-		log.Panicf("failed reading data from file: %s", err)
+		log.Error("failed reading data from settings file")
 	}
 
+	service._log = log
 	return &service
 }
 

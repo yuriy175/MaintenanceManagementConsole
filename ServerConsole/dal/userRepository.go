@@ -11,6 +11,9 @@ import (
 
 // UserRepository describes user repository implementation type
 type UserRepository struct {
+	//logger
+	_log interfaces.ILogger
+
 	// DAL service
 	_dalService *dalService
 
@@ -23,11 +26,13 @@ type UserRepository struct {
 
 // UserRepositoryNew creates an instance of UserRepository
 func UserRepositoryNew(
+	log interfaces.ILogger,
 	dalService *dalService,
 	dbName string,
 	authService interfaces.IAuthService) *UserRepository {
 	repository := &UserRepository{}
 
+	repository._log = log
 	repository._dalService = dalService
 	repository._dbName = dbName
 	repository._authService = authService

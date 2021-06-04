@@ -13,6 +13,9 @@ import (
 
 // web socket client implementation type
 type webSock struct {
+	//logger
+	_log interfaces.ILogger
+
 	// web socket service
 	_webSocketService interfaces.IWebSocketService
 
@@ -32,9 +35,12 @@ var upgrader = websocket.Upgrader{
 }
 
 // WebSockNew creates an instance of webSock
-func WebSockNew(webSocketService interfaces.IWebSocketService) interfaces.IWebSock {
+func WebSockNew(
+	log interfaces.ILogger,
+	webSocketService interfaces.IWebSocketService) interfaces.IWebSock {
 	webSock := &webSock{}
 	webSock._webSocketService = webSocketService
+	webSock._log = log
 
 	return webSock
 }

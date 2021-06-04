@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
 	"./bl"
 )
 
@@ -12,6 +9,7 @@ func main() {
 	intCh := make(chan int)
 
 	ioc := bl.InitIoc()
+	log := ioc.GetLogger()
 	mqttReceiverService := ioc.GetMqttReceiverService()
 	webSocketService := ioc.GetWebSocketService()
 	dalService := ioc.GetDalService()
@@ -28,18 +26,14 @@ func main() {
 
 	go mqttReceiverService.SendBroadcastCommand("reconnect")
 
-	fmt.Println("App Go started")
+	log.Info("App Go started")
 	<-intCh
-	fmt.Println("app quitted")
+	log.Info("app quitted")
 }
 
-func a(val int, intCh chan int) {
-	fmt.Println(val)
-	intCh <- val
-}
 
-func failOnError(err error, msg string) {
+/*func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
 	}
-}
+}*/

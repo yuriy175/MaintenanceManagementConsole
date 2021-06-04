@@ -12,7 +12,13 @@ import (
 
 // EquipController describes equipment controller implementation type
 type EquipController struct {
+	//logger
+	_log interfaces.ILogger
+
+	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
+
+	// web socket service
 	_webSocketService    interfaces.IWebSocketService
 
 	// DAL service
@@ -27,6 +33,7 @@ type EquipController struct {
 
 // EquipControllerNew creates an instance of webSock
 func EquipControllerNew(
+	log interfaces.ILogger,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
@@ -34,6 +41,7 @@ func EquipControllerNew(
 	httpService interfaces.IHttpService) *EquipController {
 	service := &EquipController{}
 
+	service._log = log
 	service._httpService = httpService
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService

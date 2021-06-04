@@ -15,6 +15,9 @@ type equipsService struct {
 	// synchronization mutex
 	_mtx        sync.RWMutex
 
+	//logger
+	_log interfaces.ILogger
+
 	// DAL service
 	_dalService interfaces.IDalService
 	_equips     map[string]models.EquipInfoModel
@@ -23,10 +26,12 @@ type equipsService struct {
 
 // EquipsServiceNew creates an instance of equipsService
 func EquipsServiceNew(
+	log interfaces.ILogger,
 	dalService interfaces.IDalService,
 	equipCh chan *models.RawMqttMessage) interfaces.IEquipsService {
 	service := &equipsService{}
 
+	service._log = log
 	service._dalService = dalService
 	service._equipCh = equipCh
 	service._equips = map[string]models.EquipInfoModel{}

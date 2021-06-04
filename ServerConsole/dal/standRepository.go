@@ -6,11 +6,15 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	"../interfaces"
 	"../models"
 )
 
 // StandRepository describes stand repository implementation type
 type StandRepository struct {
+	//logger
+	_log interfaces.ILogger
+
 	// DAL service
 	_dalService *dalService
 
@@ -20,10 +24,12 @@ type StandRepository struct {
 
 // StandRepositoryNew creates an instance of standRepository
 func StandRepositoryNew(
+	log interfaces.ILogger,
 	dalService *dalService,
 	dbName string) *StandRepository {
 	repository := &StandRepository{}
 
+	repository._log = log
 	repository._dalService = dalService
 	repository._dbName = dbName
 
