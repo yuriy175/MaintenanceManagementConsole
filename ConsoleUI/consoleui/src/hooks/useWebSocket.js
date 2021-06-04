@@ -145,7 +145,8 @@ export function useWebSocket(props) {
                 else if(path.startsWith('/ARM/Software/msg'))
                 {
                     const values = data? JSON.parse(data.Data) : null;
-                    currEquipDispatch({ type: 'SETSOFTWAREMSG', payload: values }); 
+                    // currEquipDispatch({ type: 'SETSOFTWAREMSG', payload: values }); 
+                    systemVolatileDispatch({ type: 'SETVOLATILE', payload: values }); 
                 }
                 else if(path.startsWith('/dicom'))
                 {
@@ -157,18 +158,6 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     currEquipDispatch({ type: 'SETREMOTEACCESS', payload: values }); 
                 }
-                // else if(path.startsWith('/ARM/AllDBInfo'))
-                // {
-                //     try
-                //     {
-                //         const values = data? JSON.parse(data.Data) : null;
-                //         currEquipDispatch({ type: 'SETALLDB', payload: values }); 
-                //     }
-                //     catch(e)
-                //     {
-                //         console.log(e);  
-                //     }                    
-                // }
                 else if(path.startsWith('/ARM/Hardware/Processor') ||
                         path.startsWith('/ARM/Hardware/HDD') || 
                         path.startsWith('/ARM/Hardware/Memory'))

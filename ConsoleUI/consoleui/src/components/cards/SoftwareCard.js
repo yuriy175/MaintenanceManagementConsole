@@ -17,12 +17,14 @@ const SoftwareCard = React.memo((props) => {
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
+  const volatile = props.volatile;
+  const dbStates = volatile?.DBStates;
   const software = props.software?.Software;
   const atlas = Array.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;
   const atlasUser = software?.Atlas?.Atlas_User;
   const osInfo = Array.isArray(software?.OsInfos) ? software?.OsInfos[0] : null; 
   const sql = Array.isArray(software?.SqlServices) ? software?.SqlServices[0] : null; 
-  const databases = software?.SqlDatabases;
+  const databases = dbStates ?? software?.SqlDatabases;
   
   return (
     <Card className={classes.root}>
@@ -34,8 +36,8 @@ const SoftwareCard = React.memo((props) => {
         <CardRow descr={sql?.SqlName} value={sql?.SqlVersion}></CardRow>
         <CardRow descr={'Пользователь'} value={osInfo?.CurrentUser}></CardRow>
         <CardRow descr="Ошибки" value={''}></CardRow>
-        {software?.ErrorDescriptions?.length ? 
-          software.ErrorDescriptions.map((i, ind) => (
+        {volatile?.ErrorDescriptions?.length ? 
+          volatile.ErrorDescriptions.map((i, ind) => (
             <CardErrorRow key={ind.toString()}  descr={i.Code} value={i.Description} ></CardErrorRow>
             ))
             :

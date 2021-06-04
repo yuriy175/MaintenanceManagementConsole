@@ -53,7 +53,7 @@ export default function SummaryMainTabPanel(props) {
       <div className={classes.column}>
         <RemoteAccessCard equipInfo={currEquipState.equipInfo} remoteaccess={currEquipState.remoteaccess}></RemoteAccessCard>
         <DicomCard dicom={currEquipState.dicom}></DicomCard>
-        <SoftwareCard software={currEquipState.software}></SoftwareCard>
+        <SoftwareCard software={currEquipState.software} volatile={systemVolatileState.currentVolatile}></SoftwareCard>
       </div>
       {notifyText ? <NotifyDlg title='Данные FTP' text={'Данные посланы ' + (currEquipState.remoteaccess?.FtpSendResult ? 'успешно' : 'с ошибками') }></NotifyDlg> : <></>}
     </div>

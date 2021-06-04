@@ -30,10 +30,17 @@ const useStyles = makeStyles({
     alignSelf: 'center',
   },
   errorDescr: {
-    width:'10%',
+    // width:'10%',
+    width:'65%',
+    margin: '0 0.5em',
+    textAlign: 'left',
+    fontWeight: 'bold',
   },
   errorValue: {
     width:'80%',
+    fontWeight: 'bold',
+    marginRight: '0.5em',
+    textAlign: 'right',
   },
 });
 
