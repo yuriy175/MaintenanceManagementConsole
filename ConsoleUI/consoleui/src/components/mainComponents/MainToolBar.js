@@ -110,6 +110,8 @@ export default function MainToolBar() {
       const allTables = await EquipWorker.GetAllTables(equipInfo);
       currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
     }
+    else if(SummaryHistoryTabPanelIndex === newValue){      
+    }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
   };
