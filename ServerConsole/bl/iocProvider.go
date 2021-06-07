@@ -37,6 +37,9 @@ type types struct {
 	// equipment service
 	_equipsService   interfaces.IEquipsService
 
+	// events service
+	_eventsService   interfaces.IEventsService
+
 	// chanel for DAL communications
 	_dalCh chan *Models.RawMqttMessage
 
@@ -45,6 +48,9 @@ type types struct {
 
 	// chanel for communications with equipment service
 	_equipsCh chan *Models.RawMqttMessage
+
+	// chanel for communications with events service
+	_eventsCh chan *Models.RawMqttMessage
 }
 
 // types instance
@@ -55,6 +61,7 @@ func InitIoc() interfaces.IIoCProvider {
 	dalCh := make(chan *models.RawMqttMessage)
 	webSockCh := make(chan *models.RawMqttMessage)
 	equipsCh := make(chan *models.RawMqttMessage)
+	eventsCh := make(chan *models.RawMqttMessage)
 
 	log := utils.LoggerNew()
 	authService := AuthServiceNew(log)
@@ -63,10 +70,12 @@ func InitIoc() interfaces.IIoCProvider {
 
 	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(log, dalService, equipsCh)
-	webSocketService := WebSocketServiceNew(log, _types, webSockCh)
-	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, topicStorage, dalCh, webSockCh)
+	webSocketService := WebSocketServiceNew(log, _types, webSockCh)	
+	eventsService := EventsServiceNew(log, webSocketService, dalService, eventsCh)
+	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService, 
+		topicStorage, dalCh, webSockCh, eventsCh)
 	httpService := HTTPServiceNew(log, mqttReceiverService, webSocketService, dalService, equipsService, authService)
-
+	
 	_types._log = log
 	_types._authService = authService
 	_types._mqttReceiverService = mqttReceiverService
@@ -76,9 +85,11 @@ func InitIoc() interfaces.IIoCProvider {
 	_types._httpService = httpService
 	_types._topicStorage = topicStorage
 	_types._settingsService = settingsService
+	_types._eventsService = eventsService
 	_types._dalCh = dalCh
 	_types._webSockCh = webSockCh
 	_types._equipsCh = equipsCh
+	_types._eventsCh = eventsCh
 
 	return _types
 }
@@ -106,6 +117,11 @@ func (t *types) GetDalService() interfaces.IDalService {
 // GetEquipsService returns IEquipsService service
 func (t *types) GetEquipsService() interfaces.IEquipsService {
 	return t._equipsService
+}
+
+// GetEventsService returns IEventsService service
+func (t *types) GetEventsService() interfaces.IEventsService {
+	return t._eventsService
 }
 
 // GetHTTPService returns IHttpService service

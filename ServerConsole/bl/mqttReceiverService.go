@@ -29,11 +29,17 @@ type mqttReceiverService struct {
 	// equipment service
 	_equipsService interfaces.IEquipsService
 
+	// events service
+	_eventsService interfaces.IEventsService
+
 	// chanel for DAL communications
 	_dalCh         chan *models.RawMqttMessage
 
 	// chanel for communications with websocket services
 	_webSockCh     chan *models.RawMqttMessage
+
+	// chanel for communications with events services
+	_eventsCh     chan *models.RawMqttMessage
 
 	// mqtt connections map
 	// key - topic
@@ -49,9 +55,11 @@ func MqttReceiverServiceNew(
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
 	equipsService interfaces.IEquipsService,
+	eventsService interfaces.IEventsService,
 	topicStorage interfaces.ITopicStorage,
 	dalCh chan *models.RawMqttMessage,
-	webSockCh chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
+	webSockCh chan *models.RawMqttMessage,
+	eventsCh  chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
 	service := &mqttReceiverService{}
 
 	service._log = log
@@ -59,9 +67,11 @@ func MqttReceiverServiceNew(
 	service._webSocketService = webSocketService
 	service._dalService = dalService
 	service._equipsService = equipsService
+	service._eventsService = eventsService
 	service._topicStorage = topicStorage
 	service._dalCh = dalCh
 	service._webSockCh = webSockCh
+	service._eventsCh = eventsCh
 	service._mqttConnections = map[string]interfaces.IMqttClient{}
 
 	return service
@@ -74,8 +84,9 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	topics := service._topicStorage.GetTopics()
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
-	dalService := service._dalService
+	// dalService := service._dalService
 	equipsService := service._equipsService
+	eventsService := service._eventsService
 
 	fmt.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
 
@@ -106,7 +117,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 			go service.SendCommand(rootTopic, "equipInfo")
 		}
 
-		go dalService.InsertConnectEvent(rootTopic)
+		go eventsService.InsertConnectEvent(rootTopic)
 	}
 
 	fmt.Println(rootTopic + " created")

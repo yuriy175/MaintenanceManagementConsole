@@ -17,6 +17,9 @@ type IIoCProvider interface {
 	// GetEquipsService returns IEquipsService service
 	GetEquipsService() IEquipsService
 
+	// GetEventsService returns IEventsService service
+	GetEventsService() IEventsService
+
 	// GetHTTPService returns IHttpService service
 	GetHTTPService() IHttpService
 
