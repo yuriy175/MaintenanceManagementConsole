@@ -42,4 +42,11 @@ type IDalService interface {
 
 	// GetDBSoftwareInfo returns permanent software info from db
 	GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel
+
+	// events repository
+	// GetEvents returns all events from db
+	GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel
+
+	// InsertEvent inserts equipment connection state info into db
+	InsertConnectEvent(equipName string)*models.EventModel 
 }

@@ -21,7 +21,9 @@ export function useSetCurrEquip() {
 
     const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
     currEquipDispatch({ type: 'SETSOFTWARE', 
-      payload: {Atlas: swInfo.Atlas[0], Software: swInfo.Software[0]} }); 
+      payload: {
+        Atlas: swInfo.Atlas ? swInfo.Atlas[0] : undefined, 
+        Software: swInfo.Software ? swInfo.Software[0] : undefined} }); 
 
     await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
   };

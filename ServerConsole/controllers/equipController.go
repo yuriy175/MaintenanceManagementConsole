@@ -323,6 +323,9 @@ func (service *EquipController) sendSearchResults(
 	} else if equipType == "Stands" {
 		standInfo := dalService.GetStandInfo(equipName, startDate, endDate)
 		json.NewEncoder(w).Encode(standInfo)
+	} else if equipType == "Events" {
+		events := dalService.GetEvents(equipName, startDate, endDate)
+		json.NewEncoder(w).Encode(events)
 	}
 }
 

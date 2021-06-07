@@ -25,7 +25,7 @@ import * as AdminWorker from '../../workers/adminWorker'
 import * as EquipWorker from '../../workers/equipWorker'
 
 const drawerWidth = 240;
-const mainMenu = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий', 'История', 'Администрирование'];
+const mainMenu = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий', 'Администрирование'];
 
 const useStyles = makeStyles((theme) => ({
   root: {

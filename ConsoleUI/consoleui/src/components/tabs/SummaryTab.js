@@ -1,10 +1,11 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { SummaryDBTabPanelIndex, MainTabPanelIndex } from '../../model/constants';
+import { SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex } from '../../model/constants';
 
 import SummaryMainTabPanel from './summaryPanels/SummaryMainTabPanel'
 import SummaryBDTabPanel from './summaryPanels/SummaryBDTabPanel'
+import SummaryHistoryTabPanel from './summaryPanels/SummaryHistoryTabPanel'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,6 +22,7 @@ export default function SummaryTab(props) {
     <div>
       {tabPanelIndex === MainTabPanelIndex ? <SummaryMainTabPanel/> : <></>}
       {tabPanelIndex === SummaryDBTabPanelIndex ? <SummaryBDTabPanel/> : <></>}
+      {tabPanelIndex === SummaryHistoryTabPanelIndex ? <SummaryHistoryTabPanel/> : <></>}      
     </div>
   );
 }

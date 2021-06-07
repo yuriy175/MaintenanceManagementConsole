@@ -311,3 +311,13 @@ type DBSoftwareInfoModel struct {
 	Software []map[string]json.RawMessage
 	Atlas    []map[string]json.RawMessage
 }
+
+// EventModel describes event DB model
+type EventModel struct {
+	ID               bson.ObjectId `bson:"_id"`
+	DateTime         time.Time
+	EquipName        string
+	Type        string
+	Title        string
+	Description string
+}

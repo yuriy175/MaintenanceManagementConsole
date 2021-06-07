@@ -52,6 +52,9 @@ const (
 	// UsersTableName is Users table name
 	UsersTableName = "Users"
 
+	// EventsTableName is Events table name
+	EventsTableName = "Events"
+
 	// MQInfoQueueName is rabbit mq queue name
 	MQInfoQueueName = "SystemInfoQueue"
 

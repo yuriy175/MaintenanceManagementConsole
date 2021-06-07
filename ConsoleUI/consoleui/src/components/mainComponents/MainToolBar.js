@@ -17,7 +17,7 @@ import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
-import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex } from '../../model/constants';
+import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex } from '../../model/constants';
 
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabControl: {
     margin: theme.spacing(1),
-    minWidth: 340,    
+    minWidth: 500,    
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
@@ -162,7 +162,10 @@ export default function MainToolBar() {
             <Tabs value={selectedTabPanel} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
               <Tab label="Главная" id= "mainTabPanel" />
               {selectedTab === SummaryTabIndex?
-                <Tab label="БД" id= "dbTabPanel" /> : <></>
+                  <Tab label="БД" id= "dbTabPanel" /> : <></>
+              }
+              {selectedTab === SummaryTabIndex?
+                  <Tab label="История" id= "histTabPanel" /> : <></>
               }
             </Tabs>
             {selectedTab === SummaryTabIndex?

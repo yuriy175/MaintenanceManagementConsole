@@ -15,8 +15,9 @@ export const SummaryTabIndex = 0;
 export const EquipsTabIndex = 1;
 export const MapTabIndex = 2;
 export const EventsTabIndex = 3;
-export const HistoryTabIndex = 4;
-export const AdminTabIndex = 5;
+// export const HistoryTabIndex = 4;
+export const AdminTabIndex = 4; //5;
 
 export const MainTabPanelIndex = 0;
 export const SummaryDBTabPanelIndex = 1;
+export const SummaryHistoryTabPanelIndex = 2;
