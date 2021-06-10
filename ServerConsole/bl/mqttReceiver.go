@@ -29,7 +29,12 @@ type mqttClient struct {
 
 	// chanel for communications with websocket services
 	_webSockCh           chan *models.RawMqttMessage
-	_equipsCh            chan *models.RawMqttMessage
+	
+	// chanel for communications with equipment service
+	_equipsCh chan *models.RawMqttMessage
+
+	// chanel for communications with events service
+	_eventsCh chan *models.RawMqttMessage
 
 	// mqtt client
 	_client      mqtt.Client
@@ -49,7 +54,8 @@ func MqttClientNew(
 	webSocketService interfaces.IWebSocketService,
 	dalCh chan *models.RawMqttMessage,
 	webSockCh chan *models.RawMqttMessage,
-	equipsCh chan *models.RawMqttMessage) interfaces.IMqttClient {
+	equipsCh chan *models.RawMqttMessage,
+	eventsCh chan *models.RawMqttMessage) interfaces.IMqttClient {
 	client := &mqttClient{}
 	
 	client._log = log
@@ -59,6 +65,7 @@ func MqttClientNew(
 	client._dalCh = dalCh
 	client._webSockCh = webSockCh
 	client._equipsCh = equipsCh
+	client._eventsCh = eventsCh
 
 	return client
 }
@@ -119,6 +126,7 @@ func (client *mqttClient) Create(
 
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
+			client._eventsCh <- &rawMsg
 			if strings.Contains(topic, "/hospital") {
 				client._equipsCh <- &rawMsg
 			}

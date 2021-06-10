@@ -2,7 +2,7 @@ package dal
 
 import (
 	"time"
-	"encoding/json"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
@@ -36,25 +36,21 @@ func EventsRepositoryNew(
 	return repository
 }
 
-// InsertEvent inserts equipment info into db
-func (repository *EventsRepository) InsertEvent(equipName string, data string) {
+// InsertEvent inserts events into db
+func (repository *EventsRepository) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel) []models.EventModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
+	events := []models.EventModel{}
 
-	viewmodel := models.SoftwareMessageViewModel{}
-	json.Unmarshal([]byte(data), &viewmodel)
-
-	for _, msg := range viewmodel.ErrorDescriptions {
-		repository.insertEvent(eventsCollection, equipName, "ErrorDescriptions", &msg)
+	for _, msg := range msgVms {
+		dbEvent := repository.insertEvent(eventsCollection, equipName, msgType, &msg)
+		events = append(events, *dbEvent)
 	}
 
-	for _, msg := range viewmodel.AtlasErrorDescriptions {
-		repository.insertEvent(eventsCollection, equipName, "AtlasErrorDescriptions", &msg)
-	}
+	return events
 }
-
 
 // GetEvents returns all events from db
 func (repository *EventsRepository) GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel {
@@ -75,13 +71,13 @@ func (repository *EventsRepository) GetEvents(equipName string, startDate time.T
 }
 
 // InsertEvent inserts equipment connection state info into db
-func (repository *EventsRepository) InsertConnectEvent(equipName string)*models.EventModel {
+func (repository *EventsRepository) InsertConnectEvent(equipName string) *models.EventModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
-	msg := models.MessageViewModel {equipName, "connected"}
+	msg := models.MessageViewModel{equipName, "connected"}
 	model := repository.insertEvent(eventsCollection, equipName, "EquipConnected", &msg)
 
 	return model
@@ -107,10 +103,10 @@ func (repository *EquipInfoRepository) CheckEquipment(equipName string) bool {
 */
 
 func (repository *EventsRepository) insertEvent(
-	eventsCollection *mgo.Collection, 
-	equipName string, 
-	msgType string, 
-	vm *models.MessageViewModel) *models.EventModel {	
+	eventsCollection *mgo.Collection,
+	equipName string,
+	msgType string,
+	vm *models.MessageViewModel) *models.EventModel {
 	model := models.EventModel{}
 
 	model.ID = bson.NewObjectId()

@@ -4,6 +4,7 @@
 /ServerConsole/*.dll
 /ServerConsole/*.so
 /ServerConsole/*.dylib
+/ServerConsole/*.log
 
 # Test binary, built with `go test -c`
 /ServerConsole/*.test
@@ -14,10 +15,13 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 /ServerConsole/__debug_bin
+/ServerConsole/_output
 
 /MessagesSender/.vs
 /MessagesSender/MessagesSender/bin
 /MessagesSender/MessagesSender/obj
+/MessagesSender/_output
 
 #/ConsoleUI/consoleui/build
 /ConsoleUI/consoleui/node_modules
+*.log

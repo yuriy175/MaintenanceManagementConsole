@@ -20,25 +20,25 @@ type types struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
-	_webSocketService    interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
-	_dalService          interfaces.IDalService
+	_dalService interfaces.IDalService
 
 	// http service
-	_httpService         interfaces.IHttpService
+	_httpService interfaces.IHttpService
 
 	// topic storage
-	_topicStorage        interfaces.ITopicStorage
+	_topicStorage interfaces.ITopicStorage
 
 	// settings service
 	_settingsService interfaces.ISettingsService
 
 	// equipment service
-	_equipsService   interfaces.IEquipsService
+	_equipsService interfaces.IEquipsService
 
 	// events service
-	_eventsService   interfaces.IEventsService
+	_eventsService interfaces.IEventsService
 
 	// chanel for DAL communications
 	_dalCh chan *Models.RawMqttMessage
@@ -70,12 +70,12 @@ func InitIoc() interfaces.IIoCProvider {
 
 	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(log, dalService, equipsCh)
-	webSocketService := WebSocketServiceNew(log, _types, webSockCh)	
-	eventsService := EventsServiceNew(log, webSocketService, dalService, eventsCh)
-	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService, 
+	webSocketService := WebSocketServiceNew(log, _types, webSockCh)
+	eventsService := EventsServiceNew(log, webSocketService, dalService, webSockCh, eventsCh)
+	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
 	httpService := HTTPServiceNew(log, mqttReceiverService, webSocketService, dalService, equipsService, authService)
-	
+
 	_types._log = log
 	_types._authService = authService
 	_types._mqttReceiverService = mqttReceiverService
@@ -136,5 +136,5 @@ func (t *types) GetWebSocket() interfaces.IWebSock {
 
 // GetMqttClient returns a new IMqttClient instance
 func (t *types) GetMqttClient() interfaces.IMqttClient {
-	return MqttClientNew(t._log, t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh)
+	return MqttClientNew(t._log, t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh,t._eventsCh)
 }

@@ -44,7 +44,7 @@ type dalService struct {
 	_generatorRepository *GeneratorRepository
 
 	// stand info repository
-	_standRepository  *StandRepository
+	_standRepository *StandRepository
 
 	// equipment db info repository
 	_dbInfoRepository *DbInfoRepository
@@ -74,7 +74,7 @@ func DataLayerServiceNew(
 	service._generatorRepository = GeneratorRepositoryNew(log, service, service._dbName)
 	service._standRepository = StandRepositoryNew(log, service, service._dbName)
 	service._dbInfoRepository = DbInfoRepositoryNew(log, service, service._dbName)
-	service._eventsRepository = EventsRepositoryNew(log, service, service._dbName)	
+	service._eventsRepository = EventsRepositoryNew(log, service, service._dbName)
 
 	return service
 }
@@ -133,9 +133,9 @@ func (service *dalService) Start() {
 				viewmodel := models.SoftwareInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
 				service.insertPermanentSoftwareInfo(&viewmodel, d.Topic, softwareInfoCollection)
-			} else if strings.Contains(d.Topic, "/ARM/Software/msg") {				
+			// } else if strings.Contains(d.Topic, "/ARM/Software/msg") {
 				// service.insertPermanentSoftwareInfo(&viewmodel, d.Topic, softwareVolatileInfoCollection)
-				service._eventsRepository.InsertEvent(utils.GetEquipFromTopic(d.Topic), d.Data)
+				// service._eventsRepository.InsertEvent(utils.GetEquipFromTopic(d.Topic), d.Daa)
 			} else if strings.Contains(d.Topic, "/dicom") {
 				model := models.DicomsInfoModel{}
 				json.Unmarshal([]byte(d.Data), &model)
@@ -515,7 +515,7 @@ func (service *dalService) GetEvents(equipName string, startDate time.Time, endD
 	return service._eventsRepository.GetEvents(equipName, startDate, endDate)
 }
 
-// InsertEvent inserts equipment connection state info into db
-func (service *dalService) InsertConnectEvent(equipName string)*models.EventModel {
-	return service._eventsRepository.InsertConnectEvent(equipName)
+// InsertEvent inserts events into db
+func (service *dalService) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel) []models.EventModel {
+	return service._eventsRepository.InsertEvents(equipName, msgType, msgVms)
 }

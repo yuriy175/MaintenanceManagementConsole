@@ -78,6 +78,11 @@ export function useWebSocket(props) {
                     allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
                     return;
                 }   
+                else if(topic.startsWith('Events'))
+                {
+                    // allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
+                    return;
+                }  
 
                 const equip = getEquipFromTopic(data?.Topic);
                 if(!equip || equip !== equipInfo.current){

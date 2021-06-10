@@ -181,3 +181,10 @@ type AllDBInfoViewModel struct {
 	System map[string]json.RawMessage//string
 	Atlas  map[string]json.RawMessage//string
 }
+
+// EventViewModel describes event view model to websocket
+type EventsViewModel struct {
+	Topic string
+	Events []EventModel
+}
+

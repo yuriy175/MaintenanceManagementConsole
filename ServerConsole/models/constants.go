@@ -66,4 +66,7 @@ const (
 
 	// WebSocketQueryString is websocket url query subpath
 	WebSocketQueryString = "/websocket"
+
+	// EventsTopicPath is common events topic
+	EventsTopicPath = "Events"
 )

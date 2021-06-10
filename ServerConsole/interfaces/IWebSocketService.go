@@ -20,4 +20,7 @@ type IWebSocketService interface {
 
 	// ClientClosed removes web socket connection
 	ClientClosed(sessionUID string)
+
+	// SendEvents sends events to all web connections
+	SendEvents(events []models.EventModel) 
 }

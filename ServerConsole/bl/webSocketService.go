@@ -78,13 +78,14 @@ func (service *webSocketService) Start() {
 			//topicParts := strings.Split(d.Topic, "/")
 			activatedEquipInfo := utils.GetEquipFromTopic(d.Topic) //strings.Join([]string{topicParts[0], topicParts[1]}, "/")
 
-			service._mtx.Lock()
+			b, _ := json.Marshal(d)
+			service.writeMessageToSocket(activatedEquipInfo, b)
+			/*service._mtx.Lock()
 
 			//find all sessions activated this equipment
 			if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
 				for _, uid := range sessionUids {
 					v := service._webSocketConnections[uid]
-					b, err := json.Marshal(d)
 					if v == nil || !v.IsValid() {
 						log.Println(" no connection for  %s", uid)
 						service.removeFromTopicMap(activatedEquipInfo, uid)
@@ -95,6 +96,7 @@ func (service *webSocketService) Start() {
 			}
 
 			service._mtx.Unlock()
+			*/
 		}
 	}()
 
@@ -124,8 +126,24 @@ func (service *webSocketService) UpdateWebClients(state *models.EquipConnectionS
 	defer service._mtx.Unlock()
 
 	for _, ws := range service._webSocketConnections {
-		b, _ := json.Marshal(stateVM)
-		ws.WriteMessage(b)
+		if ws.IsValid() {
+			b, _ := json.Marshal(stateVM)
+			ws.WriteMessage(b)
+		}
+	}
+}
+
+// SendEvents sends events to all web connections
+func (service *webSocketService) SendEvents(events []models.EventModel) {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	eventsVm := &models.EventsViewModel{models.EventsTopicPath, events}
+	for _, ws := range service._webSocketConnections {
+		if ws.IsValid() {
+			b, _ := json.Marshal(eventsVm)
+			ws.WriteMessage(b)
+		}
 	}
 }
 
@@ -166,4 +184,23 @@ func (service *webSocketService) removeFromTopicMap(equipInfo string, uid string
 			service._topicConnections[equipInfo][:ind], service._topicConnections[equipInfo][ind+1:]...)
 		log.Println("removed absent connection for  %s", uid)
 	}
+}
+
+func (service *webSocketService)writeMessageToSocket(activatedEquipInfo string, data []byte) {
+	service._mtx.Lock()
+
+	//find all sessions activated this equipment
+	if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
+		for _, uid := range sessionUids {
+			v := service._webSocketConnections[uid]
+			if v == nil || !v.IsValid() {
+				log.Println(" no connection for  %s", uid)
+				service.removeFromTopicMap(activatedEquipInfo, uid)
+			} else if err := v.WriteMessage(data); err != nil {
+				//log.Println("send message error for  %s", uid)
+			}
+		}
+	}
+
+	service._mtx.Unlock()
 }

@@ -1,9 +1,9 @@
 package interfaces
 
 import (
-	"time"
 	"encoding/json"
-	
+	"time"
+
 	"../models"
 )
 
@@ -38,7 +38,7 @@ type IDalService interface {
 	GetTableContent(equipName string, tableType string, tableName string) []string
 
 	// GetDBSystemInfo returns permanent system info from db
-	GetDBSystemInfo(equipName string) []map[string]json.RawMessage 
+	GetDBSystemInfo(equipName string) []map[string]json.RawMessage
 
 	// GetDBSoftwareInfo returns permanent software info from db
 	GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel
@@ -47,6 +47,6 @@ type IDalService interface {
 	// GetEvents returns all events from db
 	GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel
 
-	// InsertEvent inserts equipment connection state info into db
-	InsertConnectEvent(equipName string)*models.EventModel 
+	// InsertEvent inserts events into db
+	InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel) []models.EventModel
 }
