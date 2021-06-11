@@ -175,7 +175,7 @@ namespace MessagesSender.BL
                 // Make sure there was no error reading the event.
                 if (eventRecord != null && eventRecord.Level == 2)
                 {
-                    SendCommonErrorAsync(eventRecord.LevelDisplayName, eventRecord.ProviderName);
+                    SendCommonErrorAsync(eventRecord.LevelDisplayName, eventRecord.ProviderName, eventRecord.FormatDescription());
                 }
                 else
                 {
@@ -196,7 +196,8 @@ namespace MessagesSender.BL
                         (MQCommands.UserLoggedIn, userProps => OnUserLogIn(userProps)));
 
                 _mqService.Subscribe<MQCommands, int>(
-                        (MQCommands.Message, code => SendAtlasErrorAsync(code, string.Empty)));
+                        (MQCommands.Message, code => SendAtlasErrorAsync(
+                            "Ошибка Атлас", code, string.Empty)));
 
                 // _mqService.Subscribe<MQCommands, string>(
                 //        (MQCommands.UserLoggedOut, userName => OnUserLogOut(userName)));
@@ -228,7 +229,7 @@ namespace MessagesSender.BL
                     });
         }
 
-        private void SendCommonErrorAsync(string code, string description)
+        private void SendCommonErrorAsync(string level, string code, string description)
         {
             _ = _sendingService.SendInfoToMqttAsync(
                     MQMessages.SoftwareMsgInfo,
@@ -238,6 +239,7 @@ namespace MessagesSender.BL
                         {
                             new
                             {
+                                Level = level,
                                 Code = code,
                                 Description = description,
                             },
@@ -260,7 +262,7 @@ namespace MessagesSender.BL
                     });
         }
 
-        private void SendAtlasErrorAsync(int code, string description)
+        private void SendAtlasErrorAsync(string level, int code, string description)
         {
             _ = _sendingService.SendInfoToMqttAsync(
                     MQMessages.SoftwareMsgInfo,
@@ -270,6 +272,7 @@ namespace MessagesSender.BL
                         {
                             new
                             {
+                                Level = level,
                                 Code = code,
                                 Description = description,
                             },

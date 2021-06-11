@@ -90,7 +90,7 @@ func (service *eventsService) InsertConnectEvent(equipName string) {
 	webSocketService := service._webSocketService
 
 	go func() {
-		msg := models.MessageViewModel{equipName, "connected"}
+		msg := models.MessageViewModel{equipName, "подключен", ""}
 		events := dalService.InsertEvents(equipName, "EquipConnected", []models.MessageViewModel{msg})
 		go webSocketService.SendEvents(events)
 	}()

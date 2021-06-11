@@ -134,6 +134,7 @@ type SoftwareInfoViewModel struct {
 
 // MessageViewModel describes a message view model from equipment
 type MessageViewModel struct {
+	Level string
 	Code        string
 	Description string
 }

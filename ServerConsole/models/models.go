@@ -320,4 +320,5 @@ type EventModel struct {
 	Type        string
 	Title        string
 	Description string
+	Details string
 }

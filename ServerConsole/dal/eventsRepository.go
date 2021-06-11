@@ -77,7 +77,7 @@ func (repository *EventsRepository) InsertConnectEvent(equipName string) *models
 
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
-	msg := models.MessageViewModel{equipName, "connected"}
+	msg := models.MessageViewModel{equipName, "подключен", ""}
 	model := repository.insertEvent(eventsCollection, equipName, "EquipConnected", &msg)
 
 	return model
@@ -114,8 +114,9 @@ func (repository *EventsRepository) insertEvent(
 	model.EquipName = equipName
 
 	model.Type = msgType
-	model.Title = vm.Code
-	model.Description = vm.Description
+	model.Title = vm.Level
+	model.Description = vm.Code
+	model.Details = vm.Description
 
 	eventsCollection.Insert(model)
 

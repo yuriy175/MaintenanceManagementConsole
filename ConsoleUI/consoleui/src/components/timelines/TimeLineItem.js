@@ -7,6 +7,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,18 +26,29 @@ const useStyles = makeStyles((theme) => ({
   isImportant:{
     backgroundColor: 'red',
   },
+  collapse:{
+    textAlign:'left',
+  }
 }));
 
 export default function TimeLineItem(props) {
   const classes = useStyles();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
 
   const isImportant = props.isImportant;
   const equipName = props.equipName;
   const time = props.time;
   const title = props.title;
   const text = props.text;
+  const details = props.details;
   return (
-        <ListItem alignItems="flex-start">
+    <div>
+        <ListItem alignItems="flex-start" button onClick={handleClick}>
             <ListItemAvatar >
                 <Avatar className={isImportant ? classes.isImportant : null} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
@@ -65,8 +79,16 @@ export default function TimeLineItem(props) {
                         </Typography>
                         {" - " + text}
                     </React.Fragment>
-                }
+                }                
             />
+            {details && open ? <ExpandLess /> : 
+              details && !open ? <ExpandMore /> : <></>}
         </ListItem>
+        
+            {details ? 
+              <Collapse in={open} timeout="auto" unmountOnExit className={classes.collapse}>
+                {details}
+              </Collapse>: <></>}
+        </div>
   );
 }

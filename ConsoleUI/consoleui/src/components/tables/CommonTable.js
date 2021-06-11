@@ -15,7 +15,8 @@ const useStyles = makeStyles({
     width: '100%',
   },
   container: {
-    maxHeight: 440,
+    minHeight: 40,
+    maxHeight: '100%',
   },
   errorCell:{
     color: 'white',
@@ -62,7 +63,7 @@ export default function CommonTable(props) {
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
+        <Table stickyHeader aria-label="sticky table" size="small">
           <TableHead>
             <TableRow>
               {columns.map((column) => (

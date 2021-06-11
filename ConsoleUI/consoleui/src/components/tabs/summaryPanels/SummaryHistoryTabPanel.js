@@ -4,6 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import {SearchPeriod} from '../../../model/constants'
 import {getUSFullDate} from '../../../utilities/utils'
@@ -45,13 +47,14 @@ export default function SummaryHistoryTabPanel(props) {
   console.log("render SummaryHistoryTabPanel");
 
   const classes = useStyles();
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  // const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
 
   const curDate = new Date();
   const [startDate, setStartDate] = useState(getUSFullDate(new Date(curDate.setDate(curDate.getDate() - SearchPeriod))));
   const [endDate, setEndDate] = useState(getUSFullDate(new Date()));
   
   const [events, setEvents] = useState([]);  
+  const [importantOnly, setImportantOnly] = useState(false);  
 
   const handleStartDateChange = (ev) => {
     setStartDate(ev.target.value);
@@ -65,11 +68,15 @@ export default function SummaryHistoryTabPanel(props) {
   //   setEquipName(ev.target.value);
   // };  
 
-  const equipName = currEquipState?.equipInfo;
+  const equipName = props.equipName; // currEquipState?.equipInfo;
 
   const onSearch = async () => {    
     const data = await EquipWorker.SearchEquip('Events', equipName, startDate, endDate);
     setEvents(data);
+  };
+
+  const onSelect = async (event) => {
+    setImportantOnly(!importantOnly);
   };
 
   return (
@@ -97,12 +104,22 @@ export default function SummaryHistoryTabPanel(props) {
             shrink: true,
             }}
         />
+        <FormControlLabel
+          control={
+            <Checkbox
+                checked={importantOnly}
+                onChange={onSelect}
+            />
+          }
+          label="Только важные"
+        />
+        
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSearch}>
             Искать
         </Button>
     </div>
     <div className={classes.root}>        
-      <CommonTimeLine equipName={equipName} rows={events}></CommonTimeLine>
+      <CommonTimeLine equipName={equipName} rows={events} showImportantOnly={importantOnly}></CommonTimeLine>
     </div>
     </>
   );

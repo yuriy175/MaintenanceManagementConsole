@@ -24,4 +24,11 @@ export function getEquipFromTopic(topic ){
 
 export const parseLocalString = (value) => new Date(value).toLocaleString();
 
+export const isToday = (value) =>
+{
+    const today = new Date();
+    const date = new Date(value);
+    return date.setHours(0,0,0,0) == today.setHours(0,0,0,0);
+}
+
 export const sessionUid = generateSessionUid();

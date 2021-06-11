@@ -23,8 +23,10 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "12px",
   },
   listPanel:{
-    width: "240px",
+    width: "285px",
     backgroundColor: 'white',
+    maxHeight: "900px",
+    overflowY: 'auto',
   },
   content: {
     // marginTop: 64, // `${drawerWidth}px`,
