@@ -68,5 +68,10 @@ namespace MessagesSender.Core.Model
         /// AllDBInfo message type
         /// </summary>
         AllDBInfo,
+
+        /// <summary>
+        /// Events message type
+        /// </summary>
+        Events,
     }
 }

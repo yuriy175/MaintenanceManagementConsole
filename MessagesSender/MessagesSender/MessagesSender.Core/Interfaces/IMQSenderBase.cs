@@ -19,7 +19,7 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <typeparam name="TMsg">message type</typeparam>
         /// <typeparam name="T">entity type</typeparam>
-        /// <param name="msgType">message type</param>
+        /// <param name="msgType">messge type</param>
         /// <param name="payload">entity</param>
         /// <returns>result</returns>
         Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload);
@@ -35,7 +35,7 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <param name="equipInfo">equipment info</param>
         /// <returns>result</returns>
-        Task<bool> CreateAsync((string Name, string Number) equipInfo);
+        Task<bool> CreateAsync((string Name, string Number, string HddNumber) equipInfo);
 
         /// <summary>
         /// sends a message to a common mqtt

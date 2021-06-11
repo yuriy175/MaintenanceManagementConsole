@@ -69,7 +69,7 @@ namespace MessagesSender.BL.Remoting
         /// </summary>
         /// <param name="equipInfo">equipment info</param>
         /// <returns>result</returns>        
-        public virtual async Task<bool> CreateAsync((string Name, string Number) equipInfo)
+        public virtual async Task<bool> CreateAsync((string Name, string Number, string HddNumber) equipInfo)
         {
             if (string.IsNullOrEmpty(equipInfo.Name) || string.IsNullOrEmpty(equipInfo.Number))
             {
@@ -98,14 +98,14 @@ namespace MessagesSender.BL.Remoting
         /// Get topic
         /// </summary>
         /// <param name="equipInfo">equipment info</param>
-        /// <returns></returns>
-        protected abstract Task<string> GetTopicAsync((string Name, string Number) equipInfo);
+        /// <returns>topic</returns>
+        protected abstract Task<string> GetTopicAsync((string Name, string Number, string HddNumber) equipInfo);
 
         /// <summary>
         /// Create connection
         /// </summary>
         /// <param name="connectionFactory">connection factory</param>
-        /// <returns></returns>
+        /// <returns>mqtt client</returns>
         protected virtual async Task<IManagedMqttClient> CreateConnection(ConnectionFactory connectionFactory)
         {
             CreateConnectionProps();

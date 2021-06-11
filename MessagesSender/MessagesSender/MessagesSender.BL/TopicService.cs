@@ -53,7 +53,8 @@ namespace MessagesSender.BL
             if (string.IsNullOrEmpty(_mainTopic))
             {
                 var equipInfo = await _dbSettingsEntityService.GetEquipmentInfoAsync();
-                _mainTopic = $"{equipInfo.Name}/{equipInfo.Number}";
+                _mainTopic = $"{equipInfo.Name}/{equipInfo.Number}" +
+                    (string.IsNullOrEmpty(equipInfo.HddNumber) ? string.Empty : $"_{equipInfo.HddNumber}"); 
             }
 
             return _mainTopic;

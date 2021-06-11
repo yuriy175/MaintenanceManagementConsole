@@ -32,7 +32,7 @@ namespace MessagesSender.BL
         private readonly IMqttSender _mqttSender;
 
         private IPAddress _ipAddress = null;
-        private (string Name, string Number) _equipmentInfo = (null, null);
+        private (string Name, string Number, string HddNumber) _equipmentInfo = (null, null, null);
 
         /// <summary>
         /// public constructor

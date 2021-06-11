@@ -49,6 +49,7 @@ namespace MessagesSender.BL.Remoting
             { MQMessages.SoftwareMsgInfo.ToString(), "/ARM/Software/msg" },            
             { MQMessages.RemoteAccess.ToString(), "/remoteaccess" },
             { MQMessages.ImagesInfo.ToString(), "/images" },
+            { MQMessages.Events.ToString(), "/events" },
             { MQMessages.HospitalInfo.ToString(), "/hospital" },            
         };
 
@@ -130,7 +131,7 @@ namespace MessagesSender.BL.Remoting
         }
 
         /// <inheritdoc/>
-        protected override Task<string> GetTopicAsync((string Name, string Number) equipInfo)
+        protected override Task<string> GetTopicAsync((string Name, string Number, string HddNumber) equipInfo)
             => _topicService.GetTopicAsync();
 
         /// <inheritdoc/>

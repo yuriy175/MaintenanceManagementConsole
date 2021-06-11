@@ -106,7 +106,7 @@ namespace MessagesSender.BL
 
             _ = _sendingService.SendInfoToMqttAsync(
                 MQMessages.AllDBInfo,
-                    new
+                new
                     {
                         Hospital = new { HospitalInfo = hospitalData?.ToArray() },
                         Software = new
@@ -116,7 +116,7 @@ namespace MessagesSender.BL
                             softwareData.Errors,
                             softwareData.OsInfos,
                             softwareData.SqlDatabases,
-                            softwareData.SqlServices
+                            softwareData.SqlServices,
                         },
                         System = new
                         {
@@ -128,7 +128,7 @@ namespace MessagesSender.BL
                             systemData.Motherboards,
                             systemData.Printers,
                             systemData.Screens,
-                            systemData.VideoAdapters
+                            systemData.VideoAdapters,
                         },
                         Atlas = new
                         {
@@ -139,13 +139,35 @@ namespace MessagesSender.BL
                             atlasData.DicomServices,
                             atlasData.DicomPrinters,
                             atlasData.HardwareParams,
-                            atlasData.RasterParams
-                        }
+                            atlasData.RasterParams,
+                        },
                     });
 
             await _dbInfoEntityService.SetNewsDataSentAsync();
 
+            SendDBChangedEventAsync(
+                "Конфигурация изменена",
+                string.Join(' ', newTables.Keys)
+                );
+
             return true;
+        }
+
+        private void SendDBChangedEventAsync(string title, string description)
+        {
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.Events,
+                    new
+                    {
+                        Messages = new[]
+                        {
+                            new
+                            {
+                                Level = title,
+                                Code = description,
+                            },
+                        },
+                    });
         }
     }
 }

@@ -15,7 +15,7 @@ namespace MessagesSender.Core.Interfaces
         /// Get equipment info.
         /// </summary>
         /// <returns>equipment info</returns>
-        Task<(string Name, string Number)> GetEquipmentInfoAsync();
+        Task<(string Name, string Number, string HddNumber)> GetEquipmentInfoAsync();
 
         /// <summary>
         /// Get dicom info.
@@ -26,6 +26,7 @@ namespace MessagesSender.Core.Interfaces
         /// <summary>
         /// inserts or updates app parameter
         /// </summary>
+        /// <typeparam name="T">value type</typeparam>
         /// <param name="appParam">app parameter name</param>
         /// <param name="value">value</param>
         /// <returns>new app parameter</returns>

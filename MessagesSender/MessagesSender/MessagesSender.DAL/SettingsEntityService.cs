@@ -19,6 +19,8 @@ namespace MessagesSender.DAL
     public class SettingsEntityService
         : EntityServiceBase<SettingsContext>, ISettingsEntityService
     {
+        private const string AltSerialName = "AltSerial";
+
         private readonly IConfigurationService _configurationService = null;
         private readonly ILogger _logger;
 
@@ -40,7 +42,7 @@ namespace MessagesSender.DAL
         /// Get equipment info.
         /// </summary>
         /// <returns>equipment info</returns>
-        public async Task<(string Name, string Number)> GetEquipmentInfoAsync()
+        public async Task<(string Name, string Number, string HddNumber)> GetEquipmentInfoAsync()
         {
             var dicomTags = new[] { "(0008,1090)", "(0018,1000)" };
             var dicomParams = await GetManyAction<EquipmentDicomParam>(
@@ -48,9 +50,12 @@ namespace MessagesSender.DAL
                     .Where(p => dicomTags.Contains(p.DicomAttribute))
                     .OrderBy(p => p.Id));
 
+            var altSerial = await GetAction<AppParams>(
+                context => context.AppParams.FirstOrDefault(a => a.ParamName == AltSerialName));
+
             return dicomParams.Count() != 2 ? 
-                (null, null) : 
-                (dicomParams.FirstOrDefault().Value, dicomParams.LastOrDefault().Value);
+                (null, null, null) : 
+                (dicomParams.FirstOrDefault().Value, dicomParams.LastOrDefault().Value, altSerial?.ParamValue);
         }
 
         /// <summary>
