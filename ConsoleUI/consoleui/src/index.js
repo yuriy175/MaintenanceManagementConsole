@@ -8,6 +8,7 @@ import { AllEquipsContextProvider } from './context/allEquips-context';
 import { CurrentEquipContextProvider } from './context/currentEquip-context';
 import { UsersContextProvider} from './context/users-context';
 import { AppContextProvider} from './context/app-context';
+import { EventsContextProvider} from './context/events-context';
 import { SystemVolatileContextProvider} from './context/systemVolatile-context';
 
 ReactDOM.render(
@@ -17,9 +18,11 @@ ReactDOM.render(
         <AllEquipsContextProvider>
           <CurrentEquipContextProvider>
             <SystemVolatileContextProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
+              <EventsContextProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </EventsContextProvider>
             </SystemVolatileContextProvider>
           </CurrentEquipContextProvider>
         </AllEquipsContextProvider>

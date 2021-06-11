@@ -3,6 +3,7 @@ import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
 import { SystemVolatileContext } from '../context/systemVolatile-context';
 import { AllEquipsContext } from '../context/allEquips-context';
+import { EventsContext } from '../context/events-context';
 import * as EquipWorker from '../workers/equipWorker'
 
 import {sessionUid, getEquipFromTopic} from '../utilities/utils'
@@ -12,6 +13,7 @@ export function useWebSocket(props) {
 
     const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
     const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+    const [eventsState, eventsDispatch] = useContext(EventsContext);
     const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
     const [connection, setConnection] = useState(null);
     const equipInfo = useRef(currEquipState.equipInfo);
@@ -80,7 +82,7 @@ export function useWebSocket(props) {
                 }   
                 else if(topic.startsWith('Events'))
                 {
-                    // allEquipsDispatch({ type: 'CONNECTIONCHANGED', payload: data }); 
+                    eventsDispatch({ type: 'ADDEVENT', payload: data.Events }); 
                     return;
                 }  
 

@@ -13,7 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 
-import { SummaryTabIndex, EquipsTabIndex, MainTabPanelIndex } from '../../model/constants';
+import { SummaryTabIndex, EquipsTabIndex, EventsTabIndex, MainTabPanelIndex } from '../../model/constants';
 
 import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
@@ -21,8 +21,10 @@ import MainInfoComponent from './MainInfoComponent';
 import { UsersContext } from '../../context/users-context';
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
+import { EventsContext } from '../../context/events-context';
 import * as AdminWorker from '../../workers/adminWorker'
 import * as EquipWorker from '../../workers/equipWorker'
+import {getUSFullDate} from '../../utilities/utils'
 
 const drawerWidth = 240;
 const mainMenu = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий', 'Администрирование'];
@@ -59,6 +61,7 @@ export default function MainComponent() {
   const [appState, appDispatch] = useContext(AppContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+  const [eventsState, eventsDispatch] = useContext(EventsContext);
 
   useEffect(() => {
       (async () => {
@@ -77,6 +80,12 @@ export default function MainComponent() {
     {
       const allEquips = await EquipWorker.GetAllEquips();
       allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips });  
+    }
+    else if(index === EventsTabIndex)
+    {
+      const endDate = new Date();
+      const allEvents = await EquipWorker.SearchEquip('Events', '', getUSFullDate(endDate), getUSFullDate(endDate));
+      eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: index, panel: MainTabPanelIndex} }); 

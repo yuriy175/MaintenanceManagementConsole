@@ -21,6 +21,7 @@ import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHist
 
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
+import { EventsContext } from '../../context/events-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import { UsersContext } from '../../context/users-context';
 import {useSetCurrEquip} from '../../hooks/useSetCurrEquip'
@@ -30,6 +31,7 @@ import * as EquipWorker from '../../workers/equipWorker'
 import {sessionUid} from '../../utilities/utils'
 import { useWebSocket } from '../../hooks/useWebSocket'
 import { SettingsBackupRestore } from '@material-ui/icons';
+import {getUSFullDate} from '../../utilities/utils'
 
 const drawerWidth = 240;
 
@@ -71,6 +73,7 @@ export default function MainToolBar() {
   const classes = useStyles();
   const [appState, appDispatch] = useContext(AppContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+  const [eventsState, eventsDispatch] = useContext(EventsContext);
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   // const [currEquip, setCurrEquip] = useState('none');
@@ -88,6 +91,14 @@ export default function MainToolBar() {
   const onEquipChanged = async equipInfo =>
   {
     setCurrEquip(equipInfo, 'SETEQUIPINFO');
+    getEvents(equipInfo);
+  }
+
+  const getEvents = async (equipInfo) =>
+  {
+    const endDate = new Date();
+    const allEvents = await EquipWorker.SearchEquip('Events', equipInfo, getUSFullDate(endDate), getUSFullDate(endDate));
+    eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
   }
 
   useEffect(() => {
@@ -110,7 +121,8 @@ export default function MainToolBar() {
       const allTables = await EquipWorker.GetAllTables(equipInfo);
       currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
     }
-    else if(SummaryHistoryTabPanelIndex === newValue){      
+    else if(SummaryHistoryTabPanelIndex === newValue){        
+      getEvents(equipInfo);
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
