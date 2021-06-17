@@ -33,7 +33,7 @@ const SystemCard = React.memo((props) => {
         <Typography variant="h5" component="h2">
           {bull}CPU
         </Typography>
-        {processor?.Cpu || volatile?.Processor?.CPULoad ? 
+        {processor?.Cpu || volatile?.Processor?.CPULoad || volatile?.Processor?.CPULoad === 0? 
           <>
             <CardRow descr="Модель" value={processor?.Cpu} rightWidth={'100%'}></CardRow>
             <CardRow descr="Загрузка" value={volatile?.Processor?.CPULoad+'%'}></CardRow>
