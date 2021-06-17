@@ -9,6 +9,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import CardRow from './CardRow'
+import { ComplexTypeImages } from '../../model/constants'
 
 import {useCardsStyles} from './CommonCard'
 
@@ -16,7 +17,14 @@ const useStyles = makeStyles((theme) => ({
   media: {
     height: 0,
     paddingTop: '100%', 
+    backgroundColor: 'gray',
   },
+  dimmed:{
+    height: 0,
+    paddingTop: '100%', 
+    backgroundColor: 'gray',
+    filter: 'brightness(40%)',
+  }
 }));
 
 // export default function EquipImageCard() {
@@ -29,11 +37,19 @@ const EquipImageCard = React.memo((props) => {
   const bull = <span className={classes.bullet}>•</span>;
 
   const equipInfo = props.equipInfo;
+  const pathKey = Object.keys(ComplexTypeImages).find(k => 
+    {
+      return ComplexTypeImages[k].some(v => equipInfo.startsWith(v));
+    });
+  
+  const isConnected = props.isConnected;
+
   return (
     <Card className={classes.root}>
       <CardMedia
-        className={equipClasses.media}
-        image="./girl.jpg"
+        className={isConnected ? equipClasses.media : equipClasses.dimmed}
+        // image="./girl.jpg"
+        image={"./" + pathKey}
         title="Аппарат"
       />
       <CardContent>

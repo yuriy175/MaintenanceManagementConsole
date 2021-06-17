@@ -97,12 +97,15 @@ func (service *dalService) Start() {
 	softwareVolatileInfoCollection := db.C(models.SoftwareVolatileInfoTableName)
 	dicomInfoCollection := db.C(models.DicomInfoTableName)
 	// standInfoCollection := db.C(models.StandInfoTableName)
+	equipInfoCollection := db.C(models.EquipmentTableName)
 
 	service.ensureIndeces(sysInfoCollection, []string{"equipname", "datetime"})
 	service.ensureIndeces(sysVolatileInfoCollection, []string{"equipname", "datetime"})
 
 	service.ensureIndeces(softwareInfoCollection, []string{"equipname", "datetime"})
 	service.ensureIndeces(softwareVolatileInfoCollection, []string{"equipname", "datetime"})
+
+	service.ensureIndeces(equipInfoCollection, []string{"equipname"})
 
 	go func() {
 		for d := range service._dalCh {
@@ -123,8 +126,8 @@ func (service *dalService) Start() {
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 
 				organAutoCollection.Insert(model)
-			} else if strings.Contains(d.Topic, "/generator/state") {
-				service._generatorRepository.InsertGeneratorInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
+			// } else if strings.Contains(d.Topic, "/generator/state") {
+			// 	service._generatorRepository.InsertGeneratorInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			} else if strings.Contains(d.Topic, "/ARM/Hardware") {
 				viewmodel := models.SystemInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
@@ -144,8 +147,8 @@ func (service *dalService) Start() {
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 
 				dicomInfoCollection.Insert(model)
-			} else if strings.Contains(d.Topic, "/stand/state") {
-				service._standRepository.InsertStandInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
+			// } else if strings.Contains(d.Topic, "/stand/state") {
+			// 	service._standRepository.InsertStandInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			} else if strings.Contains(d.Topic, "/ARM/AllDBInfo") {
 				service._dbInfoRepository.InsertDbInfoInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			}

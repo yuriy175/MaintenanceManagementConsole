@@ -29,7 +29,6 @@ export default function EquipTable(props) {
   ];
 
   const rows = props.data;
-
   const handleSelect = async (event, row) => {
 
     const equipInfo = row.EquipName;

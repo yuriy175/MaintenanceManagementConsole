@@ -70,7 +70,8 @@ func (repository *EquipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 
 	// // объект для сохранения результата
 	equipInfos := []models.EquipInfoModel{}
-	equipInfoCollection.Find(query).Sort("-registerdate").All(&equipInfos)
+	// equipInfoCollection.Find(query).Sort("-registerdate").All(&equipInfos)
+	equipInfoCollection.Find(query).Sort("-equipname").All(&equipInfos)
 
 	return equipInfos
 }
