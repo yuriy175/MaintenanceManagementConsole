@@ -6,7 +6,6 @@ import (
 
 	"../controllers"
 	"../interfaces"
-	"../models"
 )
 
 // http service implementation type
@@ -23,14 +22,27 @@ type httpService struct {
 
 	// DAL service
 	_dalService      interfaces.IDalService
+
+	// settings service
+	_settingsService interfaces.ISettingsService
+
+	// http server connection string
+	_connectionString string 
+
+	// equipment service
 	_equipsService   interfaces.IEquipsService
+
+	//equipment http controller
 	_equipController *controllers.EquipController
+
+	// admin http controller
 	_adminController *controllers.AdminController
 }
 
 // HTTPServiceNew creates an instance of httpService
 func HTTPServiceNew(
 	log interfaces.ILogger,
+	settingsService interfaces.ISettingsService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
@@ -39,6 +51,8 @@ func HTTPServiceNew(
 	service := &httpService{}
 
 	service._log = log
+	service._settingsService = settingsService
+	service._connectionString = settingsService.GetHTTPServerConnectionString();
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService
@@ -60,7 +74,7 @@ func (service *httpService) Start() {
 	service._equipController.Handle()
 	service._adminController.Handle()
 
-	address := models.HTTPServerAddress
+	address := service._connectionString // models.HTTPServerAddress
 	fmt.Println("http server is listening... " + address)
 	http.ListenAndServe(address, nil)
 }

@@ -23,6 +23,12 @@ type webSocketService struct {
 	// IoC provider
 	_ioCProvider interfaces.IIoCProvider
 
+	// settings service
+	_settingsService interfaces.ISettingsService
+
+	// web socket server connection string
+	_connectionString string 
+
 	// chanel for communications with websocket services
 	_webSockCh chan *models.RawMqttMessage
 
@@ -40,11 +46,14 @@ type webSocketService struct {
 func WebSocketServiceNew(
 	log interfaces.ILogger,
 	ioCProvider interfaces.IIoCProvider,
+	settingsService interfaces.ISettingsService,
 	webSockCh chan *models.RawMqttMessage) interfaces.IWebSocketService {
 	service := &webSocketService{}
 
 	service._log = log
 	service._ioCProvider = ioCProvider
+	service._settingsService = settingsService
+	service._connectionString = settingsService.GetWebSocketServerConnectionString();
 	service._webSockCh = webSockCh
 	service._webSocketConnections = map[string]interfaces.IWebSock{}
 	service._topicConnections = map[string][]string{}
@@ -100,7 +109,7 @@ func (service *webSocketService) Start() {
 		}
 	}()
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(service._connectionString, nil) //":8080", nil)
 }
 
 // Activate activates a specified connection to equipment and deactivates the other

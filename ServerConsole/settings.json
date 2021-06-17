@@ -7,5 +7,7 @@
 	"MongoDB":{
 		"ConnectionString" :"mongodb://127.0.0.1",
 		"DBName":"test"
-	}	
+	},
+	"HTTPServerAddress":":8181",
+	"WSServerAddress":":8080"
 }

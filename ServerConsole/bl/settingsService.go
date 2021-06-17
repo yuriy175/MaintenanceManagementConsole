@@ -18,6 +18,12 @@ type settingsService struct {
 
 	//mongodb settings
 	MongoDB  models.MongoDBSettingsModel  `json:"MongoDB"`
+
+	// http server connection string
+	HTTPServerConnectionString string  `json:"HTTPServerAddress"`
+
+	// web socket server connection string
+	WebSocketServerConnectionString string  `json:"WSServerAddress"`
 }
 
 // SettingsServiceNew creates an instance of settingsService
@@ -42,4 +48,14 @@ func (service *settingsService) GetRabbitMQSettings() *models.RabbitMQSettingsMo
 // GetMongoDBSettings returns mongodb settings
 func (service *settingsService) GetMongoDBSettings() *models.MongoDBSettingsModel {
 	return &service.MongoDB
+}
+
+// GetHTTPServerConnectionString returns http server connection string
+func (service *settingsService) GetHTTPServerConnectionString() string {
+	return service.HTTPServerConnectionString
+}
+
+// GetWebSocketServerConnectionString returns web socket server connection string
+func (service *settingsService) GetWebSocketServerConnectionString() string {
+	return service.WebSocketServerConnectionString
 }

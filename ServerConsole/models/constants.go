@@ -2,7 +2,7 @@ package models
 
 const (
 	// HTTPServerAddress is a connecting string for a local http server
-	HTTPServerAddress = ":8181" // "localhost:8181"
+	// HTTPServerAddress = ":8181" // "localhost:8181"
 
 	// EquipmentTableName is Equipment table name
 	EquipmentTableName = "Equipment"
