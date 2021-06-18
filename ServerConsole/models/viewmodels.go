@@ -145,11 +145,18 @@ type AtlasUserViewModel struct {
 	Role        string
 }
 
+// OfflineMsgViewModel describes a event offline view model from equipment
+type OfflineMsgViewModel struct {
+	Message *SoftwareMessageViewModel
+	DateTime string
+}
+
 // SoftwareMessageViewModel describes a software message view model from equipment
 type SoftwareMessageViewModel struct {
 	ErrorDescriptions      []MessageViewModel
 	AtlasErrorDescriptions []MessageViewModel
 	AtlasUser AtlasUserViewModel
+	OfflineMsg *OfflineMsgViewModel
 	SimpleMsgType string
 }
 

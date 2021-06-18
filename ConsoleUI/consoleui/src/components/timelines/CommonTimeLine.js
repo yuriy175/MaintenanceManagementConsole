@@ -33,12 +33,13 @@ export default function CommonTimeLine(props) {
         { rows?.filter(i => isToday(i.DateTime))?.map((i, ind) =>
           {
             const isImportant=i.Type?.includes('Error');
+            const isOffline=i.Type?.includes('Offline');
             return (
               isImportant || !showImportantOnly ?
                 <TimeLineItem key={ind.toString()} 
                     isImportant={isImportant}
                     equipName={i.EquipName} 
-                    title={i.Title} 
+                    title={i.Title + (isOffline ? '(Offline)' : '')} 
                     text={i.Description} 
                     time={parseLocalString(i.DateTime)}
                     details={i.Details}/> : <></>        

@@ -191,7 +191,7 @@ namespace MessagesSender.BL
 
             if (result)
             {
-                await _offlineService.ClearInfosAsync();
+                // await _offlineService.ClearInfosAsync();
             }
         }
     }
