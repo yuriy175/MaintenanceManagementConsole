@@ -61,7 +61,7 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 	log.Println("web sock created Url %s", uid)
 
 	sock._conn.SetPongHandler(func(str string) error {
-		log.Println("pong received", str)
+		// log.Println("pong received", str)
 		return nil
 	})
 
@@ -115,7 +115,7 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 					return
 				}
 
-				log.Println("ping sent")
+				// log.Println("ping sent")
 				sock._mtx.Unlock()
 				// case <-interrupt:
 				// 	log.Println("interrupt")

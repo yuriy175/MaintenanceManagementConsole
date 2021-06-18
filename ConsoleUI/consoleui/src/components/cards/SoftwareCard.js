@@ -21,7 +21,7 @@ const SoftwareCard = React.memo((props) => {
   const dbStates = volatile?.DBStates;
   const software = props.software?.Software;
   const atlas = Array.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;
-  const atlasUser = software?.Atlas?.Atlas_User;
+  const atlasUser = volatile?.AtlasUser;
   const osInfo = Array.isArray(software?.OsInfos) ? software?.OsInfos[0] : null; 
   const sql = Array.isArray(software?.SqlServices) ? software?.SqlServices[0] : null; 
   const databases = dbStates ?? software?.SqlDatabases;

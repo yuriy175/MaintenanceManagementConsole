@@ -139,10 +139,18 @@ type MessageViewModel struct {
 	Description string
 }
 
+// AtlasUserViewModel describes a atlas user view model from equipment
+type AtlasUserViewModel struct {
+	User string
+	Role        string
+}
+
 // SoftwareMessageViewModel describes a software message view model from equipment
 type SoftwareMessageViewModel struct {
 	ErrorDescriptions      []MessageViewModel
 	AtlasErrorDescriptions []MessageViewModel
+	AtlasUser AtlasUserViewModel
+	AtlasExited bool
 }
 
 // UserViewModel describes user info view model to UI

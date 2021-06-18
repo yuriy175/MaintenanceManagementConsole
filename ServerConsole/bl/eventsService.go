@@ -73,6 +73,18 @@ func (service *eventsService) Start() {
 						service._dalService.InsertEvents(equipName, "AtlasErrorDescriptions", viewmodel.AtlasErrorDescriptions)...)
 				}
 
+				if viewmodel.AtlasExited {
+					msg := models.MessageViewModel{equipName, "Атлас выключен", ""}
+					events = append(events,
+						service._dalService.InsertEvents(equipName, "AtlasExited", []models.MessageViewModel{msg})...)
+				}
+
+				if viewmodel.AtlasUser.User != "" {
+					msg := models.MessageViewModel{equipName,  viewmodel.AtlasUser.User + " (" + viewmodel.AtlasUser.Role + ") вошел в Атлас", ""}
+					events = append(events,
+						service._dalService.InsertEvents(equipName, "AtlasUser", []models.MessageViewModel{msg})...)
+				}
+
 				if len(events) > 0 {
 					go webSocketService.SendEvents(events)
 				}
