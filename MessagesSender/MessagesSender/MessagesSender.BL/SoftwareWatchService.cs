@@ -104,7 +104,8 @@ namespace MessagesSender.BL
 
         private Task<bool> OnActivateArrivedAsync()
         {
-            return _sendingService.SendInfoToMqttAsync(
+            return Task.FromResult(true);
+            /*_sendingService.SendInfoToMqttAsync(
                 MQMessages.SoftwareInfo,
                 new
                 {
@@ -112,7 +113,7 @@ namespace MessagesSender.BL
                     ObservationsDB = true,
                     _versions.Version,
                     _versions.XilibVersion,
-                });
+                });*/
         }
 
         private (string Version, string XilibVersion) GetVersions()
@@ -193,11 +194,14 @@ namespace MessagesSender.BL
             return Task.Run(() =>
             {
                 _mqService.Subscribe<MQCommands, (string, IEnumerable<string>)>(
-                        (MQCommands.UserLoggedIn, userProps => OnUserLogIn(userProps)));
+                        (MQCommands.UserLoggedIn, userProps => SendUserLogInAsync(userProps)));
 
                 _mqService.Subscribe<MQCommands, int>(
                         (MQCommands.Message, code => SendAtlasErrorAsync(
                             "Ошибка Атлас", code, string.Empty)));
+
+                _mqService.Subscribe<MQCommands, bool>(
+                        (MQCommands.ExitAll, exitAlways => SendAtlasShutdownAsync()));
 
                 // _mqService.Subscribe<MQCommands, string>(
                 //        (MQCommands.UserLoggedOut, userName => OnUserLogOut(userName)));
@@ -215,10 +219,10 @@ namespace MessagesSender.BL
             return true;
         }
 
-        private async void OnUserLogIn((string UserName, IEnumerable<string> UserRoles) userProps)
+        private async void SendUserLogInAsync((string UserName, IEnumerable<string> UserRoles) userProps)
         {
             _ = _sendingService.SendInfoToMqttAsync(
-                    MQMessages.SoftwareInfo,
+                    MQMessages.SoftwareMsgInfo,
                     new
                     {
                         AtlasUser = new
@@ -226,6 +230,16 @@ namespace MessagesSender.BL
                             User = userProps.UserName,
                             Role = userProps.UserRoles?.FirstOrDefault(),
                         },
+                    });
+        }
+
+        private async void SendAtlasShutdownAsync()
+        {
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.SoftwareMsgInfo,
+                    new
+                    {
+                        AtlasExited = true,
                     });
         }
 

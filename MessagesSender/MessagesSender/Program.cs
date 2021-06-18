@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Atlas.Common.Core.Interfaces;
 using Atlas.Remoting.Helpers;
@@ -21,6 +22,15 @@ namespace MessagesSender
         /// <param name="args">command line argumentes</param>
         public static void Main(string[] args)
         {
+            using var mutex = new Mutex(false, "MessagesSender");
+            if (!mutex.WaitOne(0, false))
+            {
+                Console.WriteLine("Instance already running");
+                Console.ReadKey();
+
+                return;
+            }
+
             using IHost host = CreateHostBuilder(args).Build();
 
             Configure(host.Services);
