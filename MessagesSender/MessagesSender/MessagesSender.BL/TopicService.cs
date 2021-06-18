@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Atlas.Acquisitions.Common.Core;
 using Atlas.Acquisitions.Common.Core.Model;
@@ -26,6 +27,8 @@ namespace MessagesSender.BL
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;  
         private readonly ILogger _logger;
+
+        private readonly Regex _notAllowedSymbolsRegex = new Regex("[^a-zA-Z0-9]");
 
         private string _mainTopic = string.Empty;
 
@@ -52,9 +55,11 @@ namespace MessagesSender.BL
         {
             if (string.IsNullOrEmpty(_mainTopic))
             {
+                string Strip(string text) => _notAllowedSymbolsRegex.Replace(text, string.Empty);
+
                 var equipInfo = await _dbSettingsEntityService.GetEquipmentInfoAsync();
-                _mainTopic = $"{equipInfo.Name}/{equipInfo.Number}" +
-                    (string.IsNullOrEmpty(equipInfo.HddNumber) ? string.Empty : $"_{equipInfo.HddNumber}"); 
+                _mainTopic = $"{Strip(equipInfo.Name)}/{Strip(equipInfo.Number)}" +
+                    (string.IsNullOrEmpty(equipInfo.HddNumber) ? string.Empty : $"_{Strip(equipInfo.HddNumber)}"); 
             }
 
             return _mainTopic;
