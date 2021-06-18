@@ -4,6 +4,7 @@
     "SettingsConnection": "Server=localhost\\SQLEXPRESS;Database=settings;User Id = su; Password=medtex",
     "UsersConnection": "Server=localhost\\SQLEXPRESS;Database=users;User Id = su; Password=medtex",
     "MasterConnection": "Server=localhost\\SQLEXPRESS;Database=master;User Id = su; Password=medtex",
-    "InfoConnection": "Filename=.\\SqlInfo\\info.db"
+    "InfoConnection": "Filename=.\\SqlInfo\\info.db",
+    "ConfigConnection": "Filename=.\\SqlInfo\\config.db"
   }
 }

@@ -43,7 +43,8 @@ namespace MessagesSender.BL
         private readonly IMasterEntityService _dbMasterEntityService;
 
         private (string Version, string XilibVersion) _versions = (string.Empty, string.Empty);
-        private EventLogWatcher _watcher = null;
+        private EventLogWatcher _appWatcher = null;
+        private EventLogWatcher _sysWatcher = null;
 
         /// <summary>
         /// public constructor
@@ -90,12 +91,18 @@ namespace MessagesSender.BL
         public void Dispose()
         {
             // Stop listening to events
-            if (_watcher != null)
+            if (_appWatcher != null)
             {
-                _watcher.Enabled = false;
+                _appWatcher.Enabled = false;
             }
 
-            _watcher?.Dispose();
+            if (_sysWatcher != null)
+            {
+                _sysWatcher.Enabled = false;
+            }
+
+            _appWatcher?.Dispose();
+            _sysWatcher?.Dispose();
         }
 
         private void OnDeactivateArrivedAsync()
@@ -142,23 +149,23 @@ namespace MessagesSender.BL
 
         private void SubscribeSystemEvents()
         {
-            try
+            EventLogWatcher Subscribe(string path)
             {
-                EventLogQuery subscriptionQuery = new EventLogQuery(
-                    "Application",
-                    PathType.LogName
-                    );
+                var subscriptionQuery = new EventLogQuery(path, PathType.LogName);
 
-                _watcher = new EventLogWatcher(subscriptionQuery);
-
-                // Make the watcher listen to the EventRecordWritten
-                // events.  When this event happens, the callback method
-                // (EventLogEventRead) is called.
-                _watcher.EventRecordWritten +=
+                var watcher = new EventLogWatcher(subscriptionQuery);
+                watcher.EventRecordWritten +=
                     new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
 
-                // Activate the subscription
-                _watcher.Enabled = true;
+                watcher.Enabled = true;
+
+                return watcher;
+            }
+
+            try
+            {
+                _appWatcher = Subscribe("Application");
+                _sysWatcher = Subscribe("System");
             }
             catch (EventLogReadingException ex)
             {
@@ -239,7 +246,7 @@ namespace MessagesSender.BL
                     MQMessages.SoftwareMsgInfo,
                     new
                     {
-                        AtlasExited = true,
+                       SimpleMsgType = MQMessages.AtlasExited.ToString(),
                     });
         }
 

@@ -39,7 +39,8 @@ namespace MessagesSender.BL
         private readonly IRemoteControlService _remoteControlService;
         private readonly IImagesWatchService _imagesWatchService;
         private readonly IHospitalInfoService _hospitalInfoService;
-        private readonly IDBDataService _dbDataService;        
+        private readonly IDBDataService _dbDataService;
+        private readonly IOfflineService _offlineService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -63,6 +64,7 @@ namespace MessagesSender.BL
         /// <param name="imagesWatchService">images watch service</param>
         /// <param name="hospitalInfoService">hospital info service</param>
         /// <param name="dbDataService">db raw data service</param>
+        /// <param name="offlineService">offline service</param>
         public Service(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
@@ -79,7 +81,8 @@ namespace MessagesSender.BL
             IRemoteControlService remoteControlService,
             IImagesWatchService imagesWatchService,
             IHospitalInfoService hospitalInfoService,
-            IDBDataService dbDataService)
+            IDBDataService dbDataService,
+            IOfflineService offlineService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
@@ -97,6 +100,7 @@ namespace MessagesSender.BL
             _imagesWatchService = imagesWatchService;
             _hospitalInfoService = hospitalInfoService;
             _dbDataService = dbDataService;
+            _offlineService = offlineService;
 
             new Action[]
                 {
@@ -139,9 +143,11 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnServiceStateChangedAsync(bool isOn)
         {
-            return await _sendingService.SendInfoToCommonMqttAsync(
+            var result = await _sendingService.SendInfoToCommonMqttAsync(
                isOn ? MQMessages.InstanceOn : MQMessages.InstanceOff,
                new { });
+
+            return result;
         }
 
         private async Task<bool> OnReconnectArrivedAsync()

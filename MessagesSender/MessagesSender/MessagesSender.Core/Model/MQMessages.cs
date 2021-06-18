@@ -73,5 +73,15 @@ namespace MessagesSender.Core.Model
         /// Events message type
         /// </summary>
         Events,
+
+        /// <summary>
+        /// InstanceOn from offline message type
+        /// </summary>
+        InstanceOnOffline,
+
+        /// <summary>
+        /// AtlasExited message type
+        /// </summary>
+        AtlasExited
     }
 }

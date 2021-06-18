@@ -14,11 +14,15 @@ using System.Text;
 
 namespace MessagesSender.DAL.Model
 {
-    public class OfflineEvent
+    public class Error
     {
+        [Key]
+        [Column("rowid")]
+        public int RowId { get; set; }
         public int Id { get; set; }
-        public DateTime MsgDate { get; set; }
-        public string MsgType { get; set; }
-        public string Data { get; set; }
+        [Column("error")]
+        public string ErrorDescription { get; set; }
+        [Column("table_name")]
+        public string TableName { get; set; }
     }
 }

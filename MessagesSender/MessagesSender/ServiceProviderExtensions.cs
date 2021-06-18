@@ -86,6 +86,10 @@ namespace MessagesSender
                typeof(IDBDataService),
                typeof(DBDataService));
 
+            services.AddSingleton(
+               typeof(IOfflineService),
+               typeof(OfflineService));
+
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));
@@ -155,6 +159,10 @@ namespace MessagesSender
             services.AddSingleton(
                 typeof(IMasterEntityService),
                 typeof(MasterEntityService));
+
+            services.AddSingleton(
+                typeof(IConfigEntityService),
+                typeof(ConfigEntityService));
 
             return services;
         }

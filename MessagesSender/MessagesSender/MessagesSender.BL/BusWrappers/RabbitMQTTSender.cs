@@ -187,7 +187,7 @@ namespace MessagesSender.BL.Remoting
             return null;
         }
 
-        private async Task CheckConnectedAsync()
+        private async Task<bool> CheckConnectedAsync()
         {
             int attempts = 0;
             while (!Client.IsConnected && attempts++ < ConnectWaitingAttempts)
@@ -195,26 +195,31 @@ namespace MessagesSender.BL.Remoting
                 Console.WriteLine($"Sent to not connected {Topic}");
                 await Task.Delay(Client.Options.ConnectionCheckInterval);
             }
+
+            return Client.IsConnected;
         }
 
         private async Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload, string topic, string content)
         {
-            await CheckConnectedAsync();
+            var connected = await CheckConnectedAsync();
 
-            _ = Task.Run(async () =>
+            if (connected)
             {
-                var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
-                    .WithTopic(topic)
-                    .WithPayload(Encoding.UTF8.GetBytes(content))
-                    .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
-                    .WithRetainFlag(false) // retainFlag)
-                    .Build());
+                _ = Task.Run(async () =>
+                {
+                    var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
+                        .WithTopic(topic)
+                        .WithPayload(Encoding.UTF8.GetBytes(content))
+                        .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)0) // qos)
+                        .WithRetainFlag(false) // retainFlag)
+                        .Build());
 
-                Console.WriteLine($"Sent from SendAsync. {topic} {res.ReasonCode} {content}");
-                var tt = res;
-            });
+                    Console.WriteLine($"Sent from SendAsync. {topic} {res.ReasonCode} {content}");
+                    var tt = res;
+                });
+            }
 
-            return true;
+            return connected;
         }
     }
 }

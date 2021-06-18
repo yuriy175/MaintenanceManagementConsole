@@ -150,7 +150,7 @@ type SoftwareMessageViewModel struct {
 	ErrorDescriptions      []MessageViewModel
 	AtlasErrorDescriptions []MessageViewModel
 	AtlasUser AtlasUserViewModel
-	AtlasExited bool
+	SimpleMsgType string
 }
 
 // UserViewModel describes user info view model to UI

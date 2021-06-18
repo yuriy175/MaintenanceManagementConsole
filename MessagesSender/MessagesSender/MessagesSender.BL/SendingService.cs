@@ -30,6 +30,7 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
+        private readonly IOfflineService _offlineService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number, string HddNumber) _equipmentInfo = (null, null, null);
@@ -43,22 +44,25 @@ namespace MessagesSender.BL
         /// <param name="mqService">MQ service</param>
         /// <param name="wqSender">work queue sender</param>
         /// <param name="mqttSender">mqtt sender</param>
+        /// <param name="offlineService">offline service</param>
         public SendingService(
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
-            IMqttSender mqttSender)
+            IMqttSender mqttSender,
+            IOfflineService offlineService)
         {
             _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _mqService = mqService;
             _wqSender = wqSender;
-            _mqttSender = mqttSender;            
+            _mqttSender = mqttSender;
+            _offlineService = offlineService;
 
-            _logger.Information("Main service started");
+            _logger.Information("SendingService started");
         }
 
         /// <summary>
@@ -73,6 +77,7 @@ namespace MessagesSender.BL
                     {
                         await GetEquipmentInfoAsync();
                         await _mqttSender.CreateAsync(_equipmentInfo);
+                        await SendOfflinedInfosAsync();
                     }),
                     Task.Run(() => _ = GetEquipmentIPAsync()),
                 });
@@ -117,7 +122,13 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> SendInfoToMqttAsync<TMsgType, T>(TMsgType msgType, T info)
         {
-            return await SendInfoAsync(_mqttSender, msgType, info);
+            var result = await SendInfoAsync(_mqttSender, msgType, info);
+            if (!result)
+            {
+                await _offlineService.CheckInfoAsync(msgType, info);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -129,7 +140,13 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info)
         {
-            return await _mqttSender.SendCommonAsync(msgType, info);
+            var result = await _mqttSender.SendCommonAsync(msgType, info);
+            if (!result)
+            {
+                await _offlineService.CheckInfoAsync(msgType, info);
+            }
+
+            return result;
         }
 
         private async Task<bool> SendInfoAsync<TMsgType, T>(IMQSenderBase sender, TMsgType msgType, T info)
@@ -155,6 +172,27 @@ namespace MessagesSender.BL
             _ipAddress = host
                .AddressList
                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+        }
+
+        private async Task SendOfflinedInfosAsync()
+        {
+            var infos = (await _offlineService.GetInfosAsync())?.ToList();
+            if (infos == null)
+            {
+                _logger.Information("no offline info");
+                return;
+            }
+
+            var result = false;
+            foreach (var info in infos)
+            {
+                result = await SendInfoAsync(_mqttSender, info.MsgType, info.Msg) || result;
+            }
+
+            if (result)
+            {
+                await _offlineService.ClearInfosAsync();
+            }
         }
     }
 }

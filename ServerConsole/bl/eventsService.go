@@ -73,10 +73,16 @@ func (service *eventsService) Start() {
 						service._dalService.InsertEvents(equipName, "AtlasErrorDescriptions", viewmodel.AtlasErrorDescriptions)...)
 				}
 
-				if viewmodel.AtlasExited {
-					msg := models.MessageViewModel{equipName, "Атлас выключен", ""}
+				if viewmodel.SimpleMsgType != "" {
+					msgCode := ""
+					if viewmodel.SimpleMsgType == "AtlasExited"{
+						msgCode = "Атлас выключен"
+					} else if viewmodel.SimpleMsgType == "InstanceOnOffline"{
+						msgCode = "включался оффлайн"
+					}
+					msg := models.MessageViewModel{equipName, msgCode, ""}
 					events = append(events,
-						service._dalService.InsertEvents(equipName, "AtlasExited", []models.MessageViewModel{msg})...)
+						service._dalService.InsertEvents(equipName, viewmodel.SimpleMsgType, []models.MessageViewModel{msg})...)
 				}
 
 				if viewmodel.AtlasUser.User != "" {
