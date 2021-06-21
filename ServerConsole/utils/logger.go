@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"log"
+	"fmt"
 
 	"../interfaces"
 )
@@ -42,3 +43,14 @@ func (t *logger) Error(value string) {
 func (t *logger) Info(value string) {
 	log.Println(value)
 }
+
+// Errorf writes formatted error logs
+func (t *logger) Errorf(format string, a ...interface{}){
+	t.Error(fmt.Sprintf(format, a))
+}
+
+// Info writes formatted info logs
+func (t *logger) Infof(format string, a ...interface{}){
+	t.Info(fmt.Sprintf(format, a))
+}
+

@@ -27,6 +27,7 @@ namespace MessagesSender.BL
             Reconnect,
             GetHospitalInfo,
             UpdateDBInfo,
+            ServerReady,
         }
 
         /// <summary>
@@ -198,6 +199,23 @@ namespace MessagesSender.BL
         public void RegisterUpdateDBInfoCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.UpdateDBInfo].Add(handler);
+        }
+
+        /// <summary>
+        /// ServerReady command arrived
+        /// </summary>
+        public void ServerReadyCommandArrived()
+        {
+            _eventHandlers[EventTypes.ServerReady].ForEach(h => (h as Action)());
+        }
+
+        /// <summary>
+        /// register ServerReady command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>    
+        public void RegisterServerReadyCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.ServerReady].Add(handler);
         }
     }
 }

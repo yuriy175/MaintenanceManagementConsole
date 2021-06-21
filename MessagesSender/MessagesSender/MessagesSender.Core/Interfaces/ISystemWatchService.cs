@@ -10,7 +10,7 @@ namespace MessagesSender.Core.Interfaces
     /// <summary>
     /// system watch service interface
     /// </summary>
-    public interface ISystemWatchService
+    public interface ISystemWatchService : IDisposable
     {
     }
 }

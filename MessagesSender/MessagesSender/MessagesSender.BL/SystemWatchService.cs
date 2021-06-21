@@ -78,6 +78,15 @@ namespace MessagesSender.BL
             _logger.Information("HddWatchService started");
         }
 
+        /// <summary>
+        /// Dispose object
+        /// </summary>
+        public void Dispose()
+        {
+            _idleCpu?.Dispose();
+            _totalCpu?.Dispose();
+        }
+
         private void OnDeactivateArrivedAsync()
         {
             _isActivated = false;
@@ -135,7 +144,7 @@ namespace MessagesSender.BL
                             { 
                                 MemoryFreeGb = ramInfo.Value.AvailableSize, 
                                 MemoryTotalGb = ramInfo.Value.TotalSize,
-                            }
+                            },
                         });
                 }
 

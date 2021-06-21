@@ -102,7 +102,14 @@ func (client *mqttClient) Create(
 	var messagePubHandler mqtt.MessageHandler = func(c mqtt.Client, msg mqtt.Message) {
 		payload := msg.Payload()
 		topic := msg.Topic()
-		//fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
+		if strings.Contains(topic, "HOME") {
+			// client._equipsCh <- &rawMsg
+			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
+			t := 1
+			t = t + 1
+		}
+
+		// 
 		if topic == models.CommonTopicPath {
 			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
 
@@ -127,6 +134,7 @@ func (client *mqttClient) Create(
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
 			client._eventsCh <- &rawMsg
+			
 			if strings.Contains(topic, "/hospital") {
 				client._equipsCh <- &rawMsg
 			}

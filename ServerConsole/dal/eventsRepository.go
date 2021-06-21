@@ -2,6 +2,7 @@ package dal
 
 import (
 	"time"
+	// "fmt"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -37,7 +38,7 @@ func EventsRepositoryNew(
 }
 
 // InsertEvent inserts events into db
-func (repository *EventsRepository) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel) []models.EventModel {
+func (repository *EventsRepository) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel, msgDate *time.Time) []models.EventModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -45,7 +46,7 @@ func (repository *EventsRepository) InsertEvents(equipName string, msgType strin
 	events := []models.EventModel{}
 
 	for _, msg := range msgVms {
-		dbEvent := repository.insertEvent(eventsCollection, equipName, msgType, &msg)
+		dbEvent := repository.insertEvent(eventsCollection, equipName, msgType, &msg, msgDate)
 		events = append(events, *dbEvent)
 	}
 
@@ -78,7 +79,7 @@ func (repository *EventsRepository) InsertConnectEvent(equipName string) *models
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
 	msg := models.MessageViewModel{equipName, "подключен", ""}
-	model := repository.insertEvent(eventsCollection, equipName, "EquipConnected", &msg)
+	model := repository.insertEvent(eventsCollection, equipName, "EquipConnected", &msg, nil)
 
 	return model
 }
@@ -106,11 +107,16 @@ func (repository *EventsRepository) insertEvent(
 	eventsCollection *mgo.Collection,
 	equipName string,
 	msgType string,
-	vm *models.MessageViewModel) *models.EventModel {
+	vm *models.MessageViewModel,
+	msgDate *time.Time) *models.EventModel {
 	model := models.EventModel{}
 
 	model.ID = bson.NewObjectId()
-	model.DateTime = time.Now()
+	if msgDate == nil{
+		model.DateTime = time.Now()
+	} else {
+		model.DateTime = *msgDate
+	}
 	model.EquipName = equipName
 
 	model.Type = msgType

@@ -25,7 +25,8 @@ namespace MessagesSender.BL
     public class SendingService : ISendingService
     {
         private readonly ISettingsEntityService _dbSettingsEntityService;
-        private readonly IObservationsEntityService _dbObservationsEntityService;        
+        private readonly IObservationsEntityService _dbObservationsEntityService;
+        private readonly IEventPublisher _eventPublisher;
         private readonly ILogger _logger;
         private readonly IMQCommunicationService _mqService;
         private readonly IWorkqueueSender _wqSender;
@@ -41,6 +42,7 @@ namespace MessagesSender.BL
         /// <param name="dbSettingsEntityService">settings database connector</param>
         /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
+        /// <param name="eventPublisher">event publisher service</param>
         /// <param name="mqService">MQ service</param>
         /// <param name="wqSender">work queue sender</param>
         /// <param name="mqttSender">mqtt sender</param>
@@ -49,6 +51,7 @@ namespace MessagesSender.BL
             ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
+            IEventPublisher eventPublisher,
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
             IMqttSender mqttSender,
@@ -61,6 +64,9 @@ namespace MessagesSender.BL
             _wqSender = wqSender;
             _mqttSender = mqttSender;
             _offlineService = offlineService;
+            _eventPublisher = eventPublisher;
+
+            _eventPublisher.RegisterServerReadyCommandArrivedEvent(() => OnServerReadyArrivedAsync());
 
             _logger.Information("SendingService started");
         }
@@ -77,7 +83,6 @@ namespace MessagesSender.BL
                     {
                         await GetEquipmentInfoAsync();
                         await _mqttSender.CreateAsync(_equipmentInfo);
-                        await SendOfflinedInfosAsync();
                     }),
                     Task.Run(() => _ = GetEquipmentIPAsync()),
                 });
@@ -174,6 +179,8 @@ namespace MessagesSender.BL
                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
         }
 
+        private Task OnServerReadyArrivedAsync() => SendOfflinedInfosAsync();
+
         private async Task SendOfflinedInfosAsync()
         {
             var infos = (await _offlineService.GetInfosAsync())?.ToList();
@@ -191,7 +198,7 @@ namespace MessagesSender.BL
 
             if (result)
             {
-                // await _offlineService.ClearInfosAsync();
+                await _offlineService.ClearInfosAsync();
             }
         }
     }

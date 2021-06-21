@@ -34,6 +34,7 @@ namespace MessagesSender.BL
         private const string XilibLogsOnCommandName = "xilibLogsOn";
         private const string ReconnectCommandName = "reconnect";
         private const string EquipInfoCommandName = "equipInfo";
+        private const string ServerReadyCommandName = "serverReady";        
         private const string UpdateDBInfoCommandName = "updateDBInfo";
         
         private readonly ILogger _logger;
@@ -65,6 +66,7 @@ namespace MessagesSender.BL
                 { XilibLogsOnCommandName, () => OnXilibLogsOnCommandAsync() },
                 { ReconnectCommandName, () => OnReconnectCommand() },
                 { EquipInfoCommandName, () => OnEquipInfoCommand() },
+                { ServerReadyCommandName, () => OnServerReadyCommand() },
                 { UpdateDBInfoCommandName, () => OnUpdateDBInfoCommand() },
             };
 
@@ -130,6 +132,11 @@ namespace MessagesSender.BL
         {
             _eventPublisher.GetHospitalInfoCommandArrived();
         }
+
+        private void OnServerReadyCommand()
+        {
+            _eventPublisher.ServerReadyCommandArrived();
+        }        
 
         private void OnUpdateDBInfoCommand()
         {

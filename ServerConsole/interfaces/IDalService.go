@@ -48,5 +48,5 @@ type IDalService interface {
 	GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel
 
 	// InsertEvent inserts events into db
-	InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel) []models.EventModel
+	InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel, msgDate *time.Time) []models.EventModel
 }

@@ -519,6 +519,6 @@ func (service *dalService) GetEvents(equipName string, startDate time.Time, endD
 }
 
 // InsertEvent inserts events into db
-func (service *dalService) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel) []models.EventModel {
-	return service._eventsRepository.InsertEvents(equipName, msgType, msgVms)
+func (service *dalService) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel, msgDate *time.Time) []models.EventModel {
+	return service._eventsRepository.InsertEvents(equipName, msgType, msgVms, msgDate)
 }

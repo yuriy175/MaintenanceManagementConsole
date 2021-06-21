@@ -99,7 +99,7 @@ namespace MessagesSender.BL
                     OfflineMsg = new
                     {
                         Message = JsonConvert.DeserializeObject(i.Data),
-                        DateTime = i.MsgDate,
+                        DateTime = i.MsgDate.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ssZ"), // RFC3339     = "2006-01-02T15:04:05Z07:00"
                     },
                 };
 

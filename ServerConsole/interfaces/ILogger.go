@@ -10,4 +10,10 @@ type ILogger interface {
 
 	// Info writes info logs
 	Info(value string)
+
+	// Errorf writes formatted error logs
+	Errorf(format string, a ...interface{})
+
+	// Info writes formatted info logs
+	Infof(format string, a ...interface{})
 }
