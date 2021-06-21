@@ -106,6 +106,7 @@ func (service *dalService) Start() {
 	service.ensureIndeces(softwareVolatileInfoCollection, []string{"equipname", "datetime"})
 
 	service.ensureIndeces(equipInfoCollection, []string{"equipname"})
+	go service._userRepository.EnsureAdmin() 
 
 	go func() {
 		for d := range service._dalCh {

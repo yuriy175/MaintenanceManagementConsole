@@ -69,4 +69,10 @@ const (
 
 	// EventsTopicPath is common events topic
 	EventsTopicPath = "Events"
+
+	// AdminRoleName is administrator role name
+	AdminRoleName = "Administrator"
+
+	// DefaultAdminName is default administrator account name
+	DefaultAdminName = "sa"
 )

@@ -113,3 +113,36 @@ func (repository *UserRepository) GetUserByName(login string, email string, pass
 
 	return nil
 }
+
+func (repository *UserRepository) EnsureAdmin() {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	userCollection := session.DB(repository._dbName).C(models.UsersTableName)
+	query := bson.M{}
+	
+	//критерий выборки
+	query = bson.M{"role": models.AdminRoleName, "disabled": false}
+
+	// // объект для сохранения результата
+	user := models.UserModel{}	
+	userCollection.Find(query).One(&user)
+
+	if user.ID != ""{
+		//admin exists
+		return
+	}
+
+	query = bson.M{"login": models.DefaultAdminName}
+	userCollection.RemoveAll(query)
+
+	userVM := models.UserViewModel{}
+
+	userVM.Login = models.DefaultAdminName
+	userVM.Surname = models.DefaultAdminName
+	userVM.Role = models.AdminRoleName
+	userVM.Disabled = false
+	userVM.Password = "medtex"
+	
+	repository.UpdateUser(&userVM)
+}
