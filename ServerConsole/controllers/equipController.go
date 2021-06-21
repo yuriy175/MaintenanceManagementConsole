@@ -343,6 +343,9 @@ func (service *EquipController) sendPermanentSearchResults(
 		// swInfo := dalService.GetPermanentSoftwareInfo(equipName)
 		swInfo := dalService.GetDBSoftwareInfo(equipName)
 		json.NewEncoder(w).Encode(swInfo)
+	} else if equipType == "LastSeen" {
+		swInfo := dalService.GetLastSeenInfo(equipName)
+		json.NewEncoder(w).Encode(swInfo)
 	}
 }
 

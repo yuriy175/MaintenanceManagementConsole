@@ -514,6 +514,11 @@ func (service *dalService) GetDBSoftwareInfo(equipName string) *models.DBSoftwar
 	return service._dbInfoRepository.GetDBSoftwareInfo(equipName)
 }
 
+// GetLastSeenInfo returns last event datetime from db
+func (service *dalService) GetLastSeenInfo(equipName string) time.Time {
+	return service._eventsRepository.GetLastSeenInfo(equipName)
+}
+
 // GetEvents returns all events from db
 func (service *dalService) GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel {
 	return service._eventsRepository.GetEvents(equipName, startDate, endDate)

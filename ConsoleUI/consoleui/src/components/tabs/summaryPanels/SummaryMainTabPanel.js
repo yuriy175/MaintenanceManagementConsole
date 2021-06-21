@@ -39,10 +39,11 @@ export default function SummaryMainTabPanel(props) {
   const notifyText = currEquipState.remoteaccess?.FtpSendResult;
   const equipInfo = currEquipState.equipInfo;
   const isEquipConnected = allEquipsState.connectedEquips?.includes(equipInfo);
+  const lastSeen = currEquipState.lastSeen;
   return (
     <div className={classes.root}>
       <div className={classes.column}>
-        <EquipImageCard equipInfo={equipInfo} isConnected={isEquipConnected}></EquipImageCard>
+        <EquipImageCard equipInfo={equipInfo} isConnected={isEquipConnected} lastSeen={lastSeen}></EquipImageCard>
         <SystemCard system={currEquipState.system} volatile={systemVolatileState.currentVolatile}></SystemCard>
         {/* <HddCard></HddCard> */}
       </div>

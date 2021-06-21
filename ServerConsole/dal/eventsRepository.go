@@ -84,24 +84,21 @@ func (repository *EventsRepository) InsertConnectEvent(equipName string) *models
 	return model
 }
 
-/*
-// CheckEquipment checks if the equipment exists in db
-func (repository *EquipInfoRepository) CheckEquipment(equipName string) bool {
+// GetLastSeenInfo returns last event datetime from db
+func (repository *EventsRepository) GetLastSeenInfo(equipName string) time.Time {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
+	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
-	// // критерий выборки
+	model := models.EventModel{}
 	query := bson.M{"equipname": equipName}
+	
+	eventsCollection.Find(query).Sort("-datetime").One(&model)
 
-	// // объект для сохранения результата
-	equip := models.EquipInfoModel{}
-	equipCollection.Find(query).One(&equip)
-
-	return equip.ID != ""
+	return model.DateTime
 }
-*/
+
 
 func (repository *EventsRepository) insertEvent(
 	eventsCollection *mgo.Collection,

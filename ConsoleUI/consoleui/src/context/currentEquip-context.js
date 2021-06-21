@@ -18,6 +18,7 @@ const initialState = {
   aecs:{},
   allDBs:{},
   allDBTables:{},
+  lastSeen:undefined,
 };
 
 function reducer(state, action) {
@@ -54,6 +55,13 @@ function reducer(state, action) {
       return {
         ...state,
         organAuto: action.payload
+      };
+    }
+
+    case 'SETLASTSEEN': {
+      return {
+        ...state,
+        lastSeen: action.payload
       };
     }
     case 'SETGENERATOR': {

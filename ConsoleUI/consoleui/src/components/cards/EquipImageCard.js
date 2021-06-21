@@ -7,6 +7,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 
+import {parseLocalString} from '../../utilities/utils'
+
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import CardRow from './CardRow'
 import { ComplexTypeImages } from '../../model/constants'
@@ -43,6 +45,7 @@ const EquipImageCard = React.memo((props) => {
     });
   
   const isConnected = props.isConnected;
+  const lastSeen = props.lastSeen;
 
   return (
     <Card className={classes.root}>
@@ -55,6 +58,7 @@ const EquipImageCard = React.memo((props) => {
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
           Аппарат : {equipInfo}
+          {lastSeen? <div>Посл. сообщение: {parseLocalString(lastSeen)} </div>: <></>}
         </Typography>
       </CardContent>
     </Card>
