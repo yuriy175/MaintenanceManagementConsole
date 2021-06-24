@@ -60,7 +60,7 @@ func HTTPServiceNew(
 	service._authService = authService
 
 	service._equipController = controllers.EquipControllerNew(log, mqttReceiverService, webSocketService, dalService, equipsService, service)
-	service._adminController = controllers.AdminControllerNew(log, mqttReceiverService, webSocketService, dalService)
+	service._adminController = controllers.AdminControllerNew(log, mqttReceiverService, webSocketService, dalService, authService)
 
 	return service
 }

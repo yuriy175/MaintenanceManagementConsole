@@ -78,14 +78,14 @@ export default function CommonTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, rowInd) => {
               return (
                 <TableRow 
                     selected={selectedRow ? row.EquipName === selectedRow : false} 
                     hover 
                     role="checkbox" 
                     tabIndex={-1} 
-                    key={row.code} 
+                    key={rowInd} 
                     onClick={(ev) => onRowClick(ev, row)} >
                   {columns.map((column) => {
                     const value = row[column.id];
@@ -108,7 +108,7 @@ export default function CommonTable(props) {
                             }}
                             checked={checked}
                             onChange={(ev) => props.onSelect ? props.onSelect(ev, row) : false}
-                            inputProps={{ 'aria-label': 'select all desserts' }}
+                            inputProps={{ 'aria-label': 'select all desserts', 'data-column' : column.id }}
                           /> : 
                           column.format ? column.format(value) : 
                             column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : value}

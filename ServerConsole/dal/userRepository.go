@@ -68,6 +68,10 @@ func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *mode
 			bson.M{"login": model.Login},
 			bson.D{
 				{"$set", bson.D{{"disabled", model.Disabled}}}})
+		
+		if model.Disabled {
+			repository.EnsureAdmin()
+		}
 	}
 
 	return &model

@@ -89,9 +89,9 @@ export async function XilibLogsOn(activatedEquipInfo, detailedXilib, verboseXili
     });
 };
 
-export async function GetAllEquips() {
+export async function GetAllEquips(withDisabled = false) {
     return await HandlerWrapper('GetAllEquips', async () => {
-        const response = await axios.get(EquipsServiceAddress + EquipsController + '/GetAllEquips');
+        const response = await axios.get(EquipsServiceAddress + EquipsController + '/GetAllEquips?withDisabled='+withDisabled);
         return response.data;
     });
 };
@@ -118,6 +118,15 @@ export async function UpdateDBInfo(activatedEquipInfo) {
     return await HandlerWrapper('UpdateDBInfo', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
             '/UpdateDBInfo?activatedEquipInfo=' + activatedEquipInfo);
+        return response.data;
+    });
+};
+
+export async function DisableEquipInfo(equipName, disabled) {
+    return await HandlerWrapper('DisableEquipInfo', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/DisableEquipInfo?equipName=' + equipName+
+            '&disabled=' + disabled);
         return response.data;
     });
 };

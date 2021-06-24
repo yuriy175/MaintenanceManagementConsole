@@ -22,6 +22,9 @@ type AdminController struct {
 
 	// DAL service
 	_dalService interfaces.IDalService
+
+	// authorization service
+	_authService interfaces.IAuthService
 }
 
 // AdminControllerNew creates an instance of webSock
@@ -29,13 +32,15 @@ func AdminControllerNew(
 	log interfaces.ILogger,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
-	dalService interfaces.IDalService) *AdminController {
+	dalService interfaces.IDalService,
+	authService interfaces.IAuthService) *AdminController {
 	service := &AdminController{}
 
 	service._log = log
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService
+	service._authService = authService
 
 	return service
 }
@@ -88,9 +93,13 @@ func (service *AdminController) Handle() {
 
 		user := dalService.GetUserByName(userVM.Login, userVM.Email, userVM.Password)
 		if user == nil {
-			http.Error(w, "Not authorized", 401)
+			http.Error(w, "Not authorized", http.StatusUnauthorized)
+			service._log.Infof("login error: %s", userVM.Login);
 			return
 		}
-		json.NewEncoder(w).Encode(user)
+
+		service._log.Infof("login success: %s", userVM.Login);
+		token := service._authService.CreateToken(user)
+		json.NewEncoder(w).Encode(token)
 	})
 }

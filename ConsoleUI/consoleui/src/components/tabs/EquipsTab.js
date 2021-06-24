@@ -6,7 +6,7 @@ import EquipTable from '../tables/equipTables/EquipTable'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display:"flex"
+    // display:"flex"
   },
 }));
 

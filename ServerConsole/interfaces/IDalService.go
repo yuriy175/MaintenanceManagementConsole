@@ -32,6 +32,9 @@ type IDalService interface {
 	CheckEquipment(equipName string) bool
 	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel
 	GetEquipInfos() []models.EquipInfoModel
+	
+	// DisableEquipInfo disables an equipment
+	DisableEquipInfo(equipName string, disabled bool) 
 
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel

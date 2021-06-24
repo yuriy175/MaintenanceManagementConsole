@@ -276,6 +276,7 @@ type EquipInfoModel struct {
 	HospitalAddress   string
 	HospitalLongitude string
 	HospitalLatitude  string
+	Disabled     bool
 }
 
 // RawDeviceInfoModel describes raw device data from equipment info DB model

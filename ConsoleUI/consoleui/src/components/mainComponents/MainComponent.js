@@ -18,6 +18,7 @@ import { SummaryTabIndex, EquipsTabIndex, EventsTabIndex, MainTabPanelIndex } fr
 import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
 
+import {AdminRole} from '../../model/constants'
 import { UsersContext } from '../../context/users-context';
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
@@ -27,7 +28,7 @@ import * as EquipWorker from '../../workers/equipWorker'
 import {getUSFullDate} from '../../utilities/utils'
 
 const drawerWidth = 240;
-const mainMenu = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий', 'Администрирование'];
+const menuItems = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий']; // , 'Администрирование'];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,7 +94,9 @@ export default function MainComponent() {
   };
 
   const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
-
+  const isAdmin = usersState.currentUser?.Role === AdminRole;
+  const mainMenu = isAdmin ? [...menuItems, 'Администрирование'] : menuItems; // , ];
+  
   return (
     <div className={classes.root}>
       <CssBaseline />

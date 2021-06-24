@@ -3,9 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
+	"strconv"
 
 	interfaces "../interfaces"
 )
@@ -57,6 +57,7 @@ func (service *EquipController) Handle() {
 	webSocketService := service._webSocketService
 	equipsService := service._equipsService
 	dalService := service._dalService
+	log := service._log
 
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +70,8 @@ func (service *EquipController) Handle() {
 		sessionUids, ok := queryString["sessionUid"]
 
 		if !ok || len(sessionUids[0]) < 1 {
-			log.Println("Url Param 'sessionUid' is missing")
+			log.Error("Url Param 'sessionUid' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		sessionUID := sessionUids[0]
@@ -77,7 +79,8 @@ func (service *EquipController) Handle() {
 		activatedEquipInfos, ok := queryString["activatedEquipInfo"]
 
 		if !ok || len(activatedEquipInfos[0]) < 1 {
-			log.Println("Url Param 'activatedEquipInfo' is missing")
+			log.Error("Url Param 'activatedEquipInfo' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		activatedEquipInfo := activatedEquipInfos[0]
@@ -85,7 +88,8 @@ func (service *EquipController) Handle() {
 		deactivatedEquipInfos, ok := queryString["deactivatedEquipInfo"]
 
 		if !ok {
-			log.Println("Url Param 'deactivatedEquipInfo' is missing")
+			log.Error("Url Param 'deactivatedEquipInfo' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		deactivatedEquipInfo := ""
@@ -93,7 +97,7 @@ func (service *EquipController) Handle() {
 			deactivatedEquipInfo = deactivatedEquipInfos[0]
 		}
 
-		log.Println("Url is: %s %s %s", sessionUID, activatedEquipInfo, deactivatedEquipInfo)
+		log.Errorf("Url is: %s %s %s", sessionUID, activatedEquipInfo, deactivatedEquipInfo)
 		if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo {
 			mqttReceiverService.SendCommand(deactivatedEquipInfo, "deactivate")
 		}
@@ -117,8 +121,48 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")
-		equipInfos := equipsService.GetEquipInfos()
+
+		queryString := r.URL.Query()
+
+		withDisableds, ok := queryString["withDisabled"]
+
+		if !ok || len(withDisableds[0]) < 1 {
+			log.Error("Url Param 'withDisabled' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		withDisabled, _ := strconv.ParseBool(withDisableds[0])
+
+		equipInfos := equipsService.GetEquipInfos(withDisabled)
 		json.NewEncoder(w).Encode(equipInfos)
+	})
+
+	http.HandleFunc("/equips/DisableEquipInfo", func(w http.ResponseWriter, r *http.Request) {
+		//Allow CORS here By * or specific origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		w.Header().Set("Content-Type", "application/json")
+
+		queryString := r.URL.Query()
+
+		equipNames, ok := queryString["equipName"]
+		if !ok {
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+		equipName := equipNames[0]
+
+		disableds, ok := queryString["disabled"]
+
+		if !ok || len(disableds[0]) < 1 {
+			log.Error("Url Param 'disabled' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		disabled, _ := strconv.ParseBool(disableds[0])
+
+		equipsService.DisableEquipInfo(equipName, disabled)
 	})
 
 	http.HandleFunc("/equips/RunTeamViewer", func(w http.ResponseWriter, r *http.Request) {
@@ -142,14 +186,16 @@ func (service *EquipController) Handle() {
 
 		detailedXilibs, ok := queryString["detailedXilib"]
 		if !ok || len(detailedXilibs[0]) < 1 {
-			log.Println("Url Param 'detailedXilib' is missing")
+			log.Error("Url Param 'detailedXilib' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		// detailedXilib := detailedXilibs[0]
 
 		verboseXilibs, ok := queryString["verboseXilib"]
 		if !ok || len(verboseXilibs[0]) < 1 {
-			log.Println("Url Param 'verboseXilib' is missing")
+			log.Error("Url Param 'verboseXilib' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		// verboseXilib := verboseXilibs[0]
@@ -168,27 +214,29 @@ func (service *EquipController) Handle() {
 
 		equipTypes, ok := queryString["currType"]
 		if !ok || len(equipTypes[0]) < 1 {
-			log.Println("Url Param 'currType' is missing")
+			log.Error("Url Param 'currType' is missing")
 			return
 		}
 		equipType := equipTypes[0]
 
 		equipNames, ok := queryString["equipName"]
 		if !ok {
-			log.Println("Url Param 'equipName' is missing")
+			log.Error("Url Param 'equipName' is missing")
 			return
 		}
 		equipName := equipNames[0]
 
 		startDates, ok := queryString["startDate"]
 		if !ok || len(startDates[0]) < 1 {
-			log.Println("Url Param 'startDate' is missing")
+			log.Error("Url Param 'startDate' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		endDates, ok := queryString["endDate"]
 		if !ok {
-			log.Println("Url Param 'endDate' is missing")
+			log.Error("Url Param 'endDate' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
@@ -202,7 +250,7 @@ func (service *EquipController) Handle() {
 			fmt.Println(err)
 		}
 
-		log.Println("Url is: %s %s %s", equipType, startDate, endDate)
+		// log.Println("Url is: %s %s %s", equipType, startDate, endDate)
 
 		service.sendSearchResults(w, equipType, equipName, startDate, endDate)
 	})
@@ -217,7 +265,8 @@ func (service *EquipController) Handle() {
 
 		equipNames, ok := queryString["equipName"]
 		if !ok {
-			log.Println("Url Param 'equipName' is missing")
+			log.Error("Url Param 'equipName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		equipName := equipNames[0]
@@ -236,21 +285,24 @@ func (service *EquipController) Handle() {
 
 		equipNames, ok := queryString["equipName"]
 		if !ok {
-			log.Println("Url Param 'equipName' is missing")
+			log.Error("Url Param 'equipName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		equipName := equipNames[0]
 
 		tableTypes, ok := queryString["tableType"]
 		if !ok {
-			log.Println("Url Param 'tableType' is missing")
+			log.Error("Url Param 'tableType' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		tableType := tableTypes[0]
 
 		tableNames, ok := queryString["tableName"]
 		if !ok {
-			log.Println("Url Param 'tableName' is missing")
+			log.Error("Url Param 'tableName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		tableName := tableNames[0]
@@ -270,19 +322,21 @@ func (service *EquipController) Handle() {
 
 		equipTypes, ok := queryString["currType"]
 		if !ok || len(equipTypes[0]) < 1 {
-			log.Println("Url Param 'currType' is missing")
+			log.Error("Url Param 'currType' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		equipType := equipTypes[0]
 
 		equipNames, ok := queryString["equipName"]
 		if !ok {
-			log.Println("Url Param 'equipName' is missing")
+			log.Error("Url Param 'equipName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 		equipName := equipNames[0]
 
-		log.Println("Url is: %s %s", equipType, equipName)
+		// log.Println("Url is: %s %s", equipType, equipName)
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
 	})
@@ -360,7 +414,7 @@ func (service *EquipController) sendCommand(w http.ResponseWriter, r *http.Reque
 	activatedEquipInfos, ok := queryString["activatedEquipInfo"]
 
 	if !ok || len(activatedEquipInfos[0]) < 1 {
-		log.Println("Url Param 'activatedEquipInfo' is missing")
+		service._log.Error("Url Param 'activatedEquipInfo' is missing")
 		return
 	}
 	activatedEquipInfo := activatedEquipInfos[0]

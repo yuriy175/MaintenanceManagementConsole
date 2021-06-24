@@ -92,3 +92,15 @@ func (repository *EquipInfoRepository) CheckEquipment(equipName string) bool {
 
 	return equip.ID != ""
 }
+
+// DisableEquipInfo disables an equipment
+func (repository *EquipInfoRepository) DisableEquipInfo(equipName string, disabled bool) {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)	
+	equipCollection.Update(
+		bson.M{"equipname": equipName},
+		bson.D{
+			{"$set", bson.D{{"disabled", disabled}}}})
+}

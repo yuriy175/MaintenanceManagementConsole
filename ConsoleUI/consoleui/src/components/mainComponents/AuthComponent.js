@@ -69,9 +69,17 @@ export default function AuthComponent(props) {
   }; 
 
   const onLogin = async () => {
+    const parseJwt = (token) => {
+      try {
+        return JSON.parse(atob(token.split('.')[1]));
+      } catch (e) {
+        return null;
+      }
+    };
     const data = await AdminWorker.Login({login, password, email});
+    const claims = parseJwt(data);
     if(data){
-      usersDispatch({ type: 'SETUSER', payload: data }); 
+      usersDispatch({ type: 'SETUSER', payload: {Token: data, Claims: claims} }); 
       setRedirect(true);
     }
     else{

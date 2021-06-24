@@ -528,3 +528,8 @@ func (service *dalService) GetEvents(equipName string, startDate time.Time, endD
 func (service *dalService) InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel, msgDate *time.Time) []models.EventModel {
 	return service._eventsRepository.InsertEvents(equipName, msgType, msgVms, msgDate)
 }
+
+// DisableEquipInfo disables an equipment
+func (service *dalService) DisableEquipInfo(equipName string, disabled bool) {
+	service._equipInfoRepository.DisableEquipInfo(equipName, disabled)
+}

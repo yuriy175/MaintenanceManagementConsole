@@ -99,8 +99,23 @@ func (service *equipsService) InsertEquipInfo(equipName string, equipVM *models.
 	return equip
 }
 
-// Returns all equipments
-func (service *equipsService) GetEquipInfos() []models.EquipInfoModel {
+// DisableEquipInfo disables an equipment
+func (service *equipsService) DisableEquipInfo(equipName string, disabled bool) {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	equips := service._equips
+	if equip, ok := equips[equipName]; ok {
+		equip.Disabled = disabled
+		equips[equipName] = equip
+	}
+
+	go service._dalService.DisableEquipInfo(equipName, disabled)
+}
+
+
+// GetEquipInfos returns all equipments
+func (service *equipsService) GetEquipInfos(withDisabled bool) []models.EquipInfoModel {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
@@ -108,7 +123,9 @@ func (service *equipsService) GetEquipInfos() []models.EquipInfoModel {
 	v := make([]models.EquipInfoModel, 0, len(equips))
 
 	for _, value := range equips {
-		v = append(v, value)
+		if withDisabled || (!withDisabled && !value.Disabled) {
+			v = append(v, value)
+		}
 	}
 
 	return v

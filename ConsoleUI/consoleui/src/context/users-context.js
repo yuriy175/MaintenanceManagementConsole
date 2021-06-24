@@ -4,6 +4,7 @@ export const UsersContext = createContext();
 
 const initialState = {
   currentUser: {},
+  token: null,
   users: null,
 };
 
@@ -15,7 +16,8 @@ function reducer(state, action) {
     case 'SETUSER': {
       return {
         ...state,
-        currentUser: action.payload
+        token: action.payload.Token,
+        currentUser: action.payload.Claims
       };
     }
     case 'SETUSERS': {
