@@ -8,12 +8,6 @@ import (
 	"../models"
 )
 
-type userClaims struct {
-	Login        string
-	Surname 	 string
-	Role         string
-}
-
 // authorization service implementation type
 type authService struct {
 	//logger
@@ -49,12 +43,21 @@ func (service *authService) CheckSum(value string, hash [32]byte) bool {
 
 // CreateToken creates jwt token for user
 func (service *authService) CreateToken(user *models.UserModel) string{
-	claims := &userClaims{user.Login, user.Surname, user.Role}
+	claims := &models.UserClaims{user.Login, user.Surname, user.Role}
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), claims)
 	tokenString, _ := token.SignedString([]byte(service._jwtSecret))
 	return tokenString
 }
 
-func (c userClaims) Valid() error {
-	return nil
-}
+func (service *authService) VerifyToken(tokenString string) *models.UserClaims{
+	claims := &models.UserClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(service._jwtSecret), nil
+	})
+
+	if token == nil || err != nil{
+		return nil
+	}
+
+	return claims
+  }

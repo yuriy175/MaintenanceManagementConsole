@@ -50,16 +50,24 @@ func (service *AdminController) Handle() {
 	//mqttReceiverService := service._mqttReceiverService
 	//webSocketService := service._webSocketService
 	dalService := service._dalService
+	authService := service._authService
 
 	http.HandleFunc("/equips/GetAllUsers", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
-		//roles := dalService.GetRoles()
-		users := dalService.GetUsers()
-		json.NewEncoder(w).Encode(users)
+		/*if CheckOptionsAndSetCORSMethod(w, r){
+			return
+		}
+
+		tokenString := CheckAuthorization(w, r)
+		if tokenString == ""{
+			return;
+		}
+		
+		service._authService.VerifyToken(tokenString) */
+		if CheckAdminAuthorization(authService, w, r) != nil{
+			users := dalService.GetUsers()
+			json.NewEncoder(w).Encode(users)
+		}
 	})
 
 	http.HandleFunc("/equips/UpdateUser", func(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +89,7 @@ func (service *AdminController) Handle() {
 
 	http.HandleFunc("/equips/Login", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 		w.Header().Set("Content-Type", "application/json")
 

@@ -13,4 +13,7 @@ type IAuthService interface {
 
 	// CreateToken creates jwt token for user
 	CreateToken(user *models.UserModel) string
+
+	// VerifyToken verifies token 
+	VerifyToken(tokenString string) *models.UserClaims
 }

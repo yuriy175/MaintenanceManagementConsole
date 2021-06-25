@@ -66,7 +66,7 @@ export default function MainComponent() {
 
   useEffect(() => {
       (async () => {
-          if(usersState.token)
+          if(!usersState.token)
           {
             return;
           }

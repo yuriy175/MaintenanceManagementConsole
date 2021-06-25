@@ -77,6 +77,7 @@ export default function AuthComponent(props) {
       }
     };
     const data = await AdminWorker.Login({login, password, email});
+    // const data = await AdminWorker.Login({login: 'sa', password: 'medtex', email});
     const claims = parseJwt(data);
     if(data){
       usersDispatch({ type: 'SETUSER', payload: {Token: data, Claims: claims} }); 

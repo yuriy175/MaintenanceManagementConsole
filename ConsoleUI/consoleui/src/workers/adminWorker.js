@@ -9,8 +9,15 @@ const AdminController = '/equips';
 export async function GetAllUsers(token) {
     return await HandlerWrapper('GetAllUsers', async () => {
         const path = EquipsServiceAddress + AdminController + '/GetAllUsers';
-        console.log(path);
-        const response = await axios.get(path, GetTokenHeader(token));
+        const header = GetTokenHeader(token);        
+        const response = await axios.get(path, header);
+        /*const response = await axios.get(path, {
+            headers: {
+                // "Content-Type": "application/x-www-form-urlencoded",
+                'Authorization': `Bearer ${token}`
+            }
+            });*/
+
         return response.data;
     });
 };
