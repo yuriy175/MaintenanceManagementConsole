@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
 using Atlas.Common.Core.Interfaces;
@@ -23,9 +24,14 @@ namespace MessagesSender.BL.Remoting
     /// </summary>
     public abstract class RabbitMQTTBase
     {
+        private const int MqttPort = 1883;
+        private const int MqttsPort = 11884;
+
         private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger;
         private readonly string _clientId = Guid.NewGuid().ToString();
+        private readonly bool _useMqttSecure = true;
+
 
         private (string HostName, string UserName, string Password)? _connectionProps;
         private IManagedMqttClient _mqttClient = null;
@@ -118,12 +124,16 @@ namespace MessagesSender.BL.Remoting
                 var messageBuilder = new MqttClientOptionsBuilder()
                     .WithClientId(_clientId)
                     .WithCredentials(connectionFactory.UserName, connectionFactory.Password)
-                    .WithTcpServer(connectionFactory.HostName, 1883)
+                    .WithTcpServer(connectionFactory.HostName, _useMqttSecure ? MqttsPort : MqttPort)
                     .WithCleanSession();
 
-                var options = false // mqttSecure
+                var options = _useMqttSecure
                   ? messageBuilder
-                    .WithTls()
+                    .WithTls(new MqttClientOptionsBuilderTlsParameters()
+                    {
+                        UseTls = true,
+                        SslProtocol = SslProtocols.Tls12,
+                    })
                     .Build()
                   : messageBuilder
                     .Build();
