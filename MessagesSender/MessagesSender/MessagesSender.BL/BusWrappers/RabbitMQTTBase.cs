@@ -30,8 +30,7 @@ namespace MessagesSender.BL.Remoting
         private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger;
         private readonly string _clientId = Guid.NewGuid().ToString();
-        private readonly bool _useMqttSecure = true;
-
+        private readonly bool _useMqttSecure = false;
 
         private (string HostName, string UserName, string Password)? _connectionProps;
         private IManagedMqttClient _mqttClient = null;
@@ -145,8 +144,6 @@ namespace MessagesSender.BL.Remoting
 
                 _mqttClient = new MqttFactory().CreateManagedMqttClient();
 
-                await _mqttClient.StartAsync(managedOptions);
-
                 _mqttClient.UseConnectedHandler(e =>
                 {
                     Console.WriteLine("Connected successfully with MQTT Brokers. " + connectionFactory.HostName);
@@ -155,40 +152,9 @@ namespace MessagesSender.BL.Remoting
                 _mqttClient.UseDisconnectedHandler(e =>
                 {
                     Console.WriteLine("Disconnected from MQTT Brokers." + connectionFactory.HostName);
-                });
-                                
-                /*var options = new ManagedMqttClientOptionsBuilder()
-                       .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-                       .WithClientOptions(new MqttClientOptionsBuilder()
-                           .WithClientId("epo")
-                           //.WithTcpServer("mskorp.tk")
-                           //.WithCredentials("epo", "medtex")
-                           //.WithTls()
-                           .WithTcpServer(connectionFactory.HostName)
-                           .WithCredentials(connectionFactory.UserName, connectionFactory.Password)
-                           .Build())
-                       .Build();
+                });    
 
-                _mqttClient = new MqttFactory().CreateManagedMqttClient();
-                    // await mqttClient.SubscribeAsync(new TopicFilterBuilder().WithTopic("epotopic").Build());
-                    //await _mqttClient.StartAsync(options);
-                    var result = await _mqttClient.InternalClient.ConnectAsync(options.ClientOptions).ConfigureAwait(false);
-                    await _mqttClient.StartAsync(options);
-                    var msg = new MqttApplicationMessage
-                    {
-                        Topic = "topic/test", // "test", // "topic/test", // "epotopic",
-                        Payload = Encoding.UTF8.GetBytes("Ohrenet"),
-                    };
-                    await _mqttClient.SubscribeAsync("topic/test");
-                    var res = await _mqttClient.PublishAsync(msg);
-                /*
-                var result = await mqttClient.InternalClient.ConnectAsync(options.ClientOptions).ConfigureAwait(false);
-                var result2 = await mqttClient.InternalClient.PublishAsync(new MqttApplicationMessage
-                {
-                    Topic = "epotopic",
-                    Payload = Encoding.UTF8.GetBytes("Ohrenet"),
-                }).ConfigureAwait(false);
-                */
+                await _mqttClient.StartAsync(managedOptions);                
             }
             catch (Exception ex)
             {

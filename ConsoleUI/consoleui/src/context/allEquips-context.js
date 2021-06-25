@@ -16,6 +16,18 @@ function reducer(state, action) {
         allEquips: action.payload?.filter(p => p)
       };
     }    
+    case 'UPDATEALLEQUIPS': {
+      const oldRow = state.selectedEquips.filter(p => p.EquipName === action.payload.EquipName)
+      if(oldRow){
+        oldRow.Disabled = action.payload.Disabled
+      }
+
+      return {
+        ...state,
+        allEquips: [...state.allEquips]
+      };
+    }    
+    
     case 'SETCONNECTEDEQUIPS': {
       return {
         ...state,
