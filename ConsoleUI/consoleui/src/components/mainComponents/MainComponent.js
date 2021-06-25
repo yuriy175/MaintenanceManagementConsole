@@ -66,15 +66,15 @@ export default function MainComponent() {
 
   useEffect(() => {
       (async () => {
-          if(usersState.users)
+          if(usersState.token)
           {
             return;
           }
 
-          const users = await AdminWorker.GetAllUsers();
+          const users = await AdminWorker.GetAllUsers(usersState.token);
           usersDispatch({ type: 'SETUSERS', payload: users }); 
       })();
-  }, [usersState.users]);
+  }, [usersState.token]);
 
   const handleListItemClick = async (event, index) => {
     if(index === EquipsTabIndex)

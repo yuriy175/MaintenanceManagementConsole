@@ -16,3 +16,14 @@ export function GetJsonHeader() {
         }
     }
 }
+
+export function GetTokenHeader(token) {
+    return  {
+        headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer " + token  // передача токена в заголовке
+        }
+    };
+}
+
+

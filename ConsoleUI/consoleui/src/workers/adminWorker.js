@@ -1,16 +1,16 @@
 import axios from 'axios';
 import { EquipsServiceAddress } from '../model/constants'
-import {HandlerWrapper, GetJsonHeader} from './commonWorker'
+import {HandlerWrapper, GetJsonHeader, GetTokenHeader} from './commonWorker'
 
 import {sessionUid} from '../utilities/utils'
 
 const AdminController = '/equips';
 
-export async function GetAllUsers() {
+export async function GetAllUsers(token) {
     return await HandlerWrapper('GetAllUsers', async () => {
         const path = EquipsServiceAddress + AdminController + '/GetAllUsers';
         console.log(path);
-        const response = await axios.get(path);
+        const response = await axios.get(path, GetTokenHeader(token));
         return response.data;
     });
 };
