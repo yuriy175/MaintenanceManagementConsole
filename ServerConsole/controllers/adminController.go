@@ -51,6 +51,7 @@ func (service *AdminController) Handle() {
 	//webSocketService := service._webSocketService
 	dalService := service._dalService
 	authService := service._authService
+	log := service._log
 
 	http.HandleFunc("/equips/GetAllUsers", func(w http.ResponseWriter, r *http.Request) {
 
@@ -72,10 +73,16 @@ func (service *AdminController) Handle() {
 
 	http.HandleFunc("/equips/UpdateUser", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		/*w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")*/
+
+		claims := CheckAdminAuthorization(authService, w, r) 
+		
+		if claims == nil{
+			return
+		}
 
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
@@ -85,6 +92,8 @@ func (service *AdminController) Handle() {
 
 		user := dalService.UpdateUser(userVM)
 		json.NewEncoder(w).Encode(user)
+
+		log.Infof("User %s updated by %s", userVM.Login, claims.Login)
 	})
 
 	http.HandleFunc("/equips/Login", func(w http.ResponseWriter, r *http.Request) {

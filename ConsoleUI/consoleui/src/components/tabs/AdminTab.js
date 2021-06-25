@@ -75,8 +75,9 @@ export default function AdminTab(props) {
   };
 
   const onAdd = async () => {
-    const data = await AdminWorker.UpdateUser({id: '', login, password, surname, email, role, disabled: false});
-    const users = await AdminWorker.GetAllUsers();
+    const token = usersState.token
+    const data = await AdminWorker.UpdateUser({id: '', login, password, surname, email, role, disabled: false}, token);
+    const users = await AdminWorker.GetAllUsers(token);
     usersDispatch({ type: 'SETUSERS', payload: users }); 
   };
 

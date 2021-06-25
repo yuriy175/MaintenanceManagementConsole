@@ -101,15 +101,14 @@ export default function EquipTable(props) {
   const handleSelect = async (event, row) => {
     const equipInfo = row.EquipName;
     row.Disabled = !row.Disabled
-    await EquipWorker.DisableEquipInfo(equipInfo, row.Disabled);
-    // const allEquips = await EquipWorker.GetAllEquips(!visibleOnly);
+    await EquipWorker.DisableEquipInfo(usersState.token, equipInfo, row.Disabled);
     allEquipsDispatch({ type: 'UPDATEALLEQUIPS', payload: row }); 
   };
 
   const onVisibleOnly = async (event) => {
     const value = !visibleOnly;
     setVisibleOnly(value);
-    const allEquips = await EquipWorker.GetAllEquips(visibleOnly);
+    const allEquips = await EquipWorker.GetAllEquips(usersState.token, visibleOnly);
     allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips }); 
   };
 

@@ -29,6 +29,9 @@ type EquipController struct {
 
 	// http service
 	_httpService   interfaces.IHttpService
+
+	// authorization service
+	_authService interfaces.IAuthService
 }
 
 // EquipControllerNew creates an instance of webSock
@@ -38,7 +41,8 @@ func EquipControllerNew(
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
 	equipsService interfaces.IEquipsService,
-	httpService interfaces.IHttpService) *EquipController {
+	httpService interfaces.IHttpService,
+	authService interfaces.IAuthService) *EquipController {
 	service := &EquipController{}
 
 	service._log = log
@@ -47,6 +51,7 @@ func EquipControllerNew(
 	service._webSocketService = webSocketService
 	service._dalService = dalService
 	service._equipsService = equipsService
+	service._authService = authService
 
 	return service
 }
@@ -58,6 +63,7 @@ func (service *EquipController) Handle() {
 	equipsService := service._equipsService
 	dalService := service._dalService
 	log := service._log
+	authService := service._authService
 
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
@@ -116,12 +122,17 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
+		/*//Allow CORS here By * or specific origin
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")
-
+*/
+		claims := CheckUserAuthorization(authService, w, r) 
+						
+		if claims == nil{
+			return
+		}
 		queryString := r.URL.Query()
 
 		withDisableds, ok := queryString["withDisabled"]
@@ -138,11 +149,17 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/DisableEquipInfo", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
+		/*//Allow CORS here By * or specific origin
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")
+*/
+		claims := CheckAdminAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			return
+		}
 
 		queryString := r.URL.Query()
 

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import { Redirect } from 'react-router-dom';
 
 import { SummaryTabIndex, EquipsTabIndex, EventsTabIndex, MainTabPanelIndex } from '../../model/constants';
 
@@ -63,6 +64,7 @@ export default function MainComponent() {
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [eventsState, eventsDispatch] = useContext(EventsContext);
+  // const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
       (async () => {
@@ -76,10 +78,15 @@ export default function MainComponent() {
       })();
   }, [usersState.token]);
 
+  const token = usersState.token;
+  if (!token) {
+    return <Redirect to="/" />;  
+  }
+
   const handleListItemClick = async (event, index) => {
     if(index === EquipsTabIndex)
     {
-      const allEquips = await EquipWorker.GetAllEquips();
+      const allEquips = await EquipWorker.GetAllEquips(token);
       allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips });  
     }
     else if(index === EventsTabIndex)

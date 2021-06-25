@@ -20,8 +20,9 @@ export default function UserTable(props) {
   const handleSelect = async (event, row) => {
     const Disabled = event.target.checked;//{id: "1", login, password, surname, email, role, disabled}
     const newRow = {...row, Disabled};
-    const data = await AdminWorker.UpdateUser(newRow);
-    const users = await AdminWorker.GetAllUsers();
+    const token = usersState.token;
+    const data = await AdminWorker.UpdateUser(newRow, token);
+    const users = await AdminWorker.GetAllUsers(token);
     usersDispatch({ type: 'SETUSERS', payload: users }); 
   };
 

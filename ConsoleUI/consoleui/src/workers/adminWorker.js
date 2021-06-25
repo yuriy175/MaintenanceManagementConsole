@@ -11,18 +11,12 @@ export async function GetAllUsers(token) {
         const path = EquipsServiceAddress + AdminController + '/GetAllUsers';
         const header = GetTokenHeader(token);        
         const response = await axios.get(path, header);
-        /*const response = await axios.get(path, {
-            headers: {
-                // "Content-Type": "application/x-www-form-urlencoded",
-                'Authorization': `Bearer ${token}`
-            }
-            });*/
 
         return response.data;
     });
 };
 
-export async function UpdateUser(user) {
+export async function UpdateUser(user, token) {
     return await HandlerWrapper('UpdateUser', async () => {
         const response = await axios.post(EquipsServiceAddress + AdminController + '/UpdateUser',
             user, //json,
@@ -30,6 +24,7 @@ export async function UpdateUser(user) {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                     "Accept": "application/json",
+                    "Authorization": "Bearer " + token
                 }
             });
 

@@ -1,20 +1,10 @@
 import axios from 'axios';
 import { EquipsServiceAddress } from '../model/constants'
-import {HandlerWrapper, GetJsonHeader} from './commonWorker'
+import {HandlerWrapper, GetJsonHeader, GetTokenHeader} from './commonWorker'
 
 import {sessionUid} from '../utilities/utils'
 
 const EquipsController = '/equips';
-
-/*export async function GetStudyList(filter) {
-    return await HandlerWrapper('StudyList', async () => {
-        const response = await axios.post(JournalServiceAddress + JournalController +
-            '/StudyList',
-            JSON.stringify(filter),
-            GetJsonHeader());
-        return response.data;
-    });
-};*/
 
 export async function GetConnectedEquips() {
     return await HandlerWrapper('GetConnectedEquips', async () => {
@@ -89,9 +79,11 @@ export async function XilibLogsOn(activatedEquipInfo, detailedXilib, verboseXili
     });
 };
 
-export async function GetAllEquips(withDisabled = false) {
+export async function GetAllEquips(token, withDisabled = false) {
     return await HandlerWrapper('GetAllEquips', async () => {
-        const response = await axios.get(EquipsServiceAddress + EquipsController + '/GetAllEquips?withDisabled='+withDisabled);
+        const response = await axios.get(
+            EquipsServiceAddress + EquipsController + '/GetAllEquips?withDisabled='+withDisabled,
+            GetTokenHeader(token));
         return response.data;
     });
 };
@@ -122,11 +114,12 @@ export async function UpdateDBInfo(activatedEquipInfo) {
     });
 };
 
-export async function DisableEquipInfo(equipName, disabled) {
+export async function DisableEquipInfo(token, equipName, disabled) {
     return await HandlerWrapper('DisableEquipInfo', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
             '/DisableEquipInfo?equipName=' + equipName+
-            '&disabled=' + disabled);
+            '&disabled=' + disabled,
+            null, GetTokenHeader(token));
         return response.data;
     });
 };
