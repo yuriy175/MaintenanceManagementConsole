@@ -392,6 +392,57 @@ func (service *EquipController) Handle() {
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
 	})
+
+	///
+	http.HandleFunc("/equips/GetCommunicationsData", func(w http.ResponseWriter, r *http.Request) {
+		claims := CheckUserAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			return
+		}
+		
+		queryString := r.URL.Query()
+
+		equipName := CheckQueryParameter(queryString, "equipName", w) 
+		if equipName == ""{
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+		
+		notes := dalService.GetChatNotes(equipName)
+		json.NewEncoder(w).Encode(notes)
+	})
+
+	http.HandleFunc("/equips/SendNewNote", func(w http.ResponseWriter, r *http.Request) {
+		claims := CheckUserAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			return
+		}
+		
+		queryString := r.URL.Query()
+
+		equipName := CheckQueryParameter(queryString, "equipName", w) 
+		if equipName == ""{
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+
+		msgType := CheckQueryParameter(queryString, "msgType", w) 
+		if msgType == ""{
+			log.Error("Url Param 'msgType' is missing")
+			return
+		}
+
+		message := CheckQueryParameter(queryString, "message", w) 
+		if message == ""{
+			log.Error("Url Param 'message' is missing")
+			return
+		}
+
+		note := dalService.InsertChatNote(equipName, msgType, message, claims.Login)
+		json.NewEncoder(w).Encode(note)
+	})
 }
 
 func (service *EquipController) sendSearchResults(

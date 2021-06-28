@@ -3,10 +3,20 @@ package controllers
 import (
 	"net/http"
 	"strings"
+	"net/url"
 
 	"../models"
 	"../interfaces"
 )
+
+func CheckQueryParameter(queryString url.Values, paramName string, w http.ResponseWriter) string {
+	params, ok := queryString[paramName]
+	if !ok || len(params[0]) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		return ""
+	}
+	return params[0]
+}
 
 func CheckUserAuthorization(authService interfaces.IAuthService, w http.ResponseWriter, r *http.Request) *models.UserClaims {
 	claims := checkAuthorization(authService, w, r)

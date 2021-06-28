@@ -22,7 +22,12 @@ function reducer(state, action) {
         notes: action.payload
       };
     } 
-
+    case 'ADDNOTE': {
+      return {
+        ...state,
+        notes: [action.payload, ...state.notes]
+      };
+    }
     
     default:
       throw new Error();

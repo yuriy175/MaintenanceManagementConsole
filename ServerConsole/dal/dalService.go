@@ -51,6 +51,9 @@ type dalService struct {
 
 	// events repository
 	_eventsRepository *EventsRepository
+
+	// chats repository
+	_chatsRepository *ChatsRepository
 }
 
 // DataLayerServiceNew creates an instance of dalService
@@ -75,6 +78,7 @@ func DataLayerServiceNew(
 	service._standRepository = StandRepositoryNew(log, service, service._dbName)
 	service._dbInfoRepository = DbInfoRepositoryNew(log, service, service._dbName)
 	service._eventsRepository = EventsRepositoryNew(log, service, service._dbName)
+	service._chatsRepository = ChatsRepositoryNew(log, service, service._dbName)
 
 	return service
 }
@@ -98,6 +102,7 @@ func (service *dalService) Start() {
 	dicomInfoCollection := db.C(models.DicomInfoTableName)
 	// standInfoCollection := db.C(models.StandInfoTableName)
 	equipInfoCollection := db.C(models.EquipmentTableName)
+	chatsCollection := db.C(models.ChatsTableName)
 
 	service.ensureIndeces(sysInfoCollection, []string{"equipname", "datetime"})
 	service.ensureIndeces(sysVolatileInfoCollection, []string{"equipname", "datetime"})
@@ -106,6 +111,7 @@ func (service *dalService) Start() {
 	service.ensureIndeces(softwareVolatileInfoCollection, []string{"equipname", "datetime"})
 
 	service.ensureIndeces(equipInfoCollection, []string{"equipname"})
+	service.ensureIndeces(chatsCollection, []string{"equipname"})
 	go service._userRepository.EnsureAdmin() 
 
 	go func() {
@@ -532,4 +538,14 @@ func (service *dalService) InsertEvents(equipName string, msgType string, msgVms
 // DisableEquipInfo disables an equipment
 func (service *dalService) DisableEquipInfo(equipName string, disabled bool) {
 	service._equipInfoRepository.DisableEquipInfo(equipName, disabled)
+}
+
+// GetChatNotes returns all chat notes from db
+func (service *dalService) GetChatNotes(equipName string) []models.ChatModel {
+	return service._chatsRepository.GetChatNotes(equipName)
+}
+
+// InsertChatNote inserts a new chat note into db
+func (service *dalService) InsertChatNote(equipName string, msgType string, message string, userLogin string) *models.ChatModel {
+	return service._chatsRepository.InsertChatNote(equipName, msgType, message, userLogin)
 }

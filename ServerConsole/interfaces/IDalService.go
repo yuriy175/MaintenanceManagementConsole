@@ -55,4 +55,11 @@ type IDalService interface {
 
 	// InsertEvent inserts events into db
 	InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel, msgDate *time.Time) []models.EventModel
+
+	// chats repository
+	// GetChatNotes returns all chat notes from db
+	GetChatNotes(equipName string) []models.ChatModel
+
+	// InsertChatNote inserts a new chat note into db
+	InsertChatNote(equipName string, msgType string, message string, userLogin string) *models.ChatModel 
 }

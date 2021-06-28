@@ -323,3 +323,13 @@ type EventModel struct {
 	Description string
 	Details string
 }
+
+// ChatModel describes chat notes DB model
+type ChatModel struct {
+	ID               bson.ObjectId `bson:"_id"`
+	DateTime         time.Time
+	EquipName        string
+	Type        string
+	Message        string
+	User string
+}

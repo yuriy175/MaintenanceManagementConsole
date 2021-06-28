@@ -116,8 +116,8 @@ export default function MainToolBar() {
 
   const getChats = async () =>
   {
-    const logs = await EquipWorker.GetCommunications(token, equipInfo);
-    communicationDispatch({ type: 'SETCHATS', payload: logs }); 
+    const notes = await EquipWorker.GetCommunications(token, equipInfo);
+    communicationDispatch({ type: 'SETCHATS', payload: notes }); 
   }
 
   useEffect(() => {

@@ -143,10 +143,10 @@ export async function GetCommunications(token, equipName) {
     });
 };
 
-export async function SendNewNote(token, equipInfo, msgType, message) {
+export async function SendNewNote(token, equipName, msgType, message) {
     return await HandlerWrapper('SendNewNote', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
-            '/SendNewNote?equipInfo=' + equipInfo+
+            '/SendNewNote?equipName=' + equipName+
             '&msgType=' + msgType+
             '&message=' + message,
             null, GetTokenHeader(token));
