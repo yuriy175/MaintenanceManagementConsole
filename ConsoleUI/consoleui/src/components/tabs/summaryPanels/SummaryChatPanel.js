@@ -18,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
     width: "50%",
     marginRight: "12px",
   },
+  fullRow:{
+    width: '100%',
+    textAlign: 'left',
+  },
   textField:{
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
@@ -60,7 +64,7 @@ export default function SummaryChatPanel(props) {
         <Typography variant="h5">Заметки</Typography>
         {notes?.length ? 
           notes.map((i, ind) => (
-            <div key={ind.toString()}>
+            <div key={ind.toString()} className={classes.fullRow}>
               <Typography variant="body1" align='left' color='primary' className={classes.noteTitle}>
                   {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
               </Typography> 

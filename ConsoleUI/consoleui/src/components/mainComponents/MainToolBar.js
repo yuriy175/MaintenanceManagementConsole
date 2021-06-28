@@ -161,6 +161,7 @@ export default function MainToolBar() {
   }
 
   const isDBInfoStateUpdating = currEquipState.remoteaccess?.DBInfoStateUpdating;
+  const isValidSummaryTab = selectedTab === SummaryTabIndex && equipInfo;
   return (    
     <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -201,13 +202,13 @@ export default function MainToolBar() {
             </FormControl>
             <Tabs value={selectedTabPanel} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
               <Tab label="Главная" id= "mainTabPanel" />
-              {selectedTab === SummaryTabIndex?
+              {isValidSummaryTab?
                   <Tab label="БД" id= "dbTabPanel" /> : <></>
               }
-              {selectedTab === SummaryTabIndex?
+              {isValidSummaryTab?
                   <Tab label="История" id= "histTabPanel" /> : <></>
               }
-              {selectedTab === SummaryTabIndex?
+              {isValidSummaryTab?
                   <Tab label="Коммуникации" id= "chatTabPanel" /> : <></>
               }
               {selectedTab === AdminTabIndex?
