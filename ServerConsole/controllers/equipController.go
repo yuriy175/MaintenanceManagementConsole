@@ -238,7 +238,7 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckAdminAuthorization(authService, w, r) 
+		claims := CheckUserAuthorization(authService, w, r) 
 				
 		if claims == nil{
 			return
@@ -295,7 +295,7 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckAdminAuthorization(authService, w, r) 
+		claims := CheckUserAuthorization(authService, w, r) 
 				
 		if claims == nil{
 			return
@@ -321,7 +321,7 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckAdminAuthorization(authService, w, r) 
+		claims := CheckUserAuthorization(authService, w, r) 
 				
 		if claims == nil{
 			return
@@ -364,7 +364,7 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckAdminAuthorization(authService, w, r) 
+		claims := CheckUserAuthorization(authService, w, r) 
 				
 		if claims == nil{
 			return
