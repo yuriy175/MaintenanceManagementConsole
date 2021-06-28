@@ -1,44 +1,16 @@
 import React, {useState, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { MainTabPanelIndex, AdminLogTabPanelIndex } from '../../model/constants';
-
-import AdminMainTabPanel from './adminPanels/AdminMainTabPanel'
-import AdminLogTabPanel from './adminPanels/AdminLogTabPanel'
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    
-  },
-}));
-
-export default function AdminTab(props) {
-  console.log("render AdminTab");
-
-  const classes = useStyles();
-
-  const tabPanelIndex = props.panel ?? MainTabPanelIndex;
-  return (
-    <div>
-      {tabPanelIndex === MainTabPanelIndex ? <AdminMainTabPanel/> : <></>}
-      {tabPanelIndex === AdminLogTabPanelIndex ? <AdminLogTabPanel/> : <></>}     
-    </div>
-  );
-}
-
-
-
-/*
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 
-import UserTable from '../tables/adminTables/UserTable'
-import * as AdminWorker from '../../workers/adminWorker'
-import { UsersContext } from '../../context/users-context';
-import { Roles, UserRole } from '../../model/constants';
+import UserTable from '../../tables/adminTables/UserTable'
+import * as AdminWorker from '../../../workers/adminWorker'
+import { UsersContext } from '../../../context/users-context';
+import { Roles, UserRole } from '../../../model/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,12 +32,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-// flex-direction: row;
-//   justify-content: center;
-//   align-items: center;
-
-export default function AdminTab(props) {
-  console.log("render AdminTab");
+export default function AdminMainTabPanel(props) {
+  console.log("render AdminMainTabPanel");
 
   const classes = useStyles();
   const [usersState, usersDispatch] = useContext(UsersContext);
@@ -120,6 +88,7 @@ export default function AdminTab(props) {
         <TextField className={classes.text} id="standard-basic" required={true} label="Пароль" defaultValue={''} onChange={onPasswordChange}/>
         <TextField className={classes.text} id="standard-basic" required={true} label="ФИО" defaultValue={''} onChange={onSurnameChange}/>
         <TextField className={classes.text} id="standard-basic" label="Почта" defaultValue={''} onChange={onEmailChange}/>
+        {/* <TextField className={classes.text} id="standard-basic" label="Роль" defaultValue={''} onChange={onRoleChange}/> */}
         <FormControl className={classes.text}>
               <InputLabel htmlFor="grouped-native-select">Роль</InputLabel>
               <NativeSelect
@@ -143,4 +112,3 @@ export default function AdminTab(props) {
     </div>
   );
 }
-*/

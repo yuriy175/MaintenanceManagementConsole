@@ -73,7 +73,6 @@ func (service *EquipController) Handle() {
 		claims := CheckUserAuthorization(authService, w, r) 
 						
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
@@ -126,7 +125,6 @@ func (service *EquipController) Handle() {
 		claims := CheckUserAuthorization(authService, w, r) 
 						
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		equips := mqttReceiverService.GetConnectionNames()
@@ -143,7 +141,6 @@ func (service *EquipController) Handle() {
 		claims := CheckUserAuthorization(authService, w, r) 
 						
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		queryString := r.URL.Query()
@@ -171,7 +168,6 @@ func (service *EquipController) Handle() {
 		claims := CheckAdminAuthorization(authService, w, r) 
 				
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
@@ -245,7 +241,6 @@ func (service *EquipController) Handle() {
 		claims := CheckAdminAuthorization(authService, w, r) 
 				
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		
@@ -303,7 +298,6 @@ func (service *EquipController) Handle() {
 		claims := CheckAdminAuthorization(authService, w, r) 
 				
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		
@@ -330,7 +324,6 @@ func (service *EquipController) Handle() {
 		claims := CheckAdminAuthorization(authService, w, r) 
 				
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		
@@ -374,7 +367,6 @@ func (service *EquipController) Handle() {
 		claims := CheckAdminAuthorization(authService, w, r) 
 				
 		if claims == nil{
-			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		
@@ -469,7 +461,6 @@ func (service *EquipController) sendCommand(w http.ResponseWriter, r *http.Reque
 	claims := CheckUserAuthorization(service._authService, w, r) 
 						
 	if claims == nil{
-		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 

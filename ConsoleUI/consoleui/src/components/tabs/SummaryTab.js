@@ -1,11 +1,12 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex } from '../../model/constants';
+import { SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex } from '../../model/constants';
 
 import SummaryMainTabPanel from './summaryPanels/SummaryMainTabPanel'
 import SummaryBDTabPanel from './summaryPanels/SummaryBDTabPanel'
 import SummaryHistoryTabPanel from './summaryPanels/SummaryHistoryTabPanel'
+import SummaryChatPanel from './summaryPanels/SummaryChatPanel'
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 
@@ -28,6 +29,7 @@ export default function SummaryTab(props) {
       {tabPanelIndex === MainTabPanelIndex ? <SummaryMainTabPanel/> : <></>}
       {tabPanelIndex === SummaryDBTabPanelIndex ? <SummaryBDTabPanel equipName={equipName}/> : <></>}
       {tabPanelIndex === SummaryHistoryTabPanelIndex ? <SummaryHistoryTabPanel equipName={equipName}/> : <></>}      
+      {tabPanelIndex === SummaryChatTabPanelIndex ? <SummaryChatPanel equipName={equipName}/> : <></>}      
     </div>
   );
 }

@@ -24,7 +24,7 @@ export default function MainInfoComponent(props) {
       {tabIndex === MapTabIndex ? <MapTab></MapTab> : <></>}
       {tabIndex === EventsTabIndex ? <EventsTab></EventsTab> : <></>}
       {/* {tabIndex === HistoryTabIndex ? <HistoryTab></HistoryTab> : <></>} */}
-      {tabIndex === AdminTabIndex ? <AdminTab></AdminTab> : <></>} 
+      {tabIndex === AdminTabIndex ? <AdminTab panel={tabPanelIndex}></AdminTab> : <></>} 
     </div>
   );
 }

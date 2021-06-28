@@ -17,22 +17,26 @@ import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
-import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex } from '../../model/constants';
+import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex,
+  AdminTabIndex, AdminLogTabPanelIndex } from '../../model/constants';
 
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { EventsContext } from '../../context/events-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import { UsersContext } from '../../context/users-context';
+import { CommunicationContext } from '../../context/communication-context';
 import {useSetCurrEquip} from '../../hooks/useSetCurrEquip'
 
 import * as EquipWorker from '../../workers/equipWorker'
+import * as AdminWorker from '../../workers/adminWorker'
 // import * as WebSocket from '../../workers/webSocket'
 import {sessionUid} from '../../utilities/utils'
 import { useWebSocket } from '../../hooks/useWebSocket'
 import { SettingsBackupRestore } from '@material-ui/icons';
 import {getUSFullDate} from '../../utilities/utils'
-
+import AdminLogTabPanel from '../tabs/adminPanels/AdminLogTabPanel';
+  
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -46,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabControl: {
     margin: theme.spacing(1),
-    minWidth: 500,    
+    minWidth: 640,    
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
@@ -76,11 +80,14 @@ export default function MainToolBar() {
   const [eventsState, eventsDispatch] = useContext(EventsContext);
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
+  const [communicationState, communicationDispatch] = useContext(CommunicationContext);
+  
   // const [currEquip, setCurrEquip] = useState('none');
   const [userName, setUserName] = useState('');
   //const [tabIndex, setTabIndex] = useState(0);
   const setCurrEquip = useSetCurrEquip();
 
+  const token = usersState.token;
   const handleEquipsChange = async (event) => {
     const select = event.target;
     const val = select.value;// select.options[select.selectedIndex].value;
@@ -97,8 +104,20 @@ export default function MainToolBar() {
   const getEvents = async (equipInfo) =>
   {
     const endDate = new Date();
-    const allEvents = await EquipWorker.SearchEquip(usersState.token, 'Events', equipInfo, getUSFullDate(endDate), getUSFullDate(endDate));
+    const allEvents = await EquipWorker.SearchEquip(token, 'Events', equipInfo, getUSFullDate(endDate), getUSFullDate(endDate));
     eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
+  }
+
+  const getLogs = async () =>
+  {
+    const logs = await AdminWorker.GetServerLogs(token);
+    communicationDispatch({ type: 'SETLOGS', payload: logs }); 
+  }
+
+  const getChats = async () =>
+  {
+    const logs = await EquipWorker.GetCommunications(token, equipInfo);
+    communicationDispatch({ type: 'SETCHATS', payload: logs }); 
   }
 
   useEffect(() => {
@@ -116,15 +135,20 @@ export default function MainToolBar() {
   const equipInfo = currEquipState.equipInfo;
   const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
   const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
-  const token = usersState.token;
 
   const onTabIndexChange = async (event, newValue) => {
-    if(SummaryDBTabPanelIndex === newValue && equipInfo){
+    if(SummaryTabIndex === selectedTab && SummaryDBTabPanelIndex === newValue && equipInfo){
       const allTables = await EquipWorker.GetAllTables(token, equipInfo);
       currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
     }
-    else if(SummaryHistoryTabPanelIndex === newValue){        
+    else if(SummaryTabIndex === selectedTab && SummaryHistoryTabPanelIndex === newValue){        
       getEvents(equipInfo);
+    }
+    else if(SummaryTabIndex === selectedTab && SummaryChatTabPanelIndex === newValue){        
+      getChats(equipInfo);
+    }
+    else if(AdminTabIndex === selectedTab && AdminLogTabPanelIndex === newValue){        
+      getLogs();
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
@@ -183,6 +207,12 @@ export default function MainToolBar() {
               {selectedTab === SummaryTabIndex?
                   <Tab label="История" id= "histTabPanel" /> : <></>
               }
+              {selectedTab === SummaryTabIndex?
+                  <Tab label="Коммуникации" id= "chatTabPanel" /> : <></>
+              }
+              {selectedTab === AdminTabIndex?
+                  <Tab label="Логи" id= "logsTabPanel" /> : <></>              
+              }              
             </Tabs>
             {selectedTab === SummaryTabIndex?
                 <Button variant="contained" 

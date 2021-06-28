@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,10 +22,10 @@ namespace MessagesSender.BL.Helpers
         private readonly (string Smtp, string EmailFrom, string EmailTo, string Password) 
             _clientInfo =
                 (
-					  "mail.vko-medprom.ru", // "smtp.mail.ru",
-					  "ars@vko-medprom.ru", // "yuriy_nv@mail.ru",
+                      "mail.vko-medprom.ru", // "smtp.mail.ru",
+                      "ars@vko-medprom.ru", // "yuriy_nv@mail.ru",
                       "sergey.nikiforov@mskorp.ru",
-					  "lV0uwMU1kFI5lrS5");
+                      "lV0uwMU1kFI5lrS5");
 
         /// <summary>
         /// public constructor

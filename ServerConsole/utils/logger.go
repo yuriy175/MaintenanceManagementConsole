@@ -5,6 +5,9 @@ import (
 	"os"
 	"log"
 	"fmt"
+	"archive/zip"
+	"bytes"
+	"io/ioutil"
 
 	"../interfaces"
 )
@@ -54,3 +57,39 @@ func (t *logger) Infof(format string, a ...interface{}){
 	t.Info(fmt.Sprintf(format, a))
 }
 
+// GetZipContent returns zipped logs
+func (t *logger) GetZipContent() ([]byte, string){
+	filePath := t.Path
+	// Create a buffer to write our archive to.
+	buf := new(bytes.Buffer)
+
+	// Create a new zip archive.
+	w := zip.NewWriter(buf)
+
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		t.Error("GetZipContent error")
+		return nil, ""
+	}
+
+	f, err := w.Create(filePath)
+	if err != nil {
+		t.Error("GetZipContent error")
+		return nil, ""
+	}
+	_, err = f.Write([]byte(data))
+	if err != nil {
+		t.Error("GetZipContent error")
+		return nil, ""
+	}
+		
+
+	// Make sure to check the error on Close.
+	err = w.Close()
+	if err != nil {
+		t.Error("GetZipContent error")
+		return nil, ""
+	}
+
+	return buf.Bytes(), filePath
+}

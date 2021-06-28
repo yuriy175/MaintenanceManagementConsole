@@ -16,4 +16,7 @@ type ILogger interface {
 
 	// Info writes formatted info logs
 	Infof(format string, a ...interface{})
+
+	// GetZipContent returns zipped logs
+	GetZipContent() ([]byte, string)
 }

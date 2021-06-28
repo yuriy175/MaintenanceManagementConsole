@@ -133,3 +133,23 @@ export async function DisableEquipInfo(token, equipName, disabled) {
         return response.data;
     });
 };
+
+export async function GetCommunications(token, equipName) {
+    return await HandlerWrapper('GetCommunicationsData', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController +
+            '/GetCommunicationsData?equipName=' + equipName,
+            GetTokenHeader(token));
+        return response.data;
+    });
+};
+
+export async function SendNewNote(token, equipInfo, msgType, message) {
+    return await HandlerWrapper('SendNewNote', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/SendNewNote?equipInfo=' + equipInfo+
+            '&msgType=' + msgType+
+            '&message=' + message,
+            null, GetTokenHeader(token));
+        return response.data;
+    });
+};

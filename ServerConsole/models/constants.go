@@ -55,6 +55,9 @@ const (
 	// EventsTableName is Events table name
 	EventsTableName = "Events"
 
+	// ChatsTableName is Chats table name
+	ChatsTableName = "Chats"
+
 	// MQInfoQueueName is rabbit mq queue name
 	MQInfoQueueName = "SystemInfoQueue"
 

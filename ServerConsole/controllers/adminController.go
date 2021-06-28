@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-
+	"fmt"
+	
 	"../interfaces"
 	"../models"
 )
@@ -118,5 +119,20 @@ func (service *AdminController) Handle() {
 		service._log.Infof("login success: %s", userVM.Login);
 		token := service._authService.CreateToken(user)
 		json.NewEncoder(w).Encode(token)
+	})
+
+	http.HandleFunc("/equips/GetServerLogs", func(w http.ResponseWriter, r *http.Request) {
+		if CheckAdminAuthorization(authService, w, r) != nil{
+			logContent, filename := log.GetZipContent()
+			if logContent == nil{
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/zip")
+			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.zip\"", filename))
+			w.Write(logContent)
+			// json.NewEncoder(w).Encode(users)
+		}
 	})
 }

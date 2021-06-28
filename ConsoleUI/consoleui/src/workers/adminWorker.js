@@ -46,3 +46,13 @@ export async function Login(login) {
         return response.data;
     });
 };
+
+export async function GetServerLogs(token) {
+    return await HandlerWrapper('GetServerLogs', async () => {
+        const path = EquipsServiceAddress + AdminController + '/GetServerLogs';
+        const header = GetTokenHeader(token);        
+        const response = await axios.get(path, header);
+
+        return response.data;
+    });
+};
