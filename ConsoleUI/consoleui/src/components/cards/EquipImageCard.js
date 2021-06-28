@@ -41,7 +41,7 @@ const EquipImageCard = React.memo((props) => {
   const equipInfo = props.equipInfo;
   const pathKey = Object.keys(ComplexTypeImages).find(k => 
     {
-      return ComplexTypeImages[k].some(v => equipInfo.startsWith(v));
+      return ComplexTypeImages[k].some(v => equipInfo?.startsWith(v));
     });
   
   const isConnected = props.isConnected;

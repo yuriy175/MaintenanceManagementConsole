@@ -19,6 +19,7 @@ import DicomTable from '../tables/historyTables/DicomTable'
 
 import * as EquipWorker from '../../workers/equipWorker'
 import { CurrentEquipContext } from '../../context/currentEquip-context';
+import { UsersContext } from '../../context/users-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,6 +46,7 @@ export default function HistoryTab(props) {
 
   const classes = useStyles();
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
 
   const curDate = new Date();
   const [startDate, setStartDate] = useState(getUSFullDate(new Date(curDate.setDate(curDate.getDate() - SearchPeriod))));
@@ -61,6 +63,8 @@ export default function HistoryTab(props) {
   const [dosimeters, setDosimeters] = useState([]);
   const [software, setSoftware] = useState([]);
   const [dicom, setDicom] = useState([]);
+
+  const token = usersState.token;
 
   const handleTypeChange = async (event) => {
     const select = event.target;
@@ -82,7 +86,7 @@ export default function HistoryTab(props) {
   };  
 
   const onSearch = async () => {
-    const data = await EquipWorker.SearchEquip(currType, equipName, startDate, endDate);
+    const data = await EquipWorker.SearchEquip(token, currType, equipName, startDate, endDate);
     switch (currType) {
       case "SystemInfo":
         setSystemInfos(data);

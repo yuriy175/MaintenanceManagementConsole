@@ -3,6 +3,7 @@ import { WebSocketAddress } from '../model/constants'
 import { CurrentEquipContext } from '../context/currentEquip-context';
 import { SystemVolatileContext } from '../context/systemVolatile-context';
 import { AllEquipsContext } from '../context/allEquips-context';
+import { UsersContext } from '../context/users-context';
 import { EventsContext } from '../context/events-context';
 import * as EquipWorker from '../workers/equipWorker'
 
@@ -15,6 +16,7 @@ export function useWebSocket(props) {
     const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
     const [eventsState, eventsDispatch] = useContext(EventsContext);
     const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
+    const [usersState, usersDispatch] = useContext(UsersContext);
     const [connection, setConnection] = useState(null);
     const equipInfo = useRef(currEquipState.equipInfo);
     
@@ -29,8 +31,12 @@ export function useWebSocket(props) {
     }
 
     useEffect(() => {
+        if(!usersState.token){
+           return;
+        }
+
         createSocket();
-    }, []);
+    }, [usersState.token]);
 
     useEffect(() => {
         equipInfo.current = currEquipState.equipInfo;
@@ -41,7 +47,7 @@ export function useWebSocket(props) {
             connection.onopen = async function () {
                 console.log(`Status: Connected ${sessionUid}\n`);
 
-                const equips = await EquipWorker.GetConnectedEquips();
+                const equips = await EquipWorker.GetConnectedEquips(usersState.token);
                 allEquipsDispatch({ type: 'SETCONNECTEDEQUIPS', payload: equips ? equips : [] });     
 
                 // Send a ping every 10s

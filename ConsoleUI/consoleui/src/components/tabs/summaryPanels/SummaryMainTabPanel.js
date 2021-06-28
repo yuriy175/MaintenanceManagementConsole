@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
 import { AllEquipsContext } from '../../../context/allEquips-context';
 import { SystemVolatileContext } from '../../../context/systemVolatile-context';
+import { UsersContext } from '../../../context/users-context';
 
 import DetectorCard from '../../cards/DetectorCard'
 import GeneratorCard from '../../cards/GeneratorCard'
@@ -35,6 +36,7 @@ export default function SummaryMainTabPanel(props) {
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
 
   const notifyText = currEquipState.remoteaccess?.FtpSendResult;
   const equipInfo = currEquipState.equipInfo;
@@ -56,7 +58,7 @@ export default function SummaryMainTabPanel(props) {
         <DosimeterCard dosimeter={currEquipState.dosimeter}></DosimeterCard>
       </div>
       <div className={classes.column}>
-        <RemoteAccessCard equipInfo={currEquipState.equipInfo} remoteaccess={currEquipState.remoteaccess}></RemoteAccessCard>
+        <RemoteAccessCard equipInfo={currEquipState.equipInfo} remoteaccess={currEquipState.remoteaccess} token={usersState.token}></RemoteAccessCard>
         <DicomCard dicom={currEquipState.dicom}></DicomCard>
         <SoftwareCard software={currEquipState.software} volatile={systemVolatileState.currentVolatile}></SoftwareCard>
       </div>

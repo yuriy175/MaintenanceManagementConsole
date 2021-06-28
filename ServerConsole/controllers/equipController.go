@@ -68,8 +68,14 @@ func (service *EquipController) Handle() {
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		// w.Header().Set("Access-Control-Allow-Origin", "*")
+		// w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		claims := CheckUserAuthorization(authService, w, r) 
+						
+		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
 
 		queryString := r.URL.Query()
 
@@ -113,10 +119,16 @@ func (service *EquipController) Handle() {
 
 	http.HandleFunc("/equips/GetConnectedEquips", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		/*w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")*/
+		claims := CheckUserAuthorization(authService, w, r) 
+						
+		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
 		equips := mqttReceiverService.GetConnectionNames()
 		json.NewEncoder(w).Encode(equips)
 	})
@@ -131,6 +143,7 @@ func (service *EquipController) Handle() {
 		claims := CheckUserAuthorization(authService, w, r) 
 						
 		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		queryString := r.URL.Query()
@@ -158,6 +171,7 @@ func (service *EquipController) Handle() {
 		claims := CheckAdminAuthorization(authService, w, r) 
 				
 		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
@@ -187,6 +201,7 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/RunTaskManager", func(w http.ResponseWriter, r *http.Request) {
+
 		service.sendCommand(w, r, "runTaskMan")
 	})
 
@@ -198,7 +213,7 @@ func (service *EquipController) Handle() {
 		service.sendCommand(w, r, "updateDBInfo")
 	})
 
-	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {		
 		queryString := r.URL.Query()
 
 		detailedXilibs, ok := queryString["detailedXilib"]
@@ -223,10 +238,17 @@ func (service *EquipController) Handle() {
 	//(currType, equipName, startDate, endDate);
 	http.HandleFunc("/equips/SearchEquip", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		/*w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")*/
+		claims := CheckAdminAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		
 		queryString := r.URL.Query()
 
 		equipTypes, ok := queryString["currType"]
@@ -274,10 +296,17 @@ func (service *EquipController) Handle() {
 
 	http.HandleFunc("/equips/GetAllDBTableNames", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		/*w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")*/
+		claims := CheckAdminAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		
 		queryString := r.URL.Query()
 
 		equipNames, ok := queryString["equipName"]
@@ -294,10 +323,17 @@ func (service *EquipController) Handle() {
 
 	http.HandleFunc("/equips/GetTableContent", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		/*w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")*/
+		claims := CheckAdminAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		
 		queryString := r.URL.Query()
 
 		equipNames, ok := queryString["equipName"]
@@ -331,10 +367,17 @@ func (service *EquipController) Handle() {
 
 	http.HandleFunc("/equips/GetPermanentData", func(w http.ResponseWriter, r *http.Request) {
 		//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		/*w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json")*/
+		claims := CheckAdminAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		
 		queryString := r.URL.Query()
 
 		equipTypes, ok := queryString["currType"]
@@ -357,10 +400,6 @@ func (service *EquipController) Handle() {
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
 	})
-
-	// address := Models.HttpServerAddress
-	// fmt.Println("http server is listening... " + address)
-	// http.ListenAndServe(address, nil)
 }
 
 func (service *EquipController) sendSearchResults(
@@ -422,18 +461,28 @@ func (service *EquipController) sendPermanentSearchResults(
 
 func (service *EquipController) sendCommand(w http.ResponseWriter, r *http.Request, command string) {
 	//Allow CORS here By * or specific origin
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	/*w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")*/
+	log := service._log
+	claims := CheckUserAuthorization(service._authService, w, r) 
+						
+	if claims == nil{
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	queryString := r.URL.Query()
 	activatedEquipInfos, ok := queryString["activatedEquipInfo"]
 
 	if !ok || len(activatedEquipInfos[0]) < 1 {
-		service._log.Error("Url Param 'activatedEquipInfo' is missing")
+		log.Error("Url Param 'activatedEquipInfo' is missing")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	activatedEquipInfo := activatedEquipInfos[0]
 	service._mqttReceiverService.SendCommand(activatedEquipInfo, command)
+
+	log.Infof("User %s sent command %s", claims.Login, command)
 }

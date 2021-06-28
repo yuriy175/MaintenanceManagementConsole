@@ -68,12 +68,13 @@ export default function MainComponent() {
 
   useEffect(() => {
       (async () => {
-          if(!usersState.token)
+        const token = usersState.token;
+          if(!token)
           {
             return;
           }
 
-          const users = await AdminWorker.GetAllUsers(usersState.token);
+          const users = await AdminWorker.GetAllUsers(token);
           usersDispatch({ type: 'SETUSERS', payload: users }); 
       })();
   }, [usersState.token]);
@@ -92,7 +93,7 @@ export default function MainComponent() {
     else if(index === EventsTabIndex)
     {
       const endDate = new Date();
-      const allEvents = await EquipWorker.SearchEquip('Events', '', getUSFullDate(endDate), getUSFullDate(endDate));
+      const allEvents = await EquipWorker.SearchEquip(token, 'Events', '', getUSFullDate(endDate), getUSFullDate(endDate));
       eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
     }
 

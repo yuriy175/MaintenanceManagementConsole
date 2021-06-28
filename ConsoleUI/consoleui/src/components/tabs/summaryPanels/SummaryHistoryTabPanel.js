@@ -23,6 +23,7 @@ import CommonTimeLine from '../../timelines/CommonTimeLine'
 import * as EquipWorker from '../../../workers/equipWorker'
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
 import { EventsContext } from '../../../context/events-context';
+import { UsersContext } from '../../../context/users-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,6 +51,7 @@ export default function SummaryHistoryTabPanel(props) {
   const classes = useStyles();
   // const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [eventsState, eventsDispatch] = useContext(EventsContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
 
   const curDate = new Date();
   const [startDate, setStartDate] = useState(getUSFullDate(new Date(curDate.setDate(curDate.getDate() - SearchPeriod))));
@@ -72,9 +74,10 @@ export default function SummaryHistoryTabPanel(props) {
 
   const equipName = props.equipName; // currEquipState?.equipInfo;
   const events = eventsState.currentEvents;
+  const token = usersState.token;
 
   const onSearch = async () => {    
-    const allEvents = await EquipWorker.SearchEquip('Events', equipName, startDate, endDate);
+    const allEvents = await EquipWorker.SearchEquip(token, 'Events', equipName, startDate, endDate);
     // setEvents(data);
     eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
   };

@@ -12,6 +12,7 @@ import Divider from '@material-ui/core/Divider';
 
 import * as EquipWorker from '../../../workers/equipWorker'
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
+import { UsersContext } from '../../../context/users-context';
 import CommonTable from '../../tables/CommonTable'
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +43,7 @@ export default function SummaryBDTabPanel(props) {
   const classes = useStyles();
   const [tableContent, setTableContent] = React.useState('');
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
 
   const allDBs = currEquipState.allDBs;
   const allDBTables = currEquipState.allDBTables;
@@ -59,7 +61,7 @@ export default function SummaryBDTabPanel(props) {
   }
 
   const handleListItemClick = async (event, index, type, text) => {
-    const content = await EquipWorker.GetTableContent(currEquipState.equipInfo, type, text);
+    const content = await EquipWorker.GetTableContent(usersState.token, currEquipState.equipInfo, type, text);
     let values = []
     if(Array.isArray(content)){
       values = content.map(c => JSON.parse(c)).flat(1);

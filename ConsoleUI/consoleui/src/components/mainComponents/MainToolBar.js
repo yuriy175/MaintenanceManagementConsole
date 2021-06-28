@@ -97,7 +97,7 @@ export default function MainToolBar() {
   const getEvents = async (equipInfo) =>
   {
     const endDate = new Date();
-    const allEvents = await EquipWorker.SearchEquip('Events', equipInfo, getUSFullDate(endDate), getUSFullDate(endDate));
+    const allEvents = await EquipWorker.SearchEquip(usersState.token, 'Events', equipInfo, getUSFullDate(endDate), getUSFullDate(endDate));
     eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
   }
 
@@ -116,9 +116,11 @@ export default function MainToolBar() {
   const equipInfo = currEquipState.equipInfo;
   const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
   const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
+  const token = usersState.token;
+
   const onTabIndexChange = async (event, newValue) => {
     if(SummaryDBTabPanelIndex === newValue && equipInfo){
-      const allTables = await EquipWorker.GetAllTables(equipInfo);
+      const allTables = await EquipWorker.GetAllTables(token, equipInfo);
       currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
     }
     else if(SummaryHistoryTabPanelIndex === newValue){        
@@ -130,7 +132,7 @@ export default function MainToolBar() {
 
   const onUpdateDBInfo = async () =>{
     if(equipInfo){
-      const res = await EquipWorker.UpdateDBInfo(equipInfo);
+      const res = await EquipWorker.UpdateDBInfo(token, equipInfo);
     }
   }
 

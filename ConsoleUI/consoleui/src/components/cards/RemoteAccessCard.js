@@ -20,20 +20,21 @@ const RemoteAccessCard = React.memo((props) => {
   const bull = <span className={classes.bullet}>•</span>;
 
   const equipInfo = props.equipInfo;
+  const token = props.token;
   const onRunTeamViewer = async () => {
-    const res = await EquipWorker.RunTeamViewer(equipInfo);
+    const res = await EquipWorker.RunTeamViewer(token, equipInfo);
   };
 
   const onRunTaskManager = async () => {
-    const res = await EquipWorker.RunTaskManager(equipInfo);
+    const res = await EquipWorker.RunTaskManager(token, equipInfo);
   };
 
   const onAtlasLogs = async () => {
-    const res = await EquipWorker.SendAtlasLogs(equipInfo);
+    const res = await EquipWorker.SendAtlasLogs(token, equipInfo);
   };
 
   const onXilibLogs = async () => {
-    const res = await EquipWorker.XilibLogsOn(equipInfo, detailedXilib, verboseXilib);
+    const res = await EquipWorker.XilibLogsOn(token, equipInfo, detailedXilib, verboseXilib);
   };
 
   const onDetailedXilib = async () => {

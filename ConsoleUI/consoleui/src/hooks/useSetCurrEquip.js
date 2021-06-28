@@ -2,6 +2,7 @@ import react, { useContext } from 'react';
 import { CurrentEquipContext } from '../context/currentEquip-context';
 import { AllEquipsContext } from '../context/allEquips-context';
 import { SystemVolatileContext } from '../context/systemVolatile-context';
+import { UsersContext } from '../context/users-context';
 import * as EquipWorker from '../workers/equipWorker'
 
 export function useSetCurrEquip() {
@@ -9,9 +10,10 @@ export function useSetCurrEquip() {
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
 
   const setEquipInfo = async (equipInfo, type) => {
-
+    const token = usersState.token;
     const connectedEquip = allEquipsState.connectedEquips?.includes(equipInfo)
 
     systemVolatileDispatch({ type: 'RESET', payload: true });    
@@ -19,21 +21,21 @@ export function useSetCurrEquip() {
     currEquipDispatch({ type: type, payload: equipInfo }); 
 
     // new software & system info come very slowly
-    const sysInfo = await EquipWorker.GetPermanentData("SystemInfo", equipInfo);
+    const sysInfo = await EquipWorker.GetPermanentData(token, "SystemInfo", equipInfo);
     currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo[0] }); 
 
-    const swInfo = await EquipWorker.GetPermanentData("Software", equipInfo);
+    const swInfo = await EquipWorker.GetPermanentData(token, "Software", equipInfo);
     currEquipDispatch({ type: 'SETSOFTWARE', 
       payload: {
         Atlas: swInfo.Atlas ? swInfo.Atlas[0] : undefined, 
         Software: swInfo.Software ? swInfo.Software[0] : undefined} }); 
 
     if(!connectedEquip){
-      const lastSeen = await EquipWorker.GetPermanentData("LastSeen", equipInfo);
+      const lastSeen = await EquipWorker.GetPermanentData(token, "LastSeen", equipInfo);
       currEquipDispatch({ type: 'SETLASTSEEN', payload: lastSeen }); 
     }
     else {
-      await EquipWorker.Activate(equipInfo, currEquipState.equipInfo);
+      await EquipWorker.Activate(token, equipInfo, currEquipState.equipInfo);
     }
   };
 

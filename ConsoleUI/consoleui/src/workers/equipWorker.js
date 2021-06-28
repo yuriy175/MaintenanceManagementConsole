@@ -6,75 +6,82 @@ import {sessionUid} from '../utilities/utils'
 
 const EquipsController = '/equips';
 
-export async function GetConnectedEquips() {
+export async function GetConnectedEquips(token) {
     return await HandlerWrapper('GetConnectedEquips', async () => {
         const path = EquipsServiceAddress + EquipsController + '/GetConnectedEquips';
         console.log(path);
-        const response = await axios.get(path);
+        const response = await axios.get(path, GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function Activate(activatedEquipInfo, deactivatedEquipInfo) {
+export async function Activate(token, activatedEquipInfo, deactivatedEquipInfo) {
     return await HandlerWrapper('Activate', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController +
             '/Activate?sessionUid=' + sessionUid+
             '&activatedEquipInfo=' + activatedEquipInfo+
-            '&deactivatedEquipInfo=' + deactivatedEquipInfo);
+            '&deactivatedEquipInfo=' + deactivatedEquipInfo,
+            GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function SearchEquip(currType, equipName, startDate, endDate) {
+export async function SearchEquip(token, currType, equipName, startDate, endDate) {
     return await HandlerWrapper('SearchEquip', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController +
             '/SearchEquip?currType=' + currType+
             '&equipName=' + equipName+
             '&startDate=' + startDate+
-            '&endDate=' + endDate);
+            '&endDate=' + endDate,
+            GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function GetPermanentData(currType, equipName) {
+export async function GetPermanentData(token, currType, equipName) {
     return await HandlerWrapper('GetPermanentData', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController +
             '/GetPermanentData?currType=' + currType+
-            '&equipName=' + equipName);
+            '&equipName=' + equipName,
+            GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function RunTeamViewer(activatedEquipInfo) {
+export async function RunTeamViewer(token, activatedEquipInfo) {
     return await HandlerWrapper('RunTeamViewer', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
-            '/RunTeamViewer?activatedEquipInfo=' + activatedEquipInfo);
+            '/RunTeamViewer?activatedEquipInfo=' + activatedEquipInfo,
+            null, GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function RunTaskManager(activatedEquipInfo) {
+export async function RunTaskManager(token, activatedEquipInfo) {
     return await HandlerWrapper('RunTaskManager', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
-            '/RunTaskManager?activatedEquipInfo=' + activatedEquipInfo);
+            '/RunTaskManager?activatedEquipInfo=' + activatedEquipInfo,
+            null, GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function SendAtlasLogs(activatedEquipInfo) {
+export async function SendAtlasLogs(token, activatedEquipInfo) {
     return await HandlerWrapper('SendAtlasLogs', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
-            '/SendAtlasLogs?activatedEquipInfo=' + activatedEquipInfo);
+            '/SendAtlasLogs?activatedEquipInfo=' + activatedEquipInfo,
+            null, GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function XilibLogsOn(activatedEquipInfo, detailedXilib, verboseXilib) {
+export async function XilibLogsOn(token, activatedEquipInfo, detailedXilib, verboseXilib) {
     return await HandlerWrapper('XilibLogsOn', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
             '/XilibLogsOn?activatedEquipInfo=' + activatedEquipInfo+
             '&detailedXilib=' + detailedXilib +
-            '&verboseXilib=' + verboseXilib);
+            '&verboseXilib=' + verboseXilib,
+            null, GetTokenHeader(token));
         return response.data;
     });
 };
@@ -88,28 +95,31 @@ export async function GetAllEquips(token, withDisabled = false) {
     });
 };
 
-export async function GetAllTables(equipName) {
+export async function GetAllTables(token, equipName) {
     return await HandlerWrapper('GetAllDBTableNames', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController + 
-            '/GetAllDBTableNames?equipName=' + equipName);
+            '/GetAllDBTableNames?equipName=' + equipName,
+            GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function GetTableContent(equipName, tableType, tableName) {
+export async function GetTableContent(token, equipName, tableType, tableName) {
     return await HandlerWrapper('GetTableContent', async () => {
         const response = await axios.get(EquipsServiceAddress + EquipsController +
             '/GetTableContent?equipName=' + equipName+
             '&tableType=' + tableType+
-            '&tableName=' + tableName);
+            '&tableName=' + tableName,
+            GetTokenHeader(token));
         return response.data;
     });
 };
 
-export async function UpdateDBInfo(activatedEquipInfo) {
+export async function UpdateDBInfo(token, activatedEquipInfo) {
     return await HandlerWrapper('UpdateDBInfo', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
-            '/UpdateDBInfo?activatedEquipInfo=' + activatedEquipInfo);
+            '/UpdateDBInfo?activatedEquipInfo=' + activatedEquipInfo,
+            null, GetTokenHeader(token));
         return response.data;
     });
 };
