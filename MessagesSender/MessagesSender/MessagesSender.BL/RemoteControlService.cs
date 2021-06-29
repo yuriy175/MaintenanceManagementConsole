@@ -32,7 +32,9 @@ namespace MessagesSender.BL
         // @"D:\res\SnapShot_src\SnapShot\SnapShot\bin\Debug\SnapShot.exe";
         // @"C:\Windows\System32\notepad.exe";
         private const string XilogsFolder = @".\XiLogs\xilogs.exe";
-        private const string TeamViewerImagePath = @".\tvImage.jpeg";
+
+        // private const string TeamViewerImagePath = @".\tvImage.jpeg";
+        private const string TeamViewerImagePath = @"tvImage.jpeg";
         private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
         private const string SqlInfoExePath = @".\SqlInfo\sqlinfo.exe";
         private const string SqlInfoCommandLine = "";
@@ -136,15 +138,16 @@ namespace MessagesSender.BL
 
             await Task.Delay(2000);
 
-            var tvFile = Path.Combine(_installPath, LogFolderPathName, TeamViewerImagePath);
+            // var tvFile = Path.Combine(_installPath, LogFolderPathName, TeamViewerImagePath);
+            var tvFile = Path.Combine(Path.GetTempPath(), TeamViewerImagePath);
             var hWnd = WindowSnapshotHelper.GetWindowHandler(oldProc ?? process);
-            
+
             var image = WindowSnapshotHelper.MakeSnapshot(hWnd, false, Win32API.WindowShowStyle.Restore);
             if (image != null)
             {
                 image.Save(tvFile, ImageFormat.Jpeg);
             }
-            
+
             var result = await _emailSender.SendTeamViewerAsync(tvFile);
             await SendTeamViewerStateAsync(result);
 

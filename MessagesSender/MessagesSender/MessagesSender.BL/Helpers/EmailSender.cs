@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MessagesSender.Core.Interfaces;
 using MessagesSender.MessagesSender.BL.Helpers;
 using MimeKit;
@@ -19,12 +20,13 @@ namespace MessagesSender.BL.Helpers
         private readonly ILogger _logger;
         private readonly ITopicService _topicService;
 
-        private readonly (string Smtp, string EmailFrom, string EmailTo, string Password) 
+        private readonly (string Smtp, string EmailFrom, string EmailTo, string Login, string Password)
             _clientInfo =
                 (
                       "mail.vko-medprom.ru", // "smtp.mail.ru",
                       "ars@vko-medprom.ru", // "yuriy_nv@mail.ru",
                       "sergey.nikiforov@mskorp.ru",
+                      "tech.ars",
                       "lV0uwMU1kFI5lrS5");
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace MessagesSender.BL.Helpers
             _logger = logger;
             _topicService = topicService;
         }
-        
+
         /// <summary>
         /// sends teamviewer file
         /// </summary>
@@ -53,7 +55,7 @@ namespace MessagesSender.BL.Helpers
             }
 
             var emailMessage = CreateMessage(_clientInfo.EmailFrom, _clientInfo.EmailTo, $"Team Viewer", $"Team Viewer", tvPath);
-            await SendEmailAsync(_clientInfo.Smtp, _clientInfo.EmailFrom, _clientInfo.Password, emailMessage);
+            await SendEmailAsync(_clientInfo.Smtp, _clientInfo.Login, _clientInfo.Password, emailMessage);
 
             return true;
         }
@@ -80,12 +82,16 @@ namespace MessagesSender.BL.Helpers
             return emailMessage;
         }
 
-        private async Task SendEmailAsync(string smtpAddress, string fromAddress, string fromPassword, MimeMessage emailMessage)
+        private async Task SendEmailAsync(string smtpAddress, string fromLogin, string fromPassword, MimeMessage emailMessage)
         {
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(smtpAddress, 25, false);
-                await client.AuthenticateAsync(fromAddress, fromPassword);
+                // await client.ConnectAsync(smtpAddress, 25, false);
+                // await client.ConnectAsync(smtpAddress, 465, true);
+                client.Connect(
+                    smtpAddress, // int port = 0, 
+                    options: SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(fromLogin, fromPassword);
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);

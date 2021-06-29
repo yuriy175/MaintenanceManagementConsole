@@ -50,7 +50,7 @@ namespace MessagesSender.BL
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
 
-            _eventPublisher.RegisterGetHospitalInfoCommandArrivedEvent(() => OnHospitalInfoArrivedAsync());
+            _eventPublisher.RegisterServerReadyCommandArrivedEvent(() => OnHospitalInfoArrivedAsync());
             
             GetHospitalInfoAsync();
 
