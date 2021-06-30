@@ -91,5 +91,6 @@ func (t *logger) GetZipContent() ([]byte, string){
 		return nil, ""
 	}
 
-	return buf.Bytes(), filePath
+	// return buf.Bytes(), filePath
+	return data, filePath
 }

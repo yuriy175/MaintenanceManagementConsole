@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"fmt"
+	// "fmt"
+	"compress/gzip"
 	
 	"../interfaces"
 	"../models"
@@ -124,15 +125,28 @@ func (service *AdminController) Handle() {
 	http.HandleFunc("/equips/GetServerLogs", func(w http.ResponseWriter, r *http.Request) {
 		if CheckAdminAuthorization(authService, w, r) != nil{
 			logContent, filename := log.GetZipContent()
-			if logContent == nil{
+			if logContent == nil || filename == ""{
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			w.Header().Set("Content-Type", "application/zip")
+			/*w.Header().Set("Content-Type", "application/zip")
 			w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.zip\"", filename))
 			w.Write(logContent)
-			// json.NewEncoder(w).Encode(users)
+			*/
+
+			w.Header().Set("Content-Type", "application/json")
+		    w.Header().Set("Content-Encoding", "gzip")
+
+			writer, err := gzip.NewWriterLevel(w, gzip.BestCompression)
+			if err != nil {
+				// Your error handling
+				return
+			}
+
+			defer writer.Close()
+
+			writer.Write(logContent)
 		}
 	})
 }
