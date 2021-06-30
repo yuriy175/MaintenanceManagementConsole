@@ -8,3 +8,5 @@ window.ComplexTypeImages = {
 'u-stand-light.jpg' : ['U','KRT']
 }
 
+window.UseDarkTheme = false;
+

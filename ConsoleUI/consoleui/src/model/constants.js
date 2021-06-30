@@ -6,6 +6,7 @@
 export const EquipsServiceAddress = window.EquipsServiceAddress;
 export const WebSocketAddress = window.WebSocketAddress;
 export const ComplexTypeImages = window.ComplexTypeImages;
+export const UseDarkTheme = window.UseDarkTheme;
 
 export const SearchPeriod = 7;
 export const UserRole = 'User'

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
+import { UseDarkTheme } from './model/constants'
 import App from './App';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
@@ -15,7 +16,7 @@ import { CommunicationContextProvider} from './context/communication-context';
 
 const theme = createMuiTheme({
   palette: {
-    type: "dark",
+    type: !UseDarkTheme ? "light" : "dark",
   }
 });
 
