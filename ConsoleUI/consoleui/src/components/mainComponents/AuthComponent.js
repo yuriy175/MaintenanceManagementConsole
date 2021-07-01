@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import PasswordComponent from '../commonComponents/PasswordComponent'
 
 import UserTable from '../tables/adminTables/UserTable'
+
 import * as AdminWorker from '../../workers/adminWorker'
 import { UsersContext } from '../../context/users-context';
 
@@ -17,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     width:'100%',
-    marginBottom:'1em'
+    marginBottom:'1em',
+    backgroundColor: theme.palette.background.default,  
   },
   commonSpacing:{
     marginLeft: theme.spacing(1),
@@ -76,8 +78,8 @@ export default function AuthComponent(props) {
         return null;
       }
     };
-    const data = await AdminWorker.Login({login, password, email});
     //const data = await AdminWorker.Login({login: 'sa', password: 'medtex', email});
+    const data = await AdminWorker.Login({login, password, email});
     const claims = parseJwt(data);
     if(data){
       usersDispatch({ type: 'SETUSER', payload: {Token: data, Claims: claims} }); 
