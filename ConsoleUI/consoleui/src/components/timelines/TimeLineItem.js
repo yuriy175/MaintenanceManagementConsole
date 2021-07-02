@@ -48,7 +48,7 @@ export default function TimeLineItem(props) {
   const details = props.details;
   return (
     <div>
-        <ListItem alignItems="flex-start" button onClick={handleClick}>
+        <ListItem alignItems="flex-start" button>
             <ListItemAvatar >
                 <Avatar className={isImportant ? classes.isImportant : null} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
@@ -81,8 +81,8 @@ export default function TimeLineItem(props) {
                     </React.Fragment>
                 }                
             />
-            {details && open ? <ExpandLess /> : 
-              details && !open ? <ExpandMore /> : <></>}
+            {details && open ? <ExpandLess onClick={handleClick}/> : 
+              details && !open ? <ExpandMore onClick={handleClick}/> : <></>}
         </ListItem>
         
             {details ? 

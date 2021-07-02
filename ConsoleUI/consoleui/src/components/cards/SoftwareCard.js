@@ -21,11 +21,12 @@ const SoftwareCard = React.memo((props) => {
   const dbStates = volatile?.DBStates;
   const software = props.software?.Software;
   const atlas = Array.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;
-  const atlasUser = volatile?.AtlasUser;
+  const atlasUser = volatile?.AtlasUser || volatile?.AtlasStatus?.AtlasUser;
   const osInfo = Array.isArray(software?.OsInfos) ? software?.OsInfos[0] : null; 
   const sql = Array.isArray(software?.SqlServices) ? software?.SqlServices[0] : null; 
   const databases = dbStates ?? software?.SqlDatabases;
-  
+  const atlasRunning = volatile?.AtlasStatus?.AtlasRunning;
+
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -58,6 +59,9 @@ const SoftwareCard = React.memo((props) => {
         <Typography variant="h6" component="h2">
           {bull}Атлас
         </Typography>
+        <CardRow descr="Состояние" 
+              value={atlasRunning? "запущен" : "не запущен"}
+              rightColor={!atlasRunning? "red" : "green"}></CardRow>
         <CardRow descr="Версия" value={atlas?.AtlasVersion}></CardRow>
         <CardRow descr="Xilib" value={atlas?.XilibsVersion}></CardRow>
         <CardRow descr="Конфигурация" value={atlas?.ComplexType}></CardRow>

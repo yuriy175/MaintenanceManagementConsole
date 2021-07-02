@@ -25,7 +25,8 @@ const useStyles = makeStyles((theme) => ({
   },
   listPanel:{
     width: "285px",
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
+    backgroundColor: theme.palette.background.paper,
     maxHeight: "900px",
     overflowY: 'auto',
   },

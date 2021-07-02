@@ -12,10 +12,16 @@ function reducer(state, action) {
       return initialState;
     }
     case 'SETVOLATILE': {
-      return {
+      const newState = {
         ...state,
         currentVolatile: {...state.currentVolatile, ...action.payload}
       };
+
+      if(action.payload.SimpleMsgType === "AtlasExited") {
+        newState.currentVolatile.AtlasStatus = null;
+      }
+      
+      return newState;
     }
 
     default:

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
@@ -17,10 +17,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CommonTimeLine(props) {
   const classes = useStyles();
-
+  
   const equipName = props.equipName;
   const showImportantOnly = props.showImportantOnly;
   const  rows = props.rows;
+
   return (
     <List className={classes.root}>
         <Typography

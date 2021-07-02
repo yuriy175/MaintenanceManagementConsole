@@ -59,6 +59,11 @@ export default function SummaryHistoryTabPanel(props) {
   
   // const [events, setEvents] = useState([]);  
   const [importantOnly, setImportantOnly] = useState(false);  
+  const [filters, setFilters] = useState({
+    byTitle: '',
+    byDescr: ''
+  });
+
 
   const handleStartDateChange = (ev) => {
     setStartDate(ev.target.value);
@@ -73,7 +78,7 @@ export default function SummaryHistoryTabPanel(props) {
   // };  
 
   const equipName = props.equipName; // currEquipState?.equipInfo;
-  const events = eventsState.currentEvents;
+  let events = eventsState.currentEvents;
   const token = usersState.token;
 
   const onSearch = async () => {    
@@ -85,6 +90,24 @@ export default function SummaryHistoryTabPanel(props) {
   const onSelect = async (event) => {
     setImportantOnly(!importantOnly);
   };
+
+  
+  if(filters.byTitle){
+    events = events?.filter(p => p.Description.includes(filters.byTitle));
+  }
+
+  if(filters.byDescr){
+    events = events?.filter(p => p.Details.includes(filters.byDescr));
+  }
+
+  const onTitleFilterChange = async (val) =>{
+    setFilters({...filters, ...{byTitle: val.target?.value}});
+  }
+
+  const onDescrFilterChange = async (val) =>{
+    setFilters({...filters, ...{byDescr: val.target?.value}});
+  }
+
 
   return (
       <>
@@ -124,6 +147,10 @@ export default function SummaryHistoryTabPanel(props) {
         <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSearch}>
             Искать
         </Button>
+
+        <TextField id="outlined-basic" className={classes.commonSpacing} onChange={onTitleFilterChange} label="По названию" variant="outlined" />
+        <TextField id="outlined-basic" className={classes.commonSpacing} onChange={onDescrFilterChange} label="По описанию" variant="outlined" />
+        
     </div>
     <div className={classes.root}>        
       <CommonTimeLine equipName={equipName} rows={events} showImportantOnly={importantOnly}></CommonTimeLine>

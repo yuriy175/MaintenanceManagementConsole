@@ -32,7 +32,7 @@ namespace MessagesSender.BL
         private const string AtlasInstanceVersionName = "AtlasInstanceVersion";
         private const string ServicesFolderName = "ServicesFolder";
         private const string InstallPathName = "InstallPath";
-        private const string InstallExeName = "Atlas.System.exe";
+        private const string AtlasExeName = "Atlas.System";
         private const string XilibModuleName = @"XiLibs\XiLibNet.dll";
 
         private readonly IConfigurationService _configurationService;
@@ -42,9 +42,13 @@ namespace MessagesSender.BL
         private readonly IMQCommunicationService _mqService;
         private readonly IMasterEntityService _dbMasterEntityService;
 
+        private readonly string _installExeName = $"{AtlasExeName}.exe";
+
         private (string Version, string XilibVersion) _versions = (string.Empty, string.Empty);
         private EventLogWatcher _appWatcher = null;
         private EventLogWatcher _sysWatcher = null;
+        private bool _isActivated = false;
+        private (string UserName, IEnumerable<string> UserRoles)? _currentUserProps = null;
 
         /// <summary>
         /// public constructor
@@ -106,11 +110,17 @@ namespace MessagesSender.BL
         }
 
         private void OnDeactivateArrivedAsync()
-        {            
+        {
+            _isActivated = false;
         }
 
         private Task<bool> OnActivateArrivedAsync()
         {
+            _isActivated = true;
+            var atlasRunning = IsAtlasRunning();
+
+            SendAtlasStatusAsync(atlasRunning);
+
             return Task.FromResult(true);
             /*_sendingService.SendInfoToMqttAsync(
                 MQMessages.SoftwareInfo,
@@ -131,7 +141,7 @@ namespace MessagesSender.BL
                 if (string.IsNullOrEmpty(version))
                 {
                     var installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
-                    version = FileVersionInfo.GetVersionInfo(Path.Combine(installPath, InstallExeName)).FileVersion;
+                    version = FileVersionInfo.GetVersionInfo(Path.Combine(installPath, _installExeName)).FileVersion;
                 }
 
                 var servicesFolder = _configurationService.Get<string>(ServicesFolderName, @"C:\Program Files\Atlas\Services");
@@ -201,17 +211,20 @@ namespace MessagesSender.BL
             return Task.Run(() =>
             {
                 _mqService.Subscribe<MQCommands, (string, IEnumerable<string>)>(
-                        (MQCommands.UserLoggedIn, userProps => SendUserLogInAsync(userProps)));
+                        (MQCommands.UserLoggedIn, userProps => OnUserLogInAsync(userProps)));
 
                 _mqService.Subscribe<MQCommands, int>(
                         (MQCommands.Message, code => SendAtlasErrorAsync(
                             "Ошибка Атлас", code, string.Empty)));
 
                 _mqService.Subscribe<MQCommands, bool>(
-                        (MQCommands.ExitAll, exitAlways => SendAtlasShutdownAsync()));
+                        (MQCommands.AppStarted, code => SendAtlasStatusAsync(true)));
 
-                // _mqService.Subscribe<MQCommands, string>(
-                //        (MQCommands.UserLoggedOut, userName => OnUserLogOut(userName)));
+                _mqService.Subscribe<MQCommands, bool>(
+                        (MQCommands.ExitAll, exitAlways => OnAtlasShutdownAsync()));
+
+                _mqService.Subscribe<MQCommands, string>(
+                        (MQCommands.UserLoggedOut, userName => OnUserLogOutAsync()));
             });
         }
 
@@ -226,8 +239,31 @@ namespace MessagesSender.BL
             return true;
         }
 
-        private async void SendUserLogInAsync((string UserName, IEnumerable<string> UserRoles) userProps)
+        private async Task OnUserLogOutAsync()
         {
+            _currentUserProps = null;
+        }
+
+        private async Task OnUserLogInAsync((string UserName, IEnumerable<string> UserRoles) userProps)
+        {
+            _currentUserProps = userProps;
+            await SendUserLogInAsync();
+        }
+
+        private async Task OnAtlasShutdownAsync()
+        {
+            _currentUserProps = null;
+            SendAtlasShutdownAsync();
+        }
+
+        private async Task SendUserLogInAsync()
+        {
+            if (_currentUserProps == null)
+            {
+                return;
+            }
+
+            var userProps = _currentUserProps.Value;
             _ = _sendingService.SendInfoToMqttAsync(
                     MQMessages.SoftwareMsgInfo,
                     new
@@ -240,7 +276,26 @@ namespace MessagesSender.BL
                     });
         }
 
-        private async void SendAtlasShutdownAsync()
+        private async Task SendAtlasStatusAsync(bool atlasRunning)
+        {
+            var userProps = _currentUserProps;
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.SoftwareMsgInfo,
+                    new
+                    {
+                        AtlasStatus = new
+                        {
+                            AtlasRunning = atlasRunning,
+                            AtlasUser = new
+                            {
+                                User = userProps?.UserName,
+                                Role = userProps?.UserRoles?.FirstOrDefault(),
+                            },
+                        },
+                    });
+        }
+
+        private async Task SendAtlasShutdownAsync()
         {
             _ = _sendingService.SendInfoToMqttAsync(
                     MQMessages.SoftwareMsgInfo,
@@ -299,6 +354,11 @@ namespace MessagesSender.BL
                             },
                         },
                     });
+        }
+
+        private bool IsAtlasRunning()
+        {
+            return Process.GetProcesses().FirstOrDefault(p => p.ProcessName == AtlasExeName) != null;
         }
     }
 }
