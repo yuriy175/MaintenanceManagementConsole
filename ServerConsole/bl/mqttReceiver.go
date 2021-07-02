@@ -36,6 +36,9 @@ type mqttClient struct {
 	// chanel for communications with events service
 	_eventsCh chan *models.RawMqttMessage
 
+	// chanel for communications with chat services
+	_chatCh chan *models.RawMqttMessage
+
 	// mqtt client
 	_client      mqtt.Client
 
@@ -55,7 +58,8 @@ func MqttClientNew(
 	dalCh chan *models.RawMqttMessage,
 	webSockCh chan *models.RawMqttMessage,
 	equipsCh chan *models.RawMqttMessage,
-	eventsCh chan *models.RawMqttMessage) interfaces.IMqttClient {
+	eventsCh chan *models.RawMqttMessage,
+	chatCh chan *models.RawMqttMessage) interfaces.IMqttClient {
 	client := &mqttClient{}
 	
 	client._log = log
@@ -66,6 +70,7 @@ func MqttClientNew(
 	client._webSockCh = webSockCh
 	client._equipsCh = equipsCh
 	client._eventsCh = eventsCh
+	client._chatCh = chatCh
 
 	return client
 }
@@ -131,13 +136,18 @@ func (client *mqttClient) Create(
 		} else {
 			rawMsg := models.RawMqttMessage{topic, string(payload)}
 
+			if strings.Contains(topic, "/chat") {
+				client._chatCh <- &rawMsg
+				return
+			}
+
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
 			client._eventsCh <- &rawMsg
 			
 			if strings.Contains(topic, "/hospital") {
 				client._equipsCh <- &rawMsg
-			}
+			}  
 		}
 	}
 
@@ -194,4 +204,15 @@ func (client *mqttClient) SendCommand(command string) {
 // IsEquipTopic checks if root topic isn't common or broadcast
 func (client *mqttClient) IsEquipTopic() bool {
 	return client._isEquipment
+}
+
+// SendChatMessage send message to a chat topic
+func (client *mqttClient) SendChatMessage(user string, message string) {
+	chatTopic := client._topic + "/chat"
+	
+	viewmodel := &models.ChatViewModel{message, user}
+    data, _ := json.Marshal(viewmodel)
+
+	client._client.Publish(chatTopic, 0, false, string(data))
+	fmt.Println("Sent chat " + chatTopic)
 }

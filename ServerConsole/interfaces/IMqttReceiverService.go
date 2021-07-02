@@ -20,4 +20,7 @@ type IMqttReceiverService interface {
 
 	// GetConnectionNames returns connected equipment names
 	GetConnectionNames() []string
+
+	// PublishChatNote sends a chat note to equipment via mqtt
+	PublishChatNote(equipment string, message string, user string) 
 }

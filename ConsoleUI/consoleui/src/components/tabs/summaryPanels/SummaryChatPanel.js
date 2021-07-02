@@ -43,6 +43,7 @@ export default function SummaryChatPanel(props) {
   const [communicationState, communicationDispatch] = useContext(CommunicationContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [newNote, setNewNote] = useState('');
+  const [newChat, setNewChat] = useState('');
 
   const equipName = props.equipName;
   const token = usersState.token;
@@ -51,29 +52,29 @@ export default function SummaryChatPanel(props) {
     setNewNote(val);
   }
 
-  const onSend = async () => {
-    const note = await EquipWorker.SendNewNote(token, equipName, 'Note', newNote);    
+  const onChatChange = async (val)  => {
+    setNewChat(val);
+  }
+
+  const noteType = 'Note';
+  const chatType = 'Chat';
+  const onSendNote = async () => {
+    const note = await EquipWorker.SendNewNote(token, equipName, noteType, newNote);    
     communicationDispatch({ type: 'ADDNOTE', payload: note}); 
     setNewNote('');
   };
 
-  const notes = communicationState.notes;
+  const onSendChat = async () => {
+    const note = await EquipWorker.SendNewNote(token, equipName, chatType, newChat);   
+    setNewChat('');
+  };
+
+  const notes = communicationState.notes?.filter(n => n.Type === noteType);
+  const chats = communicationState.notes?.filter(n => n.Type === chatType);
   return (
     <div className={classes.root}>
       <div className={classes.column}>
         <Typography variant="h5">Заметки</Typography>
-        {notes?.length ? 
-          notes.map((i, ind) => (
-            <div key={ind.toString()} className={classes.fullRow}>
-              <Typography variant="body1" align='left' color='primary' className={classes.noteTitle}>
-                  {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
-              </Typography> 
-              {i.Message}
-            </div>
-            ))
-            :
-            <></>          
-        }
         <TextField
           id="outlined-multiline-static"
           className={classes.textField}
@@ -85,12 +86,50 @@ export default function SummaryChatPanel(props) {
           value={newNote}
           onChange={e => onNoteChange(e.target.value)}
         />
-        <Button variant="contained" color="primary" onClick={onSend}>
+        <Button variant="contained" color="primary" onClick={onSendNote}>
               Послать
         </Button>
+        {notes?.length ? 
+          notes.map((i, ind) => (
+            <div key={ind.toString()} className={classes.fullRow}>
+              <Typography variant="body1" align='left' color='primary' className={classes.noteTitle}>
+                  {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
+              </Typography> 
+              {i.Message}
+            </div>
+            ))
+            :
+            <></>          
+        }        
       </div>
       <div className={classes.column}>
         <Typography variant="h5">Чат</Typography>
+        <TextField
+          id="outlined-multiline-static"
+          className={classes.textField}
+          label="Новое сообщение"
+          multiline
+          rows={5}
+          defaultValue=""
+          variant="outlined"
+          value={newChat}
+          onChange={e => onChatChange(e.target.value)}
+        />
+        <Button variant="contained" color="primary" onClick={onSendChat}>
+              Послать
+        </Button>
+        {chats?.length ? 
+          chats.map((i, ind) => (
+            <div key={ind.toString()} className={classes.fullRow}>
+              <Typography variant="body1" align='left' color='primary' className={classes.noteTitle}>
+                  {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
+              </Typography> 
+              {i.Message}
+            </div>
+            ))
+            :
+            <></>          
+        }
       </div>    
     </div>
   );

@@ -37,6 +37,9 @@ type httpService struct {
 
 	// admin http controller
 	_adminController *controllers.AdminController
+
+	// communication http controller
+	_chatController *controllers.ChatController
 }
 
 // HTTPServiceNew creates an instance of httpService
@@ -61,18 +64,17 @@ func HTTPServiceNew(
 
 	service._equipController = controllers.EquipControllerNew(log, mqttReceiverService, webSocketService, dalService, equipsService, service, authService)
 	service._adminController = controllers.AdminControllerNew(log, mqttReceiverService, webSocketService, dalService, authService)
-
+	service._chatController = controllers.ChatControllerNew(log, mqttReceiverService, webSocketService, dalService, service, authService)
+	
 	return service
 }
 
 // Starts the service
 func (service *httpService) Start() {
-	// mqttReceiverService := service._mqttReceiverService
-	// webSocketService := service._webSocketService
-	// dalService := service._dalService
 
 	service._equipController.Handle()
 	service._adminController.Handle()
+	service._chatController.Handle()
 
 	address := service._connectionString // models.HTTPServerAddress
 	fmt.Println("http server is listening... " + address)

@@ -40,6 +40,9 @@ type types struct {
 	// events service
 	_eventsService interfaces.IEventsService
 
+	// chat service
+	_chatService interfaces.IChatService
+
 	// chanel for DAL communications
 	_dalCh chan *Models.RawMqttMessage
 
@@ -51,6 +54,9 @@ type types struct {
 
 	// chanel for communications with events service
 	_eventsCh chan *Models.RawMqttMessage
+
+	// chanel for communications with chat service
+	_chatCh chan *Models.RawMqttMessage
 }
 
 // types instance
@@ -62,6 +68,7 @@ func InitIoc() interfaces.IIoCProvider {
 	webSockCh := make(chan *models.RawMqttMessage)
 	equipsCh := make(chan *models.RawMqttMessage)
 	eventsCh := make(chan *models.RawMqttMessage)
+	chatCh := make(chan *models.RawMqttMessage)
 
 	log := utils.LoggerNew()
 	authService := AuthServiceNew(log)
@@ -75,6 +82,7 @@ func InitIoc() interfaces.IIoCProvider {
 	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
 	httpService := HTTPServiceNew(log, settingsService, mqttReceiverService, webSocketService, dalService, equipsService, authService)
+	chatService := ChatServiceNew(log, webSocketService, dalService, webSockCh, chatCh)
 
 	_types._log = log
 	_types._authService = authService
@@ -86,10 +94,13 @@ func InitIoc() interfaces.IIoCProvider {
 	_types._topicStorage = topicStorage
 	_types._settingsService = settingsService
 	_types._eventsService = eventsService
+	_types._chatService = chatService
 	_types._dalCh = dalCh
 	_types._webSockCh = webSockCh
 	_types._equipsCh = equipsCh
 	_types._eventsCh = eventsCh
+	_types._chatCh = chatCh
+
 
 	return _types
 }
@@ -136,5 +147,11 @@ func (t *types) GetWebSocket() interfaces.IWebSock {
 
 // GetMqttClient returns a new IMqttClient instance
 func (t *types) GetMqttClient() interfaces.IMqttClient {
-	return MqttClientNew(t._log, t._settingsService, t._mqttReceiverService, t._webSocketService, t._dalCh, t._webSockCh, t._equipsCh,t._eventsCh)
+	return MqttClientNew(t._log, t._settingsService, t._mqttReceiverService, t._webSocketService, 
+		t._dalCh, t._webSockCh, t._equipsCh, t._eventsCh, t._chatCh)
+}
+
+// GetChatService returns IHttpService service
+func (t *types) GetChatService() interfaces.IChatService {
+	return t._chatService
 }

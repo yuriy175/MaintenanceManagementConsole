@@ -20,6 +20,9 @@ type IIoCProvider interface {
 	// GetEventsService returns IEventsService service
 	GetEventsService() IEventsService
 
+	// GetChatService returns IHttpService service
+	GetChatService() IChatService
+
 	// GetHTTPService returns IHttpService service
 	GetHTTPService() IHttpService
 

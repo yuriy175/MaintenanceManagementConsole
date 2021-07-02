@@ -4,7 +4,6 @@ export const CommunicationContext = createContext();
 
 const initialState = {
   logs: [],
-  chats: [],
   notes: [],
 };
 

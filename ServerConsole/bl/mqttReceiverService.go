@@ -150,6 +150,20 @@ func (service *mqttReceiverService) SendCommand(equipment string, command string
 	return
 }
 
+// PublishChatNote sends a chat note to equipment via mqtt
+func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string) {
+	fmt.Printf("PublishChatNote from topic: %s %s %s\n", equipment, message, user)
+
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	if client, ok := service._mqttConnections[equipment]; ok {
+		go client.SendChatMessage(user, message)
+	}
+
+	return
+}
+
 // SendCommand sends a broadcast command to equipments via mqtt
 func (service *mqttReceiverService) SendBroadcastCommand(command string) {
 	service._mtx.Lock()

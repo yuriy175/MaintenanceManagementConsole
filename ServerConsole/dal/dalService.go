@@ -158,7 +158,7 @@ func (service *dalService) Start() {
 			// 	service._standRepository.InsertStandInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			} else if strings.Contains(d.Topic, "/ARM/AllDBInfo") {
 				service._dbInfoRepository.InsertDbInfoInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
-			}
+			} 
 		}
 	}() //deviceCollection)
 

@@ -5,6 +5,7 @@ import { SystemVolatileContext } from '../context/systemVolatile-context';
 import { AllEquipsContext } from '../context/allEquips-context';
 import { UsersContext } from '../context/users-context';
 import { EventsContext } from '../context/events-context';
+import { CommunicationContext } from '../context/communication-context';
 import * as EquipWorker from '../workers/equipWorker'
 
 import {sessionUid, getEquipFromTopic} from '../utilities/utils'
@@ -17,6 +18,7 @@ export function useWebSocket(props) {
     const [eventsState, eventsDispatch] = useContext(EventsContext);
     const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
     const [usersState, usersDispatch] = useContext(UsersContext);
+    const [communicationState, communicationDispatch] = useContext(CommunicationContext);
     const [connection, setConnection] = useState(null);
     const equipInfo = useRef(currEquipState.equipInfo);
     
@@ -178,6 +180,12 @@ export function useWebSocket(props) {
                     const values = data? JSON.parse(data.Data) : null;
                     systemVolatileDispatch({ type: 'SETVOLATILE', payload: values }); 
                 }
+                else if(path.startsWith('/chat'))
+                {
+                    const note = data? JSON.parse(data.Data) : null;
+                    communicationDispatch({ type: 'ADDNOTE', payload: note}); 
+                }
+               
             };
         }
     }, [connection]);

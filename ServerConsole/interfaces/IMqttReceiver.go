@@ -13,4 +13,7 @@ type IMqttClient interface {
 
 	// IsEquipTopic checks if root topic isn't common or broadcast
 	IsEquipTopic() bool
+
+	// SendChatMessage send message to a chat topic
+	SendChatMessage(user string, message string) 
 }

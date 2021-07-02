@@ -19,6 +19,7 @@
 	"/ARM/Hardware/HDD",
 	"/ARM/Hardware/Processor",
 	"/ARM/Hardware/Memory",
-	"/events"
+	"/events",
+	"/chat"
 	]
 }

@@ -16,6 +16,7 @@ func main() {
 	equipsService := ioc.GetEquipsService()
 	httpService := ioc.GetHTTPService()
 	eventsService := ioc.GetEventsService()
+	chatService := ioc.GetChatService()
 	mqttReceiverService.CreateCommonConnections()
 
 	go dalService.Start()
@@ -25,6 +26,7 @@ func main() {
 
 	go webSocketService.Start()
 	go httpService.Start()
+	go chatService.Start()
 
 	go mqttReceiverService.SendBroadcastCommand("reconnect")
 

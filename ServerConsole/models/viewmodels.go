@@ -204,3 +204,8 @@ type EventsViewModel struct {
 	Events []EventModel
 }
 
+// ChatViewModel describes chat note view model
+type ChatViewModel struct {
+	Message        string
+	User string
+}
