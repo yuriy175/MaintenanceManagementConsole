@@ -97,10 +97,10 @@ namespace MessagesSender.BL
                 return true;
             }
 
-            if (!_connectionProps.HasValue) 
+            /*if (!_connectionProps.HasValue) 
             {
                 return false;
-            }
+            }*/
 
             _isActivated = true;
 
