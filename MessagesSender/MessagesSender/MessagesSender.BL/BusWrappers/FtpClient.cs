@@ -36,11 +36,11 @@ namespace MessagesSender.BL.Remoting
             _logger = logger;
             _topicService = topicService;
 
-            _configurationService.AddConfigFile(
+            /*_configurationService.AddConfigFile(
                 Path.Combine(
                     Path.GetDirectoryName(
                         typeof(IFtpClient).Assembly.Location), "ftpsettings.json"));
-
+                        */
             CreateConnectionProps();
         }
 
