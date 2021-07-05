@@ -15,13 +15,74 @@ namespace MessagesSender.BL.BusWrappers.Helpers
         private const string ConnectionStringServerName = "Server";
         private const string ConnectionStringUserName = "User";
         private const string ConnectionStringPasswordName = "Password";
+        private const string ConnectionStringPortName = "Port";
+        private const string ConnectionStringSecuredName = "Secured";
+
+        private const string ConnectionStringSmtpName = "Smtp";
+        private const string ConnectionStringEmailFromName = "EmailFrom";
+        private const string ConnectionStringEmailToName = "EmailTo";
 
         /// <summary>
-        /// creates connection properties
+        /// creates mqtt connection properties
         /// </summary>
         /// <param name="connectionString">connection string</param>
         /// <returns>connection props</returns>
-        public static (string HostName, string UserName, string Password)? Create(string connectionString)
+        public static (string HostName, int Port, string UserName, string Password, bool Secured)? CreateMqttProps(string connectionString)
+        {
+            var props = CreateProps(connectionString);
+            if (props == null ||
+                !int.TryParse(props[ConnectionStringPortName], out int port) ||
+                !bool.TryParse(props[ConnectionStringSecuredName], out bool secured))
+            {
+                return null as (string, int, string, string, bool)?;
+            }
+
+            return (
+                props[ConnectionStringServerName], 
+                port, 
+                props[ConnectionStringUserName], 
+                props[ConnectionStringPasswordName], 
+                secured
+                );
+        }
+
+        /// <summary>
+        /// creates ftp connection properties
+        /// </summary>
+        /// <param name="connectionString">connection string</param>
+        /// <returns>connection props</returns>
+        public static (string HostName, string UserName, string Password)? CreateFtpProps(string connectionString)
+        {
+            var props = CreateProps(connectionString);
+            return props == null ?
+                null as (string, string, string)? :
+                (
+                    props[ConnectionStringServerName], 
+                    props[ConnectionStringUserName], 
+                    props[ConnectionStringPasswordName]
+                );
+        }
+
+        /// <summary>
+        /// creates email connection properties
+        /// </summary>
+        /// <param name="connectionString">connection string</param>
+        /// <returns>connection props</returns>
+        public static (string Smtp, string EmailFrom, string EmailTo, string Login, string Password)? CreateEmailProps(string connectionString)
+        {
+            var props = CreateProps(connectionString);
+            return props == null ?
+                null as (string, string, string, string, string)? :
+                (
+                    props[ConnectionStringSmtpName],
+                    props[ConnectionStringEmailFromName],
+                    props[ConnectionStringEmailToName],
+                    props[ConnectionStringUserName],
+                    props[ConnectionStringPasswordName]
+                );
+        }
+
+        private static Dictionary<string, string> CreateProps(string connectionString)
         {
             if (!string.IsNullOrEmpty(connectionString))
             {
@@ -33,7 +94,7 @@ namespace MessagesSender.BL.BusWrappers.Helpers
                     })
                     .ToDictionary(s => s.Key, s => s.Value);
 
-                return (props[ConnectionStringServerName], props[ConnectionStringUserName], props[ConnectionStringPasswordName]);
+                return props;
             }
 
             return null;

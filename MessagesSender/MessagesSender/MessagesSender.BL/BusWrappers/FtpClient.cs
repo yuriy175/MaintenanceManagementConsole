@@ -103,7 +103,7 @@ namespace MessagesSender.BL.Remoting
             var connectionString = _configurationService.Get<string>(Constants.FtpClientConnectionStringName, null);
             try
             {
-                _connectionProps = ConnectionPropsCreator.Create(connectionString);
+                _connectionProps = ConnectionPropsCreator.CreateFtpProps(connectionString);
             }
             catch (Exception ex)
             {

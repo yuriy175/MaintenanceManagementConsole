@@ -25,14 +25,14 @@ namespace MessagesSender.BL.Remoting
     public abstract class RabbitMQTTBase
     {
         private const int MqttPort = 1883;
-        private const int MqttsPort = 11884;
 
+        // private const int MqttsPort = 11884;
         private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger;
         private readonly string _clientId = Guid.NewGuid().ToString();
-        private readonly bool _useMqttSecure = false;
 
-        private (string HostName, string UserName, string Password)? _connectionProps;
+        // private readonly bool _useMqttSecure = false;
+        private (string HostName, int Port, string UserName, string Password, bool Secured)? _connectionProps;
         private IManagedMqttClient _mqttClient = null;
         private string _topic = string.Empty;
 
@@ -48,10 +48,11 @@ namespace MessagesSender.BL.Remoting
             _configurationService = configurationService;
             _logger = logger;
 
-            _configurationService.AddConfigFile(
+            /*_configurationService.AddConfigFile(
                 Path.Combine(
                     Path.GetDirectoryName(
                         typeof(IWorkqueueSender).Assembly.Location), "consoleMQsettings.json"));
+                        */
         }
 
         /// <summary>
@@ -74,14 +75,9 @@ namespace MessagesSender.BL.Remoting
         /// </summary>
         /// <param name="equipInfo">equipment info</param>
         /// <returns>result</returns>        
-        public virtual async Task<bool> CreateAsync((string Name, string Number, string HddNumber) equipInfo)
+        public virtual async Task<bool> CreateAsync()
         {
-            if (string.IsNullOrEmpty(equipInfo.Name) || string.IsNullOrEmpty(equipInfo.Number))
-            {
-                return false;
-            }
-
-            _topic = await GetTopicAsync(equipInfo);
+            _topic = await GetTopicAsync();
 
             await CreateConnection(new ConnectionFactory());
             Created = _mqttClient != null;
@@ -104,7 +100,7 @@ namespace MessagesSender.BL.Remoting
         /// </summary>
         /// <param name="equipInfo">equipment info</param>
         /// <returns>topic</returns>
-        protected abstract Task<string> GetTopicAsync((string Name, string Number, string HddNumber) equipInfo);
+        protected abstract Task<string> GetTopicAsync();
 
         /// <summary>
         /// Create connection
@@ -117,16 +113,19 @@ namespace MessagesSender.BL.Remoting
             connectionFactory.HostName = _connectionProps?.HostName ?? "localhost";
             connectionFactory.UserName = _connectionProps?.UserName ?? "guest";
             connectionFactory.Password = _connectionProps?.Password ?? "guest";
+            connectionFactory.Port = _connectionProps?.Port ?? MqttPort;
+
+            var secured = _connectionProps?.Secured ?? false;
 
             try
             {
                 var messageBuilder = new MqttClientOptionsBuilder()
                     .WithClientId(_clientId)
                     .WithCredentials(connectionFactory.UserName, connectionFactory.Password)
-                    .WithTcpServer(connectionFactory.HostName, _useMqttSecure ? MqttsPort : MqttPort)
+                    .WithTcpServer(connectionFactory.HostName, connectionFactory.Port) // _useMqttSecure ? MqttsPort : MqttPort)
                     .WithCleanSession();
 
-                var options = _useMqttSecure
+                var options = secured // _useMqttSecure
                   ? messageBuilder
                     .WithTls(new MqttClientOptionsBuilderTlsParameters()
                     {
@@ -176,7 +175,7 @@ namespace MessagesSender.BL.Remoting
             var connectionString = _configurationService.Get<string>(Constants.RabbitMQConnectionStringName, null);
             try
             {
-                _connectionProps = ConnectionPropsCreator.Create(connectionString);
+                _connectionProps = ConnectionPropsCreator.CreateMqttProps(connectionString);
             }
             catch (Exception ex)
             {

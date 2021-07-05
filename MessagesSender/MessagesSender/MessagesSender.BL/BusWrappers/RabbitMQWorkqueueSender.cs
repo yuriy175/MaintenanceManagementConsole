@@ -27,7 +27,7 @@ namespace MessagesSender.BL.Remoting
         private readonly ILogger _logger;
         private readonly string _queueName = "SystemInfoQueue"; // string.Empty;
 
-        private (string HostName, string UserName, string Password)? _connectionProps;
+        private (string HostName, int Port, string UserName, string Password, bool Secured)? _connectionProps;
         private IConnection _connection = null;
         private IModel _channel = null;
 
@@ -43,11 +43,11 @@ namespace MessagesSender.BL.Remoting
             _configurationService = configurationService;
             _logger = logger;
 
-            _configurationService.AddConfigFile(
+            /*_configurationService.AddConfigFile(
                 Path.Combine(
                     Path.GetDirectoryName(
                         typeof(IWorkqueueSender).Assembly.Location), "consoleMQsettings.json"));
-
+                      */  
             CreateAsync();
         }
 
@@ -165,7 +165,7 @@ namespace MessagesSender.BL.Remoting
             var connectionString = _configurationService.Get<string>(RabbitMQConnectionStringName, null);
             try
             {
-                _connectionProps = ConnectionPropsCreator.Create(connectionString);
+                _connectionProps = ConnectionPropsCreator.CreateMqttProps(connectionString);
             }
             catch (Exception ex)
             {

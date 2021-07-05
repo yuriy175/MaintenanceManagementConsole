@@ -68,7 +68,14 @@ namespace MessagesSender.BL
 
         private async Task GetDicomServicesAsync()
         {
-            _dicomServices = await _dbSettingsEntityService.GetDicomServicesAsync();
+            try
+            {
+                _dicomServices = await _dbSettingsEntityService.GetDicomServicesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "GetDicomServicesAsync");
+            }
         }
 
         private void OnDeactivateArrivedAsync()
@@ -82,7 +89,7 @@ namespace MessagesSender.BL
 
             await SendDicomServicesAsync();
 
-            _dicomServices.Where(d => (d.ServiceRole & PACSServiceRole) > 0 || (d.ServiceRole & WorkListServiceRole) > 0)
+            _dicomServices?.Where(d => (d.ServiceRole & PACSServiceRole) > 0 || (d.ServiceRole & WorkListServiceRole) > 0)
                 .ToList()
                 .ForEach(d =>
                 {
@@ -108,9 +115,9 @@ namespace MessagesSender.BL
                     MQMessages.DicomInfo,
                     new
                     {
-                        PACS = _dicomServices.Where(d => (d.ServiceRole & PACSServiceRole) > 0)
+                        PACS = _dicomServices?.Where(d => (d.ServiceRole & PACSServiceRole) > 0)
                             .Select(d => new { d.Name, d.IP }),
-                        WorkList = _dicomServices.Where(d => (d.ServiceRole & WorkListServiceRole) > 0)
+                        WorkList = _dicomServices?.Where(d => (d.ServiceRole & WorkListServiceRole) > 0)
                             .Select(d => new { d.Name, d.IP }),
                     });
             }

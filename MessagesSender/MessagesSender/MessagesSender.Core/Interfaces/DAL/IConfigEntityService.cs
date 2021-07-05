@@ -31,5 +31,27 @@ namespace MessagesSender.Core.Interfaces
         /// <param name="before">before datetime</param>
         /// <returns>true if success</returns>
         Task<bool> DeleteOfflineEventsAsync(DateTime? before = null);
+
+        /// <summary>
+        /// get config parameters
+        /// </summary>
+        /// <returns>config parameters</returns>
+        Task<IEnumerable<ConfigParam>> GetConfigParamAsync();
+
+        /// <summary>
+        /// inserts or updates config parameter
+        /// </summary>
+        /// <typeparam name="T">value type</typeparam>
+        /// <param name="configParamName">config parameter name</param>
+        /// <param name="value">value</param>
+        /// <returns>new config parameter</returns>
+        Task<ConfigParam> UpsertConfigParamAsync<T>(string configParamName, T value);
+
+        /// <summary>
+        /// get config parameter by name
+        /// </summary>
+        /// <param name="configParamName">config parameter name</param>
+        /// <returns>config parameter</returns>
+        Task<ConfigParam> GetConfigParamAsync(string configParamName);
     }
 }

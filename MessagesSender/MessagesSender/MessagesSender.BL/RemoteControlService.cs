@@ -40,7 +40,7 @@ namespace MessagesSender.BL
         private const string SqlInfoCommandLine = "";
 
         private readonly IConfigurationService _configurationService;
-        private readonly ISettingsEntityService _dbSettingsEntityService;
+        private readonly IConfigEntityService _dbConfigEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;
         private readonly ILogger _logger;
         private readonly ISendingService _sendingService;
@@ -61,7 +61,7 @@ namespace MessagesSender.BL
         /// public constructor
         /// </summary>
         /// <param name="configurationService">configuration service</param>
-        /// <param name="dbSettingsEntityService">settings database connector</param>
+        /// <param name="dbConfigEntityService">settings database connector</param>
         /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
         /// <param name="eventPublisher">event publisher service</param>
@@ -73,7 +73,7 @@ namespace MessagesSender.BL
         /// <param name="dbDataService">db raw data service</param>
         public RemoteControlService(
             IConfigurationService configurationService,
-            ISettingsEntityService dbSettingsEntityService,
+            IConfigEntityService dbConfigEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IEventPublisher eventPublisher,
@@ -84,7 +84,7 @@ namespace MessagesSender.BL
             ITopicService topicService,
             IDBDataService dbDataService)
         {
-            _dbSettingsEntityService = dbSettingsEntityService;
+            _dbConfigEntityService = dbConfigEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _sendingService = sendingService;
@@ -110,8 +110,8 @@ namespace MessagesSender.BL
                     async () => _ = await OnUpdateDBInfoAsync(),
                     async () =>
                     {
-                        var appParam = await _dbSettingsEntityService.GetAppParamAsync(EtlXilibLogsEnabledName);
-                        _xilibState = appParam == null ? false : Convert.ToBoolean(appParam.ParamValue);
+                        var configParam = await _dbConfigEntityService.GetConfigParamAsync(EtlXilibLogsEnabledName);
+                        _xilibState = configParam == null ? false : Convert.ToBoolean(configParam.ParamValue);
                     },
                 }.RunTasksAsync();
         }
@@ -213,7 +213,7 @@ namespace MessagesSender.BL
                         }
 
                         xilog += @"\xilogs" + DateTime.Now.ToString("_dd_MM_yyyy_HH_mm_ss") + ".etl";
-                        await _dbSettingsEntityService.UpsertAppParamAsync(EtlXilibLogsEnabledName, true);
+                        await _dbConfigEntityService.UpsertConfigParamAsync(EtlXilibLogsEnabledName, true);
 
                         // xilogs.exe [1-Run; 0-Stop] [Mode: Normal, Detailed] [Level: Info, Verbose] [path to the log]
                         ProcessHelper.ProcessRunAndWait(
@@ -246,7 +246,7 @@ namespace MessagesSender.BL
 
                         await Task.Yield();
 
-                        await _dbSettingsEntityService.UpsertAppParamAsync(EtlXilibLogsEnabledName, false);
+                        await _dbConfigEntityService.UpsertConfigParamAsync(EtlXilibLogsEnabledName, false);
                         int i = 0;
                         var zip = Path.Combine(Path.GetDirectoryName(_xilog), XiLogFileName); // Path.GetFileNameWithoutExtension(_xilog) + ".zip");
                         if (!File.Exists(zip))

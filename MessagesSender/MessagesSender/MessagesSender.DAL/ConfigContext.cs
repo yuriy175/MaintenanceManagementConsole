@@ -41,6 +41,11 @@ namespace MessagesSender.DAL
         public virtual DbSet<OfflineEvent> OfflineEvents { get; set; }
 
         /// <summary>
+        /// set of ConfigParam
+        /// </summary>
+        public virtual DbSet<ConfigParam> ConfigParams { get; set; }        
+
+        /// <summary>
         /// Creates ConfigContext.
         /// </summary>
         /// <param name="connectionString">connection string to db</param>

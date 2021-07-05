@@ -131,7 +131,7 @@ namespace MessagesSender.BL.Remoting
         }
 
         /// <inheritdoc/>
-        protected override Task<string> GetTopicAsync((string Name, string Number, string HddNumber) equipInfo)
+        protected override Task<string> GetTopicAsync()
             => _topicService.GetTopicAsync();
 
         /// <inheritdoc/>

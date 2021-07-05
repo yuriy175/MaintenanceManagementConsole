@@ -33,9 +33,8 @@ namespace MessagesSender.Core.Interfaces
         /// <summary>
         /// creates sender
         /// </summary>
-        /// <param name="equipInfo">equipment info</param>
         /// <returns>result</returns>
-        Task<bool> CreateAsync((string Name, string Number, string HddNumber) equipInfo);
+        Task<bool> CreateAsync();
 
         /// <summary>
         /// sends a message to a common mqtt

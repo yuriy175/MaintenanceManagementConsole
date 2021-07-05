@@ -1,4 +1,5 @@
-﻿using Atlas.Common.Core.Interfaces;
+﻿using System;
+using Atlas.Common.Core.Interfaces;
 using Atlas.Common.Impls;
 using Atlas.Remoting.Core.Interfaces;
 using Atlas.Remoting.Impls;
@@ -109,8 +110,16 @@ namespace MessagesSender
                 {
                     var configService = provider.GetService<ConfigurationService>();
                     var logger = provider.GetService<ILogger>();
-                    var settingsEntityService =
-                        new CommonDAL.Impls.SettingsEntityService(configService, logger);
+                    try
+                    {
+                        var settingsEntityService =
+                            new CommonDAL.Impls.SettingsEntityService(configService, logger);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, "AddConfigurationService");
+                    }
+
                     return configService;
                 });
         }
@@ -126,7 +135,7 @@ namespace MessagesSender
         {
             services.AddSingleton(
                 typeof(ILoggerBuilder),
-                typeof(LoggerBuilder));
+                typeof(BL.LoggerBuilder));
 
             return services.AddSingleton(
                 typeof(ILogger),

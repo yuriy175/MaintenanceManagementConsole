@@ -24,7 +24,6 @@ namespace MessagesSender.BL
     /// </summary>
     public class SendingService : ISendingService
     {
-        private readonly ISettingsEntityService _dbSettingsEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILogger _logger;
@@ -32,6 +31,7 @@ namespace MessagesSender.BL
         private readonly IWorkqueueSender _wqSender;
         private readonly IMqttSender _mqttSender;
         private readonly IOfflineService _offlineService;
+        private readonly ITopicService _topicService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number, string HddNumber) _equipmentInfo = (null, null, null);
@@ -39,7 +39,6 @@ namespace MessagesSender.BL
         /// <summary>
         /// public constructor
         /// </summary>
-        /// <param name="dbSettingsEntityService">settings database connector</param>
         /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
         /// <param name="eventPublisher">event publisher service</param>
@@ -47,17 +46,17 @@ namespace MessagesSender.BL
         /// <param name="wqSender">work queue sender</param>
         /// <param name="mqttSender">mqtt sender</param>
         /// <param name="offlineService">offline service</param>
+        /// <param name="topicService">topic service</param>
         public SendingService(
-            ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IEventPublisher eventPublisher,
             IMQCommunicationService mqService,
             IWorkqueueSender wqSender,
             IMqttSender mqttSender,
-            IOfflineService offlineService)
+            IOfflineService offlineService,
+            ITopicService topicService)
         {
-            _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _mqService = mqService;
@@ -65,6 +64,7 @@ namespace MessagesSender.BL
             _mqttSender = mqttSender;
             _offlineService = offlineService;
             _eventPublisher = eventPublisher;
+            _topicService = topicService;
 
             _eventPublisher.RegisterServerReadyCommandArrivedEvent(() => OnServerReadyArrivedAsync());
 
@@ -81,8 +81,8 @@ namespace MessagesSender.BL
                 {
                     Task.Run(async () =>
                     {
-                        await GetEquipmentInfoAsync();
-                        await _mqttSender.CreateAsync(_equipmentInfo);
+                        // await GetEquipmentInfoAsync();
+                        await _mqttSender.CreateAsync();
                     }),
                     Task.Run(() => _ = GetEquipmentIPAsync()),
                 });
@@ -100,7 +100,7 @@ namespace MessagesSender.BL
         /// <returns>result</returns>
         public async Task<bool> SendInfoToWorkQueueAsync<TMsgType, T>(TMsgType msgType, T info)
         {
-            if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
+            /*if (string.IsNullOrEmpty(_equipmentInfo.Number) || string.IsNullOrEmpty(_equipmentInfo.Name))
             {
                 _logger.Error($"wrong equipment props {_equipmentInfo.Number} {_equipmentInfo.Name}");
                 return false;
@@ -115,6 +115,8 @@ namespace MessagesSender.BL
                     msgType = msgType.ToString(),
                     info,
                 });
+                */
+            return true;
         }
 
         /// <summary>
@@ -161,10 +163,10 @@ namespace MessagesSender.BL
                 info);
         }
 
-        private async Task GetEquipmentInfoAsync()
+        /*private async Task GetEquipmentInfoAsync()
         {
-            _equipmentInfo = await _dbSettingsEntityService.GetEquipmentInfoAsync();
-        }
+            _equipmentInfo = await _topicService.GetEquipmentInfoAsync();
+        }*/
 
         private async Task GetEquipmentIPAsync()
         {

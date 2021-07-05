@@ -73,8 +73,6 @@ namespace MessagesSender.BL
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
-            CreateConnectionProps();
-
             _logger.Information("HddWatchService started");
         }
 
@@ -233,18 +231,5 @@ namespace MessagesSender.BL
             }
         }
         #endregion
-
-        private void CreateConnectionProps()
-        {
-            var connectionString = _configurationService.Get<string>(MessagesSenderModel.Constants.RabbitMQConnectionStringName, null);
-            try
-            {
-                _connectionProps = ConnectionPropsCreator.Create(connectionString);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Rabbit MQ work queue wrong connection string");
-            }
-        }
     }
 }

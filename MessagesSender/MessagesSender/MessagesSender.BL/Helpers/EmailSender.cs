@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Atlas.Common.Core.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using MessagesSender.BL.BusWrappers.Helpers;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 using MessagesSender.MessagesSender.BL.Helpers;
 using MimeKit;
 using Serilog;
@@ -19,8 +22,9 @@ namespace MessagesSender.BL.Helpers
     {
         private readonly ILogger _logger;
         private readonly ITopicService _topicService;
+        private readonly IConfigurationService _configurationService;
 
-        private readonly (string Smtp, string EmailFrom, string EmailTo, string Login, string Password)
+        private (string Smtp, string EmailFrom, string EmailTo, string Login, string Password)?
             _clientInfo =
                 (
                       "mail.vko-medprom.ru", // "smtp.mail.ru",
@@ -32,14 +36,19 @@ namespace MessagesSender.BL.Helpers
         /// <summary>
         /// public constructor
         /// </summary>
+        /// <param name="configurationService">configuration service</param>
         /// <param name="logger">logger</param>
         /// <param name="topicService">topic service</param>
         public EmailSender(
+            IConfigurationService configurationService,
             ILogger logger,
             ITopicService topicService)
         {
+            _configurationService = configurationService;
             _logger = logger;
             _topicService = topicService;
+
+            CreateConnectionProps();
         }
 
         /// <summary>
@@ -54,8 +63,14 @@ namespace MessagesSender.BL.Helpers
                 _logger.Error($"SendTeamViewerAsync error : {tvPath} doesn't exists");
             }
 
-            var emailMessage = CreateMessage(_clientInfo.EmailFrom, _clientInfo.EmailTo, $"Team Viewer", $"Team Viewer", tvPath);
-            await SendEmailAsync(_clientInfo.Smtp, _clientInfo.Login, _clientInfo.Password, emailMessage);
+            if (!_clientInfo.HasValue)
+            {
+                return false;
+            }
+
+            var clientInfo = _clientInfo.Value;
+            var emailMessage = CreateMessage(clientInfo.EmailFrom, clientInfo.EmailTo, $"Team Viewer", $"Team Viewer", tvPath);
+            await SendEmailAsync(clientInfo.Smtp, clientInfo.Login, clientInfo.Password, emailMessage);
 
             return true;
         }
@@ -95,6 +110,19 @@ namespace MessagesSender.BL.Helpers
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);
+            }
+        }
+
+        private void CreateConnectionProps()
+        {
+            var connectionString = _configurationService.Get<string>(Constants.EmailConnectionStringName, null);
+            try
+            {
+                _clientInfo = ConnectionPropsCreator.CreateEmailProps(connectionString);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Ftp client wrong connection string");
             }
         }
     }

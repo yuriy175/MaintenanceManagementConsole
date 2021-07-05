@@ -59,7 +59,14 @@ namespace MessagesSender.BL
 
         private async Task GetHospitalInfoAsync()
         {
-            _hospitalInfo = await _dbSettingsEntityService.GetHospitalInfoAsync();
+            try
+            { 
+                _hospitalInfo = await _dbSettingsEntityService.GetHospitalInfoAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "GetHospitalInfoAsync");
+            }
         }
 
         private async Task<bool> OnHospitalInfoArrivedAsync()

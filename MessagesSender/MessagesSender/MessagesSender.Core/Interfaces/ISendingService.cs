@@ -16,7 +16,7 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <typeparam name="TMsgType">message type</typeparam>
         /// <typeparam name="T">info type</typeparam>
-        /// <param name="msgType">info type</param>
+        /// <param name="msgType">mssage type</param>
         /// <param name="info">info</param>
         /// <returns>result</returns>
         Task<bool> SendInfoToWorkQueueAsync<TMsgType, T>(TMsgType msgType, T info);
@@ -26,7 +26,7 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <typeparam name="TMsgType">message type</typeparam>
         /// <typeparam name="T">info type</typeparam>
-        /// <param name="msgType">info type</param>
+        /// <param name="msgType">mssage type</param>
         /// <param name="info">info</param>
         /// <returns>result</returns>
         Task<bool> SendInfoToMqttAsync<TMsgType, T>(TMsgType msgType, T info);
@@ -35,7 +35,7 @@ namespace MessagesSender.Core.Interfaces
         /// sends info to common mqtt
         /// </summary>
         /// <typeparam name="T">info type</typeparam>
-        /// <param name="msgType">info type</param>
+        /// <param name="msgType">mssage type</param>
         /// <param name="info">info</param>
         /// <returns>result</returns>
         Task<bool> SendInfoToCommonMqttAsync<T>(MQMessages msgType, T info);

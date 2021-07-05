@@ -14,7 +14,7 @@ using Serilog;
 namespace MessagesSender.DAL
 {
     /// <summary>
-    /// ISettingsEntityService implementation
+    /// IMasterEntityService implementation
     /// </summary>
     public class MasterEntityService
         : EntityServiceBase<MasterContext>, IMasterEntityService
@@ -44,10 +44,18 @@ namespace MessagesSender.DAL
         {
             var query = "select name, state_desc from sys.databases";
 
-            var states = (await ExecuteQueryAsync(query))?
-                .Select(i => (i.FirstOrDefault().ToString(), i.LastOrDefault().ToString()));
+            try
+            {
+                var states = (await ExecuteQueryAsync(query))?
+                    .Select(i => (i.FirstOrDefault().ToString(), i.LastOrDefault().ToString()));
 
-            return states?.ToArray();
+                return states?.ToArray();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "GetDatabasesStatesAsync");
+                return null;
+            }
         }
 
         /// <summary>

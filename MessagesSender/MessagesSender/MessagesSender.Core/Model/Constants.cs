@@ -17,6 +17,11 @@ namespace MessagesSender.Core.Model
         /// <summary>
         /// FtpClient connection sring
         /// </summary>
-        public const string FtpClientConnectionStringName = "FtpClientConnectionString";        
+        public const string FtpClientConnectionStringName = "FtpClientConnectionString";
+
+        /// <summary>
+        /// EmailClient connection sring
+        /// </summary>
+        public const string EmailConnectionStringName = "EmailConnectionString";
     }
 }

@@ -230,11 +230,8 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnUpdateDBInfoAsync()
         {
-            var dbStates = await _dbMasterEntityService.GetDatabasesStatesAsync();
-            if (dbStates != null)
-            {
-                SendDBStatesAsync(dbStates);
-            }
+            var dbStates = await _dbMasterEntityService.GetDatabasesStatesAsync();            
+            SendDBStatesAsync(dbStates);
 
             return true;
         }
@@ -329,12 +326,15 @@ namespace MessagesSender.BL
                     MQMessages.SoftwareMsgInfo,
                     new
                     {
-                        DBStates = dbStates.Select(s =>
-                            new
-                            {
-                                Name = s.Name,
-                                Status = s.State,
-                            }),
+                        DBStates = dbStates == null ?
+                            new[] { new { Name = "Все БД", Status = "OFFLINE", } }
+                            :
+                            dbStates.Select(s =>
+                                new 
+                                {
+                                    Name = s.Name,
+                                    Status = s.State,
+                                }),
                     });
         }
 

@@ -24,7 +24,6 @@ namespace MessagesSender.BL
     /// </summary>
     public class Service : IService, IDisposable
     {
-        private readonly ISettingsEntityService _dbSettingsEntityService;
         private readonly IObservationsEntityService _dbObservationsEntityService;
         private readonly ILogger _logger;
         private readonly ISendingService _sendingService;
@@ -48,7 +47,6 @@ namespace MessagesSender.BL
         /// <summary>
         /// public constructor
         /// </summary>
-        /// <param name="dbSettingsEntityService">settings database connector</param>
         /// <param name="dbObservationsEntityService">observations database connector</param>
         /// <param name="logger">logger</param>
         /// <param name="eventPublisher">event publisher service</param>
@@ -66,7 +64,6 @@ namespace MessagesSender.BL
         /// <param name="dbDataService">db raw data service</param>
         /// <param name="offlineService">offline service</param>
         public Service(
-            ISettingsEntityService dbSettingsEntityService,
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IEventPublisher eventPublisher,
@@ -84,7 +81,6 @@ namespace MessagesSender.BL
             IDBDataService dbDataService,
             IOfflineService offlineService)
         {
-            _dbSettingsEntityService = dbSettingsEntityService;
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
             _sendingService = sendingService;

@@ -53,6 +53,7 @@ namespace MessagesSender
             using IServiceScope serviceScope = services.CreateScope();
             IServiceProvider provider = serviceScope.ServiceProvider;
 
+            var topicService = provider.GetRequiredService<ITopicService>(); 
             IService service = provider.GetRequiredService<IService>();
         }
     }
