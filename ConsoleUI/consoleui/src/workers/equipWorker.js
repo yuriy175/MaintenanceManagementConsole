@@ -147,8 +147,8 @@ export async function SendNewNote(token, equipName, msgType, message) {
     return await HandlerWrapper('SendNewNote', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
             '/SendNewNote?equipName=' + equipName+
-            '&msgType=' + msgType+
-            '&message=' + message,
+            '&msgType=' + encodeURIComponent(msgType)+
+            '&message=' + encodeURIComponent(message),
             null, GetTokenHeader(token));
         return response.data;
     });
