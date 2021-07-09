@@ -70,27 +70,44 @@ export default function AdminMainTabPanel(props) {
     setRole(val);
   };
 
-  const onAdd = async () => {
+  const onSubmit = async () => {
     const token = usersState.token
     const data = await AdminWorker.UpdateUser({id: '', login, password, surname, email, role, disabled: false}, token);
     const users = await AdminWorker.GetAllUsers(token);
     usersDispatch({ type: 'SETUSERS', payload: users }); 
   };
 
+  const onEdit = async (user) => {
+    setLogin(user.Login);
+    setPassword('');
+    setSurname(user.Surname);
+    setEmail(user.Email);
+    setRole(user.Role);
+  };
+
+  const onCancel = async (user) => {
+    setLogin('');
+    setPassword('');
+    setSurname('');
+    setEmail('');
+    setRole(UserRole);
+  };
+
   const onLogin = async () => {
     const data = await AdminWorker.Login({login, password});
   };
 
+  const canSubmit = login && password && surname;
   return (
     <div className={classes.root}>
       <div className={classes.root}>
-        <TextField className={classes.text} id="standard-basic" required={true} label="Логин" defaultValue={''} onChange={onLoginChange}/>
-        <TextField className={classes.text} id="standard-basic" required={true} label="Пароль" defaultValue={''} onChange={onPasswordChange}/>
-        <TextField className={classes.text} id="standard-basic" required={true} label="ФИО" defaultValue={''} onChange={onSurnameChange}/>
-        <TextField className={classes.text} id="standard-basic" label="Почта" defaultValue={''} onChange={onEmailChange}/>
+        <TextField className={classes.text} id="standard-basic" required={true} label="Логин" value={login} onChange={onLoginChange}/>
+        <TextField className={classes.text} id="standard-basic" required={true} label="Пароль" value={password} onChange={onPasswordChange}/>
+        <TextField className={classes.text} id="standard-basic" required={true} label="ФИО" value={surname} onChange={onSurnameChange}/>
+        <TextField className={classes.text} id="standard-basic" label="Почта" value={email} onChange={onEmailChange}/>
         {/* <TextField className={classes.text} id="standard-basic" label="Роль" defaultValue={''} onChange={onRoleChange}/> */}
-        <FormControl className={classes.text}>
-              <InputLabel htmlFor="grouped-native-select">Роль</InputLabel>
+        <FormControl required={true} className={classes.text}>
+              <InputLabel required={true} htmlFor="grouped-native-select">Роль</InputLabel>
               <NativeSelect
                 value={role}
                 onChange={handleRoleChange}
@@ -104,11 +121,14 @@ export default function AdminMainTabPanel(props) {
                 }
               </NativeSelect>
             </FormControl>
-        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onAdd}>
-              Добавить
+        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSubmit} disabled={!canSubmit}>
+              Готово
+        </Button>
+        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onCancel}>
+              Отменить
         </Button>
       </div>
-      <UserTable data={usersState.users}></UserTable>
+      <UserTable data={usersState.users} onEdit={onEdit}></UserTable>
     </div>
   );
 }

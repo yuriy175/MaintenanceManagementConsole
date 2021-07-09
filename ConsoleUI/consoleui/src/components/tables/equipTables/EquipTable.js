@@ -52,12 +52,12 @@ export default function EquipTable(props) {
     { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50,
       format: (row) => allEquipsState.connectedEquips?.includes(row.EquipName)
     },
-    { id: 'EquipName', label: 'Комплекс', minWidth: 170 },
+    { id: 'EquipName', label: 'Комплекс', minWidth: 170, sortable: true },
     { id: 'RegisterDate', label: 'Дата регистрации', minWidth: 170,
       format: (value) => parseLocalString(value)
     },
-    { id: 'HospitalName', label: 'ЛПУ', minWidth: 100 },
-    { id: 'HospitalAddress', label: 'Адрес', minWidth: 100 },
+    { id: 'HospitalName', label: 'ЛПУ', minWidth: 100, sortable: true },
+    { id: 'HospitalAddress', label: 'Адрес', minWidth: 100, sortable: true },
     { id: 'HospitalLatitude', label: 'Широта', minWidth: 100 },
     { id: 'HospitalLongitude', label: 'Долгота', minWidth: 100 },
     
