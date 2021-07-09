@@ -42,11 +42,11 @@ func (service *authService) CheckSum(value string, hash [32]byte) bool {
 }
 
 // CreateToken creates jwt token for user
-func (service *authService) CreateToken(user *models.UserModel) string{
-	claims := &models.UserClaims{user.Login, user.Surname, user.Role}
+func (service *authService) CreateToken(user *models.UserModel) (string, string) {
+	claims := &models.UserClaims{user.Login, user.Role}
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), claims)
 	tokenString, _ := token.SignedString([]byte(service._jwtSecret))
-	return tokenString
+	return tokenString, user.Surname
 }
 
 func (service *authService) VerifyToken(tokenString string) *models.UserClaims{

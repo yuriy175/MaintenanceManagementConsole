@@ -209,3 +209,10 @@ type ChatViewModel struct {
 	Message        string
 	User string
 }
+
+
+// TokenWithUserViewModel describes token and user info view model to UI
+type TokenWithUserViewModel struct {
+	Token       string
+	Surname  string
+}

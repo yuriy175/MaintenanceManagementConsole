@@ -16,6 +16,8 @@ import { UsersContext } from '../../../context/users-context';
 import * as EquipWorker from '../../../workers/equipWorker'
 import {useSetCurrEquip} from '../../../hooks/useSetCurrEquip'
 import {parseLocalString} from '../../../utilities/utils'
+import ConfirmDlg from '../../dialogs/ConfirmDlg'
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +45,7 @@ export default function EquipTable(props) {
     byHospital: '',
     byAddress:''
   });
+  const [openConfirm, setOpenConfirm] = React.useState({Result: false});
 
   const isAdmin = usersState.currentUser?.Role === AdminRole;
   const columns = [
@@ -99,10 +102,8 @@ export default function EquipTable(props) {
   };
 
   const handleSelect = async (event, row) => {
-    const equipInfo = row.EquipName;
-    row.Disabled = !row.Disabled
-    await EquipWorker.DisableEquipInfo(usersState.token, equipInfo, row.Disabled);
-    allEquipsDispatch({ type: 'UPDATEALLEQUIPS', payload: row }); 
+    setOpenConfirm({Result: true, Context: row});
+    /* */
   };
 
   const onVisibleOnly = async (event) => {
@@ -123,6 +124,18 @@ export default function EquipTable(props) {
   const onAddressFilterChange = async (val) =>{
     setFilters({...filters, ...{byAddress: val.target?.value}});
   }
+
+  const onConfirmClose = async (result, context) => {
+    if(result){
+      const row = context;
+      const equipInfo = row.EquipName;
+      row.Disabled = !row.Disabled
+      await EquipWorker.DisableEquipInfo(usersState.token, equipInfo, row.Disabled);
+      allEquipsDispatch({ type: 'UPDATEALLEQUIPS', payload: row });
+    }
+    setOpenConfirm({Result: false});
+  };
+
 
   return (
     <>
@@ -146,6 +159,13 @@ export default function EquipTable(props) {
       <div className={classes.root}>
         <CommonTable readonly columns={columns} rows={rows} selectedRow={currEquipState.equipInfo} onRowClick={handleRowClick} onSelect={handleSelect}></CommonTable>
       </div>
+      <ConfirmDlg 
+        open={openConfirm.Result} 
+        сonfirmMessage={'Вы действительно хотите '+(openConfirm.Context?.Disabled ? 'открыть' : 'скрыть')+' комплекс?'}
+        onClose={onConfirmClose}
+        context={openConfirm.Context}
+        >          
+      </ConfirmDlg>
     </>
   );
 }

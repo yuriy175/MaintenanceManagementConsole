@@ -78,11 +78,12 @@ export default function AuthComponent(props) {
         return null;
       }
     };
-    // const data = await AdminWorker.Login({login: 'sa', password: 'medtex', email});
-    const data = await AdminWorker.Login({login, password, email});
-    const claims = parseJwt(data);
-    if(data){
-      usersDispatch({ type: 'SETUSER', payload: {Token: data, Claims: claims} }); 
+    const data = await AdminWorker.Login({login: 'sa', password: 'medtex', email});
+    //const data = await AdminWorker.Login({login, password, email});
+    
+    if(data && data.Token){
+      const claims = parseJwt(data.Token);      
+      usersDispatch({ type: 'SETUSER', payload: {Token: data.Token, Claims: claims, Surname: data.Surname} }); 
       setRedirect(true);
     }
     else{

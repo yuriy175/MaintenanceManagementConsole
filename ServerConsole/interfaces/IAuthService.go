@@ -12,7 +12,7 @@ type IAuthService interface {
 	CheckSum(value string, hash [32]byte) bool
 
 	// CreateToken creates jwt token for user
-	CreateToken(user *models.UserModel) string
+	CreateToken(user *models.UserModel) (string, string)
 
 	// VerifyToken verifies token 
 	VerifyToken(tokenString string) *models.UserClaims

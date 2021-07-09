@@ -118,8 +118,8 @@ func (service *AdminController) Handle() {
 		}
 
 		service._log.Infof("login success: %s", userVM.Login);
-		token := service._authService.CreateToken(user)
-		json.NewEncoder(w).Encode(token)
+		token, userName := service._authService.CreateToken(user)
+		json.NewEncoder(w).Encode(models.TokenWithUserViewModel{token,userName})
 	})
 
 	http.HandleFunc("/equips/GetServerLogs", func(w http.ResponseWriter, r *http.Request) {

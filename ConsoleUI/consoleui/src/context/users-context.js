@@ -17,7 +17,7 @@ function reducer(state, action) {
       return {
         ...state,
         token: action.payload.Token,
-        currentUser: action.payload.Claims
+        currentUser: {...action.payload.Claims, Surname: action.payload.Surname}
       };
     }
     case 'SETUSERS': {

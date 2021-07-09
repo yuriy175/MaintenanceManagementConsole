@@ -7,7 +7,6 @@ import (
 // UserClaims describes claim for authentification
 type UserClaims struct {
 	Login        string
-	Surname 	 string
 	Role         string
 }
 
