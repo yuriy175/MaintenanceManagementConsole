@@ -9,33 +9,71 @@ import { CommunicationContext } from '../../../context/communication-context';
 import { UsersContext } from '../../../context/users-context';
 import * as EquipWorker from '../../../workers/equipWorker'
 import {parseLocalString} from '../../../utilities/utils'
+import SummaryChatSubpanel from './subpanels/SummaryChatSubpanel'
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display:"flex"
   },
-  column:{
-    width: "50%",
-    marginRight: "12px",
-  },
-  fullRow:{
-    width: '100%',
-    textAlign: 'left',
-  },
-  textField:{
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: '100%',
-
-  } ,
-  noteTitle:{
-    width: '100%',
-    fontWeight: 'bolder',
-    textAlign: 'left',
-    display: 'inline',
-  }
 }));
 
+export default function SummaryChatPanel(props) {
+  console.log("render SummaryChatPanel");
+
+  const classes = useStyles();
+  const [communicationState, communicationDispatch] = useContext(CommunicationContext);
+  const [usersState, usersDispatch] = useContext(UsersContext);
+
+  const equipName = props.equipName;
+  const token = usersState.token;
+
+  const noteType = 'Note';
+  const chatType = 'Chat';
+
+  const onSendNote = async (type, note) => {
+    if(type === noteType){
+      await onSendNoteNote(note);
+    }
+    else if(type === chatType){
+      await onSendChatNote(note);
+    }
+  };
+
+  const onSendNoteNote = async (newnote) => {
+    const note = await EquipWorker.SendNewNote(token, equipName, noteType, newnote);    
+    communicationDispatch({ type: 'ADDNOTE', payload: note}); 
+  };
+
+  const onSendChatNote = async (newnote) => {
+    const note = await EquipWorker.SendNewNote(token, equipName, chatType, newnote);   
+  };
+
+  const notes = communicationState.notes?.filter(n => n.Type === noteType);
+  const chats = communicationState.notes?.filter(n => n.Type === chatType);
+  return (
+    <div className={classes.root}>     
+      <SummaryChatSubpanel
+        type={noteType}
+        title='Заметки'
+        notes={notes}
+        onSendNote={onSendNote}
+        currentUser={usersState.currentUser?.Login}
+      >
+      </SummaryChatSubpanel>
+      <SummaryChatSubpanel
+        type={chatType}
+        title='Чат'
+        notes={chats}
+        onSendNote={onSendNote}
+        currentUser={usersState.currentUser?.Login}
+      >
+      </SummaryChatSubpanel>
+    </div>
+  );
+}
+  
+/*
 export default function SummaryChatPanel(props) {
   console.log("render SummaryChatPanel");
 
@@ -138,4 +176,4 @@ export default function SummaryChatPanel(props) {
     </div>
   );
 }
-  
+  */

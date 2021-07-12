@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing(3),
+    width: `calc(100% - ${drawerWidth}px)`,
   },
 }));
 
