@@ -46,6 +46,9 @@ type mqttReceiverService struct {
 	// value - mqtt client
 	_mqttConnections map[string]interfaces.IMqttClient
 	_topicStorage    interfaces.ITopicStorage
+
+	// topics : server may communicate with a client
+	_supportedTopics []string
 }
 
 // MqttReceiverServiceNew creates an instance of mqttReceiverService
@@ -74,6 +77,8 @@ func MqttReceiverServiceNew(
 	service._eventsCh = eventsCh
 	service._mqttConnections = map[string]interfaces.IMqttClient{}
 
+	service._supportedTopics = topicStorage.GetTopics()
+
 	return service
 }
 
@@ -81,7 +86,7 @@ func MqttReceiverServiceNew(
 func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipConnectionState) {
 	rootTopic := state.Name
 	isOff := !state.Connected
-	topics := service._topicStorage.GetTopics()
+	topics := service._supportedTopics
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 	// dalService := service._dalService
@@ -157,7 +162,16 @@ func (service *mqttReceiverService) PublishChatNote(equipment string, message st
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	if client, ok := service._mqttConnections[equipment]; ok {
+	// we may have no connection to this client
+	topics := service._supportedTopics
+	mqttConnections := service._mqttConnections
+	ioCProvider := service._ioCProvider
+
+	if _, ok := mqttConnections[equipment]; !ok {
+		mqttConnections[equipment] = ioCProvider.GetMqttClient().Create(equipment, topics)
+	}	
+
+	if client, ok := mqttConnections[equipment]; ok {
 		go client.SendChatMessage(user, message)
 	}
 

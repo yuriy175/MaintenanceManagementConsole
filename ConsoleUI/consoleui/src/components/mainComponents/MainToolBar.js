@@ -98,6 +98,7 @@ export default function MainToolBar() {
   const onEquipChanged = async equipInfo =>
   {
     setCurrEquip(equipInfo, 'SETEQUIPINFO');
+    allEquipsDispatch({ type: 'ADDSELECTEDEQUIPS', payload: equipInfo }); 
     getEvents(equipInfo);
   }
 
