@@ -37,6 +37,7 @@ export default function AdminMainTabPanel(props) {
 
   const classes = useStyles();
   const [usersState, usersDispatch] = useContext(UsersContext);
+  const [userId, setUserId] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [surname, setSurname] = useState('');
@@ -72,12 +73,15 @@ export default function AdminMainTabPanel(props) {
 
   const onSubmit = async () => {
     const token = usersState.token
-    const data = await AdminWorker.UpdateUser({id: '', login, password, surname, email, role, disabled: false}, token);
+    const data = await AdminWorker.UpdateUser({id: userId, login, password, surname, email, role, disabled: false}, token);
     const users = await AdminWorker.GetAllUsers(token);
     usersDispatch({ type: 'SETUSERS', payload: users }); 
+
+    onCancel();
   };
 
   const onEdit = async (user) => {
+    setUserId(user.ID);
     setLogin(user.Login);
     setPassword('');
     setSurname(user.Surname);
@@ -85,7 +89,8 @@ export default function AdminMainTabPanel(props) {
     setRole(user.Role);
   };
 
-  const onCancel = async (user) => {
+  const onCancel = async () => {
+    setUserId('');
     setLogin('');
     setPassword('');
     setSurname('');
@@ -93,11 +98,7 @@ export default function AdminMainTabPanel(props) {
     setRole(UserRole);
   };
 
-  const onLogin = async () => {
-    const data = await AdminWorker.Login({login, password});
-  };
-
-  const canSubmit = login && password && surname;
+  const canSubmit = login && surname && (userId ? true : password);
   return (
     <div className={classes.root}>
       <div className={classes.root}>
@@ -121,12 +122,14 @@ export default function AdminMainTabPanel(props) {
                 }
               </NativeSelect>
             </FormControl>
-        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSubmit} disabled={!canSubmit}>
-              Готово
-        </Button>
-        <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onCancel}>
-              Отменить
-        </Button>
+        <div>
+          <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onSubmit} disabled={!canSubmit}>
+                Готово
+          </Button>
+          <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onCancel}>
+                Отменить
+          </Button>
+        </div>
       </div>
       <UserTable data={usersState.users} onEdit={onEdit}></UserTable>
     </div>

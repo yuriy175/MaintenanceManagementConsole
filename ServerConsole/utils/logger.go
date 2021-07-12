@@ -8,6 +8,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"io/ioutil"
+	"compress/gzip"
 
 	"../interfaces"
 )
@@ -58,8 +59,8 @@ func (t *logger) Infof(format string, a ...interface{}){
 	t.Info(log)
 }
 
-// GetZipContent returns zipped logs
-func (t *logger) GetZipContent() ([]byte, string){
+// getZipContent returns zipped logs
+func (t *logger) getZipContent() ([]byte, string){
 	filePath := t.Path
 	// Create a buffer to write our archive to.
 	buf := new(bytes.Buffer)
@@ -94,4 +95,23 @@ func (t *logger) GetZipContent() ([]byte, string){
 
 	// return buf.Bytes(), filePath
 	return data, filePath
+}
+
+// WriteZipContent writes zipped logs to a writer
+func (t *logger) WriteZipContent(w io.Writer) bool{
+	logContent, filename := t.getZipContent()
+	if logContent == nil || filename == ""{
+		return false
+	}
+	writer, err := gzip.NewWriterLevel(w, gzip.BestCompression)
+	if err != nil {
+		t.Errorf("WriteZipContent error %v", err)
+		return false
+	}
+
+	defer writer.Close()
+
+	writer.Write(logContent)
+
+	return true
 }

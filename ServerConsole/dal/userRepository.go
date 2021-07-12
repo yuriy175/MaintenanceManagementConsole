@@ -2,7 +2,7 @@ package dal
 
 import (
 	"time"
-
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
 
 	"../interfaces"
@@ -64,11 +64,22 @@ func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *mode
 
 		userCollection.Insert(model)
 	} else {
-		userCollection.Update(
-			bson.M{"login": model.Login},
+		///id, _ := primitive.ObjectIDFromHex(userVM.ID)
+		model.ID = bson.ObjectId(userVM.ID)
+		id1, _ := primitive.ObjectIDFromHex(userVM.ID) // "5d9e0173c1305d2a54eb431a")
+		id := string(id1)
+		err := userCollection.Update(
+			bson.M{"_id": id}, // model.ID},
 			bson.D{
-				{"$set", bson.D{{"disabled", model.Disabled}}}})
-		
+				{"$set", bson.D{
+					{"disabled", model.Disabled},
+					{"login", model.Login},
+					{"role", model.Role},
+				}}})
+		if err != nil{
+			repository._log.Errorf("UpdateUser error %v", err)
+		}
+
 		if model.Disabled {
 			repository.EnsureAdmin()
 		}

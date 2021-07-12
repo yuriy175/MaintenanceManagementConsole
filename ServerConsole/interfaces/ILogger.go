@@ -1,4 +1,7 @@
 package interfaces
+import (
+	"io"
+)
 
 // ILogger describes logger interface
 type ILogger interface {
@@ -18,5 +21,7 @@ type ILogger interface {
 	Infof(format string, a ...interface{})
 
 	// GetZipContent returns zipped logs
-	GetZipContent() ([]byte, string)
+	// GetZipContent() ([]byte, string)
+	// WriteZipContent writes zipped logs to a writer
+	WriteZipContent(w io.Writer) bool
 }
