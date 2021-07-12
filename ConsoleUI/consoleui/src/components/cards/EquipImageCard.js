@@ -46,6 +46,8 @@ const EquipImageCard = React.memo((props) => {
   
   const isConnected = props.isConnected;
   const lastSeen = props.lastSeen;
+  const hospital = props.hospital;
+  const address = props.address;
 
   return (
     <Card className={classes.root}>
@@ -58,6 +60,8 @@ const EquipImageCard = React.memo((props) => {
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
           Аппарат : {equipInfo}
+          {hospital? <div>ЛПУ: {hospital} </div>: <></>}
+          {address? <div>Адрес: {address} </div>: <></>}
           {lastSeen? <div>Посл. сообщение: {parseLocalString(lastSeen)} </div>: <></>}
         </Typography>
       </CardContent>

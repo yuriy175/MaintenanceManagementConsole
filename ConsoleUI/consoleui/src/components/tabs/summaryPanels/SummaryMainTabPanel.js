@@ -42,10 +42,18 @@ export default function SummaryMainTabPanel(props) {
   const equipInfo = currEquipState.equipInfo;
   const isEquipConnected = allEquipsState.connectedEquips?.includes(equipInfo);
   const lastSeen = currEquipState.lastSeen;
+  const hospital = currEquipState.locationInfo?.HospitalName;
+  const address = currEquipState.locationInfo?.HospitalAddress;
   return (
     <div className={classes.root}>
       <div className={classes.column}>
-        <EquipImageCard equipInfo={equipInfo} isConnected={isEquipConnected} lastSeen={lastSeen}></EquipImageCard>
+        <EquipImageCard 
+          equipInfo={equipInfo} 
+          isConnected={isEquipConnected} 
+          lastSeen={lastSeen}
+          hospital={hospital}
+          address={address}
+        ></EquipImageCard>
         <SystemCard system={currEquipState.system} volatile={systemVolatileState.currentVolatile}></SystemCard>
         {/* <HddCard></HddCard> */}
       </div>

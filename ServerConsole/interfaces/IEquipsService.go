@@ -20,4 +20,7 @@ type IEquipsService interface {
 
 	// DisableEquipInfo disables an equipment
 	DisableEquipInfo(equipName string, disabled bool) 
+
+	// GetFullInfo returns full equipment permanent info
+	GetFullInfo(equipName string)*models.FullEquipInfoModel
 }

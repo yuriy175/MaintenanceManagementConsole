@@ -19,6 +19,7 @@ const initialState = {
   allDBs:{},
   allDBTables:{},
   lastSeen:undefined,
+  locationInfo: '',
 };
 
 function reducer(state, action) {
@@ -188,6 +189,16 @@ function reducer(state, action) {
         dicom: dicom
       };
     }    
+
+    case 'SETFULLINFO': {
+      return {
+        ...state,
+        system: action.payload?.SystemInfo[0],
+        software: action.payload?.SoftwareInfo[0],
+        lastSeen: action.payload?.LastSeen,
+        locationInfo: action.payload?.LocationInfo
+      };
+    }
 
     default:
       throw new Error();

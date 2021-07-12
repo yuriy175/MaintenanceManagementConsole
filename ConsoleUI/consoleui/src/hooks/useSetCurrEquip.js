@@ -21,7 +21,7 @@ export function useSetCurrEquip() {
     currEquipDispatch({ type: type, payload: equipInfo }); 
 
     // new software & system info come very slowly
-    const sysInfo = await EquipWorker.GetPermanentData(token, "SystemInfo", equipInfo);
+    /*const sysInfo = await EquipWorker.GetPermanentData(token, "SystemInfo", equipInfo);
     currEquipDispatch({ type: 'SETSYSTEM', payload: sysInfo[0] }); 
 
     const swInfo = await EquipWorker.GetPermanentData(token, "Software", equipInfo);
@@ -35,6 +35,12 @@ export function useSetCurrEquip() {
       currEquipDispatch({ type: 'SETLASTSEEN', payload: lastSeen }); 
     }
     else {
+      await EquipWorker.Activate(token, equipInfo, currEquipState.equipInfo);
+    }
+    */
+    const fullInfo = await EquipWorker.GetPermanentData(token, "FullInfo", equipInfo);
+    currEquipDispatch({ type: 'SETFULLINFO', payload: fullInfo }); 
+    if(connectedEquip){
       await EquipWorker.Activate(token, equipInfo, currEquipState.equipInfo);
     }
   };

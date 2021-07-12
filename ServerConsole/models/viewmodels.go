@@ -216,3 +216,4 @@ type TokenWithUserViewModel struct {
 	Token       string
 	Surname  string
 }
+

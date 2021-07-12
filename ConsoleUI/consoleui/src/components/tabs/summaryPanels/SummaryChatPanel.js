@@ -95,7 +95,11 @@ export default function SummaryChatPanel(props) {
               <Typography variant="body1" align='left' color='primary' className={classes.noteTitle}>
                   {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
               </Typography> 
-              {i.Message}
+              {
+                i.Message?.split("\n")?.map(s => 
+                    <Typography >{s}</Typography>
+                  )
+              }              
             </div>
             ))
             :

@@ -372,7 +372,7 @@ func (service *EquipController) Handle() {
 		
 		queryString := r.URL.Query()
 
-		equipTypes, ok := queryString["currType"]
+		/*equipTypes, ok := queryString["currType"]
 		if !ok || len(equipTypes[0]) < 1 {
 			log.Error("Url Param 'currType' is missing")
 			w.WriteHeader(http.StatusBadRequest)
@@ -386,9 +386,18 @@ func (service *EquipController) Handle() {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		equipName := equipNames[0]
+		equipName := equipNames[0]*/
+		equipType := CheckQueryParameter(queryString, "currType", w) 
+		if equipType == ""{
+			log.Error("Url Param 'equipType' is missing")
+			return
+		}
 
-		// log.Println("Url is: %s %s", equipType, equipName)
+		equipName := CheckQueryParameter(queryString, "equipName", w) 
+		if equipType == ""{
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
 	})	
@@ -437,7 +446,12 @@ func (service *EquipController) sendPermanentSearchResults(
 	equipName string) {
 
 	dalService := service._dalService
-	if equipType == "SystemInfo" {
+	equipsService := service._equipsService
+	
+	if equipType == "FullInfo" {
+		fullInfo := equipsService.GetFullInfo(equipName)
+		json.NewEncoder(w).Encode(fullInfo)
+	} else if equipType == "SystemInfo" {
 		// sysInfo := dalService.GetPermanentSystemInfo(equipName)
 		sysInfo := dalService.GetDBSystemInfo(equipName)
 		json.NewEncoder(w).Encode(sysInfo)

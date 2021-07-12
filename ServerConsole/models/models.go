@@ -333,3 +333,11 @@ type ChatModel struct {
 	Message        string
 	User string
 }
+
+// FullEquipInfoModel describes full equipment permanent info view model to ui
+type FullEquipInfoModel struct {
+	SoftwareInfo   DBSoftwareInfoModel
+	SystemInfo []map[string]json.RawMessage
+	LastSeen time.Time
+	LocationInfo EquipInfoModel
+}

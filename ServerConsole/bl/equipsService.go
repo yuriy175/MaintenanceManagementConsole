@@ -130,3 +130,38 @@ func (service *equipsService) GetEquipInfos(withDisabled bool) []models.EquipInf
 
 	return v
 }
+
+
+// GetFullInfo returns full equipment permanent info
+func (service *equipsService) GetFullInfo(equipName string)*models.FullEquipInfoModel {
+	var wg sync.WaitGroup 
+	model :=  &models.FullEquipInfoModel{}
+	dalService := service._dalService
+
+    wg.Add(4) 
+    go func() { 
+        defer wg.Done()
+		model.SystemInfo = dalService.GetDBSystemInfo(equipName)
+    }();
+
+    go func() { 
+		defer wg.Done()
+		model.SoftwareInfo = *dalService.GetDBSoftwareInfo(equipName)
+	}();
+
+	go func() { 
+		defer wg.Done()
+		model.LastSeen = dalService.GetLastSeenInfo(equipName)
+	}();
+
+	go func() { 
+		defer wg.Done()
+		if equip, ok := service._equips[equipName]; ok {
+			model.LocationInfo = equip
+		}
+	}();
+	
+   wg.Wait()  
+
+   return model
+}
