@@ -67,7 +67,7 @@ func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *mode
 		///id, _ := primitive.ObjectIDFromHex(userVM.ID)
 		model.ID = bson.ObjectId(userVM.ID)
 		id1, _ := primitive.ObjectIDFromHex(userVM.ID) // "5d9e0173c1305d2a54eb431a")
-		id := string(id1)
+		id := string(id1[:12])
 		err := userCollection.Update(
 			bson.M{"_id": id}, // model.ID},
 			bson.D{
