@@ -2,7 +2,7 @@ package dal
 
 import (
 	"time"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
 
 	"../interfaces"
@@ -64,18 +64,24 @@ func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *mode
 
 		userCollection.Insert(model)
 	} else {
-		///id, _ := primitive.ObjectIDFromHex(userVM.ID)
-		model.ID = bson.ObjectId(userVM.ID)
-		id1, _ := primitive.ObjectIDFromHex(userVM.ID) // "5d9e0173c1305d2a54eb431a")
-		id := string(id1[:12])
+		model.ID = bson.ObjectIdHex(userVM.ID) 
+		newBson := bson.D{
+			{"disabled", model.Disabled},
+			{"login", model.Login},
+			{"role", model.Role},
+			{"surname", model.Surname},
+			{"email", model.Email},
+		}
+
+		if userVM.Password != "" {
+			sum := repository._authService.GetSum(userVM.Password)
+			newBson = append(newBson, bson.DocElem{"passwordhash", sum})
+		}
+
 		err := userCollection.Update(
-			bson.M{"_id": id}, // model.ID},
+			bson.M{"_id": model.ID }, 
 			bson.D{
-				{"$set", bson.D{
-					{"disabled", model.Disabled},
-					{"login", model.Login},
-					{"role", model.Role},
-				}}})
+				{"$set", newBson}})
 		if err != nil{
 			repository._log.Errorf("UpdateUser error %v", err)
 		}
