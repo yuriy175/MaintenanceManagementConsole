@@ -64,6 +64,7 @@ namespace MessagesSender.BL
         /// <param name="hospitalInfoService">hospital info service</param>
         /// <param name="dbDataService">db raw data service</param>
         /// <param name="offlineService">offline service</param>
+        /// <param name="keepAliveService">keep alive info service </param>
         public Service(
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
