@@ -78,4 +78,7 @@ const (
 
 	// DefaultAdminName is default administrator account name
 	DefaultAdminName = "sa"
+
+	// KeepAliveCheckPeriod is KeepAlive messages check period, sec
+	KeepAliveCheckPeriod = 10
 )

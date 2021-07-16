@@ -9,6 +9,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
+import Box from '@material-ui/core/Box';
 
 import * as EquipWorker from '../../../workers/equipWorker'
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     width: "285px",
     // backgroundColor: 'white',
     backgroundColor: theme.palette.background.paper,
-    maxHeight: "900px",
+    // maxHeight: "900px",
     overflowY: 'auto',
   },
   content: {
@@ -88,7 +89,9 @@ export default function SummaryBDTabPanel(props) {
   const atlasTableMenu = currEquipState.allDBTables?.Atlas;
   return (
     <div className={classes.root}>
-      <div className={classes.listPanel}>
+      {/* <div className={classes.listPanel}> */}
+      {/* <Box className={classes.listPanel} height={'calc(100% - 500px)'}> */}
+      <Box className={classes.listPanel} height={'100%'}>
         <Typography variant="h6" component="h2">ЛПУ</Typography>
         <List>
           {hospTableMenu?.map((text, index) => (
@@ -137,15 +140,18 @@ export default function SummaryBDTabPanel(props) {
             </ListItem>
           ))}
         </List>
-      </div>
-      <main className={classes.content}>
-        <>  
-                   <CommonTable 
-                     columns={columns} 
-                     rows={rows} 
-                     isRowBold = {isRowBold}></CommonTable>
-        </>
-      </main>
+      {/* </div> */}
+      </Box>
+      <Box className={classes.content} height="100%">
+        {/* <main className={classes.content} >
+          <>   */}
+                    <CommonTable 
+                      columns={columns} 
+                      rows={rows} 
+                      isRowBold = {isRowBold}></CommonTable>
+          {/* </>
+        </main> */}
+      </Box>
     </div>
   );
 }

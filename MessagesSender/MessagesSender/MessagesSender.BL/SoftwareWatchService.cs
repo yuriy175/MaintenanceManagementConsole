@@ -120,6 +120,7 @@ namespace MessagesSender.BL
             var atlasRunning = IsAtlasRunning();
 
             SendAtlasStatusAsync(atlasRunning);
+            OnUpdateDBInfoAsync();
 
             return Task.FromResult(true);
             /*_sendingService.SendInfoToMqttAsync(

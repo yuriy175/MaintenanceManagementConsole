@@ -50,7 +50,8 @@ namespace MessagesSender.BL.Remoting
             { MQMessages.RemoteAccess.ToString(), "/remoteaccess" },
             { MQMessages.ImagesInfo.ToString(), "/images" },
             { MQMessages.Events.ToString(), "/events" },
-            { MQMessages.HospitalInfo.ToString(), "/hospital" },            
+            { MQMessages.HospitalInfo.ToString(), "/hospital" },
+            { MQMessages.KeepAlive.ToString(), "/keepalive" },
         };
 
         /// <summary>

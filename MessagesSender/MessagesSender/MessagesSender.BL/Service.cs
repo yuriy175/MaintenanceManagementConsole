@@ -40,6 +40,7 @@ namespace MessagesSender.BL
         private readonly IHospitalInfoService _hospitalInfoService;
         private readonly IDBDataService _dbDataService;
         private readonly IOfflineService _offlineService;
+        private readonly IKeepAliveService _keepAliveService;
 
         private IPAddress _ipAddress = null;
         private (string Name, string Number) _equipmentInfo = (null, null);
@@ -79,7 +80,8 @@ namespace MessagesSender.BL
             IImagesWatchService imagesWatchService,
             IHospitalInfoService hospitalInfoService,
             IDBDataService dbDataService,
-            IOfflineService offlineService)
+            IOfflineService offlineService,
+            IKeepAliveService keepAliveService)
         {
             _dbObservationsEntityService = dbObservationsEntityService;
             _logger = logger;
@@ -97,6 +99,7 @@ namespace MessagesSender.BL
             _hospitalInfoService = hospitalInfoService;
             _dbDataService = dbDataService;
             _offlineService = offlineService;
+            _keepAliveService = keepAliveService;
 
             new Action[]
                 {

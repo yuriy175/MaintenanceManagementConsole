@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"../interfaces"
 	"../models"
@@ -47,6 +48,9 @@ type mqttClient struct {
 
 	// is topic equipment
 	_isEquipment bool
+
+	// last alive message time
+	_lastAliveMessage time.Time
 }
 
 // MqttClientNew creates an instance of mqttClient
@@ -71,6 +75,8 @@ func MqttClientNew(
 	client._equipsCh = equipsCh
 	client._eventsCh = eventsCh
 	client._chatCh = chatCh
+
+	client._lastAliveMessage = time.Now()
 
 	return client
 }
@@ -135,6 +141,11 @@ func (client *mqttClient) Create(
 			go client._webSocketService.UpdateWebClients(state)
 		} else {
 			rawMsg := models.RawMqttMessage{topic, string(payload)}
+
+			if strings.Contains(topic, "/keepalive") {
+				client._lastAliveMessage = time.Now()
+				return
+			}
 
 			if strings.Contains(topic, "/chat") {
 				client._chatCh <- &rawMsg
@@ -215,4 +226,9 @@ func (client *mqttClient) SendChatMessage(user string, message string) {
 
 	client._client.Publish(chatTopic, 0, false, string(data))
 	fmt.Println("Sent chat " + chatTopic)
+}
+
+// GetLastAliveMessage returns the client is last alive message time
+func (client *mqttClient) GetLastAliveMessage() time.Time {
+	return client._lastAliveMessage
 }

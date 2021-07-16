@@ -91,6 +91,10 @@ namespace MessagesSender
                typeof(IOfflineService),
                typeof(OfflineService));
 
+            services.AddSingleton(
+               typeof(IKeepAliveService),
+               typeof(KeepAliveService));
+
             return services.AddSingleton(
                typeof(IService),
                typeof(Service));

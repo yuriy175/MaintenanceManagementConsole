@@ -3,6 +3,7 @@ package bl
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"../interfaces"
 	"../models"
@@ -78,6 +79,8 @@ func MqttReceiverServiceNew(
 	service._mqttConnections = map[string]interfaces.IMqttClient{}
 
 	service._supportedTopics = topicStorage.GetTopics()
+
+	go service.startActiveConnectionsCheck()
 
 	return service
 }
@@ -208,4 +211,38 @@ func (service *mqttReceiverService) GetConnectionNames() []string {
 	}
 
 	return keys
+}
+
+func (service *mqttReceiverService) startActiveConnectionsCheck(){
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+				case _ = <-ticker.C:
+					service._mtx.Lock()				
+
+					mqttConnections := service._mqttConnections
+					checkTime := time.Now().Add(time.Duration(-models.KeepAliveCheckPeriod) * time.Second)
+
+					for t, c := range mqttConnections {
+						if(!c.IsEquipTopic()){
+							continue
+						}
+
+						lastTime := c.GetLastAliveMessage()
+						if lastTime.Before(checkTime){
+							// fmt.Println("removed topic %s", t)
+							// go c.Disconnect()
+							// delete(mqttConnections, t)
+							state := &models.EquipConnectionState{t, false}
+							go service.UpdateMqttConnections(state)
+							go service._webSocketService.UpdateWebClients(state)
+						}
+					}
+
+					service._mtx.Unlock()
+
+					fmt.Printf("Active connectins: %v\n", len(mqttConnections))
+			}
+		}
 }

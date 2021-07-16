@@ -1,5 +1,9 @@
 package interfaces
 
+import (
+	"time"
+)
+
 // IMqttClient describes mqtt client interface
 type IMqttClient interface {
 	// Create initializes an instance of mqttClient
@@ -16,4 +20,7 @@ type IMqttClient interface {
 
 	// SendChatMessage send message to a chat topic
 	SendChatMessage(user string, message string) 
+
+	// GetLastAliveMessage returns the client is last alive message time
+	GetLastAliveMessage() time.Time
 }

@@ -82,6 +82,11 @@ namespace MessagesSender.Core.Model
         /// <summary>
         /// AtlasExited message type
         /// </summary>
-        AtlasExited
+        AtlasExited,
+
+        /// <summary>
+        /// KeepAlive message type
+        /// </summary>
+        KeepAlive,
     }
 }

@@ -215,14 +215,15 @@ namespace MessagesSender.BL
             }
         }        
 
-        private async Task<(long TotalSize, long AvailableSize)?> GetRamInfoAsync()
+        private async Task<(float TotalSize, float AvailableSize)?> GetRamInfoAsync()
         {
             try
             {
                 var gcMemoryInfo = GC.GetGCMemoryInfo();
 
                 var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-                return ((long)(gcMemoryInfo.TotalAvailableMemoryBytes / Megabyte), (long)ramCounter.NextValue());
+                return ((float)Math.Round((double)gcMemoryInfo.TotalAvailableMemoryBytes / Gigabyte, 2),
+                    (float)Math.Round(ramCounter.NextValue() / 1024, 2));
             }
             catch (Exception ex)
             {

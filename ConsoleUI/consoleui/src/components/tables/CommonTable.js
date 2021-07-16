@@ -87,7 +87,11 @@ export default function CommonTable(props) {
     setOrderBy(property);
   };
 
-  const rows = stableSort(props.rows ? props.rows : [], getComparator(order, orderBy)) ;
+  const rows = stableSort(props.rows ? props.rows : [], getComparator(order, orderBy)) ?? [];
+  if(rows.length < page * rowsPerPage){
+    setPage(0);
+  }
+
   const columns = props.columns;
   const selectedRow = props.selectedRow;
   let onRowClick = props.onRowClick;
