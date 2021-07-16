@@ -23,4 +23,7 @@ type IMqttReceiverService interface {
 
 	// PublishChatNote sends a chat note to equipment via mqtt
 	PublishChatNote(equipment string, message string, user string) 
+
+	// Activate activates a specified connection to equipment and deactivates the other
+	Activate(activatedEquipInfo string, deactivatedEquipInfo string)
 }

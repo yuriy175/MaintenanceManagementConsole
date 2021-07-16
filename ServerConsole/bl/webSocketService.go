@@ -189,8 +189,15 @@ func (service *webSocketService) removeFromTopicMap(equipInfo string, uid string
 			return
 		}
 
+		topicConnection := service._topicConnections[equipInfo]
+		// service._topicConnections[equipInfo] = append(
+		// 	service._topicConnections[equipInfo][:ind], service._topicConnections[equipInfo][ind+1:]...)
 		service._topicConnections[equipInfo] = append(
-			service._topicConnections[equipInfo][:ind], service._topicConnections[equipInfo][ind+1:]...)
+			topicConnection[:ind], topicConnection[ind+1:]...)
+		if len(service._topicConnections[equipInfo]) == 0 {
+			delete(service._topicConnections, equipInfo)
+		}
+
 		log.Println("removed absent connection for  %s", uid)
 	}
 }

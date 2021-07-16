@@ -108,12 +108,16 @@ func (service *EquipController) Handle() {
 			deactivatedEquipInfo = deactivatedEquipInfos[0]
 		}
 
-		log.Errorf("Url is: %s %s %s", sessionUID, activatedEquipInfo, deactivatedEquipInfo)
+		go func(){ 
+			webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
+			mqttReceiverService.Activate(activatedEquipInfo, deactivatedEquipInfo)
+		}()
+		/*log.Errorf("Url is: %s %s %s", sessionUID, activatedEquipInfo, deactivatedEquipInfo)
 		if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo {
 			mqttReceiverService.SendCommand(deactivatedEquipInfo, "deactivate")
 		}
 		webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
-		mqttReceiverService.SendCommand(activatedEquipInfo, "activate")
+		mqttReceiverService.SendCommand(activatedEquipInfo, "activate")*/
 	})
 
 	http.HandleFunc("/equips/GetConnectedEquips", func(w http.ResponseWriter, r *http.Request) {

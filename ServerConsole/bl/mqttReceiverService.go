@@ -213,6 +213,19 @@ func (service *mqttReceiverService) GetConnectionNames() []string {
 	return keys
 }
 
+// Activate activates a specified connection to equipment and deactivates the other
+func (service *mqttReceiverService) Activate(activatedEquipInfo string, deactivatedEquipInfo string) {
+
+	if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo &&
+		!service._webSocketService.HasActiveClients(deactivatedEquipInfo){
+		service.SendCommand(deactivatedEquipInfo, "deactivate")
+	}
+	
+	service.SendCommand(activatedEquipInfo, "activate")
+
+	return
+}
+
 func (service *mqttReceiverService) startActiveConnectionsCheck(){
 		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
@@ -231,9 +244,6 @@ func (service *mqttReceiverService) startActiveConnectionsCheck(){
 
 						lastTime := c.GetLastAliveMessage()
 						if lastTime.Before(checkTime){
-							// fmt.Println("removed topic %s", t)
-							// go c.Disconnect()
-							// delete(mqttConnections, t)
 							state := &models.EquipConnectionState{t, false}
 							go service.UpdateMqttConnections(state)
 							go service._webSocketService.UpdateWebClients(state)
