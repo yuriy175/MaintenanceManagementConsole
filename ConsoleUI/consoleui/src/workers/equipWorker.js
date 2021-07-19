@@ -143,12 +143,24 @@ export async function GetCommunications(token, equipName) {
     });
 };
 
-export async function SendNewNote(token, equipName, msgType, message) {
+export async function SendNewNote(token, equipName, msgType, id, message) {
     return await HandlerWrapper('SendNewNote', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
             '/SendNewNote?equipName=' + equipName+
             '&msgType=' + encodeURIComponent(msgType)+
+            '&id=' + id +
             '&message=' + encodeURIComponent(message),
+            null, GetTokenHeader(token));
+        return response.data;
+    });
+};
+
+export async function DeleteNote(token, equipName, msgType, id) {
+    return await HandlerWrapper('DeleteNote', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/DeleteNote?equipName=' + equipName+
+            '&msgType=' + encodeURIComponent(msgType)+
+            '&id=' + id,
             null, GetTokenHeader(token));
         return response.data;
     });

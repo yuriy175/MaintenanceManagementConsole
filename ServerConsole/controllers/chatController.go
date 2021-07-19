@@ -95,6 +95,8 @@ func (service *ChatController) Handle() {
 			return
 		}
 
+		id := CheckOptionalQueryParameter(queryString, "id", w) 
+
 		message := CheckQueryParameter(queryString, "message", w) 
 		if message == ""{
 			log.Error("Url Param 'message' is missing")
@@ -102,11 +104,44 @@ func (service *ChatController) Handle() {
 		}
 
 		if msgType == "Note"{
-			note := dalService.InsertChatNote(equipName, msgType, message, claims.Login)		
+			note := dalService.UpsertChatNote(equipName, msgType, id, message, claims.Login)		
 			json.NewEncoder(w).Encode(note)
 		} else {
-			mqttReceiverService.PublishChatNote(equipName, message, claims.Login)
+			if id == ""{
+				mqttReceiverService.PublishChatNote(equipName, message, claims.Login)
+			} else {
+				dalService.UpsertChatNote(equipName, "Chat", id, message, claims.Login)
+			}
 		}
+	})
+	http.HandleFunc("/equips/DeleteNote", func(w http.ResponseWriter, r *http.Request) {
+		claims := CheckUserAuthorization(authService, w, r) 
+				
+		if claims == nil{
+			return
+		}
+		
+		queryString := r.URL.Query()
+
+		equipName := CheckQueryParameter(queryString, "equipName", w) 
+		if equipName == ""{
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+
+		msgType := CheckQueryParameter(queryString, "msgType", w) 
+		if msgType == ""{
+			log.Error("Url Param 'msgType' is missing")
+			return
+		}
+
+		id := CheckQueryParameter(queryString, "id", w) 
+		if id == ""{
+			log.Error("Url Param 'id' is missing")
+			return
+		}
+
+		dalService.DeleteChatNote(equipName, msgType, id)	
 	})
 }
 

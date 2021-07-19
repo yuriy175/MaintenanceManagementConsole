@@ -78,7 +78,8 @@ export default function AuthComponent(props) {
         return null;
       }
     };
-    const data = await AdminWorker.Login({login: 'sa', password: 'medtex', email});
+    const data = await AdminWorker.Login({login: 'se', password: '1', email});
+    // const data = await AdminWorker.Login({login: 'sa', password: 'medtex', email});
     // const data = await AdminWorker.Login({login, password, email});
     
     if(data && data.Token){

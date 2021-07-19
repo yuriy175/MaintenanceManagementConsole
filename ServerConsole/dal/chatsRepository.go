@@ -46,7 +46,7 @@ func (repository *ChatsRepository) GetChatNotes(equipName string) []models.ChatM
 	chatsCollection := session.DB(repository._dbName).C(models.ChatsTableName)
 
 	// // критерий выборки
-	query := bson.M{"equipname": equipName}
+	query := bson.M{"equipname": equipName, "hidden": false}
 
 	// // объект для сохранения результата
 	chats := []models.ChatModel{}
@@ -55,27 +55,67 @@ func (repository *ChatsRepository) GetChatNotes(equipName string) []models.ChatM
 	return chats
 }
 
-// InsertChatNote inserts a new chat note into db
-func (repository *ChatsRepository) InsertChatNote(equipName string, msgType string, message string, userLogin string) *models.ChatModel {
+// UpsertChatNote upserts a new chat note into db
+func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType string, id string, message string, userLogin string) *models.ChatModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
 	chatsCollection := session.DB(repository._dbName).C(models.ChatsTableName)
 
 	model := models.ChatModel{}
+	model.Hidden = false
 
-	model.ID = bson.NewObjectId()
-	model.DateTime = time.Now()
-	model.EquipName = equipName
-	model.Type = msgType
-	model.User = userLogin
-	model.Message= message
+	if id == ""{
+		model.ID = bson.NewObjectId()
+		model.DateTime = time.Now()
+		model.EquipName = equipName
+		model.Type = msgType
+		model.User = userLogin
+		model.Message = message
 
-	error := chatsCollection.Insert(model)
-	if error != nil {
-		repository._log.Errorf("error InsertChatNote")
+		error := chatsCollection.Insert(model)
+		if error != nil {
+			repository._log.Errorf("error InsertChatNote")
+		}
+	} else {
+		model.ID = bson.ObjectIdHex(id) 
+		model.Message = message
+		newBson := bson.D{
+			{"message", model.Message},
+		}
+
+		err := chatsCollection.Update(
+			bson.M{"_id": model.ID }, 
+			bson.D{
+				{"$set", newBson}})
+		if err != nil{
+			repository._log.Errorf("UpdateUser error %v", err)
+		}
 	}
 
 	return &model
+}
+
+// DeleteChatNote hides a chat note in db
+func (repository *ChatsRepository) DeleteChatNote(equipName string, msgType string, id string) {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	chatsCollection := session.DB(repository._dbName).C(models.ChatsTableName)
+
+	if id != ""{
+		hexId := bson.ObjectIdHex(id) 
+		newBson := bson.D{
+			{"hidden", true},
+		}
+
+		err := chatsCollection.Update(
+			bson.M{"_id": hexId }, 
+			bson.D{
+				{"$set", newBson}})
+		if err != nil{
+			repository._log.Errorf("DeleteChatNote error %v", err)
+		}
+	}
 }
 

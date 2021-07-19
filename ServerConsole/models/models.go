@@ -332,6 +332,7 @@ type ChatModel struct {
 	Type        string
 	Message        string
 	User string
+	Hidden bool
 }
 
 // FullEquipInfoModel describes full equipment permanent info view model to ui
