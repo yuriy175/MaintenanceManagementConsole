@@ -21,6 +21,9 @@ export default function CommonTimeLine(props) {
   const equipName = props.equipName;
   const showImportantOnly = props.showImportantOnly;
   const  rows = props.rows;
+  const todayRows = rows?.filter(i => isToday(i.DateTime)) ?? [];
+  const todayCount = todayRows.length;
+  const othersCount = rows.length - todayCount;
 
   return (
     <List className={classes.root}>
@@ -29,9 +32,9 @@ export default function CommonTimeLine(props) {
           variant="h5"
           color="textPrimary"
           >
-            Сегодня
+            Сегодня ({todayCount} сообщений)
         </Typography>
-        { rows?.filter(i => isToday(i.DateTime))?.map((i, ind) =>
+        { todayRows?.map((i, ind) =>
           {
             const isImportant=i.Type?.includes('Error');
             const isOffline=i.Type?.includes('Offline');
@@ -53,7 +56,7 @@ export default function CommonTimeLine(props) {
           variant="h5"
           color="textPrimary"
           >
-            Все время
+            Все время ({othersCount} сообщений)
         </Typography>
         { rows?.filter(i => !isToday(i.DateTime))?.map((i, ind) =>
           {

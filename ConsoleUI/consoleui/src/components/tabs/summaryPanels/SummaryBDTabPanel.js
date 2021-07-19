@@ -18,7 +18,7 @@ import CommonTable from '../../tables/CommonTable'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display:"flex"
+    display:"table"
   },
   column:{
     width: "30%",
@@ -30,12 +30,15 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     // maxHeight: "900px",
     overflowY: 'auto',
+    display: 'table-cell',
   },
   content: {
     // marginTop: 64, // `${drawerWidth}px`,
-    flexGrow: 1,
+    // flexGrow: 1,
+    width: '100%', 
     backgroundColor: theme.palette.background.default,
     paddingLeft: theme.spacing(1),
+    display: 'table-cell',
   },
 }));
 

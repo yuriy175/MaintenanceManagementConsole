@@ -28,6 +28,27 @@ const useStyles = makeStyles((theme) => ({
   },
   collapse:{
     textAlign:'left',
+  },
+  outerLabel:{
+    marginTop:'6px',
+    marginRight:'12px',
+  },
+  ordinaryLabel:{
+    borderRadius:'50%',
+    backgroundColor: 'gray',
+  },
+  importantLabel:{    
+    borderRadius:'50%',
+    backgroundColor: 'red',
+  },
+  innerLabel:{
+    width:'40px',
+    height:'40px',
+    display: 'flex',
+    fontSize: '1.25rem',
+    color: '#303030',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 }));
 
@@ -49,10 +70,16 @@ export default function TimeLineItem(props) {
   return (
     <div>
         <ListItem alignItems="flex-start" button>
-            <ListItemAvatar >
-                <Avatar className={isImportant ? classes.isImportant : null} alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            {/* <ListItemText className={classes.equip} primary={equipName} secondary={time} /> */}
+            <div className={classes.outerLabel}>
+              <div className={isImportant ? classes.importantLabel : classes.ordinaryLabel}>
+                <div className={classes.innerLabel}>
+                  {isImportant ? '!' : 'O'}
+                </div>
+              </div>
+            </div>
+            {/* <ListItemAvatar >
+                <Avatar className={isImportant ? classes.isImportant : null} alt={isImportant ? "!" : ""} src={'xz'}/>
+            </ListItemAvatar>  */}
             <ListItemText
                 primary={
                     <React.Fragment>
