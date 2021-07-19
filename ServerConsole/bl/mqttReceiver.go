@@ -91,18 +91,23 @@ func (client *mqttClient) Create(
 		fmt.Println("Reconnecting " + rootTopic)
 	}
 
-	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
+	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {	
 		fmt.Println("Connected " + rootTopic)
 		go func() {
 			var topics = map[string]byte{}
-			topics[rootTopic] = 0
+			actualRootTopic := rootTopic
+			if rootTopic == models.CommonChatsPath {
+				actualRootTopic = rootTopic + "/#"
+			}
+
+			topics[actualRootTopic] = 0
 			for _, value := range subTopics {
 				topics[rootTopic+value] = 0
 			}
 
 			token := client.SubscribeMultiple(topics, nil) // callback MessageHandler)
 			token.Wait()
-			fmt.Printf("Subscribed to topic: %s", rootTopic)
+			fmt.Printf("Subscribed to topic: %s", actualRootTopic)
 		}()
 	}
 
@@ -139,6 +144,11 @@ func (client *mqttClient) Create(
 
 			go client._mqttReceiverService.UpdateMqttConnections(state)
 			go client._webSocketService.UpdateWebClients(state)
+		} else if strings.HasPrefix(topic, models.CommonChatsPath) { // strings.HasPrefix(topic, models.CommonChatsPath) {
+			fmt.Printf("Received chat message: %s from topic: %s\n", payload, topic)
+			charTopic := topic[len(models.CommonChatsPath)+1:len(topic)] + "/chat"
+			rawMsg := models.RawMqttMessage{charTopic, string(payload)}
+			client._chatCh <- &rawMsg
 		} else {
 			rawMsg := models.RawMqttMessage{topic, string(payload)}
 
@@ -147,10 +157,10 @@ func (client *mqttClient) Create(
 				return
 			}
 
-			if strings.Contains(topic, "/chat") {
+			/*if strings.Contains(topic, "/chat") {
 				client._chatCh <- &rawMsg
 				return
-			}
+			}*/
 
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
@@ -183,19 +193,9 @@ func (client *mqttClient) Create(
 
 	client._client = c
 	client._topic = rootTopic
-	client._isEquipment = rootTopic != models.CommonTopicPath && rootTopic != models.BroadcastCommandsTopic
-
-	// go func() {
-	// 	var topics = map[string]byte{}
-	// 	topics[rootTopic] = 0
-	// 	for _, value := range subTopics {
-	// 		topics[rootTopic+value] = 0
-	// 	}
-
-	// 	token := c.SubscribeMultiple(topics, nil) // callback MessageHandler)
-	// 	token.Wait()
-	// 	fmt.Printf("Subscribed to topic: %s", rootTopic)
-	// }()
+	client._isEquipment = rootTopic != models.CommonTopicPath && 
+						rootTopic != models.BroadcastCommandsTopic &&
+						rootTopic != models.CommonChatsPath
 
 	return client
 }
@@ -218,8 +218,11 @@ func (client *mqttClient) IsEquipTopic() bool {
 }
 
 // SendChatMessage send message to a chat topic
-func (client *mqttClient) SendChatMessage(user string, message string) {
-	chatTopic := client._topic + "/chat"
+func (client *mqttClient) SendChatMessage(equipment string, user string, message string) {
+	// chatTopic := client._topic + "/chat"
+	
+	chatTopic := models.CommonChatsPath + "/" + equipment
+	fmt.Printf("PublishChatNote from topic: %s %s %s\n", chatTopic, message, user)
 	
 	viewmodel := &models.ChatViewModel{message, user}
     data, _ := json.Marshal(viewmodel)

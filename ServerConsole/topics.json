@@ -20,7 +20,6 @@
 	"/ARM/Hardware/Processor",
 	"/ARM/Hardware/Memory",
 	"/events",
-	"/chat",
 	"/keepalive"
 	]
 }

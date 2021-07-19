@@ -64,6 +64,9 @@ const (
 	// CommonTopicPath is common mqtt topic
 	CommonTopicPath = "Subscribe"
 
+	// CommonChatsPath is common mqtt topic for chats
+	CommonChatsPath = "Chats"
+
 	// BroadcastCommandsTopic is broadcasting command mqtt topic
 	BroadcastCommandsTopic = "Broadcast"
 

@@ -5,6 +5,11 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+
 import {parseLocalString} from '../../../../utilities/utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +49,17 @@ export default function SummaryChatSubpanel(props) {
   const classes = useStyles();
   const [newNote, setNewNote] = useState('');
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openEditMenu = Boolean(anchorEl);
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const onNoteChange = async (val)  => {
     setNewNote(val);
   }
@@ -81,6 +97,17 @@ export default function SummaryChatSubpanel(props) {
           {notes?.length ? 
             notes.map((i, ind) => (
               <div key={ind.toString()} className={classes.fullRow}>
+                {currentUser === i.User? 
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      onClick={handleMenuClick}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  : <></>
+                }              
                 <Typography variant="body1" align='left' color={currentUser === i.User? 'secondary' : 'primary'} className={classes.noteTitle}>
                     {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
                 </Typography> 
@@ -88,9 +115,8 @@ export default function SummaryChatSubpanel(props) {
                   i.Message?.split("\n")?.map((s, ind) => 
                   {
                     return ind === 0? s : <Typography>{s}</Typography>
-                  }
-                  )
-                }              
+                  })
+                }                
               </div>
               ))
               :

@@ -161,7 +161,15 @@ namespace MessagesSender.BL
         public async Task<bool> RunTaskManagerAsync()
         {
             RegistryManager.SetPolicies(false);
-            var process = Process.Start(TaskManPath);
+            try
+            {
+                var process = Process.Start(TaskManPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "RunTaskManagerAsync error");
+                return false;
+            }
 
             return true;
         }

@@ -140,6 +140,7 @@ func (service *mqttReceiverService) CreateCommonConnections() {
 	defer service._mtx.Unlock()
 	mqttConnections[Models.CommonTopicPath] = ioCProvider.GetMqttClient().Create(models.CommonTopicPath, []string{})
 	mqttConnections[Models.BroadcastCommandsTopic] = ioCProvider.GetMqttClient().Create(models.BroadcastCommandsTopic, []string{})
+	mqttConnections[Models.CommonChatsPath] = ioCProvider.GetMqttClient().Create(models.CommonChatsPath, []string{})
 
 	return
 }
@@ -159,15 +160,18 @@ func (service *mqttReceiverService) SendCommand(equipment string, command string
 }
 
 // PublishChatNote sends a chat note to equipment via mqtt
-func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string) {
-	fmt.Printf("PublishChatNote from topic: %s %s %s\n", equipment, message, user)
+func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string) {	
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	// we may have no connection to this client
-	topics := service._supportedTopics
 	mqttConnections := service._mqttConnections
+	if client, ok := mqttConnections[models.CommonChatsPath]; ok {
+		go client.SendChatMessage(equipment, user, message)
+	}
+
+	/*// we may have no connection to this client
+	topics := service._supportedTopics
 	ioCProvider := service._ioCProvider
 
 	if _, ok := mqttConnections[equipment]; !ok {
@@ -176,7 +180,7 @@ func (service *mqttReceiverService) PublishChatNote(equipment string, message st
 
 	if client, ok := mqttConnections[equipment]; ok {
 		go client.SendChatMessage(user, message)
-	}
+	}*/
 
 	return
 }

@@ -25,7 +25,7 @@ namespace MessagesSender.BL
     /// </summary>
     public class KeepAliveService : IKeepAliveService
     {
-        private const int KeepAlivePeriod = 2000;
+        private const int KeepAlivePeriod = 4000;
 
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;

@@ -19,7 +19,7 @@ type IMqttClient interface {
 	IsEquipTopic() bool
 
 	// SendChatMessage send message to a chat topic
-	SendChatMessage(user string, message string) 
+	SendChatMessage(equipment string, user string, message string) 
 
 	// GetLastAliveMessage returns the client is last alive message time
 	GetLastAliveMessage() time.Time
