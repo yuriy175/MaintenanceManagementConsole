@@ -88,7 +88,7 @@ export default function SummaryChatSubpanel(props) {
   const title = props.title;
   const notes = props.notes;
   const currentUser = props.currentUser;
-  const canSubmit = !!newNote;
+  const canSubmit = !!newNote?.note;
   const handleEditNote = async (ev) => {
     const noteId = anchorEl.id; // ev.target.id;
     const note = notes.find(n => n.ID == noteId);

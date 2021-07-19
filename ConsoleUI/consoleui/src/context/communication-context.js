@@ -27,6 +27,23 @@ function reducer(state, action) {
         notes: [action.payload, ...state.notes]
       };
     }
+    case 'CHANGENOTE': {
+      const oldNote = state.notes.filter(n => n.ID === action.payload.ID);
+      if(oldNote?.length > 0){
+        oldNote[0].Message = action.payload.Message;
+      }
+
+      return {
+        ...state,
+        notes: [...state.notes]
+      };
+    }
+    case 'DELETENOTE': {
+      return {
+        ...state,
+        notes: [...state.notes.filter(n => n.ID !== action.payload)]
+      };
+    }    
     
     default:
       throw new Error();

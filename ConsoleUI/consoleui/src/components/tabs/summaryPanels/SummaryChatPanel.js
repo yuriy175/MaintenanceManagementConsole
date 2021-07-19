@@ -45,16 +45,20 @@ export default function SummaryChatPanel(props) {
   };
 
   const onDeleteNote = async (type, noteId) => {
-    const note = await EquipWorker.DeleteNote(token, equipName, chatType, noteId); 
+    await EquipWorker.DeleteNote(token, equipName, chatType, noteId); 
+    communicationDispatch({ type: 'DELETENOTE', payload: noteId}); 
   };
 
   const onSendNoteNote = async (newnote) => {
     const note = await EquipWorker.SendNewNote(token, equipName, noteType, newnote.id, newnote.note);    
-    communicationDispatch({ type: 'ADDNOTE', payload: note}); 
+    communicationDispatch({ type: newnote.id? 'CHANGENOTE' : 'ADDNOTE', payload: note}); 
   };
 
   const onSendChatNote = async (newnote) => {
-    const note = await EquipWorker.SendNewNote(token, equipName, chatType, newnote.id, newnote.note);   
+    const note = await EquipWorker.SendNewNote(token, equipName, chatType, newnote.id, newnote.note);  
+    if(newnote.id){
+      communicationDispatch({ type: 'CHANGENOTE', payload: note}); 
+    } 
   };
 
   const notes = communicationState.notes?.filter(n => n.Type === noteType);

@@ -64,14 +64,14 @@ func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType stri
 
 	model := models.ChatModel{}
 	model.Hidden = false
+	model.EquipName = equipName
+	model.Type = msgType	
+	model.User = userLogin
+	model.Message = message
 
 	if id == ""{
 		model.ID = bson.NewObjectId()
-		model.DateTime = time.Now()
-		model.EquipName = equipName
-		model.Type = msgType
-		model.User = userLogin
-		model.Message = message
+		model.DateTime = time.Now()	
 
 		error := chatsCollection.Insert(model)
 		if error != nil {
@@ -79,7 +79,6 @@ func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType stri
 		}
 	} else {
 		model.ID = bson.ObjectIdHex(id) 
-		model.Message = message
 		newBson := bson.D{
 			{"message", model.Message},
 		}
