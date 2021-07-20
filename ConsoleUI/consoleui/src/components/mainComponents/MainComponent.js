@@ -53,12 +53,12 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing(3),
-    width: `calc(100% - ${drawerWidth}px)`,
+    // width: `calc(100% - ${drawerWidth}px)`,
   },
 }));
 
 export default function MainComponent() {
-  const classes = useStyles();
+  const classes = useStyles();  
 
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [appState, appDispatch] = useContext(AppContext);
