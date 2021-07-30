@@ -120,7 +120,7 @@ export default function MainToolBar() {
   {
     const notes = await EquipWorker.GetCommunications(token, equipInfo);
     communicationDispatch({ 
-      type: equipInfo !== CommonChat ? 'SETCHATS' : 'SETCOMMONCHAT', 
+      type: 'SETCHATS', 
       payload: notes 
     }); 
   }
@@ -154,9 +154,6 @@ export default function MainToolBar() {
     }
     else if(AdminTabIndex === selectedTab && AdminLogTabPanelIndex === newValue){        
       getLogs();
-    }
-    else if(ControlTabIndex === selectedTab){        
-      getChats(CommonChat);
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 

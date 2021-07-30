@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {CommonChat, ChatMessageType} from '../../model/constants'
 import { CommunicationContext } from '../../context/communication-context';
 import { UsersContext } from '../../context/users-context';
+import { ControlStateContext } from '../../context/controlState-context';
 import * as EquipWorker from '../../workers/equipWorker'
 
 import ServerStateCard from '../cards/controlCards/ServerStateCard'
@@ -26,6 +27,7 @@ export default function ControlTab(props) {
 
   const [communicationState, communicationDispatch] = useContext(CommunicationContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
+  const [controlState, controlDispatch] = useContext(ControlStateContext);
 
   const chatType = ChatMessageType;
   const classes = useStyles();
@@ -48,11 +50,12 @@ export default function ControlTab(props) {
   };
 
   const chats = communicationState.commonNotes?.filter(n => n.Type === chatType);
+  const serverState = controlState.serverState;
 
   return (
     <div className={classes.root}>
       <div className={classes.column}>
-        <ServerStateCard></ServerStateCard>
+        <ServerStateCard serverState={serverState}></ServerStateCard>
         <UnasweredEquipsCard></UnasweredEquipsCard>
       </div>
       <SummaryChatSubpanel

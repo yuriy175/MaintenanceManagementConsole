@@ -43,6 +43,9 @@ type types struct {
 	// chat service
 	_chatService interfaces.IChatService
 
+	// server state service
+	_serverStateService interfaces.IServerStateService
+
 	// chanel for DAL communications
 	_dalCh chan *Models.RawMqttMessage
 
@@ -79,9 +82,11 @@ func InitIoc() interfaces.IIoCProvider {
 	equipsService := EquipsServiceNew(log, dalService, equipsCh)
 	webSocketService := WebSocketServiceNew(log, _types, settingsService, webSockCh)
 	eventsService := EventsServiceNew(log, webSocketService, dalService, webSockCh, eventsCh)
+	serverStateService := ServerStateServiceNew(log, dalService)
 	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
-	httpService := HTTPServiceNew(log, settingsService, mqttReceiverService, webSocketService, dalService, equipsService, authService)
+	httpService := HTTPServiceNew(log, settingsService, mqttReceiverService, webSocketService, dalService, 
+		equipsService, authService, serverStateService)
 	chatService := ChatServiceNew(log, webSocketService, dalService, webSockCh, chatCh)
 
 	_types._log = log
@@ -100,7 +105,7 @@ func InitIoc() interfaces.IIoCProvider {
 	_types._equipsCh = equipsCh
 	_types._eventsCh = eventsCh
 	_types._chatCh = chatCh
-
+	_types._serverStateService = serverStateService
 
 	return _types
 }

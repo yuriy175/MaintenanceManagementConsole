@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import {useCardsStyles} from '../CommonCard'
+import CardRow, {CardErrorRow} from '../CardRow'
 
 export default function ServerStateCard(props) {
   console.log(`! render ServerStateCard`);
@@ -14,22 +15,17 @@ export default function ServerStateCard(props) {
   const classes = useCardsStyles();
   const bull = <span className={classes.bullet}>•</span>;
 
-  const hdd = props.hdd;
+  const state = props.serverState;
   
   return (
     <Card className={classes.root}>
-      <CardContent>        
-        {hdd?.map((i, ind) => (
-          <div key={ind.toString()} >
-            <Typography variant="h5" component="h2">
-              {bull}Диск {i.Letter}
-            </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              Свободно: {i.FreeSize}Гб, Всего: {i.TotalSize}Гб
-            </Typography>
-          </div>
-          ))
-        }
+      <CardContent>       
+        <Typography variant="h5" component="h2">
+          {bull}Сервер
+        </Typography> 
+        <CardRow descr="Всего БД" value={state?.DBUsedSize}></CardRow>
+        <CardRow descr="Всего диск" value={state?.DiskTotalSpace}></CardRow>
+        <CardRow descr="Занято диск" value={state?.DiskUsedSpace}></CardRow>
       </CardContent>
     </Card>
   );

@@ -66,4 +66,7 @@ type IDalService interface {
 
 	// DeleteChatNote hides a chat note in db
 	DeleteChatNote(equipName string, msgType string, id string)
+
+	// GetState returns db server state map
+	GetState() map[string]interface{}
 }

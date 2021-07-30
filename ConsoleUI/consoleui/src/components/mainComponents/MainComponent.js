@@ -14,7 +14,8 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { Redirect } from 'react-router-dom';
 
-import { SummaryTabIndex, EquipsTabIndex, EventsTabIndex, MainTabPanelIndex } from '../../model/constants';
+import { SummaryTabIndex, EquipsTabIndex, EventsTabIndex, MainTabPanelIndex,
+  ControlTabIndex, CommonChat } from '../../model/constants';
 
 import MainToolBar from './MainToolBar';
 import MainInfoComponent from './MainInfoComponent';
@@ -24,8 +25,11 @@ import { UsersContext } from '../../context/users-context';
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
 import { EventsContext } from '../../context/events-context';
+import { CommunicationContext } from '../../context/communication-context';
+import { ControlStateContext} from '../../context/controlState-context';
 import * as AdminWorker from '../../workers/adminWorker'
 import * as EquipWorker from '../../workers/equipWorker'
+import * as ControlWorker from '../../workers/controlWorker'
 import {getUSFullDate} from '../../utilities/utils'
 
 const drawerWidth = 240;
@@ -66,6 +70,8 @@ export default function MainComponent() {
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [eventsState, eventsDispatch] = useContext(EventsContext);
+  const [controlState, controlDispatch] = useContext(ControlStateContext);
+  const [communicationState, communicationDispatch] = useContext(CommunicationContext);
   // const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
@@ -97,8 +103,15 @@ export default function MainComponent() {
       const endDate = new Date();
       const allEvents = await EquipWorker.SearchEquip(token, 'Events', '', getUSFullDate(endDate), getUSFullDate(endDate));
       eventsDispatch({ type: 'SETEVENTS', payload: allEvents }); 
-    }
+    }    
+    else if(index === ControlTabIndex){  
+      const state = await ControlWorker.GetServerState(token);
+      controlDispatch({ type: 'SETSRVSTATE', payload: state });  
 
+      const notes = await EquipWorker.GetCommunications(token, CommonChat);
+      communicationDispatch({ type: 'SETCOMMONCHAT', payload: notes });     
+    }
+  
     appDispatch({ type: 'SETTAB', payload: {tab: index, panel: MainTabPanelIndex} }); 
     // setSelectedIndex(index);
   };

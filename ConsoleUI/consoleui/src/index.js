@@ -11,6 +11,7 @@ import { AppContextProvider} from './context/app-context';
 import { EventsContextProvider} from './context/events-context';
 import { SystemVolatileContextProvider} from './context/systemVolatile-context';
 import { CommunicationContextProvider} from './context/communication-context';
+import { ControlStateContextProvider} from './context/controlState-context';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -21,9 +22,11 @@ ReactDOM.render(
               <SystemVolatileContextProvider>
                 <EventsContextProvider>
                   <CommunicationContextProvider>
-                    <BrowserRouter>
-                      <App />
-                    </BrowserRouter>
+                    <ControlStateContextProvider>
+                      <BrowserRouter>
+                        <App />
+                      </BrowserRouter>
+                    </ControlStateContextProvider>
                   </CommunicationContextProvider>
                 </EventsContextProvider>
               </SystemVolatileContextProvider>

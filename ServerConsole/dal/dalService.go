@@ -555,3 +555,16 @@ func (service *dalService) UpsertChatNote(equipName string, msgType string,id st
 func (service *dalService) DeleteChatNote(equipName string, msgType string, id string){
 	service._chatsRepository.DeleteChatNote(equipName, msgType, id)
 }
+
+// GetState returns db server state
+func (service *dalService) GetState() map[string]interface{}{
+	session := service.CreateSession()
+	defer session.Close()
+
+	db := session.DB(service._dbName)
+
+	result := bson.M{}
+	db.Run("dbstats", &result)
+
+	return result
+}

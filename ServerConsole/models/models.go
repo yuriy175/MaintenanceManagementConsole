@@ -346,7 +346,7 @@ type FullEquipInfoModel struct {
 
 // ServerState describes server state model
 type ServerState struct {	
-	DBVolume        string
-	DiskTotalSpace string
-	DiskFreeSpace string
+	DBUsedSize        float64
+	DiskTotalSpace float64
+	DiskUsedSpace float64
 }
