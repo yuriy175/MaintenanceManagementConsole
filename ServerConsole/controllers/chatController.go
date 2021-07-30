@@ -3,7 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-
+	"io/ioutil"
+	
 	interfaces "../interfaces"
 )
 
@@ -97,11 +98,14 @@ func (service *ChatController) Handle() {
 
 		id := CheckOptionalQueryParameter(queryString, "id", w) 
 
-		message := CheckQueryParameter(queryString, "message", w) 
+		/*message := CheckQueryParameter(queryString, "message", w) 
 		if message == ""{
 			log.Error("Url Param 'message' is missing")
 			return
-		}
+		}*/
+		defer r.Body.Close()
+		bodyBytes, _ := ioutil.ReadAll(r.Body)
+		message := string (bodyBytes)
 
 		if msgType == "Note"{
 			note := dalService.UpsertChatNote(equipName, msgType, id, message, claims.Login)		

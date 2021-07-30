@@ -113,6 +113,10 @@ func (repository *UserRepository) GetUsers() []models.UserModel {
 
 // GetUserByName returns a valid user by login or email or nil
 func (repository *UserRepository) GetUserByName(login string, email string, password string) *models.UserModel {
+	if login == "" && email == ""{
+		return nil
+	}
+
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
