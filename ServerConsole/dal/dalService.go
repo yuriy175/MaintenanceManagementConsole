@@ -563,8 +563,13 @@ func (service *dalService) GetState() map[string]interface{}{
 
 	db := session.DB(service._dbName)
 
-	result := bson.M{}
-	db.Run("dbstats", &result)
+	result := bson.M{}	
+	if err := db.Run("dbstats", &result); err != nil {
+        fmt.Println(err)
+		service._log.Errorf("error dbstats: %v", err)
+    }
+
+	fmt.Println("dbstats ok")
 
 	return result
 }
