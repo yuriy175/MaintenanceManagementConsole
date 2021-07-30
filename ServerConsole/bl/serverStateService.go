@@ -30,7 +30,7 @@ func (service *serverStateService) GetState() *models.ServerState{
 	state := &models.ServerState{}
 
 	dbState := service._dalService.GetState()
-	state.DBUsedSize = dbState["totalSize"].(float64)
+	state.DBUsedSize = dbState["dataSize"].(float64)
 	state.DiskTotalSpace = dbState["fsTotalSize"].(float64)
 	state.DiskUsedSpace = dbState["fsUsedSize"].(float64)
 	
