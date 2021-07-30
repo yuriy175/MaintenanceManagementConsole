@@ -546,8 +546,9 @@ func (service *dalService) GetChatNotes(equipName string) []models.ChatModel {
 }
 
 // UpsertChatNote upserts a new chat note into db
-func (service *dalService) UpsertChatNote(equipName string, msgType string,id string, message string, userLogin string) *models.ChatModel {
-	return service._chatsRepository.UpsertChatNote(equipName, msgType, id, message, userLogin)
+func (service *dalService) UpsertChatNote(equipName string, msgType string,id string, message string, 
+	userLogin string, isInternal bool) *models.ChatModel {
+	return service._chatsRepository.UpsertChatNote(equipName, msgType, id, message, userLogin, isInternal)
 }
 
 // DeleteChatNote hides a chat note in db

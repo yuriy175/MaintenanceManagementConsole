@@ -84,4 +84,7 @@ const (
 
 	// KeepAliveCheckPeriod is KeepAlive messages check period, sec
 	KeepAliveCheckPeriod = 10
+
+	// CommonChat is mqtt topic for common chat
+	CommonChat = "CommonChat";
 )

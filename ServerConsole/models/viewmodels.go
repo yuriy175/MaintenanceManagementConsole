@@ -208,6 +208,7 @@ type EventsViewModel struct {
 type ChatViewModel struct {
 	Message        string
 	User string
+	IsInternal bool 
 }
 
 

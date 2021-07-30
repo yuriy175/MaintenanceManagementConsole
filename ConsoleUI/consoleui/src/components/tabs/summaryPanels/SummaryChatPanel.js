@@ -6,6 +6,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 
+import {ChatMessageType} from '../../../model/constants'
+
 import { CommunicationContext } from '../../../context/communication-context';
 import { UsersContext } from '../../../context/users-context';
 import * as EquipWorker from '../../../workers/equipWorker'
@@ -33,7 +35,7 @@ export default function SummaryChatPanel(props) {
   const token = usersState.token;
 
   const noteType = 'Note';
-  const chatType = 'Chat';
+  const chatType = ChatMessageType;
 
   const onSendNote = async (type, note) => {
     if(type === noteType){

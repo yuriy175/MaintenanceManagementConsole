@@ -160,14 +160,14 @@ func (service *mqttReceiverService) SendCommand(equipment string, command string
 }
 
 // PublishChatNote sends a chat note to equipment via mqtt
-func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string) {	
+func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string, isInternal bool) {	
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
 	mqttConnections := service._mqttConnections
 	if client, ok := mqttConnections[models.CommonChatsPath]; ok {
-		go client.SendChatMessage(equipment, user, message)
+		go client.SendChatMessage(equipment, user, message, isInternal)
 	}
 
 	/*// we may have no connection to this client

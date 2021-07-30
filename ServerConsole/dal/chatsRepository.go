@@ -56,7 +56,8 @@ func (repository *ChatsRepository) GetChatNotes(equipName string) []models.ChatM
 }
 
 // UpsertChatNote upserts a new chat note into db
-func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType string, id string, message string, userLogin string) *models.ChatModel {
+func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType string, id string, message string, 
+	userLogin string, isInternal bool) *models.ChatModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -68,6 +69,7 @@ func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType stri
 	model.Type = msgType	
 	model.User = userLogin
 	model.Message = message
+	model.IsInternal = isInternal
 
 	if id == ""{
 		model.ID = bson.NewObjectId()

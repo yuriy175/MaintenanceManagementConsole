@@ -93,6 +93,12 @@ export function useWebSocket(props) {
                     eventsDispatch({ type: 'ADDEVENT', payload: data.Events }); 
                     return;
                 }  
+                else if(topic.startsWith('CommonChat'))
+                {
+                    const note = data? JSON.parse(data.Data) : null;
+                    communicationDispatch({ type: 'ADDCOMMONNOTE', payload: note}); 
+                    return;
+                }                  
 
                 const equip = getEquipFromTopic(data?.Topic);
                 if(!equip || equip !== equipInfo.current){

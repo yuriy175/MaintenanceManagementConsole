@@ -204,6 +204,16 @@ func (service *webSocketService) removeFromTopicMap(equipInfo string, uid string
 
 func (service *webSocketService)writeMessageToSocket(activatedEquipInfo string, data []byte) {
 	service._mtx.Lock()
+	defer service._mtx.Unlock()
+	
+	if activatedEquipInfo == models.CommonChat{
+		for _, ws := range service._webSocketConnections {
+			if ws.IsValid() {
+				ws.WriteMessage(data)
+			}
+		}
+		return
+	}
 
 	//find all sessions activated this equipment
 	if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
@@ -218,5 +228,5 @@ func (service *webSocketService)writeMessageToSocket(activatedEquipInfo string, 
 		}
 	}
 
-	service._mtx.Unlock()
+	// service._mtx.Unlock()
 }

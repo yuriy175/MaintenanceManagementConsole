@@ -59,7 +59,8 @@ func (service *chatService) Start() {
 		for d := range service._chatCh {
 			viewmodel := models.ChatViewModel{}
 			json.Unmarshal([]byte(d.Data), &viewmodel)				
-			note := dalService.UpsertChatNote(utils.GetEquipFromTopic(d.Topic), "Chat", "", viewmodel.Message, viewmodel.User)
+			note := dalService.UpsertChatNote(utils.GetEquipFromTopic(d.Topic), "Chat", "", 
+				viewmodel.Message, viewmodel.User, viewmodel.IsInternal)
 
 			data, _ := json.Marshal(note)
 			rawMsg := models.RawMqttMessage{d.Topic, string(data)}

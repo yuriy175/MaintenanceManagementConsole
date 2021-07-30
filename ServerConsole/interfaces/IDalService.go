@@ -61,7 +61,8 @@ type IDalService interface {
 	GetChatNotes(equipName string) []models.ChatModel
 
 	// UpsertChatNote upserts a new chat note into db
-	UpsertChatNote(equipName string, msgType string, id string, message string, userLogin string) *models.ChatModel 
+	UpsertChatNote(equipName string, msgType string, id string, message string, userLogin string,
+		isInternal bool) *models.ChatModel 
 
 	// DeleteChatNote hides a chat note in db
 	DeleteChatNote(equipName string, msgType string, id string)

@@ -5,6 +5,7 @@ export const CommunicationContext = createContext();
 const initialState = {
   logs: [],
   notes: [],
+  commonNotes: [],
 };
 
 function reducer(state, action) {
@@ -21,10 +22,22 @@ function reducer(state, action) {
         notes: action.payload
       };
     } 
+    case 'SETCOMMONCHAT': {
+      return {
+        ...state,
+        commonNotes: action.payload
+      };
+    } 
     case 'ADDNOTE': {
       return {
         ...state,
         notes: [action.payload, ...state.notes]
+      };
+    }
+    case 'ADDCOMMONNOTE': {
+      return {
+        ...state,
+        commonNotes: [action.payload, ...state.commonNotes]
       };
     }
     case 'CHANGENOTE': {

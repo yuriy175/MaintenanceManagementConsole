@@ -146,7 +146,10 @@ func (client *mqttClient) Create(
 			go client._webSocketService.UpdateWebClients(state)
 		} else if strings.HasPrefix(topic, models.CommonChatsPath) { // strings.HasPrefix(topic, models.CommonChatsPath) {
 			fmt.Printf("Received chat message: %s from topic: %s\n", payload, topic)
-			charTopic := topic[len(models.CommonChatsPath)+1:len(topic)] + "/chat"
+			charTopic := topic[len(models.CommonChatsPath)+1:len(topic)]
+			if charTopic != models.CommonChat{
+				charTopic = charTopic + "/chat"
+			}
 			rawMsg := models.RawMqttMessage{charTopic, string(payload)}
 			client._chatCh <- &rawMsg
 		} else {
@@ -218,13 +221,13 @@ func (client *mqttClient) IsEquipTopic() bool {
 }
 
 // SendChatMessage send message to a chat topic
-func (client *mqttClient) SendChatMessage(equipment string, user string, message string) {
+func (client *mqttClient) SendChatMessage(equipment string, user string, message string, isInternal bool) {
 	// chatTopic := client._topic + "/chat"
 	
 	chatTopic := models.CommonChatsPath + "/" + equipment
 	fmt.Printf("PublishChatNote from topic: %s %s %s\n", chatTopic, message, user)
 	
-	viewmodel := &models.ChatViewModel{message, user}
+	viewmodel := &models.ChatViewModel{message, user, isInternal}
     data, _ := json.Marshal(viewmodel)
 
 	client._client.Publish(chatTopic, 0, false, string(data))

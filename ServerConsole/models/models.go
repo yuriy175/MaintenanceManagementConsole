@@ -333,6 +333,7 @@ type ChatModel struct {
 	Message        string
 	User string
 	Hidden bool
+	IsInternal bool 
 }
 
 // FullEquipInfoModel describes full equipment permanent info view model to ui
@@ -341,4 +342,11 @@ type FullEquipInfoModel struct {
 	SystemInfo []map[string]json.RawMessage
 	LastSeen time.Time
 	LocationInfo EquipInfoModel
+}
+
+// ServerState describes server state model
+type ServerState struct {	
+	DBVolume        string
+	DiskTotalSpace string
+	DiskFreeSpace string
 }

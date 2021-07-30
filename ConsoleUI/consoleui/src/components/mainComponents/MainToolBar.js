@@ -18,6 +18,7 @@ import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
 import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex,
+  ControlTabIndex, CommonChat,
   AdminTabIndex, AdminLogTabPanelIndex } from '../../model/constants';
 
 import { AppContext } from '../../context/app-context';
@@ -115,10 +116,13 @@ export default function MainToolBar() {
     communicationDispatch({ type: 'SETLOGS', payload: logs }); 
   }
 
-  const getChats = async () =>
+  const getChats = async (equipInfo) =>
   {
     const notes = await EquipWorker.GetCommunications(token, equipInfo);
-    communicationDispatch({ type: 'SETCHATS', payload: notes }); 
+    communicationDispatch({ 
+      type: equipInfo !== CommonChat ? 'SETCHATS' : 'SETCOMMONCHAT', 
+      payload: notes 
+    }); 
   }
 
   useEffect(() => {
@@ -150,6 +154,9 @@ export default function MainToolBar() {
     }
     else if(AdminTabIndex === selectedTab && AdminLogTabPanelIndex === newValue){        
       getLogs();
+    }
+    else if(ControlTabIndex === selectedTab){        
+      getChats(CommonChat);
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 

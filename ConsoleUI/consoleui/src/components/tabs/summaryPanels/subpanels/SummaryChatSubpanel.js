@@ -42,9 +42,12 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline',
   },
   notesArea:{
-    width: 'calc(50% - 46px)',
+    // maxWidth: 'calc(50% - 0px)',
     overflowWrap: 'break-word',
     alignSelf: 'center',
+    width: '100%',
+    margin: '0',
+    display: 'block',
   }
 }));
 

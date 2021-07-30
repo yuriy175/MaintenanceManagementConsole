@@ -22,7 +22,7 @@ type IMqttReceiverService interface {
 	GetConnectionNames() []string
 
 	// PublishChatNote sends a chat note to equipment via mqtt
-	PublishChatNote(equipment string, message string, user string) 
+	PublishChatNote(equipment string, message string, user string, isInternal bool) 
 
 	// Activate activates a specified connection to equipment and deactivates the other
 	Activate(activatedEquipInfo string, deactivatedEquipInfo string)

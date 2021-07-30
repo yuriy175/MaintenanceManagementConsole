@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"io/ioutil"
-	
+
 	interfaces "../interfaces"
 )
 
@@ -108,13 +108,14 @@ func (service *ChatController) Handle() {
 		message := string (bodyBytes)
 
 		if msgType == "Note"{
-			note := dalService.UpsertChatNote(equipName, msgType, id, message, claims.Login)		
+			note := dalService.UpsertChatNote(equipName, msgType, id, message, claims.Login, true)		
 			json.NewEncoder(w).Encode(note)
 		} else {
 			if id == ""{
-				mqttReceiverService.PublishChatNote(equipName, message, claims.Login)
+				mqttReceiverService.PublishChatNote(equipName, message, claims.Login, true)
 			} else {
-				dalService.UpsertChatNote(equipName, "Chat", id, message, claims.Login)
+				note := dalService.UpsertChatNote(equipName, "Chat", id, message, claims.Login, true)
+				json.NewEncoder(w).Encode(note)
 			}
 		}
 	})

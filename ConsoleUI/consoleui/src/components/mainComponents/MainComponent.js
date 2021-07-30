@@ -29,7 +29,7 @@ import * as EquipWorker from '../../workers/equipWorker'
 import {getUSFullDate} from '../../utilities/utils'
 
 const drawerWidth = 240;
-const menuItems = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий']; // , 'Администрирование'];
+const menuItems = ['Обзор', 'Комплексы', 'Карта', 'Журнал событий', 'Панель управления']; // , 'Администрирование'];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing(3),
+    minWidth: '1300px',
     // width: `calc(100% - ${drawerWidth}px)`,
   },
 }));
