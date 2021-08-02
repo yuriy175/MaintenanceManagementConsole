@@ -73,3 +73,13 @@ func (service *chatService) Start() {
 		}
 	}() 
 }
+
+// GetChatNotes returns all chat notes from db
+func (service *chatService) GetChatNotes(equipName string) []models.ChatModel {
+	dalService := service._dalService
+	equipsService := service._equipsService
+
+	equipNames := append(equipsService.GetOldEquipNames(equipName), equipName)
+
+	return dalService.GetChatNotes(equipNames)
+}

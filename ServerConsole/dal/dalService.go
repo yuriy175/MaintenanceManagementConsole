@@ -552,8 +552,8 @@ func (service *dalService) DisableEquipInfo(equipName string, disabled bool) {
 }
 
 // GetChatNotes returns all chat notes from db
-func (service *dalService) GetChatNotes(equipName string) []models.ChatModel {
-	return service._chatsRepository.GetChatNotes(equipName)
+func (service *dalService) GetChatNotes(equipNames []string) []models.ChatModel {
+	return service._chatsRepository.GetChatNotes(equipNames)
 }
 
 // UpsertChatNote upserts a new chat note into db

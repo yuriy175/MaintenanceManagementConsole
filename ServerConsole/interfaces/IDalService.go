@@ -66,7 +66,7 @@ type IDalService interface {
 
 	// chats repository
 	// GetChatNotes returns all chat notes from db
-	GetChatNotes(equipName string) []models.ChatModel
+	GetChatNotes(equipNames []string) []models.ChatModel
 
 	// UpsertChatNote upserts a new chat note into db
 	UpsertChatNote(equipName string, msgType string, id string, message string, userLogin string,

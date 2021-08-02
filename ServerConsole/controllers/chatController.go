@@ -22,6 +22,9 @@ type ChatController struct {
 	// DAL service
 	_dalService    interfaces.IDalService
 
+	// chat service
+	_chatService interfaces.IChatService
+
 	// http service
 	_httpService   interfaces.IHttpService
 
@@ -35,6 +38,7 @@ func ChatControllerNew(
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
+	chatService interfaces.IChatService,
 	httpService interfaces.IHttpService,
 	authService interfaces.IAuthService) *ChatController {
 	service := &ChatController{}
@@ -43,6 +47,7 @@ func ChatControllerNew(
 	service._httpService = httpService
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
+	service._chatService = chatService
 	service._dalService = dalService
 	service._authService = authService
 
@@ -55,6 +60,7 @@ func (service *ChatController) Handle() {
 	dalService := service._dalService
 	log := service._log
 	authService := service._authService
+	chatService := service._chatService
 	///
 	http.HandleFunc("/equips/GetCommunicationsData", func(w http.ResponseWriter, r *http.Request) {
 		claims := CheckUserAuthorization(authService, w, r) 
@@ -71,7 +77,7 @@ func (service *ChatController) Handle() {
 			return
 		}
 		
-		notes := dalService.GetChatNotes(equipName)
+		notes := chatService.GetChatNotes(equipName)
 		json.NewEncoder(w).Encode(notes)
 	})
 

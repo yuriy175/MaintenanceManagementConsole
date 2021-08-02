@@ -38,15 +38,17 @@ func ChatsRepositoryNew(
 }
 
 // GetChatNotes returns all chat notes from db
-func (repository *ChatsRepository) GetChatNotes(equipName string) []models.ChatModel {
+func (repository *ChatsRepository) GetChatNotes(equipNames []string) []models.ChatModel {
 	service := repository._dalService
 	session := service.CreateSession()
 	defer session.Close()
 
 	chatsCollection := session.DB(repository._dbName).C(models.ChatsTableName)
 
-	// // критерий выборки
-	query := bson.M{"equipname": equipName, "hidden": false}
+	// query := bson.M{"equipname": equipName, "hidden": false}
+	query := bson.M{"$and": []bson.M{
+		bson.M{"equipname": bson.M{"$in": equipNames}},
+		bson.M{"hidden": false}}}
 
 	// // объект для сохранения результата
 	chats := []models.ChatModel{}

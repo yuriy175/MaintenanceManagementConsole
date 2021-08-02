@@ -87,7 +87,7 @@ func InitIoc() interfaces.IIoCProvider {
 	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
 	httpService := HTTPServiceNew(log, settingsService, mqttReceiverService, webSocketService, dalService, 
-		equipsService, eventsService, authService, serverStateService)
+		equipsService, eventsService, chatService, authService, serverStateService)
 
 	_types._log = log
 	_types._authService = authService
