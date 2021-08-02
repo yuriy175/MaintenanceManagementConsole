@@ -61,7 +61,15 @@ func (repository *EventsRepository) GetEvents(equipNames []string, startDate tim
 
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
-	query := bson.M{"$and": []bson.M{
+	var query bson.M
+	if len(equipNames) == 0{
+		query = bson.M{
+				"datetime": bson.M{
+					"$gt": startDate,
+					"$lt": endDate,
+				}}
+	} else {
+		query = bson.M{"$and": []bson.M{
 			bson.M{"equipname": bson.M{"$in": equipNames}},
 			bson.M{
 				"datetime": bson.M{
@@ -69,6 +77,7 @@ func (repository *EventsRepository) GetEvents(equipNames []string, startDate tim
 					"$lt": endDate,
 				},
 			}}}
+	}
 
 	// // объект для сохранения результата
 	events := []models.EventModel{}

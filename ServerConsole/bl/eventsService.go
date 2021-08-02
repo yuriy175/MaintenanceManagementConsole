@@ -31,8 +31,11 @@ type eventsService struct {
 	// chanel for communications with websocket services
 	_webSockCh chan *models.RawMqttMessage
 
-	// chanel for communications with events service
+	// chanel for communications with events service (outer events)
 	_eventsCh chan *models.RawMqttMessage
+
+	// chanel for communications with events service (internal events)
+	_internalEventsCh chan *models.MessageViewModel
 }
 
 // EventsServiceNew creates an instance of equipsService
@@ -42,7 +45,8 @@ func EventsServiceNew(
 	dalService interfaces.IDalService,
 	equipsService interfaces.IEquipsService,
 	webSockCh chan *models.RawMqttMessage,
-	eventsCh chan *models.RawMqttMessage) interfaces.IEventsService {
+	eventsCh chan *models.RawMqttMessage,
+	internalEventsCh chan *models.MessageViewModel) interfaces.IEventsService {
 	service := &eventsService{}
 
 	service._log = log
@@ -51,6 +55,7 @@ func EventsServiceNew(
 	service._equipsService = equipsService
 	service._eventsCh = eventsCh
 	service._webSockCh = webSockCh
+	service._internalEventsCh = internalEventsCh
 
 	return service
 }
@@ -59,6 +64,9 @@ func EventsServiceNew(
 func (service *eventsService) Start() {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
+
+	dalService := service._dalService
+	webSocketService := service._webSocketService
 
 	go func() {
 		for d := range service._eventsCh {
@@ -70,7 +78,14 @@ func (service *eventsService) Start() {
 				service.insertEvents(equipName, &viewmodel, false, nil)
 			}
 		}
-	}() //deviceCollection)
+	}() 
+
+	go func() {
+		for msg := range service._internalEventsCh {
+			events := dalService.InsertEvents(msg.Level, "InternalEvent", []models.MessageViewModel{*msg}, nil)
+			go webSocketService.SendEvents(events)
+		}
+	}() 
 }
 
 // InsertEvent inserts equipment connection state info into db
@@ -91,6 +106,10 @@ func (service *eventsService) InsertConnectEvent(equipName string) {
 // GetEvents returns all events from db
 func (service *eventsService) GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel {
 	dalService := service._dalService
+	if equipName == "" {
+		return dalService.GetEvents([]string{}, startDate, endDate)
+	}
+	
 	equipsService := service._equipsService
 
 	equipNames := append(equipsService.GetOldEquipNames(equipName), equipName)

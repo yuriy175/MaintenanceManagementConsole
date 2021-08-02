@@ -18,18 +18,10 @@ export default function UnasweredEquipsCard(props) {
   
   return (
     <Card className={classes.root}>
-      <CardContent>        
-        {hdd?.map((i, ind) => (
-          <div key={ind.toString()} >
-            <Typography variant="h5" component="h2">
-              {bull}Диск {i.Letter}
-            </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              Свободно: {i.FreeSize}Гб, Всего: {i.TotalSize}Гб
-            </Typography>
-          </div>
-          ))
-        }
+      <CardContent>       
+        <Typography variant="h5" component="h2">
+          {bull}Неотвеченные комплексы
+        </Typography> 
       </CardContent>
     </Card>
   );

@@ -22,6 +22,10 @@ type equipsService struct {
 	_dalService interfaces.IDalService
 	_equips     map[string]models.EquipInfoModel
 	_equipCh    chan *models.RawMqttMessage
+
+	// chanel for communications with events service (internal events)
+	_internalEventsCh chan *models.MessageViewModel
+
 	_renamedEquips     map[string][]string
 }
 
@@ -29,12 +33,14 @@ type equipsService struct {
 func EquipsServiceNew(
 	log interfaces.ILogger,
 	dalService interfaces.IDalService,
-	equipCh chan *models.RawMqttMessage) interfaces.IEquipsService {
+	equipCh chan *models.RawMqttMessage,
+	internalEventsCh chan *models.MessageViewModel) interfaces.IEquipsService {
 	service := &equipsService{}
 
 	service._log = log
 	service._dalService = dalService
 	service._equipCh = equipCh
+	service._internalEventsCh = internalEventsCh
 	service._equips = map[string]models.EquipInfoModel{}
 
 	return service
@@ -195,15 +201,18 @@ func (service *equipsService) checkIfEquipmentRenamed(equipName string){
 	dalService := service._dalService
 	hddNumber := utils.GetHddNumberFromEquip(equipName)
 
-	anyRenamed := false
+	anyRenamed := ""
 	for equipName, equip := range equips {
 		if !equip.Renamed && hddNumber == utils.GetHddNumberFromEquip(equipName){
 			dalService.RenameEquip(equipName)
-			anyRenamed = true
+			anyRenamed = equip.EquipName
 		}
 	}
 
-	if anyRenamed{
+	if anyRenamed != ""{		
+		msg := models.MessageViewModel{equipName, "переименован из "+ anyRenamed, ""}
+
+		service._internalEventsCh <- &msg
 		service.initEquipInfos()
 	}
 }

@@ -58,6 +58,9 @@ type types struct {
 	// chanel for communications with events service
 	_eventsCh chan *Models.RawMqttMessage
 
+	// chanel for communications with events service (internal events)
+	_internalEventsCh chan *models.MessageViewModel
+
 	// chanel for communications with chat service
 	_chatCh chan *Models.RawMqttMessage
 }
@@ -71,6 +74,7 @@ func InitIoc() interfaces.IIoCProvider {
 	webSockCh := make(chan *models.RawMqttMessage)
 	equipsCh := make(chan *models.RawMqttMessage)
 	eventsCh := make(chan *models.RawMqttMessage)
+	internalEventsCh := make(chan *models.MessageViewModel)
 	chatCh := make(chan *models.RawMqttMessage)
 
 	log := utils.LoggerNew()
@@ -79,9 +83,10 @@ func InitIoc() interfaces.IIoCProvider {
 	settingsService := SettingsServiceNew(log)
 
 	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
-	equipsService := EquipsServiceNew(log, dalService, equipsCh)
+	equipsService := EquipsServiceNew(log, dalService, equipsCh, internalEventsCh)
 	webSocketService := WebSocketServiceNew(log, _types, settingsService, webSockCh)
-	eventsService := EventsServiceNew(log, webSocketService, dalService, equipsService, webSockCh, eventsCh)
+	eventsService := EventsServiceNew(log, webSocketService, dalService, equipsService, webSockCh, 
+		eventsCh, internalEventsCh)
 	serverStateService := ServerStateServiceNew(log, dalService)
 	chatService := ChatServiceNew(log, webSocketService, dalService, equipsService, webSockCh, chatCh)
 	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService,
@@ -104,6 +109,7 @@ func InitIoc() interfaces.IIoCProvider {
 	_types._webSockCh = webSockCh
 	_types._equipsCh = equipsCh
 	_types._eventsCh = eventsCh
+	_types._internalEventsCh = internalEventsCh
 	_types._chatCh = chatCh
 	_types._serverStateService = serverStateService
 

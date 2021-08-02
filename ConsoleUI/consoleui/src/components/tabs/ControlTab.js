@@ -64,7 +64,7 @@ export default function ControlTab(props) {
         notes={chats}
         onSendNote={onSendNote}
         onDeleteNote = {onDeleteNote}
-        currentUser=''
+        currentUser={usersState.currentUser?.Login}
       >
       </SummaryChatSubpanel>
     </div>
