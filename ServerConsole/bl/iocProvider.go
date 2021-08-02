@@ -81,13 +81,13 @@ func InitIoc() interfaces.IIoCProvider {
 	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(log, dalService, equipsCh)
 	webSocketService := WebSocketServiceNew(log, _types, settingsService, webSockCh)
-	eventsService := EventsServiceNew(log, webSocketService, dalService, webSockCh, eventsCh)
+	eventsService := EventsServiceNew(log, webSocketService, dalService, equipsService, webSockCh, eventsCh)
 	serverStateService := ServerStateServiceNew(log, dalService)
+	chatService := ChatServiceNew(log, webSocketService, dalService, equipsService, webSockCh, chatCh)
 	mqttReceiverService := MqttReceiverServiceNew(log, _types, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
 	httpService := HTTPServiceNew(log, settingsService, mqttReceiverService, webSocketService, dalService, 
-		equipsService, authService, serverStateService)
-	chatService := ChatServiceNew(log, webSocketService, dalService, webSockCh, chatCh)
+		equipsService, eventsService, authService, serverStateService)
 
 	_types._log = log
 	_types._authService = authService

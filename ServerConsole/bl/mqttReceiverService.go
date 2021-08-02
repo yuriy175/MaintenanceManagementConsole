@@ -93,7 +93,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 	// dalService := service._dalService
-	// equipsService := service._equipsService
+	equipsService := service._equipsService
 	eventsService := service._eventsService
 
 	fmt.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
@@ -121,10 +121,8 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 
 	if !isOff {
 		mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
-		// if !equipsService.CheckEquipment(rootTopic) {
+		go equipsService.CheckEquipment(rootTopic) 
 		go service.SendCommand(rootTopic, "serverReady")
-		// }
-
 		go eventsService.InsertConnectEvent(rootTopic)
 	}
 

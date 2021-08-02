@@ -24,6 +24,9 @@ type eventsService struct {
 
 	// DAL service
 	_dalService interfaces.IDalService
+	
+	// equipment service
+	_equipsService   interfaces.IEquipsService
 
 	// chanel for communications with websocket services
 	_webSockCh chan *models.RawMqttMessage
@@ -37,6 +40,7 @@ func EventsServiceNew(
 	log interfaces.ILogger,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
+	equipsService interfaces.IEquipsService,
 	webSockCh chan *models.RawMqttMessage,
 	eventsCh chan *models.RawMqttMessage) interfaces.IEventsService {
 	service := &eventsService{}
@@ -44,6 +48,7 @@ func EventsServiceNew(
 	service._log = log
 	service._dalService = dalService
 	service._webSocketService = webSocketService
+	service._equipsService = equipsService
 	service._eventsCh = eventsCh
 	service._webSockCh = webSockCh
 
@@ -63,35 +68,6 @@ func (service *eventsService) Start() {
 
 				equipName := utils.GetEquipFromTopic(d.Topic)
 				service.insertEvents(equipName, &viewmodel, false, nil)
-				/*events := []models.EventModel{}
-				if viewmodel.ErrorDescriptions != nil {
-					events = service._dalService.InsertEvents(equipName, "ErrorDescriptions", viewmodel.ErrorDescriptions)
-				}
-
-				if viewmodel.AtlasErrorDescriptions != nil {
-					events = append(events,
-						service._dalService.InsertEvents(equipName, "AtlasErrorDescriptions", viewmodel.AtlasErrorDescriptions)...)
-				}
-
-				if viewmodel.SimpleMsgType != "" {
-					msgCode := ""
-					if viewmodel.SimpleMsgType == "AtlasExited"{
-						msgCode = "Атлас выключен"
-					} 
-					msg := models.MessageViewModel{equipName, msgCode, ""}
-					events = append(events,
-						service._dalService.InsertEvents(equipName, viewmodel.SimpleMsgType, []models.MessageViewModel{msg})...)
-				}
-
-				if viewmodel.AtlasUser.User != "" {
-					msg := models.MessageViewModel{equipName,  viewmodel.AtlasUser.User + " (" + viewmodel.AtlasUser.Role + ") вошел в Атлас", ""}
-					events = append(events,
-						service._dalService.InsertEvents(equipName, "AtlasUser", []models.MessageViewModel{msg})...)
-				}
-
-				if len(events) > 0 {
-					go webSocketService.SendEvents(events)
-				}*/
 			}
 		}
 	}() //deviceCollection)
@@ -111,6 +87,17 @@ func (service *eventsService) InsertConnectEvent(equipName string) {
 		go webSocketService.SendEvents(events)
 	}()
 }
+
+// GetEvents returns all events from db
+func (service *eventsService) GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel {
+	dalService := service._dalService
+	equipsService := service._equipsService
+
+	equipNames := append(equipsService.GetOldEquipNames(equipName), equipName)
+
+	return dalService.GetEvents(equipNames, startDate, endDate)
+}
+
 
 func (service *eventsService) insertEvents(
 	equipName string, 

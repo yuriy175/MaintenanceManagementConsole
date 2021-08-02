@@ -23,4 +23,7 @@ type IEquipsService interface {
 
 	// GetFullInfo returns full equipment permanent info
 	GetFullInfo(equipName string)*models.FullEquipInfoModel
+
+	// GetOldEquipNames returns out of date equipment names
+	GetOldEquipNames(equipName string) []string 
 }

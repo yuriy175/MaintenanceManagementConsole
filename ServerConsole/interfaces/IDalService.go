@@ -31,10 +31,18 @@ type IDalService interface {
 	//equip info repository
 	CheckEquipment(equipName string) bool
 	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel
+
+	// GetEquipInfos returns all existing equipment infos
 	GetEquipInfos() []models.EquipInfoModel
+
+	// GetOldEquipInfos returns all renamed equipment infos
+	GetOldEquipInfos() []models.RenamedEquipInfoModel
 	
 	// DisableEquipInfo disables an equipment
 	DisableEquipInfo(equipName string, disabled bool) 
+
+	// RenameEquip appends equipment to renamedequipment
+	RenameEquip(oldEquipName string) bool
 
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel
@@ -51,7 +59,7 @@ type IDalService interface {
 
 	// events repository
 	// GetEvents returns all events from db
-	GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel
+	GetEvents(equipNames []string, startDate time.Time, endDate time.Time) []models.EventModel
 
 	// InsertEvent inserts events into db
 	InsertEvents(equipName string, msgType string, msgVms []models.MessageViewModel, msgDate *time.Time) []models.EventModel

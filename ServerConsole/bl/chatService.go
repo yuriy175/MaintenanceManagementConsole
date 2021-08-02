@@ -23,6 +23,9 @@ type chatService struct {
 	// DAL service
 	_dalService interfaces.IDalService
 
+	// equipment service
+	_equipsService   interfaces.IEquipsService
+
 	// chanel for communications with chat services
 	_chatCh chan *models.RawMqttMessage
 
@@ -35,6 +38,7 @@ func ChatServiceNew(
 	log interfaces.ILogger,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
+	equipsService interfaces.IEquipsService,
 	webSockCh chan *models.RawMqttMessage,
 	chatCh chan *models.RawMqttMessage) interfaces.IChatService {
 	service := &chatService{}
@@ -42,6 +46,7 @@ func ChatServiceNew(
 	service._log = log
 	service._dalService = dalService
 	service._webSocketService = webSocketService
+	service._equipsService = equipsService
 	service._chatCh = chatCh
 	service._webSockCh = webSockCh
 

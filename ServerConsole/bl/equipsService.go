@@ -22,6 +22,7 @@ type equipsService struct {
 	_dalService interfaces.IDalService
 	_equips     map[string]models.EquipInfoModel
 	_equipCh    chan *models.RawMqttMessage
+	_renamedEquips     map[string][]string
 }
 
 // EquipsServiceNew creates an instance of equipsService
@@ -44,12 +45,13 @@ func (service *equipsService) Start() {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	equipInfos := service._dalService.GetEquipInfos()
+	/*equipInfos := service._dalService.GetEquipInfos()
 	service._equips = make(map[string]models.EquipInfoModel, len(equipInfos))
 
 	for _, equip := range equipInfos {
 		service._equips[equip.EquipName] = equip
-	}
+	}*/
+	service.initEquipInfos()
 
 	go func() {
 		for d := range service._equipCh {
@@ -72,7 +74,7 @@ func (service *equipsService) Start() {
 
 // Checks if the equipment exists
 func (service *equipsService) CheckEquipment(equipName string) bool {
-	service._mtx.Lock()
+	service._mtx.Lock()	
 	defer service._mtx.Unlock()
 
 	equips := service._equips
@@ -81,6 +83,11 @@ func (service *equipsService) CheckEquipment(equipName string) bool {
 	}
 
 	ok := service._dalService.CheckEquipment(equipName)
+
+	if !ok {
+		go service.checkIfEquipmentRenamed(equipName)
+	}
+
 	return ok
 }
 
@@ -123,12 +130,26 @@ func (service *equipsService) GetEquipInfos(withDisabled bool) []models.EquipInf
 	v := make([]models.EquipInfoModel, 0, len(equips))
 
 	for _, value := range equips {
-		if withDisabled || (!withDisabled && !value.Disabled) {
+		if !value.Renamed && (withDisabled || (!withDisabled && !value.Disabled)) {
 			v = append(v, value)
 		}
 	}
 
 	return v
+}
+
+// GetOldEquipNames returns out of date equipment names
+func (service *equipsService) GetOldEquipNames(equipName string) []string {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	renamedEquips := service._renamedEquips
+	hddNumber := utils.GetHddNumberFromEquip(equipName)
+	if equip, ok := renamedEquips[hddNumber]; ok {
+		return equip
+	}
+
+	return []string{}
 }
 
 
@@ -164,4 +185,41 @@ func (service *equipsService) GetFullInfo(equipName string)*models.FullEquipInfo
    wg.Wait()  
 
    return model
+}
+
+func (service *equipsService) checkIfEquipmentRenamed(equipName string){
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	equips := service._equips
+	dalService := service._dalService
+	hddNumber := utils.GetHddNumberFromEquip(equipName)
+
+	anyRenamed := false
+	for equipName, equip := range equips {
+		if !equip.Renamed && hddNumber == utils.GetHddNumberFromEquip(equipName){
+			dalService.RenameEquip(equipName)
+			anyRenamed = true
+		}
+	}
+
+	if anyRenamed{
+		service.initEquipInfos()
+	}
+}
+
+func (service *equipsService) initEquipInfos() {
+	equipInfos := service._dalService.GetEquipInfos()
+	service._equips = make(map[string]models.EquipInfoModel, len(equipInfos))
+
+	for _, equip := range equipInfos {
+		service._equips[equip.EquipName] = equip
+	}
+
+	renamedInfos := service._dalService.GetOldEquipInfos()
+	service._renamedEquips = make(map[string][]string, len(renamedInfos))
+
+	for _, equip := range renamedInfos {
+		service._renamedEquips[equip.HddNumber] = equip.OldEquipNames
+	}
 }

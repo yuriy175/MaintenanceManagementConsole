@@ -26,6 +26,9 @@ type EquipController struct {
 
 	// equipment service
 	_equipsService interfaces.IEquipsService
+	
+	// events service
+	_eventsService interfaces.IEventsService
 
 	// http service
 	_httpService   interfaces.IHttpService
@@ -41,6 +44,7 @@ func EquipControllerNew(
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
 	equipsService interfaces.IEquipsService,
+	eventsService interfaces.IEventsService,
 	httpService interfaces.IHttpService,
 	authService interfaces.IAuthService) *EquipController {
 	service := &EquipController{}
@@ -51,6 +55,7 @@ func EquipControllerNew(
 	service._webSocketService = webSocketService
 	service._dalService = dalService
 	service._equipsService = equipsService
+	service._eventsService = eventsService
 	service._authService = authService
 
 	return service
@@ -417,6 +422,7 @@ func (service *EquipController) sendSearchResults(
 	endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 0, time.UTC)
 
 	dalService := service._dalService
+	eventsService := service._eventsService
 	if equipType == "SystemInfo" {
 		sysInfo := dalService.GetSystemInfo(equipName, startDate, endDate)
 		json.NewEncoder(w).Encode(sysInfo)
@@ -439,7 +445,7 @@ func (service *EquipController) sendSearchResults(
 		standInfo := dalService.GetStandInfo(equipName, startDate, endDate)
 		json.NewEncoder(w).Encode(standInfo)
 	} else if equipType == "Events" {
-		events := dalService.GetEvents(equipName, startDate, endDate)
+		events := eventsService.GetEvents(equipName, startDate, endDate)
 		json.NewEncoder(w).Encode(events)
 	}
 }

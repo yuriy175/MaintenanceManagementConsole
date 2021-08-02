@@ -32,6 +32,9 @@ type httpService struct {
 	// equipment service
 	_equipsService   interfaces.IEquipsService
 
+	/// events service
+	_eventsService interfaces.IEventsService
+
 	// server state service
 	_serverStateService interfaces.IServerStateService
 
@@ -56,6 +59,7 @@ func HTTPServiceNew(
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
 	equipsService interfaces.IEquipsService,
+	eventsService interfaces.IEventsService,
 	authService interfaces.IAuthService,
 	serverStateService interfaces.IServerStateService) interfaces.IHttpService {
 	service := &httpService{}
@@ -67,10 +71,11 @@ func HTTPServiceNew(
 	service._webSocketService = webSocketService
 	service._dalService = dalService
 	service._equipsService = equipsService
+	service._eventsService = eventsService
 	service._authService = authService
 	service._serverStateService = serverStateService
 
-	service._equipController = controllers.EquipControllerNew(log, mqttReceiverService, webSocketService, dalService, equipsService, service, authService)
+	service._equipController = controllers.EquipControllerNew(log, mqttReceiverService, webSocketService, dalService, equipsService, eventsService, service, authService)
 	service._adminController = controllers.AdminControllerNew(log, mqttReceiverService, webSocketService, dalService, authService)
 	service._chatController = controllers.ChatControllerNew(log, mqttReceiverService, webSocketService, dalService, service, authService)
 	service._serverController = controllers.ServerControllerNew(log, service, serverStateService, authService)

@@ -277,6 +277,7 @@ type EquipInfoModel struct {
 	HospitalLongitude string
 	HospitalLatitude  string
 	Disabled     bool
+	Renamed     bool
 }
 
 // RawDeviceInfoModel describes raw device data from equipment info DB model
@@ -349,4 +350,11 @@ type ServerState struct {
 	DBUsedSize        float64
 	DiskTotalSpace float64
 	DiskUsedSpace float64
+}
+
+// RenamedEquipInfoModel describes renamed equipments DB model
+type RenamedEquipInfoModel struct {
+	ID                bson.ObjectId `bson:"_id"`
+	HddNumber        string
+	OldEquipNames      []string
 }

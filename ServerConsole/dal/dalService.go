@@ -494,8 +494,19 @@ func (service *dalService) CheckEquipment(equipName string) bool {
 	return service._equipInfoRepository.CheckEquipment(equipName)
 }
 
+// GetOldEquipInfos returns all existing equipment infos
 func (service *dalService) GetEquipInfos() []models.EquipInfoModel {
 	return service._equipInfoRepository.GetEquipInfos()
+}
+
+// GetOldEquipInfos returns all renamed equipment infos
+func (service *dalService) GetOldEquipInfos() []models.RenamedEquipInfoModel{
+	return service._equipInfoRepository.GetOldEquipInfos()
+}
+
+// RenameEquip appends equipment to renamedequipment
+func (service *dalService) RenameEquip(oldEquipName string) bool{
+	return service._equipInfoRepository.RenameEquip(oldEquipName)
 }
 
 func (service *dalService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
@@ -526,8 +537,8 @@ func (service *dalService) GetLastSeenInfo(equipName string) time.Time {
 }
 
 // GetEvents returns all events from db
-func (service *dalService) GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel {
-	return service._eventsRepository.GetEvents(equipName, startDate, endDate)
+func (service *dalService) GetEvents(equipNames []string, startDate time.Time, endDate time.Time) []models.EventModel {
+	return service._eventsRepository.GetEvents(equipNames, startDate, endDate)
 }
 
 // InsertEvent inserts events into db

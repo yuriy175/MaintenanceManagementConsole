@@ -7,6 +7,9 @@ const (
 	// EquipmentTableName is Equipment table name
 	EquipmentTableName = "Equipment"
 
+	// RenamedEquipmentTableName is RenamedEquipment table name
+	RenamedEquipmentTableName = "RenamedEquipment"
+
 	// DeviceConnectionsTableName is DeviceConnections table name
 	DeviceConnectionsTableName = "DeviceConnections"
 

@@ -54,15 +54,21 @@ func (repository *EventsRepository) InsertEvents(equipName string, msgType strin
 }
 
 // GetEvents returns all events from db
-func (repository *EventsRepository) GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel {
+func (repository *EventsRepository) GetEvents(equipNames []string, startDate time.Time, endDate time.Time) []models.EventModel {
 	service := repository._dalService
 	session := service.CreateSession()
 	defer session.Close()
 
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
-	// // критерий выборки
-	query := service.GetQuery(equipName, startDate, endDate)
+	query := bson.M{"$and": []bson.M{
+			bson.M{"equipname": bson.M{"$in": equipNames}},
+			bson.M{
+				"datetime": bson.M{
+					"$gt": startDate,
+					"$lt": endDate,
+				},
+			}}}
 
 	// // объект для сохранения результата
 	events := []models.EventModel{}
