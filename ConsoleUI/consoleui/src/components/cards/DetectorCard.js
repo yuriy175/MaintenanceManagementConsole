@@ -33,7 +33,8 @@ const DetectorCard = React.memo((props) => {
             <CardRow descr="Состояние" 
               value={i.State !== 2? "Не готов" : "Готов"}
               rightColor={i.State !== 2? "red" : "green"}></CardRow>
-            <CardRow descr="Поле детектора" value={i.DetectorField}></CardRow>
+            <CardRow descr="Поле детектора" value={i.DetectorField}></CardRow>            
+            <CardRow descr="Скорость" value={i.DetectorFrameRate ? i?.DetectorFrameRate + ' к/сек' : ''}></CardRow>
             {aecs?
               <>
                 <Typography variant="h6" component="h2">

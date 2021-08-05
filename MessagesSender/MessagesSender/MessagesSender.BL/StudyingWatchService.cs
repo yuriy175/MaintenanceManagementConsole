@@ -80,6 +80,11 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnStudyInWorkAsync(int studyId)
         {
+            if (!_isActivated)
+            {
+                return true;
+            }
+
             var studyProps = await _dbObservationsEntityService.GetStudyInfoByIdAsync(studyId);
             if (!studyProps.HasValue)
             {
@@ -94,13 +99,18 @@ namespace MessagesSender.BL
 
         private async Task<bool> OnOrganAutoAsync((OrganAuto OrganAuto, int LogicalWsId) organAuto)
         {
+            if (!_isActivated)
+            {
+                return true;
+            }
+
             if (organAuto.OrganAuto == null)
             {
                 _logger.Error("OnOrganAutoAsync error : no OrganAuto arrived");
                 return false;
             }
 
-            return await _sendingService.SendInfoToMqttAsync(
+            await _sendingService.SendInfoToMqttAsync(
                 MQCommands.SetOrganAuto,
                 new
                 { 
@@ -111,6 +121,10 @@ namespace MessagesSender.BL
                     organAuto.OrganAuto.AgeId,
                     organAuto.OrganAuto.Constitution,
                 });
+
+            return await _sendingService.SendInfoToMqttAsync(
+                    MQCommands.DetectorStateArrived,
+                    new { organAuto.OrganAuto.DetectorId, DetectorField = organAuto.OrganAuto.OrganAutoParams.FirstOrDefault()?.DetectorField ?? 1 });
         }
 
         private void OnDeactivateArrivedAsync()

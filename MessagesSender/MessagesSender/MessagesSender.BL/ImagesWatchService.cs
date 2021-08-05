@@ -80,8 +80,13 @@ namespace MessagesSender.BL
         
         private async Task<bool> OnNewImageCreatedAsync(int imageId)
         {
+            if (!_isActivated)
+            {
+                return true;
+            }
+
             ++_imageCount;
-            SendImagesInfoAsync();
+            _ = SendImagesInfoAsync();
 
             return true;
         }

@@ -67,12 +67,16 @@ func (service *equipsService) Start() {
 
 				equipName := utils.GetEquipFromTopic(d.Topic)
 
-				service._mtx.Lock()
 				if _, ok := service._equips[equipName]; !ok {
+					service.checkIfEquipmentRenamed(equipName)
 					equip := service._dalService.InsertEquipInfo(equipName, &viewmodel)
+					
+					service._mtx.Lock()
+
 					service._equips[equip.EquipName] = *equip
-				}
-				service._mtx.Unlock()
+
+					service._mtx.Unlock()
+				}				
 			}
 		}
 	}()
@@ -202,10 +206,10 @@ func (service *equipsService) checkIfEquipmentRenamed(equipName string){
 	hddNumber := utils.GetHddNumberFromEquip(equipName)
 
 	anyRenamed := ""
-	for equipName, equip := range equips {
-		if !equip.Renamed && hddNumber == utils.GetHddNumberFromEquip(equipName){
-			dalService.RenameEquip(equipName)
-			anyRenamed = equip.EquipName
+	for oldEquipName, oldEquip := range equips {
+		if !oldEquip.Renamed && hddNumber == utils.GetHddNumberFromEquip(oldEquipName){
+			dalService.RenameEquip(oldEquipName)
+			anyRenamed = oldEquip.EquipName
 		}
 	}
 

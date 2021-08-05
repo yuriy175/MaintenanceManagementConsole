@@ -86,13 +86,17 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
-                // _mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
-                //   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
+                _mqService.Subscribe<MQCommands, (int detectorId, int? detectorField)>(
+                   (MQCommands.DetectorField, state => OnDetectorFieldChanged(state)));
+
                 _mqService.Subscribe<MQCommands, (int Id, DosimeterState State)>(
                             (MQCommands.ProcessDoseArrived, state => OnDosimeterState(state)));
 
                 _mqService.Subscribe<MQCommands, (int Id, string Type, AecState State)>(
                             (MQCommands.AecStateArrived, state => OnAecState(state)));
+
+                _mqService.Subscribe<MQCommands, (HardwareParams HardwareParam, string Value)>(
+                    (MQCommands.SetHwParameter, value => OnSetParameter(value)));
             });
         }
 
@@ -200,6 +204,25 @@ namespace MessagesSender.BL
             }
         }
 
+        private void OnSetParameter((HardwareParams HardwareParam, string Value) parameter)
+        {
+            if (!_isActivated)
+            {
+                return;
+            }
+
+            if (parameter.HardwareParam == HardwareParams.FrameRate)
+            {
+                var value = JsonConvert.DeserializeObject(parameter.Value, typeof((ShootingModes, float))) as (ShootingModes Mode, float Value)?;
+                if (value.HasValue)
+                {
+                    _sendingService.SendInfoToMqttAsync(
+                        MQCommands.DetectorStateArrived,
+                        new { DetectorId = 1, DetectorFrameRate = value.Value.Value });
+                }
+            }
+        }
+
         private void OnDeactivateArrivedAsync()
         {
             _isActivated = false;
@@ -254,10 +277,27 @@ namespace MessagesSender.BL
                 state.Error != null ||
                 state.Kv.HasValue ||
                 state.Mas.HasValue ||
+                state.Ma.HasValue ||
+                state.Ms.HasValue ||
+                state.Post_kv.HasValue ||
+                state.Post_ma.HasValue ||
+                state.Post_mas.HasValue ||
+                state.Post_time.HasValue ||
                 state.Workstation.HasValue ||
                 state.HeatStatus.HasValue ||
                 state.PedalPressed.HasValue ||
-                state.Focus.HasValue
+                state.Focus.HasValue ||
+                state.Points_mode.HasValue ||
+                state.Scopy_kv.HasValue ||
+                state.Scopy_mas.HasValue ||
+                state.Scopy_ma.HasValue ||
+                state.Scopy_ms.HasValue ||
+                state.Scopy_post_kv.HasValue ||
+                state.Scopy_post_ms.HasValue ||
+                state.Scopy_post_mas.HasValue ||
+                state.Scopy_post_ma.HasValue ||
+                state.Scopy_pps.HasValue ||
+                state.Scopy_mode.HasValue
             );
 
         private bool CanSendStandState(StandState state) =>
