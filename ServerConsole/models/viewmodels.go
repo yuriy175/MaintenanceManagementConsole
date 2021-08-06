@@ -188,6 +188,7 @@ type DetailedEquipInfoViewModel struct {
 	HospitalLongitude string
 	HospitalLatitude  string
 	IsActive          bool
+	LastSeen      time.Time
 }
 
 // AllDBInfoViewModel describes all db info view model from equipment

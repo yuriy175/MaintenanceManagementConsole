@@ -342,7 +342,7 @@ type FullEquipInfoModel struct {
 	SoftwareInfo   DBSoftwareInfoModel
 	SystemInfo []map[string]json.RawMessage
 	LastSeen time.Time
-	LocationInfo EquipInfoModel
+	LocationInfo DetailedEquipInfoModel
 }
 
 // ServerState describes server state model
@@ -357,4 +357,10 @@ type RenamedEquipInfoModel struct {
 	ID                bson.ObjectId `bson:"_id"`
 	HddNumber        string
 	OldEquipNames      []string
+}
+
+type DetailedEquipInfoModel struct {
+	EquipInfoModel
+	IsActive          bool
+	LastSeen      *time.Time
 }

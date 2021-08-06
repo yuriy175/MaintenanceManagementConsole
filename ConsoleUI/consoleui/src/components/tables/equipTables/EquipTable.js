@@ -9,7 +9,6 @@ import {AdminRole} from '../../../model/constants'
 import CommonTable from '../CommonTable'
 
 import { SummaryTabIndex, MainTabPanelIndex } from '../../../model/constants';
-import { CurrentEquipContext } from '../../../context/currentEquip-context';
 import { AppContext } from '../../../context/app-context';
 import { AllEquipsContext } from '../../../context/allEquips-context';
 import { UsersContext } from '../../../context/users-context';
@@ -29,16 +28,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EquipTable(props) {
+//export default function EquipTable(props) {
+const EquipTable = React.memo((props) => {
   console.log("render EquipTable");
   const classes = useStyles();
 
-  const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [appState, appDispatch] = useContext(AppContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const setCurrEquip = useSetCurrEquip();
   const [visibleOnly, setVisibleOnly] = useState(true);  
+  const [activeOnly, setActiveOnly] = useState(false);  
   const [filtrate, setFiltrate] = useState(false);  
   const [filters, setFilters] = React.useState({
     byEquip: '',
@@ -49,8 +49,8 @@ export default function EquipTable(props) {
 
   const isAdmin = usersState.currentUser?.Role === AdminRole;
   const columns = [
-    { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50,
-      format: (row) => allEquipsState.connectedEquips?.includes(row.EquipName)
+    { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50, sortable: true,
+      // format: (row) => allEquipsState.connectedEquips?.includes(row.EquipName)
     },
     { id: 'EquipName', label: 'Комплекс', minWidth: 170, sortable: true },
     { id: 'RegisterDate', label: 'Дата регистрации', minWidth: 170,
@@ -60,6 +60,9 @@ export default function EquipTable(props) {
     { id: 'HospitalAddress', label: 'Адрес', minWidth: 100, sortable: true },
     { id: 'HospitalLatitude', label: 'Широта', minWidth: 100 },
     { id: 'HospitalLongitude', label: 'Долгота', minWidth: 100 },
+    { id: 'LastSeen', label: 'Посл. сообщение', minWidth: 100, sortable: true,
+      //format: (value) => value ? parseLocalString(value) : ""
+    },
     
     // { id: 'Disabled', label: 'Удален', checked: true, minWidth: 100 },
   ];
@@ -73,7 +76,15 @@ export default function EquipTable(props) {
     setFiltrate(!filtrate);
   }
 
-  let rows = visibleOnly ? props.data?.filter(p => !p.Disabled) : props.data;
+  let rows = props.data;
+  if(activeOnly) {
+    rows = rows?.filter(p => p.IsActive);
+  }
+
+  if(visibleOnly) {
+    rows = rows?.filter(p => !p.Disabled);
+  }
+  
   if(filters.byEquip){
     rows = rows?.filter(p => p.EquipName.includes(filters.byEquip));
   }
@@ -86,6 +97,10 @@ export default function EquipTable(props) {
     rows = rows?.filter(p => p.HospitalAddress.includes(filters.byAddress));
   }
 
+  rows.forEach((row) => 
+  {
+    row.LastSeen = row.LastSeen ? parseLocalString(row.LastSeen) : "";
+  });
   const handleRowClick = async (event, row) => {
 
     var dataColumn = event.target.getAttribute("data-column");
@@ -113,6 +128,11 @@ export default function EquipTable(props) {
     allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips }); 
   };
 
+  const onActiveOnly = async (event) => {
+    const value = !activeOnly;
+    setActiveOnly(value);
+  };
+
   const onEquipFilterChange = async (val) =>{
     setFilters({...filters, ...{byEquip: val.target?.value}});
   }
@@ -136,6 +156,7 @@ export default function EquipTable(props) {
     setOpenConfirm({Result: false});
   };
 
+  const equipInfo = props.equipInfo;
 
   return (
     <>
@@ -149,6 +170,15 @@ export default function EquipTable(props) {
               }
               label="Только нескрытые"
             />
+        <FormControlLabel
+              control={
+                <Checkbox
+                    checked={activeOnly}
+                    onChange={onActiveOnly}
+                />
+              }
+              label="Только активные"
+            />
         <TextField id="outlined-basic" className={classes.commonSpacing} onChange={onEquipFilterChange} label="По комплексу" variant="outlined" />
         <TextField id="outlined-basic" className={classes.commonSpacing} onChange={onHospFilterChange} label="По ЛПУ" variant="outlined" />
         <TextField id="outlined-basic" className={classes.commonSpacing} onChange={onAddressFilterChange} label="По адресу" variant="outlined" />
@@ -157,7 +187,8 @@ export default function EquipTable(props) {
         </Button> */}
       </div>
       <div className={classes.root}>
-        <CommonTable readonly columns={columns} rows={rows} selectedRow={currEquipState.equipInfo} onRowClick={handleRowClick} onSelect={handleSelect}></CommonTable>
+        {/* <CommonTable readonly columns={columns} rows={rows} selectedRow={currEquipState.equipInfo} onRowClick={handleRowClick} onSelect={handleSelect}></CommonTable> */}
+        <CommonTable readonly defaultSort={'IsActive'} defaultSortOrder={'desc'} columns={columns} rows={rows} selectedRow={equipInfo} onRowClick={handleRowClick} onSelect={handleSelect}></CommonTable>
       </div>
       <ConfirmDlg 
         open={openConfirm.Result} 
@@ -168,4 +199,6 @@ export default function EquipTable(props) {
       </ConfirmDlg>
     </>
   );
-}
+});
+
+export default EquipTable;

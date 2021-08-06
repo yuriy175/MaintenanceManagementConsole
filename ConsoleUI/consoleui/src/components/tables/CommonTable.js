@@ -69,8 +69,8 @@ export default function CommonTable(props) {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(100);
-  const [orderBy, setOrderBy] = React.useState('');
-  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState(props.defaultSort ?? '');
+  const [order, setOrder] = React.useState( props.defaultSortOrder ?? 'asc');
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);

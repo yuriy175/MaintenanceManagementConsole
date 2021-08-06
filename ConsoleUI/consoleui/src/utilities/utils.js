@@ -22,7 +22,7 @@ export function getEquipFromTopic(topic ){
 	return equip;
 }
 
-export const parseLocalString = (value) => new Date(value).toLocaleString();
+export const parseLocalString = (value) => value ? new Date(value).toLocaleString() : value;
 
 export const isToday = (value) =>
 {

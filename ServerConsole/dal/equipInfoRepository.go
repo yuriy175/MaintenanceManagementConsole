@@ -93,6 +93,24 @@ func (repository *EquipInfoRepository) GetOldEquipInfos() []models.RenamedEquipI
 	return equipInfos
 }
 
+// UpdateEquipmentInfo updates equipment info in db
+func (repository *EquipInfoRepository) UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel){
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+	
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)	
+	
+	equipCollection.Update(
+		bson.M{"equipname": equip.EquipName},
+		bson.D{
+			{"$set", bson.D{
+				{"hospitalhame", equip.HospitalName},
+				{"hospitaladdress", equip.HospitalAddress},
+				{"hospitallongitude", equip.HospitalLongitude},
+				{"hospitallatitude", equip.HospitalLatitude},
+			}}})
+}
+
 // RenameEquip appends equipment to renamedequipment
 func (repository *EquipInfoRepository) RenameEquip(oldEquipName string) bool{
 	session := repository._dalService.CreateSession()

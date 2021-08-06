@@ -54,21 +54,25 @@ export default function SummaryMainTabPanel(props) {
           hospital={hospital}
           address={address}
         ></EquipImageCard>
-        <SystemCard system={currEquipState.system} volatile={systemVolatileState.currentVolatile}></SystemCard>
-        {/* <HddCard></HddCard> */}
+        <SystemCard 
+          system={currEquipState.system} 
+          volatile={isEquipConnected ? systemVolatileState.currentVolatile : null}></SystemCard>
+        
       </div>
       <div className={classes.column}>
-        <OrganAutoCard organAuto={currEquipState.organAuto}></OrganAutoCard>
-        <ImagesCard images={currEquipState.images}></ImagesCard>
-        <GeneratorCard generator={currEquipState.generator}></GeneratorCard>
-        <DetectorCard detectors={currEquipState.detectors} aecs={currEquipState.aecs}></DetectorCard>
-        <StandCard stand={currEquipState.stand}></StandCard>
-        <DosimeterCard dosimeter={currEquipState.dosimeter}></DosimeterCard>
+        <OrganAutoCard organAuto={isEquipConnected ? currEquipState.organAuto : null}></OrganAutoCard>
+        <ImagesCard images={isEquipConnected ? currEquipState.images : null}></ImagesCard>
+        <GeneratorCard generator={isEquipConnected ? currEquipState.generator : null}></GeneratorCard>
+        <DetectorCard detectors={isEquipConnected ? currEquipState.detectors : null} aecs={currEquipState.aecs}></DetectorCard>
+        <StandCard stand={isEquipConnected ? currEquipState.stand : null}></StandCard>
+        <DosimeterCard dosimeter={isEquipConnected ? currEquipState.dosimeter : null}></DosimeterCard>
       </div>
       <div className={classes.column}>
-        <RemoteAccessCard equipInfo={currEquipState.equipInfo} remoteaccess={currEquipState.remoteaccess} token={usersState.token}></RemoteAccessCard>
-        <DicomCard dicom={currEquipState.dicom}></DicomCard>
-        <SoftwareCard software={currEquipState.software} volatile={systemVolatileState.currentVolatile}></SoftwareCard>
+        <RemoteAccessCard equipInfo={isEquipConnected ? currEquipState.equipInfo : null} remoteaccess={currEquipState.remoteaccess} token={usersState.token}></RemoteAccessCard>
+        <DicomCard dicom={isEquipConnected ? currEquipState.dicom : null}></DicomCard>
+        <SoftwareCard 
+          software={isEquipConnected ? currEquipState.software : null} 
+          volatile={isEquipConnected ? systemVolatileState.currentVolatile : null}></SoftwareCard>
       </div>
       {notifyText ? <NotifyDlg title='Данные FTP' text={'Данные посланы ' + (currEquipState.remoteaccess?.FtpSendResult ? 'успешно' : 'с ошибками') }></NotifyDlg> : <></>}
     </div>

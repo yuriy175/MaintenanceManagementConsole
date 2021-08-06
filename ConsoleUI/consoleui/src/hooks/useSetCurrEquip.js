@@ -1,14 +1,14 @@
 import react, { useContext } from 'react';
 import { CurrentEquipContext } from '../context/currentEquip-context';
 import { AllEquipsContext } from '../context/allEquips-context';
-import { SystemVolatileContext } from '../context/systemVolatile-context';
+//import { SystemVolatileContext } from '../context/systemVolatile-context';
 import { UsersContext } from '../context/users-context';
 import * as EquipWorker from '../workers/equipWorker'
 
 export function useSetCurrEquip() {
   console.log("useSetCurrEquip");
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
-  const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
+  // const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
   const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
 
@@ -16,7 +16,7 @@ export function useSetCurrEquip() {
     const token = usersState.token;
     const connectedEquip = allEquipsState.connectedEquips?.includes(equipInfo)
 
-    systemVolatileDispatch({ type: 'RESET', payload: true });    
+    // systemVolatileDispatch({ type: 'RESET', payload: true });    
     currEquipDispatch({ type: 'RESET', payload: true });    
     currEquipDispatch({ type: type, payload: equipInfo }); 
 

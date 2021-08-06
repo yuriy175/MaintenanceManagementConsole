@@ -509,6 +509,11 @@ func (service *dalService) RenameEquip(oldEquipName string) bool{
 	return service._equipInfoRepository.RenameEquip(oldEquipName)
 }
 
+// UpdateEquipmentInfo updates equipment info in db
+func (service *dalService) UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel){
+	service._equipInfoRepository.UpdateEquipmentInfo(equip)
+}
+
 func (service *dalService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	return service._equipInfoRepository.InsertEquipInfo(equipName, equipVM)
 }

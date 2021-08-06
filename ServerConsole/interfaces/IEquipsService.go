@@ -10,13 +10,13 @@ type IEquipsService interface {
 	Start()
 
 	// InsertEquipInfo inserts a new equipment
-	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel
+	InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.DetailedEquipInfoModel
 
 	// CheckEquipment checks if the equipment exists
 	CheckEquipment(equipName string) bool
 
 	// GetEquipInfos returns all equipments
-	GetEquipInfos(withDisabled bool) []models.EquipInfoModel
+	GetEquipInfos(withDisabled bool) []models.DetailedEquipInfoModel
 
 	// DisableEquipInfo disables an equipment
 	DisableEquipInfo(equipName string, disabled bool) 
@@ -26,4 +26,10 @@ type IEquipsService interface {
 
 	// GetOldEquipNames returns out of date equipment names
 	GetOldEquipNames(equipName string) []string 
+
+	// SetLastSeen sets last seen event time
+	SetLastSeen(equipName string)
+
+	// SetActivate sets whether equipment is active
+	SetActivate(equipName string, isOn bool)
 }

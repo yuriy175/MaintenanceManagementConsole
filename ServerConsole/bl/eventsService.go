@@ -66,6 +66,7 @@ func (service *eventsService) Start() {
 	defer service._mtx.Unlock()
 
 	dalService := service._dalService
+	equipsService := service._equipsService
 	webSocketService := service._webSocketService
 
 	go func() {
@@ -82,7 +83,9 @@ func (service *eventsService) Start() {
 
 	go func() {
 		for msg := range service._internalEventsCh {
-			events := dalService.InsertEvents(msg.Level, "InternalEvent", []models.MessageViewModel{*msg}, nil)
+			equipName := msg.Level
+			events := dalService.InsertEvents(equipName, "InternalEvent", []models.MessageViewModel{*msg}, nil)
+			equipsService.SetLastSeen(equipName)
 			go webSocketService.SendEvents(events)
 		}
 	}() 
@@ -99,6 +102,7 @@ func (service *eventsService) InsertConnectEvent(equipName string) {
 	go func() {
 		msg := models.MessageViewModel{equipName, "подключен", ""}
 		events := dalService.InsertEvents(equipName, "EquipConnected", []models.MessageViewModel{msg}, nil)
+		service._equipsService.SetLastSeen(equipName)
 		go webSocketService.SendEvents(events)
 	}()
 }
@@ -124,6 +128,7 @@ func (service *eventsService) insertEvents(
 	isOffline bool, 
 	msgDate *time.Time) {
 	webSocketService := service._webSocketService
+	equipsService := service._equipsService
 	events := []models.EventModel{}
 	typePostfix := ""
 	if isOffline{
@@ -169,6 +174,7 @@ func (service *eventsService) insertEvents(
 	}
 
 	if len(events) > 0 {
+		equipsService.SetLastSeen(equipName)
 		go webSocketService.SendEvents(events)
 	}
 }

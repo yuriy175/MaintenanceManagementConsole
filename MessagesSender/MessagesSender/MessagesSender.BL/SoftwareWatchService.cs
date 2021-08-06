@@ -32,7 +32,7 @@ namespace MessagesSender.BL
         private const string AtlasInstanceVersionName = "AtlasInstanceVersion";
         private const string ServicesFolderName = "ServicesFolder";
         private const string InstallPathName = "InstallPath";
-        private const string AtlasExeName = "Atlas.System";
+        private const string AtlasExeName = "Atlas.Acquisition"; // "Atlas.System";
         private const string XilibModuleName = @"XiLibs\XiLibNet.dll";
 
         private readonly IConfigurationService _configurationService;

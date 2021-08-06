@@ -44,6 +44,9 @@ type IDalService interface {
 	// RenameEquip appends equipment to renamedequipment
 	RenameEquip(oldEquipName string) bool
 
+	// UpdateEquipmentInfo updates equipment info in db
+	UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel)
+
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel
 	GetTableContent(equipName string, tableType string, tableName string) []string

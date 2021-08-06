@@ -93,7 +93,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	mqttConnections := service._mqttConnections
 	ioCProvider := service._ioCProvider
 	// dalService := service._dalService
-	// equipsService := service._equipsService
+	equipsService := service._equipsService
 	eventsService := service._eventsService
 
 	fmt.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
@@ -102,6 +102,8 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	defer service._mtx.Unlock()
 
 	fmt.Printf("UpdateMqttConnections unlocked")
+
+	equipsService.SetActivate(rootTopic, !isOff)
 
 	if client, ok := mqttConnections[rootTopic]; ok {
 		fmt.Println(rootTopic + " already exists")

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 	"sync"
+	"time"
 
 	"../interfaces"
 	"../models"
@@ -20,7 +21,7 @@ type equipsService struct {
 
 	// DAL service
 	_dalService interfaces.IDalService
-	_equips     map[string]models.EquipInfoModel
+	_equips     map[string]models.DetailedEquipInfoModel
 	_equipCh    chan *models.RawMqttMessage
 
 	// chanel for communications with events service (internal events)
@@ -41,7 +42,7 @@ func EquipsServiceNew(
 	service._dalService = dalService
 	service._equipCh = equipCh
 	service._internalEventsCh = internalEventsCh
-	service._equips = map[string]models.EquipInfoModel{}
+	service._equips = map[string]models.DetailedEquipInfoModel{}
 
 	return service
 }
@@ -67,16 +68,25 @@ func (service *equipsService) Start() {
 
 				equipName := utils.GetEquipFromTopic(d.Topic)
 
-				if _, ok := service._equips[equipName]; !ok {
+				existingEquip, ok := service._equips[equipName]
+				if !ok {
 					service.checkIfEquipmentRenamed(equipName)
 					equip := service._dalService.InsertEquipInfo(equipName, &viewmodel)
 					
 					service._mtx.Lock()
-
-					service._equips[equip.EquipName] = *equip
+					now := time.Now()
+					detailedEquip := models.DetailedEquipInfoModel{*equip, true, &now}
+					service._equips[equip.EquipName] = detailedEquip
 
 					service._mtx.Unlock()
-				}				
+				} else {
+					if  existingEquip.HospitalName != viewmodel.HospitalName ||
+						existingEquip.HospitalAddress != viewmodel.HospitalAddress ||
+						existingEquip.HospitalLongitude != viewmodel.HospitalLongitude ||
+						existingEquip.HospitalLatitude != viewmodel.HospitalLatitude {
+							go service.updateEquipmentInfo(equipName, viewmodel)
+					}
+				}			
 			}
 		}
 	}()
@@ -102,7 +112,7 @@ func (service *equipsService) CheckEquipment(equipName string) bool {
 }
 
 // Inserts a new equipment
-func (service *equipsService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
+func (service *equipsService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.DetailedEquipInfoModel {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
@@ -112,8 +122,12 @@ func (service *equipsService) InsertEquipInfo(equipName string, equipVM *models.
 	}
 
 	equip := service._dalService.InsertEquipInfo(equipName, equipVM)
-	equips[equipName] = *equip
-	return equip
+	// equips[equipName] = *equip
+	now := time.Now()
+	detailedEquip := models.DetailedEquipInfoModel{*equip, true, &now}
+	equips[equip.EquipName] = detailedEquip
+
+	return &detailedEquip
 }
 
 // DisableEquipInfo disables an equipment
@@ -132,12 +146,12 @@ func (service *equipsService) DisableEquipInfo(equipName string, disabled bool) 
 
 
 // GetEquipInfos returns all equipments
-func (service *equipsService) GetEquipInfos(withDisabled bool) []models.EquipInfoModel {
+func (service *equipsService) GetEquipInfos(withDisabled bool) []models.DetailedEquipInfoModel {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
 	equips := service._equips
-	v := make([]models.EquipInfoModel, 0, len(equips))
+	v := make([]models.DetailedEquipInfoModel, 0, len(equips))
 
 	for _, value := range equips {
 		if !value.Renamed && (withDisabled || (!withDisabled && !value.Disabled)) {
@@ -162,6 +176,30 @@ func (service *equipsService) GetOldEquipNames(equipName string) []string {
 	return []string{}
 }
 
+// SetLastSeen sets last seen event time
+func (service *equipsService) SetLastSeen(equipName string){
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	equips := service._equips
+	if equip, ok := equips[equipName]; ok {
+		now := time.Now()
+		equip.LastSeen = &now
+		equips[equipName] = equip
+	}
+}
+
+// SetActivate sets whether equipment is active
+func (service *equipsService) SetActivate(equipName string, isOn bool){
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	equips := service._equips
+	if equip, ok := equips[equipName]; ok {
+		equip.IsActive = isOn
+		equips[equipName] = equip
+	}
+}
 
 // GetFullInfo returns full equipment permanent info
 func (service *equipsService) GetFullInfo(equipName string)*models.FullEquipInfoModel {
@@ -223,10 +261,11 @@ func (service *equipsService) checkIfEquipmentRenamed(equipName string){
 
 func (service *equipsService) initEquipInfos() {
 	equipInfos := service._dalService.GetEquipInfos()
-	service._equips = make(map[string]models.EquipInfoModel, len(equipInfos))
+	service._equips = make(map[string]models.DetailedEquipInfoModel, len(equipInfos))
 
 	for _, equip := range equipInfos {
-		service._equips[equip.EquipName] = equip
+		detailedEquip := models.DetailedEquipInfoModel{equip, false, nil}
+		service._equips[equip.EquipName] = detailedEquip
 	}
 
 	renamedInfos := service._dalService.GetOldEquipInfos()
@@ -234,5 +273,21 @@ func (service *equipsService) initEquipInfos() {
 
 	for _, equip := range renamedInfos {
 		service._renamedEquips[equip.HddNumber] = equip.OldEquipNames
+	}
+}
+
+func (service *equipsService) updateEquipmentInfo(equipName string, viewmodel models.EquipInfoViewModel){
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	equips := service._equips
+	if equip, ok := equips[equipName]; ok {
+		equip.HospitalName = viewmodel.HospitalName
+		equip.HospitalAddress = viewmodel.HospitalAddress
+		equip.HospitalLongitude = viewmodel.HospitalLongitude
+		equip.HospitalLatitude = viewmodel.HospitalLatitude
+		equips[equipName] = equip
+
+		go service._dalService.UpdateEquipmentInfo(&equip)
 	}
 }
