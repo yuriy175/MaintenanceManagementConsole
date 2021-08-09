@@ -17,6 +17,9 @@ type mqttClient struct {
 	//logger
 	_log interfaces.ILogger
 
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
 	_settingsService interfaces.ISettingsService
 
 	// mqtt receiver service
@@ -56,6 +59,7 @@ type mqttClient struct {
 // MqttClientNew creates an instance of mqttClient
 func MqttClientNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	settingsService interfaces.ISettingsService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
@@ -67,6 +71,7 @@ func MqttClientNew(
 	client := &mqttClient{}
 	
 	client._log = log
+	client._diagnosticService = diagnosticService
 	client._settingsService = settingsService
 	client._mqttReceiverService = mqttReceiverService
 	client._webSocketService = webSocketService
@@ -150,10 +155,10 @@ func (client *mqttClient) Create(
 			if charTopic != models.CommonChat{
 				charTopic = charTopic + "/chat"
 			}
-			rawMsg := models.RawMqttMessage{charTopic, string(payload)}
+			rawMsg := models.RawMqttMessage{charTopic, string(payload), time.Now()}
 			client._chatCh <- &rawMsg
 		} else {
-			rawMsg := models.RawMqttMessage{topic, string(payload)}
+			rawMsg := models.RawMqttMessage{topic, string(payload), time.Now()}
 
 			if strings.Contains(topic, "/keepalive") {
 				client._lastAliveMessage = time.Now()

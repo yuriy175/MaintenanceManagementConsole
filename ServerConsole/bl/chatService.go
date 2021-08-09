@@ -3,6 +3,7 @@ package bl
 import (
 	"encoding/json"
 	"sync"
+	"time"
 
 	"../interfaces"
 	"../models"
@@ -68,7 +69,7 @@ func (service *chatService) Start() {
 				viewmodel.Message, viewmodel.User, viewmodel.IsInternal)
 
 			data, _ := json.Marshal(note)
-			rawMsg := models.RawMqttMessage{d.Topic, string(data)}
+			rawMsg := models.RawMqttMessage{d.Topic, string(data), time.Now()}
 			service._webSockCh <- &rawMsg
 		}
 	}() 

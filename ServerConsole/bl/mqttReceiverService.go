@@ -21,6 +21,9 @@ type mqttReceiverService struct {
 	// IoC provider
 	_ioCProvider      interfaces.IIoCProvider
 
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
 	// web socket service
 	_webSocketService interfaces.IWebSocketService
 
@@ -56,6 +59,7 @@ type mqttReceiverService struct {
 func MqttReceiverServiceNew(
 	log interfaces.ILogger,
 	ioCProvider interfaces.IIoCProvider,
+	diagnosticService interfaces.IDiagnosticService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
 	equipsService interfaces.IEquipsService,
@@ -68,6 +72,7 @@ func MqttReceiverServiceNew(
 
 	service._log = log
 	service._ioCProvider = ioCProvider
+	service._diagnosticService = diagnosticService
 	service._webSocketService = webSocketService
 	service._dalService = dalService
 	service._equipsService = equipsService

@@ -135,10 +135,10 @@ func (service *dalService) Start() {
 				organAutoCollection.Insert(model)
 			// } else if strings.Contains(d.Topic, "/generator/state") {
 			// 	service._generatorRepository.InsertGeneratorInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
-			} else if strings.Contains(d.Topic, "/ARM/Hardware") {
-				viewmodel := models.SystemInfoViewModel{}
-				json.Unmarshal([]byte(d.Data), &viewmodel)
-				service.insertSystemInfo(&viewmodel, d.Topic, sysInfoCollection, sysVolatileInfoCollection)
+			// } else if strings.Contains(d.Topic, "/ARM/Hardware") {
+			// 	viewmodel := models.SystemInfoViewModel{}
+			// 	json.Unmarshal([]byte(d.Data), &viewmodel)
+			// 	service.insertSystemInfo(&viewmodel, d.Topic, sysInfoCollection, sysVolatileInfoCollection)
 			} else if strings.Contains(d.Topic, "/ARM/Software/Complex") {
 				viewmodel := models.SoftwareInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)

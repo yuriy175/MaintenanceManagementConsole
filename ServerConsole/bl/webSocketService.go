@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"../interfaces"
 	"../models"
@@ -22,6 +23,9 @@ type webSocketService struct {
 
 	// IoC provider
 	_ioCProvider interfaces.IIoCProvider
+
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
 
 	// settings service
 	_settingsService interfaces.ISettingsService
@@ -46,12 +50,14 @@ type webSocketService struct {
 func WebSocketServiceNew(
 	log interfaces.ILogger,
 	ioCProvider interfaces.IIoCProvider,
+	diagnosticService interfaces.IDiagnosticService,
 	settingsService interfaces.ISettingsService,
 	webSockCh chan *models.RawMqttMessage) interfaces.IWebSocketService {
 	service := &webSocketService{}
 
 	service._log = log
 	service._ioCProvider = ioCProvider
+	service._diagnosticService = diagnosticService
 	service._settingsService = settingsService
 	service._connectionString = settingsService.GetWebSocketServerConnectionString();
 	service._webSockCh = webSockCh
@@ -63,6 +69,8 @@ func WebSocketServiceNew(
 
 // Start starts the service
 func (service *webSocketService) Start() {
+	diagnosticService := service._diagnosticService
+
 	http.HandleFunc(models.WebSocketQueryString, func(w http.ResponseWriter, r *http.Request) {
 		uids, ok := r.URL.Query()["uid"]
 
@@ -89,23 +97,7 @@ func (service *webSocketService) Start() {
 
 			b, _ := json.Marshal(d)
 			service.writeMessageToSocket(activatedEquipInfo, b)
-			/*service._mtx.Lock()
-
-			//find all sessions activated this equipment
-			if sessionUids, ok := service._topicConnections[activatedEquipInfo]; ok {
-				for _, uid := range sessionUids {
-					v := service._webSocketConnections[uid]
-					if v == nil || !v.IsValid() {
-						log.Println(" no connection for  %s", uid)
-						service.removeFromTopicMap(activatedEquipInfo, uid)
-					} else if err = v.WriteMessage(b); err != nil {
-						//log.Println("send message error for  %s", uid)
-					}
-				}
-			}
-
-			service._mtx.Unlock()
-			*/
+			diagnosticService.SetDuration(d.Topic+"_ws", time.Since(d.Arrival))
 		}
 	}()
 

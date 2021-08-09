@@ -16,6 +16,9 @@ type webSock struct {
 	//logger
 	_log interfaces.ILogger
 
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
 	// web socket service
 	_webSocketService interfaces.IWebSocketService
 
@@ -37,8 +40,10 @@ var upgrader = websocket.Upgrader{
 // WebSockNew creates an instance of webSock
 func WebSockNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	webSocketService interfaces.IWebSocketService) interfaces.IWebSock {
 	webSock := &webSock{}
+	webSock._diagnosticService = diagnosticService
 	webSock._webSocketService = webSocketService
 	webSock._log = log
 

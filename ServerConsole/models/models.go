@@ -23,6 +23,7 @@ type StudyInWorkModel struct {
 type RawMqttMessage struct {
 	Topic string
 	Data  string
+	Arrival time.Time
 }
 
 // OrganAutoInfoModel describes organ auto info model from equipment

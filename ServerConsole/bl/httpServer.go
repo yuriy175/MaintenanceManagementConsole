@@ -15,6 +15,11 @@ type httpService struct {
 
 	// authorization service
 	_authService         interfaces.IAuthService
+
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
+	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
@@ -60,6 +65,7 @@ type httpService struct {
 // HTTPServiceNew creates an instance of httpService
 func HTTPServiceNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	settingsService interfaces.ISettingsService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
@@ -72,6 +78,7 @@ func HTTPServiceNew(
 	service := &httpService{}
 
 	service._log = log
+	service._diagnosticService = diagnosticService
 	service._settingsService = settingsService
 	service._connectionString = settingsService.GetHTTPServerConnectionString();
 	service._mqttReceiverService = mqttReceiverService
@@ -83,7 +90,7 @@ func HTTPServiceNew(
 	service._authService = authService
 	service._serverStateService = serverStateService
 
-	service._equipController = controllers.EquipControllerNew(log, mqttReceiverService, webSocketService, dalService, equipsService, eventsService, service, authService)
+	service._equipController = controllers.EquipControllerNew(log, diagnosticService, mqttReceiverService, webSocketService, dalService, equipsService, eventsService, service, authService)
 	service._adminController = controllers.AdminControllerNew(log, mqttReceiverService, webSocketService, dalService, authService)
 	service._chatController = controllers.ChatControllerNew(log, mqttReceiverService, webSocketService, dalService, chatService, service, authService)
 	service._serverController = controllers.ServerControllerNew(log, service, serverStateService, authService)

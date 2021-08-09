@@ -15,6 +15,9 @@ type EquipController struct {
 	//logger
 	_log interfaces.ILogger
 
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
 	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
 
@@ -40,6 +43,7 @@ type EquipController struct {
 // EquipControllerNew creates an instance of webSock
 func EquipControllerNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
@@ -50,6 +54,7 @@ func EquipControllerNew(
 	service := &EquipController{}
 
 	service._log = log
+	service._diagnosticService = diagnosticService
 	service._httpService = httpService
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
@@ -69,6 +74,7 @@ func (service *EquipController) Handle() {
 	dalService := service._dalService
 	log := service._log
 	authService := service._authService
+	diagnosticService := service._diagnosticService
 
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
@@ -141,17 +147,15 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
-		/*//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")
-*/
 		claims := CheckUserAuthorization(authService, w, r) 
 						
 		if claims == nil{
 			return
 		}
+		methodName := "/equips/GetAllEquips"
+		diagnosticService.IncCount(methodName)
+		start := time.Now()
+
 		queryString := r.URL.Query()
 
 		withDisableds, ok := queryString["withDisabled"]
@@ -165,6 +169,8 @@ func (service *EquipController) Handle() {
 
 		equipInfos := equipsService.GetEquipInfos(withDisabled)
 		json.NewEncoder(w).Encode(equipInfos)
+
+		diagnosticService.SetDuration(methodName, time.Since(start))
 	})
 
 	http.HandleFunc("/equips/DisableEquipInfo", func(w http.ResponseWriter, r *http.Request) {
