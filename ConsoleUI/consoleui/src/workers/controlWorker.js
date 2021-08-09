@@ -15,3 +15,13 @@ export async function GetServerState(token) {
         return response.data;
     });
 };
+
+export async function GetServerMetrics(token) {
+    return await HandlerWrapper('GetServerState', async () => {
+        const path = EquipsServiceAddress + ControlController + '/metrics';
+        const header = GetTokenHeader(token);        
+        const response = await axios.get(path, header);
+
+        return response.data;
+    });
+};

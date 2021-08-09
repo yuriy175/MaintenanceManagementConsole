@@ -27,5 +27,8 @@ export const SummaryHistoryTabPanelIndex = 2;
 export const SummaryChatTabPanelIndex = 3;
 
 export const AdminLogTabPanelIndex = 4;
+
+export const ControlDiagnosticTabPanelIndex = 5;
+
 export const CommonChat = 'CommonChat';
 export const ChatMessageType = 'Chat';

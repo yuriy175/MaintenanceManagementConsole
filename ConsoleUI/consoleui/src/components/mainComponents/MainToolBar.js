@@ -18,8 +18,9 @@ import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
 import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex,
-  ControlTabIndex, CommonChat,
-  AdminTabIndex, AdminLogTabPanelIndex } from '../../model/constants';
+  CommonChat,
+  AdminTabIndex, AdminLogTabPanelIndex,
+  ControlTabIndex, ControlDiagnosticTabPanelIndex } from '../../model/constants';
 
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
@@ -27,10 +28,12 @@ import { EventsContext } from '../../context/events-context';
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 import { UsersContext } from '../../context/users-context';
 import { CommunicationContext } from '../../context/communication-context';
+import { ControlStateContext } from '../../context/controlState-context';
 import {useSetCurrEquip} from '../../hooks/useSetCurrEquip'
 
 import * as EquipWorker from '../../workers/equipWorker'
 import * as AdminWorker from '../../workers/adminWorker'
+import * as ControlWorker from '../../workers/controlWorker'
 // import * as WebSocket from '../../workers/webSocket'
 import {sessionUid} from '../../utilities/utils'
 import { useWebSocket } from '../../hooks/useWebSocket'
@@ -82,6 +85,7 @@ export default function MainToolBar() {
   const [currEquipState, currEquipDispatch] = useContext(CurrentEquipContext);
   const [usersState, usersDispatch] = useContext(UsersContext);
   const [communicationState, communicationDispatch] = useContext(CommunicationContext);
+  const [controlState, controlDispatch] = useContext(ControlStateContext);  
   
   // const [currEquip, setCurrEquip] = useState('none');
   const [userName, setUserName] = useState('');
@@ -114,6 +118,12 @@ export default function MainToolBar() {
   {
     const logs = await AdminWorker.GetServerLogs(token);
     communicationDispatch({ type: 'SETLOGS', payload: logs }); 
+  }
+
+  const getDiagnostics = async () =>
+  {
+    const metrics = await ControlWorker.GetServerMetrics(token);
+    controlDispatch({ type: 'SETDIAGNOSTIC', payload: metrics }); 
   }
 
   const getChats = async (equipInfo) =>
@@ -154,6 +164,9 @@ export default function MainToolBar() {
     }
     else if(AdminTabIndex === selectedTab && AdminLogTabPanelIndex === newValue){        
       getLogs();
+    }
+    else if(ControlTabIndex === selectedTab && ControlDiagnosticTabPanelIndex === newValue){        
+      getDiagnostics();
     }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
@@ -218,7 +231,10 @@ export default function MainToolBar() {
               }
               {selectedTab === AdminTabIndex?
                   <Tab label="Логи" id= "logsTabPanel" /> : <></>              
-              }              
+              }            
+              {selectedTab === ControlTabIndex?
+                  <Tab label="Диагностика" id= "diagnosticTabPanel" /> : <></>              
+              }           
             </Tabs>
             {selectedTab === SummaryTabIndex?
                 <Button variant="contained" 

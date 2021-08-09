@@ -5,6 +5,7 @@ export const ControlStateContext = createContext();
 
 const initialState = {
   serverState: {},
+  diagnostic: {}
 };
 
 function reducer(state, action) {
@@ -16,6 +17,12 @@ function reducer(state, action) {
       return {
         ...state,
         serverState: action.payload
+      };
+    }
+    case 'SETDIAGNOSTIC': {
+      return {
+        ...state,
+        diagnostic: action.payload
       };
     }
 

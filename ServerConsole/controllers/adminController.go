@@ -28,7 +28,7 @@ type AdminController struct {
 	_authService interfaces.IAuthService
 }
 
-// AdminControllerNew creates an instance of webSock
+// AdminControllerNew creates an instance of AdminController
 func AdminControllerNew(
 	log interfaces.ILogger,
 	mqttReceiverService interfaces.IMqttReceiverService,
