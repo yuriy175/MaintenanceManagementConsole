@@ -32,12 +32,14 @@ const ImagesCard = React.memo((props) => {
         </Typography>
         {today?.SingleGraphy ? <CardRow descr="Графия" value={today.SingleGraphy}></CardRow> : <></>}
         {today?.Scopy ? <CardRow descr="Скопия" value={today.Scopy}></CardRow> : <></>}
+        {today?.Stitching ? <CardRow descr="Сшивка" value={today.Stitching}></CardRow> : <></>}
 
         <Typography variant="h6" component="h2">
           {bull}Последний
         </Typography>
+        <CardRow descr="Тип" value={current?.Type}></CardRow>
         <CardRow descr="Напряжение" value={current?.Kv}></CardRow>
-        <CardRow descr="Ток" value={current?.Mas}></CardRow>
+        <CardRow descr="Ток" value={current?.Mas ?? current?.Ma}></CardRow>
         <CardRow descr="Доза" value={ current?.Dose}></CardRow>
       </CardContent>
     </Card>

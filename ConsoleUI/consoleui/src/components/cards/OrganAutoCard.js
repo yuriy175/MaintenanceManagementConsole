@@ -27,8 +27,21 @@ const OrganAutoCard = React.memo((props) => {
         <CardRow descr="Название" value={organAuto?.Name} rightWidth={'50%'}></CardRow>
         <CardRow descr="Прекция" value={organAuto?.Projection}></CardRow>
         <CardRow descr="Направление" value={organAuto?.Direction}></CardRow>
-        <CardRow descr="Возр. группа" value={ organAuto?.AgeId}></CardRow>
-        <CardRow descr="Телосложение" value={organAuto?.Constitution}></CardRow>
+        {/* <CardRow descr="Возр. группа" value={ organAuto?.AgeId}></CardRow> */}
+        <CardRow descr="Возр. группа" 
+          value={ 
+            organAuto?.AgeId === 1 ? "0 - 0.5" : 
+            organAuto?.AgeId === 2 ? "0.5 - 2" : 
+            organAuto?.AgeId === 3 ? "2 - 7" :
+            organAuto?.AgeId === 4 ? "7 - 12" :
+            organAuto?.AgeId === 5 ? "12 - 17" :
+            "> 17"} >
+        </CardRow>
+        <CardRow descr="Телосложение"  value={ 
+              organAuto?.Constitution === 1 ? "худой" : 
+              organAuto?.Constitution === 3 ? "толстый" : 
+              organAuto?.Constitution === 4 ? "очень толстый" :
+              "норма"}></CardRow>
       </CardContent>
     </Card>
   );
