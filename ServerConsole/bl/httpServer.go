@@ -91,9 +91,9 @@ func HTTPServiceNew(
 	service._serverStateService = serverStateService
 
 	service._equipController = controllers.EquipControllerNew(log, diagnosticService, mqttReceiverService, webSocketService, dalService, equipsService, eventsService, service, authService)
-	service._adminController = controllers.AdminControllerNew(log, mqttReceiverService, webSocketService, dalService, authService)
-	service._chatController = controllers.ChatControllerNew(log, mqttReceiverService, webSocketService, dalService, chatService, service, authService)
-	service._serverController = controllers.ServerControllerNew(log, service, serverStateService, authService)
+	service._adminController = controllers.AdminControllerNew(log, diagnosticService, mqttReceiverService, webSocketService, dalService, authService)
+	service._chatController = controllers.ChatControllerNew(log, diagnosticService, mqttReceiverService, webSocketService, dalService, chatService, service, authService)
+	service._serverController = controllers.ServerControllerNew(log, diagnosticService, service, serverStateService, authService)
 	service._diagnosticController = controllers.DiagnosticControllerNew(log, authService)
 
 	return service

@@ -12,6 +12,9 @@ type ServerController struct {
 	//logger
 	_log interfaces.ILogger
 
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
 	// http service
 	_httpService interfaces.IHttpService
 
@@ -25,12 +28,14 @@ type ServerController struct {
 // ServerControllerNew creates an instance of ServerController
 func ServerControllerNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	httpService interfaces.IHttpService,
 	serverStateService interfaces.IServerStateService,
 	authService interfaces.IAuthService) *ServerController {
 	service := &ServerController{}
 
 	service._log = log
+	service._diagnosticService = diagnosticService
 	service._httpService = httpService
 	service._serverStateService = serverStateService
 	service._authService = authService

@@ -100,7 +100,7 @@ func (service *dalService) Start() {
 	softwareInfoCollection := db.C(models.SoftwareInfoTableName)
 	softwareVolatileInfoCollection := db.C(models.SoftwareVolatileInfoTableName)
 	dicomInfoCollection := db.C(models.DicomInfoTableName)
-	// standInfoCollection := db.C(models.StandInfoTableName)
+	eventsCollection := db.C(models.EventsTableName)
 	equipInfoCollection := db.C(models.EquipmentTableName)
 	chatsCollection := db.C(models.ChatsTableName)
 
@@ -112,6 +112,7 @@ func (service *dalService) Start() {
 
 	service.ensureIndeces(equipInfoCollection, []string{"equipname"})
 	service.ensureIndeces(chatsCollection, []string{"equipname"})
+	service.ensureIndeces(eventsCollection, []string{"equipname"})
 	go service._userRepository.EnsureAdmin()
 
 	go func() {

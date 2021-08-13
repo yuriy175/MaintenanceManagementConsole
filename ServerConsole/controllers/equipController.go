@@ -221,7 +221,23 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/UpdateDBInfo", func(w http.ResponseWriter, r *http.Request) {
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
+			return
+		}
+
 		service.sendCommand(w, r, "updateDBInfo")
+	})
+
+	http.HandleFunc("/equips/RecreateDBInfo", func(w http.ResponseWriter, r *http.Request) {
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
+			return
+		}
+
+		service.sendCommand(w, r, "recreateDBInfo")
 	})
 
 	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {
@@ -248,17 +264,13 @@ func (service *EquipController) Handle() {
 
 	//(currType, equipName, startDate, endDate);
 	http.HandleFunc("/equips/SearchEquip", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		/*w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")*/
 		claims := CheckUserAuthorization(authService, w, r)
 
 		if claims == nil {
 			return
 		}
 
+		start := time.Now()
 		queryString := r.URL.Query()
 
 		equipTypes, ok := queryString["currType"]
@@ -267,6 +279,9 @@ func (service *EquipController) Handle() {
 			return
 		}
 		equipType := equipTypes[0]
+
+		methodName := "/equips/SearchEquip_" + equipType
+		diagnosticService.IncCount(methodName)
 
 		equipNames, ok := queryString["equipName"]
 		if !ok {
@@ -302,6 +317,8 @@ func (service *EquipController) Handle() {
 		// log.Println("Url is: %s %s %s", equipType, startDate, endDate)
 
 		service.sendSearchResults(w, equipType, equipName, startDate, endDate)
+
+		diagnosticService.SetDuration(methodName, time.Since(start))
 	})
 
 	http.HandleFunc("/equips/GetAllDBTableNames", func(w http.ResponseWriter, r *http.Request) {

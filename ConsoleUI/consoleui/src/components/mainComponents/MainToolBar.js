@@ -100,11 +100,22 @@ export default function MainToolBar() {
     await onEquipChanged(val);
   };
 
+  
+  const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
+  const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
+
   const onEquipChanged = async equipInfo =>
   {
     setCurrEquip(equipInfo, 'SETEQUIPINFO');
     allEquipsDispatch({ type: 'ADDSELECTEDEQUIPS', payload: equipInfo }); 
-    getEvents(equipInfo);
+    //getEvents(equipInfo);
+    
+    if(SummaryTabIndex === selectedTab && SummaryHistoryTabPanelIndex === selectedTabPanel){        
+      getEvents(equipInfo);
+    }
+    else if(SummaryTabIndex === selectedTab && SummaryChatTabPanelIndex === selectedTabPanel){        
+      getChats(equipInfo);
+    }
   }
 
   const getEvents = async (equipInfo) =>
@@ -148,8 +159,6 @@ export default function MainToolBar() {
   );
 
   const equipInfo = currEquipState.equipInfo;
-  const selectedTab = appState.currentTab?.tab ?? SummaryTabIndex;
-  const selectedTabPanel = appState.currentTab?.panel ?? MainTabPanelIndex;
 
   const onTabIndexChange = async (event, newValue) => {
     if(SummaryTabIndex === selectedTab && SummaryDBTabPanelIndex === newValue && equipInfo){

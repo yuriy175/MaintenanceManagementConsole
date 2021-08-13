@@ -124,6 +124,15 @@ export async function UpdateDBInfo(token, activatedEquipInfo) {
     });
 };
 
+export async function RecreateDBInfo(token, activatedEquipInfo) {
+    return await HandlerWrapper('RecreateDBInfo', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/RecreateDBInfo?activatedEquipInfo=' + activatedEquipInfo,
+            null, GetTokenHeader(token));
+        return response.data;
+    });
+};
+
 export async function DisableEquipInfo(token, equipName, disabled) {
     return await HandlerWrapper('DisableEquipInfo', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +

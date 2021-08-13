@@ -16,6 +16,9 @@ type AdminController struct {
 	//logger
 	_log interfaces.ILogger
 
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
+
 	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
 
@@ -32,6 +35,7 @@ type AdminController struct {
 // AdminControllerNew creates an instance of AdminController
 func AdminControllerNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
@@ -39,6 +43,7 @@ func AdminControllerNew(
 	service := &AdminController{}
 
 	service._log = log
+	service._diagnosticService = diagnosticService
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService

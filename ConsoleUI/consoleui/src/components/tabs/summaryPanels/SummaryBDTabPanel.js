@@ -10,6 +10,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 import * as EquipWorker from '../../../workers/equipWorker'
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
@@ -40,6 +41,10 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1),
     display: 'table-cell',
   },
+  button:{
+    marginBottom: '1em',
+    marginTop: '1em',
+  }
 }));
 
 export default function SummaryBDTabPanel(props) {
@@ -65,8 +70,10 @@ export default function SummaryBDTabPanel(props) {
     return { id: key, label: key, minWidth: 100, maxWidth: 300 }
   }
 
+  const token = usersState.token;
+  const equipInfo = currEquipState.equipInfo;
   const handleListItemClick = async (event, index, type, text) => {
-    const content = await EquipWorker.GetTableContent(usersState.token, currEquipState.equipInfo, type, text);
+    const content = await EquipWorker.GetTableContent(token, equipInfo, type, text);
     let values = []
     if(Array.isArray(content)){
       values = content.map(c => JSON.parse(c)).flat(1);
@@ -82,6 +89,10 @@ export default function SummaryBDTabPanel(props) {
   {
     return row.Active
   }
+
+  const onRecreate = async () => {
+    const content = await EquipWorker.RecreateDBInfo(token, equipInfo);    
+  };
   
   const columns = tableContent.length === 0 ? [] : Object.keys(tableContent[0]).map(k => getColumn(k));
   const rows = tableContent.length === 0 ? [] : tableContent;
@@ -95,6 +106,9 @@ export default function SummaryBDTabPanel(props) {
       {/* <div className={classes.listPanel}> */}
       {/* <Box className={classes.listPanel} height={'calc(100% - 500px)'}> */}
       <Box className={classes.listPanel} height={'100%'}>
+        <Button className={classes.button} variant="contained" color="primary" onClick={onRecreate}>
+              Пересоздать
+        </Button>
         <Typography variant="h6" component="h2">ЛПУ</Typography>
         <List>
           {hospTableMenu?.map((text, index) => (

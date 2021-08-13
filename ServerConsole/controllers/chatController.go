@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	interfaces "ServerConsole/interfaces"
 )
@@ -12,6 +13,9 @@ import (
 type ChatController struct {
 	//logger
 	_log interfaces.ILogger
+
+	// diagnostic service
+	_diagnosticService interfaces.IDiagnosticService
 
 	// mqtt receiver service
 	_mqttReceiverService interfaces.IMqttReceiverService
@@ -35,6 +39,7 @@ type ChatController struct {
 // ChatControllerNew creates an instance of ChatController
 func ChatControllerNew(
 	log interfaces.ILogger,
+	diagnosticService interfaces.IDiagnosticService,
 	mqttReceiverService interfaces.IMqttReceiverService,
 	webSocketService interfaces.IWebSocketService,
 	dalService interfaces.IDalService,
@@ -44,6 +49,7 @@ func ChatControllerNew(
 	service := &ChatController{}
 
 	service._log = log
+	service._diagnosticService = diagnosticService
 	service._httpService = httpService
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
@@ -61,6 +67,7 @@ func (service *ChatController) Handle() {
 	log := service._log
 	authService := service._authService
 	chatService := service._chatService
+	diagnosticService := service._diagnosticService
 	///
 	http.HandleFunc("/equips/GetCommunicationsData", func(w http.ResponseWriter, r *http.Request) {
 		claims := CheckUserAuthorization(authService, w, r)
@@ -68,6 +75,10 @@ func (service *ChatController) Handle() {
 		if claims == nil {
 			return
 		}
+
+		start := time.Now()
+		methodName := "/equips/GetCommunicationsData"
+		diagnosticService.IncCount(methodName)
 
 		queryString := r.URL.Query()
 
@@ -79,6 +90,8 @@ func (service *ChatController) Handle() {
 
 		notes := chatService.GetChatNotes(equipName)
 		json.NewEncoder(w).Encode(notes)
+
+		diagnosticService.SetDuration(methodName, time.Since(start))
 	})
 
 	http.HandleFunc("/equips/SendNewNote", func(w http.ResponseWriter, r *http.Request) {
