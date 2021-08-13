@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // GeneratorRepository describes generator info repository implementation type

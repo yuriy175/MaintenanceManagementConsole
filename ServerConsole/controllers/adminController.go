@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	// "fmt"	
-	
-	"../interfaces"
-	"../models"
+
+	// "fmt"
+
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // AdminController describes admin controller implementation type
@@ -19,7 +20,7 @@ type AdminController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
-	_webSocketService    interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
 	_dalService interfaces.IDalService
@@ -64,9 +65,9 @@ func (service *AdminController) Handle() {
 		if tokenString == ""{
 			return;
 		}
-		
+
 		service._authService.VerifyToken(tokenString) */
-		if CheckAdminAuthorization(authService, w, r) != nil{
+		if CheckAdminAuthorization(authService, w, r) != nil {
 			users := dalService.GetUsers()
 			json.NewEncoder(w).Encode(users)
 		}
@@ -79,9 +80,9 @@ func (service *AdminController) Handle() {
 
 		w.Header().Set("Content-Type", "application/json")*/
 
-		claims := CheckAdminAuthorization(authService, w, r) 
-		
-		if claims == nil{
+		claims := CheckAdminAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
 
@@ -112,41 +113,41 @@ func (service *AdminController) Handle() {
 		user := dalService.GetUserByName(userVM.Login, userVM.Email, userVM.Password)
 		if user == nil {
 			http.Error(w, "Not authorized", http.StatusUnauthorized)
-			service._log.Infof("login error: %s", userVM.Login);
+			service._log.Infof("login error: %s", userVM.Login)
 			return
 		}
 
-		service._log.Infof("login success: %s", userVM.Login);
+		service._log.Infof("login success: %s", userVM.Login)
 		token, userName := service._authService.CreateToken(user)
-		json.NewEncoder(w).Encode(models.TokenWithUserViewModel{token,userName})
+		json.NewEncoder(w).Encode(models.TokenWithUserViewModel{token, userName})
 	})
 
 	http.HandleFunc("/equips/GetServerLogs", func(w http.ResponseWriter, r *http.Request) {
-		if CheckAdminAuthorization(authService, w, r) != nil{
+		if CheckAdminAuthorization(authService, w, r) != nil {
 			/*logContent, filename := log.GetZipContent()
-			if logContent == nil || filename == ""{
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
+				if logContent == nil || filename == ""{
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
 
-			w.Header().Set("Content-Type", "application/json")
-		    w.Header().Set("Content-Encoding", "gzip")
+				w.Header().Set("Content-Type", "application/json")
+			    w.Header().Set("Content-Encoding", "gzip")
 
-			writer, err := gzip.NewWriterLevel(w, gzip.BestCompression)
-			if err != nil {
-				// Your error handling
-				return
-			}
+				writer, err := gzip.NewWriterLevel(w, gzip.BestCompression)
+				if err != nil {
+					// Your error handling
+					return
+				}
 
-			defer writer.Close()
+				defer writer.Close()
 
-			writer.Write(logContent)
+				writer.Write(logContent)
 			*/
 			w.Header().Set("Content-Type", "application/json")
-		    w.Header().Set("Content-Encoding", "gzip")
+			w.Header().Set("Content-Encoding", "gzip")
 
 			ok := log.WriteZipContent(w)
-			if(!ok){
+			if !ok {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}

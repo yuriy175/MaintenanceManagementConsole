@@ -7,8 +7,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // DbInfoRepository describes equipment db info repository implementation type

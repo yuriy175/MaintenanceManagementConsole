@@ -5,7 +5,7 @@ import "strings"
 // GetEquipFromTopic returns equipment name from topic
 func GetEquipFromTopic(topic string) string {
 	topicParts := strings.Split(topic, "/")
-	if len(topicParts) == 1{
+	if len(topicParts) == 1 {
 		return topic
 	}
 
@@ -14,13 +14,12 @@ func GetEquipFromTopic(topic string) string {
 	return equip
 }
 
-// GetHddNumberFromEquip returns hdd number from equipment name 
+// GetHddNumberFromEquip returns hdd number from equipment name
 func GetHddNumberFromEquip(equip string) string {
 	equipParts := strings.Split(equip, "_")
-	if len(equipParts) < 2{
+	if len(equipParts) < 2 {
 		return ""
 	}
 
-	return equipParts[len(equipParts) - 1]
+	return equipParts[len(equipParts)-1]
 }
-

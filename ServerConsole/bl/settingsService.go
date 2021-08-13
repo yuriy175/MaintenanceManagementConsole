@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // settings service implementation type
@@ -17,13 +17,13 @@ type settingsService struct {
 	RabbitMQ models.RabbitMQSettingsModel `json:"RabbitMQ"`
 
 	//mongodb settings
-	MongoDB  models.MongoDBSettingsModel  `json:"MongoDB"`
+	MongoDB models.MongoDBSettingsModel `json:"MongoDB"`
 
 	// http server connection string
-	HTTPServerConnectionString string  `json:"HTTPServerAddress"`
+	HTTPServerConnectionString string `json:"HTTPServerAddress"`
 
 	// web socket server connection string
-	WebSocketServerConnectionString string  `json:"WSServerAddress"`
+	WebSocketServerConnectionString string `json:"WSServerAddress"`
 }
 
 // SettingsServiceNew creates an instance of settingsService

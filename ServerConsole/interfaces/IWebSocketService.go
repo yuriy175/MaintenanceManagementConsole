@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"../models"
+	"ServerConsole/models"
 )
 
 // IWebSocketService describes web socket service interface
@@ -22,5 +22,5 @@ type IWebSocketService interface {
 	ClientClosed(sessionUID string)
 
 	// SendEvents sends events to all web connections
-	SendEvents(events []models.EventModel) 
+	SendEvents(events []models.EventModel)
 }

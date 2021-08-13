@@ -1,11 +1,12 @@
 package interfaces
+
 import (
-	"../models"
+	"ServerConsole/models"
 )
 
 // IAuthService describes auth service interface
 type IAuthService interface {
-   // GetSum calculates SHA256 hash
+	// GetSum calculates SHA256 hash
 	GetSum(value string) [32]byte
 
 	// CheckSum checks SHA256 hash
@@ -14,6 +15,6 @@ type IAuthService interface {
 	// CreateToken creates jwt token for user
 	CreateToken(user *models.UserModel) (string, string)
 
-	// VerifyToken verifies token 
+	// VerifyToken verifies token
 	VerifyToken(tokenString string) *models.UserClaims
 }

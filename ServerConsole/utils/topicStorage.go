@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"../interfaces"
+	"ServerConsole/interfaces"
 )
 
 // topic storage implementation type

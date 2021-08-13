@@ -7,8 +7,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // EventsRepository describes events repository implementation type
@@ -62,12 +62,12 @@ func (repository *EventsRepository) GetEvents(equipNames []string, startDate tim
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
 	var query bson.M
-	if len(equipNames) == 0{
+	if len(equipNames) == 0 {
 		query = bson.M{
-				"datetime": bson.M{
-					"$gt": startDate,
-					"$lt": endDate,
-				}}
+			"datetime": bson.M{
+				"$gt": startDate,
+				"$lt": endDate,
+			}}
 	} else {
 		query = bson.M{"$and": []bson.M{
 			bson.M{"equipname": bson.M{"$in": equipNames}},
@@ -108,12 +108,11 @@ func (repository *EventsRepository) GetLastSeenInfo(equipName string) time.Time 
 
 	model := models.EventModel{}
 	query := bson.M{"equipname": equipName}
-	
+
 	eventsCollection.Find(query).Sort("-datetime").One(&model)
 
 	return model.DateTime
 }
-
 
 func (repository *EventsRepository) insertEvent(
 	eventsCollection *mgo.Collection,
@@ -124,7 +123,7 @@ func (repository *EventsRepository) insertEvent(
 	model := models.EventModel{}
 
 	model.ID = bson.NewObjectId()
-	if msgDate == nil{
+	if msgDate == nil {
 		model.DateTime = time.Now()
 	} else {
 		model.DateTime = *msgDate

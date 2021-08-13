@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // StandRepository describes stand repository implementation type

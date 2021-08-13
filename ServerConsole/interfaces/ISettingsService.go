@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"../models"
+	"ServerConsole/models"
 )
 
 // ISettingsService describes settings service interface

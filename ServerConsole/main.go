@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./bl"
+	"ServerConsole/bl"
 )
 
 func main() {
@@ -34,7 +34,6 @@ func main() {
 	<-intCh
 	log.Info("app quitted")
 }
-
 
 /*func failOnError(err error, msg string) {
 	if err != nil {

@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"../interfaces"
-	"../models"
-	"../utils"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	"ServerConsole/utils"
 )
 
 // web socket service implementation type
@@ -31,7 +31,7 @@ type webSocketService struct {
 	_settingsService interfaces.ISettingsService
 
 	// web socket server connection string
-	_connectionString string 
+	_connectionString string
 
 	// chanel for communications with websocket services
 	_webSockCh chan *models.RawMqttMessage
@@ -59,7 +59,7 @@ func WebSocketServiceNew(
 	service._ioCProvider = ioCProvider
 	service._diagnosticService = diagnosticService
 	service._settingsService = settingsService
-	service._connectionString = settingsService.GetWebSocketServerConnectionString();
+	service._connectionString = settingsService.GetWebSocketServerConnectionString()
 	service._webSockCh = webSockCh
 	service._webSocketConnections = map[string]interfaces.IWebSock{}
 	service._topicConnections = map[string][]string{}
@@ -194,11 +194,11 @@ func (service *webSocketService) removeFromTopicMap(equipInfo string, uid string
 	}
 }
 
-func (service *webSocketService)writeMessageToSocket(activatedEquipInfo string, data []byte) {
+func (service *webSocketService) writeMessageToSocket(activatedEquipInfo string, data []byte) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
-	
-	if activatedEquipInfo == models.CommonChat{
+
+	if activatedEquipInfo == models.CommonChat {
 		for _, ws := range service._webSocketConnections {
 			if ws.IsValid() {
 				ws.WriteMessage(data)

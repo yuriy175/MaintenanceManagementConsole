@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 
-	interfaces "../interfaces"
+	interfaces "ServerConsole/interfaces"
 )
 
 // EquipController describes equipment controller implementation type
@@ -22,19 +22,19 @@ type EquipController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
-	_webSocketService    interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
-	_dalService    interfaces.IDalService
+	_dalService interfaces.IDalService
 
 	// equipment service
 	_equipsService interfaces.IEquipsService
-	
+
 	// events service
 	_eventsService interfaces.IEventsService
 
 	// http service
-	_httpService   interfaces.IHttpService
+	_httpService interfaces.IHttpService
 
 	// authorization service
 	_authService interfaces.IAuthService
@@ -81,9 +81,9 @@ func (service *EquipController) Handle() {
 		//Allow CORS here By * or specific origin
 		// w.Header().Set("Access-Control-Allow-Origin", "*")
 		// w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		claims := CheckUserAuthorization(authService, w, r) 
-						
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
 
@@ -119,7 +119,7 @@ func (service *EquipController) Handle() {
 			deactivatedEquipInfo = deactivatedEquipInfos[0]
 		}
 
-		go func(){ 
+		go func() {
 			webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
 			mqttReceiverService.Activate(activatedEquipInfo, deactivatedEquipInfo)
 		}()
@@ -137,9 +137,9 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckUserAuthorization(authService, w, r) 
-						
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
 		equips := mqttReceiverService.GetConnectionNames()
@@ -147,9 +147,9 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/GetAllEquips", func(w http.ResponseWriter, r *http.Request) {
-		claims := CheckUserAuthorization(authService, w, r) 
-						
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
 		methodName := "/equips/GetAllEquips"
@@ -179,10 +179,10 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")
-*/
-		claims := CheckAdminAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		*/
+		claims := CheckAdminAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
 
@@ -224,7 +224,7 @@ func (service *EquipController) Handle() {
 		service.sendCommand(w, r, "updateDBInfo")
 	})
 
-	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {		
+	http.HandleFunc("/equips/XilibLogsOn", func(w http.ResponseWriter, r *http.Request) {
 		queryString := r.URL.Query()
 
 		detailedXilibs, ok := queryString["detailedXilib"]
@@ -253,12 +253,12 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
 		equipTypes, ok := queryString["currType"]
@@ -310,12 +310,12 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
 		equipNames, ok := queryString["equipName"]
@@ -336,12 +336,12 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
 		equipNames, ok := queryString["equipName"]
@@ -379,12 +379,12 @@ func (service *EquipController) Handle() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		w.Header().Set("Content-Type", "application/json")*/
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
 		/*equipTypes, ok := queryString["currType"]
@@ -402,20 +402,20 @@ func (service *EquipController) Handle() {
 			return
 		}
 		equipName := equipNames[0]*/
-		equipType := CheckQueryParameter(queryString, "currType", w) 
-		if equipType == ""{
+		equipType := CheckQueryParameter(queryString, "currType", w)
+		if equipType == "" {
 			log.Error("Url Param 'equipType' is missing")
 			return
 		}
 
-		equipName := CheckQueryParameter(queryString, "equipName", w) 
-		if equipType == ""{
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipType == "" {
 			log.Error("Url Param 'equipName' is missing")
 			return
 		}
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
-	})	
+	})
 }
 
 func (service *EquipController) sendSearchResults(
@@ -463,7 +463,7 @@ func (service *EquipController) sendPermanentSearchResults(
 
 	dalService := service._dalService
 	equipsService := service._equipsService
-	
+
 	if equipType == "FullInfo" {
 		fullInfo := equipsService.GetFullInfo(equipName)
 		json.NewEncoder(w).Encode(fullInfo)
@@ -488,9 +488,9 @@ func (service *EquipController) sendCommand(w http.ResponseWriter, r *http.Reque
 
 	w.Header().Set("Content-Type", "application/json")*/
 	log := service._log
-	claims := CheckUserAuthorization(service._authService, w, r) 
-						
-	if claims == nil{
+	claims := CheckUserAuthorization(service._authService, w, r)
+
+	if claims == nil {
 		return
 	}
 

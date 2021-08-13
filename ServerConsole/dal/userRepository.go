@@ -5,8 +5,8 @@ import (
 	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // UserRepository describes user repository implementation type
@@ -64,7 +64,7 @@ func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *mode
 
 		userCollection.Insert(model)
 	} else {
-		model.ID = bson.ObjectIdHex(userVM.ID) 
+		model.ID = bson.ObjectIdHex(userVM.ID)
 		newBson := bson.D{
 			{"disabled", model.Disabled},
 			{"login", model.Login},
@@ -79,10 +79,10 @@ func (repository *UserRepository) UpdateUser(userVM *models.UserViewModel) *mode
 		}
 
 		err := userCollection.Update(
-			bson.M{"_id": model.ID }, 
+			bson.M{"_id": model.ID},
 			bson.D{
 				{"$set", newBson}})
-		if err != nil{
+		if err != nil {
 			repository._log.Errorf("UpdateUser error %v", err)
 		}
 
@@ -113,7 +113,7 @@ func (repository *UserRepository) GetUsers() []models.UserModel {
 
 // GetUserByName returns a valid user by login or email or nil
 func (repository *UserRepository) GetUserByName(login string, email string, password string) *models.UserModel {
-	if login == "" && email == ""{
+	if login == "" && email == "" {
 		return nil
 	}
 
@@ -145,15 +145,15 @@ func (repository *UserRepository) EnsureAdmin() {
 
 	userCollection := session.DB(repository._dbName).C(models.UsersTableName)
 	query := bson.M{}
-	
+
 	//критерий выборки
 	query = bson.M{"role": models.AdminRoleName, "disabled": false}
 
 	// // объект для сохранения результата
-	user := models.UserModel{}	
+	user := models.UserModel{}
 	userCollection.Find(query).One(&user)
 
-	if user.ID != ""{
+	if user.ID != "" {
 		//admin exists
 		return
 	}
@@ -168,6 +168,6 @@ func (repository *UserRepository) EnsureAdmin() {
 	userVM.Role = models.AdminRoleName
 	userVM.Disabled = false
 	userVM.Password = "medtex"
-	
+
 	repository.UpdateUser(&userVM)
 }

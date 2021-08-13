@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"net/http"
 
-	interfaces "../interfaces"
+	interfaces "ServerConsole/interfaces"
 )
 
 // ServerController describes server control controller implementation type
 type ServerController struct {
 	//logger
 	_log interfaces.ILogger
-	
+
 	// http service
-	_httpService   interfaces.IHttpService
+	_httpService interfaces.IHttpService
 
 	// server state service
 	_serverStateService interfaces.IServerStateService
@@ -43,14 +43,13 @@ func (service *ServerController) Handle() {
 	serverStateService := service._serverStateService
 	authService := service._authService
 	http.HandleFunc("/equips/GetServerState", func(w http.ResponseWriter, r *http.Request) {
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		state := serverStateService.GetState()
 		json.NewEncoder(w).Encode(state)
 	})
 }
-

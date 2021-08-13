@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"../interfaces"
-	"../models"
-	"../utils"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	"ServerConsole/utils"
 )
 
 // events service implementation type
@@ -24,9 +24,9 @@ type eventsService struct {
 
 	// DAL service
 	_dalService interfaces.IDalService
-	
+
 	// equipment service
-	_equipsService   interfaces.IEquipsService
+	_equipsService interfaces.IEquipsService
 
 	// chanel for communications with websocket services
 	_webSockCh chan *models.RawMqttMessage
@@ -79,7 +79,7 @@ func (service *eventsService) Start() {
 				service.insertEvents(equipName, &viewmodel, false, nil)
 			}
 		}
-	}() 
+	}()
 
 	go func() {
 		for msg := range service._internalEventsCh {
@@ -88,7 +88,7 @@ func (service *eventsService) Start() {
 			equipsService.SetLastSeen(equipName)
 			go webSocketService.SendEvents(events)
 		}
-	}() 
+	}()
 }
 
 // InsertEvent inserts equipment connection state info into db
@@ -113,7 +113,7 @@ func (service *eventsService) GetEvents(equipName string, startDate time.Time, e
 	if equipName == "" {
 		return dalService.GetEvents([]string{}, startDate, endDate)
 	}
-	
+
 	equipsService := service._equipsService
 
 	equipNames := append(equipsService.GetOldEquipNames(equipName), equipName)
@@ -121,56 +121,55 @@ func (service *eventsService) GetEvents(equipName string, startDate time.Time, e
 	return dalService.GetEvents(equipNames, startDate, endDate)
 }
 
-
 func (service *eventsService) insertEvents(
-	equipName string, 
-	viewmodel *models.SoftwareMessageViewModel, 
-	isOffline bool, 
+	equipName string,
+	viewmodel *models.SoftwareMessageViewModel,
+	isOffline bool,
 	msgDate *time.Time) {
 	webSocketService := service._webSocketService
 	equipsService := service._equipsService
 	events := []models.EventModel{}
 	typePostfix := ""
-	if isOffline{
+	if isOffline {
 		typePostfix = "Offline"
 	}
 	if viewmodel.ErrorDescriptions != nil {
-		events = service._dalService.InsertEvents(equipName, "ErrorDescriptions" + typePostfix, viewmodel.ErrorDescriptions, msgDate)
+		events = service._dalService.InsertEvents(equipName, "ErrorDescriptions"+typePostfix, viewmodel.ErrorDescriptions, msgDate)
 	}
 
 	if viewmodel.AtlasErrorDescriptions != nil {
 		events = append(events,
-			service._dalService.InsertEvents(equipName, "AtlasErrorDescriptions" + typePostfix, viewmodel.AtlasErrorDescriptions, msgDate)...)
+			service._dalService.InsertEvents(equipName, "AtlasErrorDescriptions"+typePostfix, viewmodel.AtlasErrorDescriptions, msgDate)...)
 	}
 
 	if viewmodel.OfflineMsg != nil && viewmodel.OfflineMsg.Message != nil {
 		value := viewmodel.OfflineMsg.DateTime
 		layout := time.RFC3339[:len(value)]
 		date, err := time.Parse(layout, value)
-		if err != nil{
+		if err != nil {
 			date = time.Now()
-			service._log.Errorf("insertEvent error: %s %s", err, value);
-		} 
-		
+			service._log.Errorf("insertEvent error: %s %s", err, value)
+		}
+
 		service.insertEvents(equipName, viewmodel.OfflineMsg.Message, true, &date)
 	}
 
 	if viewmodel.SimpleMsgType != "" {
 		msgCode := ""
-		if viewmodel.SimpleMsgType == "AtlasExited"{
+		if viewmodel.SimpleMsgType == "AtlasExited" {
 			msgCode = "Атлас выключен"
-		} else if viewmodel.SimpleMsgType == "InstanceOnOffline"{
+		} else if viewmodel.SimpleMsgType == "InstanceOnOffline" {
 			msgCode = "подключен"
 		}
 		msg := models.MessageViewModel{equipName, msgCode, ""}
 		events = append(events,
-			service._dalService.InsertEvents(equipName, viewmodel.SimpleMsgType + typePostfix, []models.MessageViewModel{msg}, msgDate)...)
+			service._dalService.InsertEvents(equipName, viewmodel.SimpleMsgType+typePostfix, []models.MessageViewModel{msg}, msgDate)...)
 	}
 
 	if viewmodel.AtlasUser.User != "" {
-		msg := models.MessageViewModel{equipName,  viewmodel.AtlasUser.User + " (" + viewmodel.AtlasUser.Role + ") вошел в Атлас", ""}
+		msg := models.MessageViewModel{equipName, viewmodel.AtlasUser.User + " (" + viewmodel.AtlasUser.Role + ") вошел в Атлас", ""}
 		events = append(events,
-			service._dalService.InsertEvents(equipName, "AtlasUser" + typePostfix, []models.MessageViewModel{msg}, msgDate)...)
+			service._dalService.InsertEvents(equipName, "AtlasUser"+typePostfix, []models.MessageViewModel{msg}, msgDate)...)
 	}
 
 	if len(events) > 0 {

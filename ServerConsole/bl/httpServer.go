@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"../controllers"
-	"../interfaces"
+	"ServerConsole/controllers"
+	"ServerConsole/interfaces"
 )
 
 // http service implementation type
@@ -14,7 +14,7 @@ type httpService struct {
 	_log interfaces.ILogger
 
 	// authorization service
-	_authService         interfaces.IAuthService
+	_authService interfaces.IAuthService
 
 	// diagnostic service
 	_diagnosticService interfaces.IDiagnosticService
@@ -23,19 +23,19 @@ type httpService struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
-	_webSocketService    interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
-	_dalService      interfaces.IDalService
+	_dalService interfaces.IDalService
 
 	// settings service
 	_settingsService interfaces.ISettingsService
 
 	// http server connection string
-	_connectionString string 
+	_connectionString string
 
 	// equipment service
-	_equipsService   interfaces.IEquipsService
+	_equipsService interfaces.IEquipsService
 
 	/// events service
 	_eventsService interfaces.IEventsService
@@ -56,7 +56,7 @@ type httpService struct {
 	_chatController *controllers.ChatController
 
 	// server control http controller
-	_serverController *controllers.ServerController	
+	_serverController *controllers.ServerController
 
 	// diagnostic http controller
 	_diagnosticController *controllers.DiagnosticController
@@ -80,7 +80,7 @@ func HTTPServiceNew(
 	service._log = log
 	service._diagnosticService = diagnosticService
 	service._settingsService = settingsService
-	service._connectionString = settingsService.GetHTTPServerConnectionString();
+	service._connectionString = settingsService.GetHTTPServerConnectionString()
 	service._mqttReceiverService = mqttReceiverService
 	service._webSocketService = webSocketService
 	service._dalService = dalService
@@ -95,7 +95,7 @@ func HTTPServiceNew(
 	service._chatController = controllers.ChatControllerNew(log, mqttReceiverService, webSocketService, dalService, chatService, service, authService)
 	service._serverController = controllers.ServerControllerNew(log, service, serverStateService, authService)
 	service._diagnosticController = controllers.DiagnosticControllerNew(log, authService)
-	
+
 	return service
 }
 

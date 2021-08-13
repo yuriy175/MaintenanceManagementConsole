@@ -6,8 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
@@ -26,14 +27,14 @@ type mqttClient struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
-	_webSocketService    interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 
 	// chanel for DAL communications
-	_dalCh               chan *models.RawMqttMessage
+	_dalCh chan *models.RawMqttMessage
 
 	// chanel for communications with websocket services
-	_webSockCh           chan *models.RawMqttMessage
-	
+	_webSockCh chan *models.RawMqttMessage
+
 	// chanel for communications with equipment service
 	_equipsCh chan *models.RawMqttMessage
 
@@ -44,10 +45,10 @@ type mqttClient struct {
 	_chatCh chan *models.RawMqttMessage
 
 	// mqtt client
-	_client      mqtt.Client
+	_client mqtt.Client
 
 	// main topic
-	_topic       string
+	_topic string
 
 	// is topic equipment
 	_isEquipment bool
@@ -69,7 +70,7 @@ func MqttClientNew(
 	eventsCh chan *models.RawMqttMessage,
 	chatCh chan *models.RawMqttMessage) interfaces.IMqttClient {
 	client := &mqttClient{}
-	
+
 	client._log = log
 	client._diagnosticService = diagnosticService
 	client._settingsService = settingsService
@@ -96,7 +97,7 @@ func (client *mqttClient) Create(
 		fmt.Println("Reconnecting " + rootTopic)
 	}
 
-	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {	
+	var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
 		fmt.Println("Connected " + rootTopic)
 		go func() {
 			var topics = map[string]byte{}
@@ -130,7 +131,7 @@ func (client *mqttClient) Create(
 			t = t + 1
 		}
 
-		// 
+		//
 		if topic == models.CommonTopicPath {
 			fmt.Printf("Received message: %s from topic: %s\n", payload, topic)
 
@@ -151,8 +152,8 @@ func (client *mqttClient) Create(
 			go client._webSocketService.UpdateWebClients(state)
 		} else if strings.HasPrefix(topic, models.CommonChatsPath) { // strings.HasPrefix(topic, models.CommonChatsPath) {
 			fmt.Printf("Received chat message: %s from topic: %s\n", payload, topic)
-			charTopic := topic[len(models.CommonChatsPath)+1:len(topic)]
-			if charTopic != models.CommonChat{
+			charTopic := topic[len(models.CommonChatsPath)+1 : len(topic)]
+			if charTopic != models.CommonChat {
 				charTopic = charTopic + "/chat"
 			}
 			rawMsg := models.RawMqttMessage{charTopic, string(payload), time.Now()}
@@ -173,10 +174,10 @@ func (client *mqttClient) Create(
 			client._dalCh <- &rawMsg
 			client._webSockCh <- &rawMsg
 			client._eventsCh <- &rawMsg
-			
+
 			if strings.Contains(topic, "/hospital") {
 				client._equipsCh <- &rawMsg
-			}  
+			}
 		}
 	}
 
@@ -201,9 +202,9 @@ func (client *mqttClient) Create(
 
 	client._client = c
 	client._topic = rootTopic
-	client._isEquipment = rootTopic != models.CommonTopicPath && 
-						rootTopic != models.BroadcastCommandsTopic &&
-						rootTopic != models.CommonChatsPath
+	client._isEquipment = rootTopic != models.CommonTopicPath &&
+		rootTopic != models.BroadcastCommandsTopic &&
+		rootTopic != models.CommonChatsPath
 
 	return client
 }
@@ -228,12 +229,12 @@ func (client *mqttClient) IsEquipTopic() bool {
 // SendChatMessage send message to a chat topic
 func (client *mqttClient) SendChatMessage(equipment string, user string, message string, isInternal bool) {
 	// chatTopic := client._topic + "/chat"
-	
+
 	chatTopic := models.CommonChatsPath + "/" + equipment
 	fmt.Printf("PublishChatNote from topic: %s %s %s\n", chatTopic, message, user)
-	
+
 	viewmodel := &models.ChatViewModel{message, user, isInternal}
-    data, _ := json.Marshal(viewmodel)
+	data, _ := json.Marshal(viewmodel)
 
 	client._client.Publish(chatTopic, 0, false, string(data))
 	fmt.Println("Sent chat " + chatTopic)

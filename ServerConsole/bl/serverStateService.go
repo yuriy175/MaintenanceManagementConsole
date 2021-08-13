@@ -1,15 +1,15 @@
 package bl
 
 import (
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // server state service implementation type
 type serverStateService struct {
 	//logger
 	_log interfaces.ILogger
-	
+
 	// DAL service
 	_dalService interfaces.IDalService
 }
@@ -26,13 +26,13 @@ func ServerStateServiceNew(
 }
 
 // GetState returns server state
-func (service *serverStateService) GetState() *models.ServerState{
+func (service *serverStateService) GetState() *models.ServerState {
 	state := &models.ServerState{}
 
 	dbState := service._dalService.GetState()
 	state.DBUsedSize = dbState["dataSize"].(float64)
 	state.DiskTotalSpace = dbState["fsTotalSize"].(float64)
 	state.DiskUsedSpace = dbState["fsUsedSize"].(float64)
-	
+
 	return state
 }

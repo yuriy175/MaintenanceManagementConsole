@@ -9,9 +9,9 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
-	"../utils"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	"ServerConsole/utils"
 )
 
 // DAL service implementation type
@@ -112,7 +112,7 @@ func (service *dalService) Start() {
 
 	service.ensureIndeces(equipInfoCollection, []string{"equipname"})
 	service.ensureIndeces(chatsCollection, []string{"equipname"})
-	go service._userRepository.EnsureAdmin() 
+	go service._userRepository.EnsureAdmin()
 
 	go func() {
 		for d := range service._dalCh {
@@ -133,17 +133,17 @@ func (service *dalService) Start() {
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 
 				organAutoCollection.Insert(model)
-			// } else if strings.Contains(d.Topic, "/generator/state") {
-			// 	service._generatorRepository.InsertGeneratorInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
-			// } else if strings.Contains(d.Topic, "/ARM/Hardware") {
-			// 	viewmodel := models.SystemInfoViewModel{}
-			// 	json.Unmarshal([]byte(d.Data), &viewmodel)
-			// 	service.insertSystemInfo(&viewmodel, d.Topic, sysInfoCollection, sysVolatileInfoCollection)
+				// } else if strings.Contains(d.Topic, "/generator/state") {
+				// 	service._generatorRepository.InsertGeneratorInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
+				// } else if strings.Contains(d.Topic, "/ARM/Hardware") {
+				// 	viewmodel := models.SystemInfoViewModel{}
+				// 	json.Unmarshal([]byte(d.Data), &viewmodel)
+				// 	service.insertSystemInfo(&viewmodel, d.Topic, sysInfoCollection, sysVolatileInfoCollection)
 			} else if strings.Contains(d.Topic, "/ARM/Software/Complex") {
 				viewmodel := models.SoftwareInfoViewModel{}
 				json.Unmarshal([]byte(d.Data), &viewmodel)
 				service.insertPermanentSoftwareInfo(&viewmodel, d.Topic, softwareInfoCollection)
-			// } else if strings.Contains(d.Topic, "/ARM/Software/msg") {
+				// } else if strings.Contains(d.Topic, "/ARM/Software/msg") {
 				// service.insertPermanentSoftwareInfo(&viewmodel, d.Topic, softwareVolatileInfoCollection)
 				// service._eventsRepository.InsertEvent(utils.GetEquipFromTopic(d.Topic), d.Daa)
 			} else if strings.Contains(d.Topic, "/dicom") {
@@ -154,11 +154,11 @@ func (service *dalService) Start() {
 				model.EquipName = utils.GetEquipFromTopic(d.Topic)
 
 				dicomInfoCollection.Insert(model)
-			// } else if strings.Contains(d.Topic, "/stand/state") {
-			// 	service._standRepository.InsertStandInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
+				// } else if strings.Contains(d.Topic, "/stand/state") {
+				// 	service._standRepository.InsertStandInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
 			} else if strings.Contains(d.Topic, "/ARM/AllDBInfo") {
 				service._dbInfoRepository.InsertDbInfoInfo(utils.GetEquipFromTopic(d.Topic), d.Data)
-			} 
+			}
 		}
 	}() //deviceCollection)
 
@@ -500,17 +500,17 @@ func (service *dalService) GetEquipInfos() []models.EquipInfoModel {
 }
 
 // GetOldEquipInfos returns all renamed equipment infos
-func (service *dalService) GetOldEquipInfos() []models.RenamedEquipInfoModel{
+func (service *dalService) GetOldEquipInfos() []models.RenamedEquipInfoModel {
 	return service._equipInfoRepository.GetOldEquipInfos()
 }
 
 // RenameEquip appends equipment to renamedequipment
-func (service *dalService) RenameEquip(oldEquipName string) bool{
+func (service *dalService) RenameEquip(oldEquipName string) bool {
 	return service._equipInfoRepository.RenameEquip(oldEquipName)
 }
 
 // UpdateEquipmentInfo updates equipment info in db
-func (service *dalService) UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel){
+func (service *dalService) UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel) {
 	service._equipInfoRepository.UpdateEquipmentInfo(equip)
 }
 
@@ -562,28 +562,28 @@ func (service *dalService) GetChatNotes(equipNames []string) []models.ChatModel 
 }
 
 // UpsertChatNote upserts a new chat note into db
-func (service *dalService) UpsertChatNote(equipName string, msgType string,id string, message string, 
+func (service *dalService) UpsertChatNote(equipName string, msgType string, id string, message string,
 	userLogin string, isInternal bool) *models.ChatModel {
 	return service._chatsRepository.UpsertChatNote(equipName, msgType, id, message, userLogin, isInternal)
 }
 
 // DeleteChatNote hides a chat note in db
-func (service *dalService) DeleteChatNote(equipName string, msgType string, id string){
+func (service *dalService) DeleteChatNote(equipName string, msgType string, id string) {
 	service._chatsRepository.DeleteChatNote(equipName, msgType, id)
 }
 
 // GetState returns db server state
-func (service *dalService) GetState() map[string]interface{}{
+func (service *dalService) GetState() map[string]interface{} {
 	session := service.CreateSession()
 	defer session.Close()
 
 	db := session.DB(service._dbName)
 
-	result := bson.M{}	
+	result := bson.M{}
 	if err := db.Run("dbstats", &result); err != nil {
-        fmt.Println(err)
+		fmt.Println(err)
 		service._log.Errorf("error dbstats: %v", err)
-    }
+	}
 
 	fmt.Println("dbstats ok")
 

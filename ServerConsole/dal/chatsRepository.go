@@ -7,8 +7,8 @@ import (
 	// "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // ChatsRepository describes chat notes repository implementation type
@@ -58,7 +58,7 @@ func (repository *ChatsRepository) GetChatNotes(equipNames []string) []models.Ch
 }
 
 // UpsertChatNote upserts a new chat note into db
-func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType string, id string, message string, 
+func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType string, id string, message string,
 	userLogin string, isInternal bool) *models.ChatModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
@@ -68,30 +68,30 @@ func (repository *ChatsRepository) UpsertChatNote(equipName string, msgType stri
 	model := models.ChatModel{}
 	model.Hidden = false
 	model.EquipName = equipName
-	model.Type = msgType	
+	model.Type = msgType
 	model.User = userLogin
 	model.Message = message
 	model.IsInternal = isInternal
 
-	if id == ""{
+	if id == "" {
 		model.ID = bson.NewObjectId()
-		model.DateTime = time.Now()	
+		model.DateTime = time.Now()
 
 		error := chatsCollection.Insert(model)
 		if error != nil {
 			repository._log.Errorf("error InsertChatNote")
 		}
 	} else {
-		model.ID = bson.ObjectIdHex(id) 
+		model.ID = bson.ObjectIdHex(id)
 		newBson := bson.D{
 			{"message", model.Message},
 		}
 
 		err := chatsCollection.Update(
-			bson.M{"_id": model.ID }, 
+			bson.M{"_id": model.ID},
 			bson.D{
 				{"$set", newBson}})
-		if err != nil{
+		if err != nil {
 			repository._log.Errorf("UpdateUser error %v", err)
 		}
 	}
@@ -106,19 +106,18 @@ func (repository *ChatsRepository) DeleteChatNote(equipName string, msgType stri
 
 	chatsCollection := session.DB(repository._dbName).C(models.ChatsTableName)
 
-	if id != ""{
-		hexId := bson.ObjectIdHex(id) 
+	if id != "" {
+		hexId := bson.ObjectIdHex(id)
 		newBson := bson.D{
 			{"hidden", true},
 		}
 
 		err := chatsCollection.Update(
-			bson.M{"_id": hexId }, 
+			bson.M{"_id": hexId},
 			bson.D{
 				{"$set", newBson}})
-		if err != nil{
+		if err != nil {
 			repository._log.Errorf("DeleteChatNote error %v", err)
 		}
 	}
 }
-

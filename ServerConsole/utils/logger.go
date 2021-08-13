@@ -1,16 +1,16 @@
 package utils
 
 import (
-	"io"
-	"os"
-	"log"
-	"fmt"
 	"archive/zip"
 	"bytes"
-	"io/ioutil"
 	"compress/gzip"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
 
-	"../interfaces"
+	"ServerConsole/interfaces"
 )
 
 // logger implementation type
@@ -28,8 +28,8 @@ func LoggerNew() interfaces.ILogger {
 	}
 	// defer f.Close()
 	wrt := io.MultiWriter(os.Stdout, f)
-	log.SetOutput(wrt)	
-	
+	log.SetOutput(wrt)
+
 	return logImp
 }
 
@@ -49,18 +49,18 @@ func (t *logger) Info(value string) {
 }
 
 // Errorf writes formatted error logs
-func (t *logger) Errorf(format string, a ...interface{}){
+func (t *logger) Errorf(format string, a ...interface{}) {
 	t.Error(fmt.Sprintf(format, a...))
 }
 
 // Info writes formatted info logs
-func (t *logger) Infof(format string, a ...interface{}){
+func (t *logger) Infof(format string, a ...interface{}) {
 	log := fmt.Sprintf(format, a...)
 	t.Info(log)
 }
 
 // getZipContent returns zipped logs
-func (t *logger) getZipContent() ([]byte, string){
+func (t *logger) getZipContent() ([]byte, string) {
 	filePath := t.Path
 	// Create a buffer to write our archive to.
 	buf := new(bytes.Buffer)
@@ -84,7 +84,6 @@ func (t *logger) getZipContent() ([]byte, string){
 		t.Error("GetZipContent error")
 		return nil, ""
 	}
-		
 
 	// Make sure to check the error on Close.
 	err = w.Close()
@@ -98,9 +97,9 @@ func (t *logger) getZipContent() ([]byte, string){
 }
 
 // WriteZipContent writes zipped logs to a writer
-func (t *logger) WriteZipContent(w io.Writer) bool{
+func (t *logger) WriteZipContent(w io.Writer) bool {
 	logContent, filename := t.getZipContent()
-	if logContent == nil || filename == ""{
+	if logContent == nil || filename == "" {
 		return false
 	}
 	writer, err := gzip.NewWriterLevel(w, gzip.BestCompression)

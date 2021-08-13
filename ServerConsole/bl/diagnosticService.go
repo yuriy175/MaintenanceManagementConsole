@@ -2,11 +2,13 @@ package bl
 
 import (
 	"time"
-	"github.com/prometheus/client_golang/prometheus"
-	// "github.com/prometheus/client_golang/prometheus/promauto"
-  	_ "github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"../interfaces"
+	"github.com/prometheus/client_golang/prometheus"
+
+	// "github.com/prometheus/client_golang/prometheus/promauto"
+	_ "github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"ServerConsole/interfaces"
 )
 
 // diagnostic service implementation type
@@ -37,9 +39,9 @@ func DiagnosticServiceNew(
 	)
 
 	service._handlersDurationRegistered = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name: "http_handlers_called_microseconds",
-		Help: "Duration of HTTP requests.",
-		Buckets: []float64{0.5, 1, 5, 10, 20, 30, 100, 1000 } ,
+		Name:    "http_handlers_called_microseconds",
+		Help:    "Duration of HTTP requests.",
+		Buckets: []float64{0.5, 1, 5, 10, 20, 30, 100, 1000},
 	}, []string{"path"})
 
 	/*requestProcessingTimeHistogramMs := prometheus.NewHistogram(
@@ -61,7 +63,6 @@ func (service *diagnosticService) IncCount(counterName string) {
 
 	handlersCalledRegistered.WithLabelValues(counterName).Inc()
 }
-
 
 // SetDuration sets specified duration
 func (service *diagnosticService) SetDuration(counterName string, duration time.Duration) {

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+
 	"github.com/streadway/amqp"
 )
 

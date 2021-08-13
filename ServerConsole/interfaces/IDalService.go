@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"../models"
+	"ServerConsole/models"
 )
 
 // IDalService describes DAL service interface
@@ -37,9 +37,9 @@ type IDalService interface {
 
 	// GetOldEquipInfos returns all renamed equipment infos
 	GetOldEquipInfos() []models.RenamedEquipInfoModel
-	
+
 	// DisableEquipInfo disables an equipment
-	DisableEquipInfo(equipName string, disabled bool) 
+	DisableEquipInfo(equipName string, disabled bool)
 
 	// RenameEquip appends equipment to renamedequipment
 	RenameEquip(oldEquipName string) bool
@@ -73,7 +73,7 @@ type IDalService interface {
 
 	// UpsertChatNote upserts a new chat note into db
 	UpsertChatNote(equipName string, msgType string, id string, message string, userLogin string,
-		isInternal bool) *models.ChatModel 
+		isInternal bool) *models.ChatModel
 
 	// DeleteChatNote hides a chat note in db
 	DeleteChatNote(equipName string, msgType string, id string)

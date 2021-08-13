@@ -2,10 +2,11 @@ package bl
 
 import (
 	"crypto/sha256"
+
 	"github.com/dgrijalva/jwt-go"
 
-	"../interfaces"
-	"../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // authorization service implementation type
@@ -49,15 +50,15 @@ func (service *authService) CreateToken(user *models.UserModel) (string, string)
 	return tokenString, user.Surname
 }
 
-func (service *authService) VerifyToken(tokenString string) *models.UserClaims{
+func (service *authService) VerifyToken(tokenString string) *models.UserClaims {
 	claims := &models.UserClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(service._jwtSecret), nil
 	})
 
-	if token == nil || err != nil{
+	if token == nil || err != nil {
 		return nil
 	}
 
 	return claims
-  }
+}

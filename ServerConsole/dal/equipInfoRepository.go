@@ -5,9 +5,9 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"../interfaces"
-	"../models"
-	"../utils"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	"ServerConsole/utils"
 )
 
 // EquipInfoRepository describes equipment info repository implementation type
@@ -77,7 +77,7 @@ func (repository *EquipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 }
 
 // GetOldEquipInfos returns all renamed equipment infos from db
-func (repository *EquipInfoRepository) GetOldEquipInfos() []models.RenamedEquipInfoModel{
+func (repository *EquipInfoRepository) GetOldEquipInfos() []models.RenamedEquipInfoModel {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
@@ -94,12 +94,12 @@ func (repository *EquipInfoRepository) GetOldEquipInfos() []models.RenamedEquipI
 }
 
 // UpdateEquipmentInfo updates equipment info in db
-func (repository *EquipInfoRepository) UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel){
+func (repository *EquipInfoRepository) UpdateEquipmentInfo(equip *models.DetailedEquipInfoModel) {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
-	
-	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)	
-	
+
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
+
 	equipCollection.Update(
 		bson.M{"equipname": equip.EquipName},
 		bson.D{
@@ -112,20 +112,20 @@ func (repository *EquipInfoRepository) UpdateEquipmentInfo(equip *models.Detaile
 }
 
 // RenameEquip appends equipment to renamedequipment
-func (repository *EquipInfoRepository) RenameEquip(oldEquipName string) bool{
+func (repository *EquipInfoRepository) RenameEquip(oldEquipName string) bool {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
 	renamedInfoCollection := session.DB(repository._dbName).C(models.RenamedEquipmentTableName)
-	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)	
-	
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
+
 	equipCollection.Update(
 		bson.M{"equipname": oldEquipName},
 		bson.D{
 			{"$set", bson.D{{"renamed", true}}}})
 
 	hddNumber := utils.GetHddNumberFromEquip(oldEquipName)
-	
+
 	query := bson.M{"hddnumber": hddNumber}
 	renamedEquip := models.RenamedEquipInfoModel{}
 	renamedInfoCollection.Find(query).One(&renamedEquip)
@@ -140,13 +140,12 @@ func (repository *EquipInfoRepository) RenameEquip(oldEquipName string) bool{
 		renamedEquip.ID = bson.NewObjectId()
 		renamedEquip.HddNumber = hddNumber
 		renamedEquip.OldEquipNames = []string{oldEquipName}
-		
+
 		renamedInfoCollection.Insert(renamedEquip)
 	}
 
 	return true
 }
-
 
 // CheckEquipment checks if the equipment exists in db
 func (repository *EquipInfoRepository) CheckEquipment(equipName string) bool {
@@ -170,7 +169,7 @@ func (repository *EquipInfoRepository) DisableEquipInfo(equipName string, disabl
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
-	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)	
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
 	equipCollection.Update(
 		bson.M{"equipname": equipName},
 		bson.D{

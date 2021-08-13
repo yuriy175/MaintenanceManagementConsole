@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"../models"
+	"ServerConsole/models"
 )
 
 // IEquipsService describes  equipment service interface
@@ -19,13 +19,13 @@ type IEquipsService interface {
 	GetEquipInfos(withDisabled bool) []models.DetailedEquipInfoModel
 
 	// DisableEquipInfo disables an equipment
-	DisableEquipInfo(equipName string, disabled bool) 
+	DisableEquipInfo(equipName string, disabled bool)
 
 	// GetFullInfo returns full equipment permanent info
-	GetFullInfo(equipName string)*models.FullEquipInfoModel
+	GetFullInfo(equipName string) *models.FullEquipInfoModel
 
 	// GetOldEquipNames returns out of date equipment names
-	GetOldEquipNames(equipName string) []string 
+	GetOldEquipNames(equipName string) []string
 
 	// SetLastSeen sets last seen event time
 	SetLastSeen(equipName string)

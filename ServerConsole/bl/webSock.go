@@ -7,7 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"../interfaces"
+	"ServerConsole/interfaces"
+
 	"github.com/gorilla/websocket"
 )
 

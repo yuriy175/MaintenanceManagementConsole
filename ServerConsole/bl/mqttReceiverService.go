@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"../interfaces"
-	"../models"
-	Models "../models"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	Models "ServerConsole/models"
 )
 
 // mqtt receiver service implementation type
@@ -16,10 +16,10 @@ type mqttReceiverService struct {
 	_log interfaces.ILogger
 
 	// synchronization mutex
-	_mtx              sync.RWMutex
+	_mtx sync.RWMutex
 
 	// IoC provider
-	_ioCProvider      interfaces.IIoCProvider
+	_ioCProvider interfaces.IIoCProvider
 
 	// diagnostic service
 	_diagnosticService interfaces.IDiagnosticService
@@ -28,7 +28,7 @@ type mqttReceiverService struct {
 	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
-	_dalService    interfaces.IDalService
+	_dalService interfaces.IDalService
 
 	// equipment service
 	_equipsService interfaces.IEquipsService
@@ -37,13 +37,13 @@ type mqttReceiverService struct {
 	_eventsService interfaces.IEventsService
 
 	// chanel for DAL communications
-	_dalCh         chan *models.RawMqttMessage
+	_dalCh chan *models.RawMqttMessage
 
 	// chanel for communications with websocket services
-	_webSockCh     chan *models.RawMqttMessage
+	_webSockCh chan *models.RawMqttMessage
 
 	// chanel for communications with events services
-	_eventsCh     chan *models.RawMqttMessage
+	_eventsCh chan *models.RawMqttMessage
 
 	// mqtt connections map
 	// key - topic
@@ -67,7 +67,7 @@ func MqttReceiverServiceNew(
 	topicStorage interfaces.ITopicStorage,
 	dalCh chan *models.RawMqttMessage,
 	webSockCh chan *models.RawMqttMessage,
-	eventsCh  chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
+	eventsCh chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
 	service := &mqttReceiverService{}
 
 	service._log = log
@@ -128,7 +128,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 
 	if !isOff {
 		mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
-		// go equipsService.CheckEquipment(rootTopic) 
+		// go equipsService.CheckEquipment(rootTopic)
 		go service.SendCommand(rootTopic, "serverReady")
 		go eventsService.InsertConnectEvent(rootTopic)
 	}
@@ -165,7 +165,7 @@ func (service *mqttReceiverService) SendCommand(equipment string, command string
 }
 
 // PublishChatNote sends a chat note to equipment via mqtt
-func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string, isInternal bool) {	
+func (service *mqttReceiverService) PublishChatNote(equipment string, message string, user string, isInternal bool) {
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
@@ -181,7 +181,7 @@ func (service *mqttReceiverService) PublishChatNote(equipment string, message st
 
 	if _, ok := mqttConnections[equipment]; !ok {
 		mqttConnections[equipment] = ioCProvider.GetMqttClient().Create(equipment, topics)
-	}	
+	}
 
 	if client, ok := mqttConnections[equipment]; ok {
 		go client.SendChatMessage(user, message)
@@ -226,42 +226,42 @@ func (service *mqttReceiverService) GetConnectionNames() []string {
 func (service *mqttReceiverService) Activate(activatedEquipInfo string, deactivatedEquipInfo string) {
 
 	if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo &&
-		!service._webSocketService.HasActiveClients(deactivatedEquipInfo){
+		!service._webSocketService.HasActiveClients(deactivatedEquipInfo) {
 		service.SendCommand(deactivatedEquipInfo, "deactivate")
 	}
-	
+
 	service.SendCommand(activatedEquipInfo, "activate")
 
 	return
 }
 
-func (service *mqttReceiverService) startActiveConnectionsCheck(){
-		ticker := time.NewTicker(10 * time.Second)
-		defer ticker.Stop()
-		for {
-			select {
-				case _ = <-ticker.C:
-					service._mtx.Lock()				
+func (service *mqttReceiverService) startActiveConnectionsCheck() {
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case _ = <-ticker.C:
+			service._mtx.Lock()
 
-					mqttConnections := service._mqttConnections
-					checkTime := time.Now().Add(time.Duration(-models.KeepAliveCheckPeriod) * time.Second)
+			mqttConnections := service._mqttConnections
+			checkTime := time.Now().Add(time.Duration(-models.KeepAliveCheckPeriod) * time.Second)
 
-					for t, c := range mqttConnections {
-						if(!c.IsEquipTopic()){
-							continue
-						}
+			for t, c := range mqttConnections {
+				if !c.IsEquipTopic() {
+					continue
+				}
 
-						lastTime := c.GetLastAliveMessage()
-						if lastTime.Before(checkTime){
-							state := &models.EquipConnectionState{t, false}
-							go service.UpdateMqttConnections(state)
-							go service._webSocketService.UpdateWebClients(state)
-						}
-					}
-
-					service._mtx.Unlock()
-
-					fmt.Printf("Active connectins: %v\n", len(mqttConnections))
+				lastTime := c.GetLastAliveMessage()
+				if lastTime.Before(checkTime) {
+					state := &models.EquipConnectionState{t, false}
+					go service.UpdateMqttConnections(state)
+					go service._webSocketService.UpdateWebClients(state)
+				}
 			}
+
+			service._mtx.Unlock()
+
+			fmt.Printf("Active connectins: %v\n", len(mqttConnections))
 		}
+	}
 }

@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"../interfaces"
-	"../models"
-	"../utils"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	"ServerConsole/utils"
 )
 
 // chat service implementation type
@@ -25,13 +25,13 @@ type chatService struct {
 	_dalService interfaces.IDalService
 
 	// equipment service
-	_equipsService   interfaces.IEquipsService
+	_equipsService interfaces.IEquipsService
 
 	// chanel for communications with chat services
 	_chatCh chan *models.RawMqttMessage
 
 	// chanel for communications with websocket services
-	_webSockCh     chan *models.RawMqttMessage
+	_webSockCh chan *models.RawMqttMessage
 }
 
 // EventsServiceNew creates an instance of equipsService
@@ -64,15 +64,15 @@ func (service *chatService) Start() {
 	go func() {
 		for d := range service._chatCh {
 			viewmodel := models.ChatViewModel{}
-			json.Unmarshal([]byte(d.Data), &viewmodel)				
-			note := dalService.UpsertChatNote(utils.GetEquipFromTopic(d.Topic), "Chat", "", 
+			json.Unmarshal([]byte(d.Data), &viewmodel)
+			note := dalService.UpsertChatNote(utils.GetEquipFromTopic(d.Topic), "Chat", "",
 				viewmodel.Message, viewmodel.User, viewmodel.IsInternal)
 
 			data, _ := json.Marshal(note)
 			rawMsg := models.RawMqttMessage{d.Topic, string(data), time.Now()}
 			service._webSockCh <- &rawMsg
 		}
-	}() 
+	}()
 }
 
 // GetChatNotes returns all chat notes from db

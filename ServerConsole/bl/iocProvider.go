@@ -1,11 +1,11 @@
 package bl
 
 import (
-	"../dal"
-	"../interfaces"
-	"../models"
-	Models "../models"
-	"../utils"
+	"ServerConsole/dal"
+	"ServerConsole/interfaces"
+	"ServerConsole/models"
+	Models "ServerConsole/models"
+	"ServerConsole/utils"
 )
 
 // IoC provider implementation type
@@ -89,13 +89,13 @@ func InitIoc() interfaces.IIoCProvider {
 	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(log, dalService, equipsCh, internalEventsCh)
 	webSocketService := WebSocketServiceNew(log, _types, diagnosticService, settingsService, webSockCh)
-	eventsService := EventsServiceNew(log, webSocketService, dalService, equipsService, webSockCh, 
+	eventsService := EventsServiceNew(log, webSocketService, dalService, equipsService, webSockCh,
 		eventsCh, internalEventsCh)
 	serverStateService := ServerStateServiceNew(log, dalService)
 	chatService := ChatServiceNew(log, webSocketService, dalService, equipsService, webSockCh, chatCh)
 	mqttReceiverService := MqttReceiverServiceNew(log, _types, diagnosticService, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
-	httpService := HTTPServiceNew(log, diagnosticService, settingsService, mqttReceiverService, webSocketService, dalService, 
+	httpService := HTTPServiceNew(log, diagnosticService, settingsService, mqttReceiverService, webSocketService, dalService,
 		equipsService, eventsService, chatService, authService, serverStateService)
 
 	_types._log = log
@@ -168,7 +168,7 @@ func (t *types) GetWebSocket() interfaces.IWebSock {
 
 // GetMqttClient returns a new IMqttClient instance
 func (t *types) GetMqttClient() interfaces.IMqttClient {
-	return MqttClientNew(t._log, t._diagnosticService, t._settingsService, t._mqttReceiverService, t._webSocketService, 
+	return MqttClientNew(t._log, t._diagnosticService, t._settingsService, t._mqttReceiverService, t._webSocketService,
 		t._dalCh, t._webSockCh, t._equipsCh, t._eventsCh, t._chatCh)
 }
 

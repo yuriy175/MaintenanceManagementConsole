@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
 	"io/ioutil"
+	"net/http"
 
-	interfaces "../interfaces"
+	interfaces "ServerConsole/interfaces"
 )
 
 // ChatController describes communication controller implementation type
@@ -17,16 +17,16 @@ type ChatController struct {
 	_mqttReceiverService interfaces.IMqttReceiverService
 
 	// web socket service
-	_webSocketService    interfaces.IWebSocketService
+	_webSocketService interfaces.IWebSocketService
 
 	// DAL service
-	_dalService    interfaces.IDalService
+	_dalService interfaces.IDalService
 
 	// chat service
 	_chatService interfaces.IChatService
 
 	// http service
-	_httpService   interfaces.IHttpService
+	_httpService interfaces.IHttpService
 
 	// authorization service
 	_authService interfaces.IAuthService
@@ -63,61 +63,61 @@ func (service *ChatController) Handle() {
 	chatService := service._chatService
 	///
 	http.HandleFunc("/equips/GetCommunicationsData", func(w http.ResponseWriter, r *http.Request) {
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
-		equipName := CheckQueryParameter(queryString, "equipName", w) 
-		if equipName == ""{
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
 			log.Error("Url Param 'equipName' is missing")
 			return
 		}
-		
+
 		notes := chatService.GetChatNotes(equipName)
 		json.NewEncoder(w).Encode(notes)
 	})
 
 	http.HandleFunc("/equips/SendNewNote", func(w http.ResponseWriter, r *http.Request) {
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
-		equipName := CheckQueryParameter(queryString, "equipName", w) 
-		if equipName == ""{
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
 			log.Error("Url Param 'equipName' is missing")
 			return
 		}
 
-		msgType := CheckQueryParameter(queryString, "msgType", w) 
-		if msgType == ""{
+		msgType := CheckQueryParameter(queryString, "msgType", w)
+		if msgType == "" {
 			log.Error("Url Param 'msgType' is missing")
 			return
 		}
 
-		id := CheckOptionalQueryParameter(queryString, "id", w) 
+		id := CheckOptionalQueryParameter(queryString, "id", w)
 
-		/*message := CheckQueryParameter(queryString, "message", w) 
+		/*message := CheckQueryParameter(queryString, "message", w)
 		if message == ""{
 			log.Error("Url Param 'message' is missing")
 			return
 		}*/
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
-		message := string (bodyBytes)
+		message := string(bodyBytes)
 
-		if msgType == "Note"{
-			note := dalService.UpsertChatNote(equipName, msgType, id, message, claims.Login, true)		
+		if msgType == "Note" {
+			note := dalService.UpsertChatNote(equipName, msgType, id, message, claims.Login, true)
 			json.NewEncoder(w).Encode(note)
 		} else {
-			if id == ""{
+			if id == "" {
 				mqttReceiverService.PublishChatNote(equipName, message, claims.Login, true)
 			} else {
 				note := dalService.UpsertChatNote(equipName, "Chat", id, message, claims.Login, true)
@@ -126,33 +126,32 @@ func (service *ChatController) Handle() {
 		}
 	})
 	http.HandleFunc("/equips/DeleteNote", func(w http.ResponseWriter, r *http.Request) {
-		claims := CheckUserAuthorization(authService, w, r) 
-				
-		if claims == nil{
+		claims := CheckUserAuthorization(authService, w, r)
+
+		if claims == nil {
 			return
 		}
-		
+
 		queryString := r.URL.Query()
 
-		equipName := CheckQueryParameter(queryString, "equipName", w) 
-		if equipName == ""{
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
 			log.Error("Url Param 'equipName' is missing")
 			return
 		}
 
-		msgType := CheckQueryParameter(queryString, "msgType", w) 
-		if msgType == ""{
+		msgType := CheckQueryParameter(queryString, "msgType", w)
+		if msgType == "" {
 			log.Error("Url Param 'msgType' is missing")
 			return
 		}
 
-		id := CheckQueryParameter(queryString, "id", w) 
-		if id == ""{
+		id := CheckQueryParameter(queryString, "id", w)
+		if id == "" {
 			log.Error("Url Param 'id' is missing")
 			return
 		}
 
-		dalService.DeleteChatNote(equipName, msgType, id)	
+		dalService.DeleteChatNote(equipName, msgType, id)
 	})
 }
-

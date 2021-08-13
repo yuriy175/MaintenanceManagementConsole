@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"net/http"
-	
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	
-	"../interfaces"
+
+	"ServerConsole/interfaces"
 )
 
 // DiagnosticController describes diagnostic controller implementation type
@@ -32,10 +32,10 @@ func DiagnosticControllerNew(
 // Handle handles incomming requests
 func (service *DiagnosticController) Handle() {
 	authService := service._authService
-	
+
 	handler := promhttp.Handler()
 	http.HandleFunc("/equips/metrics", func(w http.ResponseWriter, r *http.Request) {
-		if CheckAdminAuthorization(authService, w, r) != nil{
+		if CheckAdminAuthorization(authService, w, r) != nil {
 			handler.ServeHTTP(w, r)
 		}
 	})
