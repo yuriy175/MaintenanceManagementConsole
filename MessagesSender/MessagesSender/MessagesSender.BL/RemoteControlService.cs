@@ -289,6 +289,7 @@ namespace MessagesSender.BL
         private async Task<bool> OnActivateArrivedAsync()
         {
             await SendXilogsStateAsync();
+            await SendDBInfoStateAsync();
 
             return true;
         }
@@ -303,26 +304,35 @@ namespace MessagesSender.BL
                 return true;
             }
 
-            _isDBInfoUpdating = true;
-            await SendDBInfoStateAsync();
-
-            if (recreate && File.Exists(SqlInfoDbPath))
+            try
             {
-                File.Delete(SqlInfoDbPath);
+                _isDBInfoUpdating = true;
+                await SendDBInfoStateAsync();
+
+                if (recreate && File.Exists(SqlInfoDbPath))
+                {
+                    File.Delete(SqlInfoDbPath);
+                }
+
+                ProcessHelper.ProcessRunAndWait(SqlInfoExePath, SqlInfoCommandLine);
+                await _dbDataService.UpdateDBInfoAsync(recreate);
             }
-
-            // ProcessHelper.ProcessRunAndWait(SqlInfoExePath, SqlInfoCommandLine);
-            await _dbDataService.UpdateDBInfoAsync(recreate);
-
-            _isDBInfoUpdating = false;
-            await SendDBInfoStateAsync();
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "OnUpdateDBInfoAsync error");
+            }
+            finally
+            {
+                _isDBInfoUpdating = false;
+                await SendDBInfoStateAsync();
+            }
 
             return true;
         }
 
         private Task<bool> OnRecreateDBInfoAsync()
         {
-            return OnUpdateDBInfoAsync(recreate: true);
+            return Task<bool>.Run(() => OnUpdateDBInfoAsync(recreate: true));
         }
 
         private async Task SendXilogsStateAsync(bool? ftpSendResult = null)

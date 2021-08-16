@@ -103,6 +103,7 @@ func (service *dalService) Start() {
 	eventsCollection := db.C(models.EventsTableName)
 	equipInfoCollection := db.C(models.EquipmentTableName)
 	chatsCollection := db.C(models.ChatsTableName)
+	allDbTablesCollection := db.C(models.AllDBInfoTableName)
 
 	service.ensureIndeces(sysInfoCollection, []string{"equipname", "datetime"})
 	service.ensureIndeces(sysVolatileInfoCollection, []string{"equipname", "datetime"})
@@ -113,6 +114,8 @@ func (service *dalService) Start() {
 	service.ensureIndeces(equipInfoCollection, []string{"equipname"})
 	service.ensureIndeces(chatsCollection, []string{"equipname"})
 	service.ensureIndeces(eventsCollection, []string{"equipname"})
+	service.ensureIndeces(allDbTablesCollection, []string{"equipname"})
+
 	go service._userRepository.EnsureAdmin()
 
 	go func() {
@@ -540,6 +543,11 @@ func (service *dalService) GetDBSoftwareInfo(equipName string) *models.DBSoftwar
 // GetLastSeenInfo returns last event datetime from db
 func (service *dalService) GetLastSeenInfo(equipName string) time.Time {
 	return service._eventsRepository.GetLastSeenInfo(equipName)
+}
+
+// DisableAllDBInfo disables all db info
+func (service *dalService) DisableAllDBInfo(equipName string) {
+	service._dbInfoRepository.DisableAllDBInfo(equipName)
 }
 
 // GetEvents returns all events from db

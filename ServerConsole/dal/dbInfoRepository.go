@@ -77,7 +77,7 @@ func (repository *DbInfoRepository) GetAllTableNamesInfo(equipName string) *mode
 
 	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
 
-	query := bson.M{"equipname": equipName}
+	query := bson.M{"equipname": equipName, "hidden": false}
 
 	allInfo := models.AllDBInfoModel{}
 	allInfoCollection.Find(query).Sort("datetime").One(&allInfo)
@@ -111,7 +111,7 @@ func (repository *DbInfoRepository) GetTableContent(equipName string, tableType 
 
 	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
 
-	query := bson.M{"equipname": equipName}
+	query := bson.M{"equipname": equipName, "hidden": false}
 
 	allInfos := []models.AllDBInfoModel{}
 	allInfoCollection.Find(query).Sort("datetime").All(&allInfos)
@@ -172,7 +172,11 @@ func (repository *DbInfoRepository) GetDBSystemInfo(equipName string) []map[stri
 
 	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
 
-	query := bson.M{"equipname": equipName}
+	// query := bson.M{"equipname": equipName, "hidden": false}
+	// query := bson.M{"equipname": equipName}
+	query := bson.M{"$and": []bson.M{
+		bson.M{"equipname": equipName},
+		bson.M{"hidden": false}}}
 
 	maps := []map[string]json.RawMessage{}
 	allInfos := []models.AllDBInfoModel{}
@@ -194,7 +198,7 @@ func (repository *DbInfoRepository) GetDBSoftwareInfo(equipName string) *models.
 
 	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
 
-	query := bson.M{"equipname": equipName}
+	query := bson.M{"equipname": equipName, "hidden": false}
 
 	allInfos := []models.AllDBInfoModel{}
 	allInfoCollection.Find(query).Sort("datetime").All(&allInfos)
@@ -205,4 +209,21 @@ func (repository *DbInfoRepository) GetDBSoftwareInfo(equipName string) *models.
 	}
 
 	return &swInfo
+}
+
+// DisableAllDBInfo disables all db info
+func (repository *DbInfoRepository) DisableAllDBInfo(equipName string) {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	allInfoCollection := session.DB(repository._dbName).C(models.AllDBInfoTableName)
+
+	_, err := allInfoCollection.UpdateAll(
+		bson.M{"equipname": equipName},
+		bson.D{
+			{"$set", bson.D{{"hidden", true}}}})
+
+	if err != nil {
+		repository._log.Errorf("DisableAllDBInfo error %v", err)
+	}
 }

@@ -57,6 +57,9 @@ type IDalService interface {
 	// GetDBSoftwareInfo returns permanent software info from db
 	GetDBSoftwareInfo(equipName string) *models.DBSoftwareInfoModel
 
+	// DisableAllDBInfo disables all db info
+	DisableAllDBInfo(equipName string)
+
 	// GetLastSeenInfo returns last event datetime from db
 	GetLastSeenInfo(equipName string) time.Time
 

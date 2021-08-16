@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MessagesSender.Core.Interfaces;
 
 namespace MessagesSender.BL
@@ -224,7 +225,8 @@ namespace MessagesSender.BL
         /// </summary>
         public void ServerReadyCommandArrived()
         {
-            _eventHandlers[EventTypes.ServerReady].ForEach(h => (h as Action)());
+            _eventHandlers[EventTypes.ServerReady].ForEach(h => 
+                Task.Run(() => (h as Action)()));
         }
 
         /// <summary>

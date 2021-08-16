@@ -21,8 +21,8 @@ type StudyInWorkModel struct {
 
 // RawMqttMessage describes a raw mqtt message from equipment
 type RawMqttMessage struct {
-	Topic string
-	Data  string
+	Topic   string
+	Data    string
 	Arrival time.Time
 }
 
@@ -277,8 +277,8 @@ type EquipInfoModel struct {
 	HospitalAddress   string
 	HospitalLongitude string
 	HospitalLatitude  string
-	Disabled     bool
-	Renamed     bool
+	Disabled          bool
+	Renamed           bool
 }
 
 // RawDeviceInfoModel describes raw device data from equipment info DB model
@@ -298,6 +298,7 @@ type AllDBInfoModel struct {
 	Software  map[string]json.RawMessage //string
 	System    map[string]json.RawMessage //string
 	Atlas     map[string]json.RawMessage //string
+	Hidden    bool
 }
 
 // AllDBTablesModel describes all db info from equipment info DB model
@@ -317,51 +318,51 @@ type DBSoftwareInfoModel struct {
 
 // EventModel describes event DB model
 type EventModel struct {
-	ID               bson.ObjectId `bson:"_id"`
-	DateTime         time.Time
-	EquipName        string
+	ID          bson.ObjectId `bson:"_id"`
+	DateTime    time.Time
+	EquipName   string
 	Type        string
-	Title        string
+	Title       string
 	Description string
-	Details string
+	Details     string
 }
 
 // ChatModel describes chat notes DB model
 type ChatModel struct {
-	ID               bson.ObjectId `bson:"_id"`
-	DateTime         time.Time
-	EquipName        string
-	Type        string
-	Message        string
-	User string
-	Hidden bool
-	IsInternal bool 
+	ID         bson.ObjectId `bson:"_id"`
+	DateTime   time.Time
+	EquipName  string
+	Type       string
+	Message    string
+	User       string
+	Hidden     bool
+	IsInternal bool
 }
 
 // FullEquipInfoModel describes full equipment permanent info view model to ui
 type FullEquipInfoModel struct {
-	SoftwareInfo   DBSoftwareInfoModel
-	SystemInfo []map[string]json.RawMessage
-	LastSeen time.Time
+	SoftwareInfo DBSoftwareInfoModel
+	SystemInfo   []map[string]json.RawMessage
+	LastSeen     time.Time
 	LocationInfo DetailedEquipInfoModel
 }
 
 // ServerState describes server state model
-type ServerState struct {	
-	DBUsedSize        float64
+type ServerState struct {
+	DBUsedSize     float64
 	DiskTotalSpace float64
-	DiskUsedSpace float64
+	DiskUsedSpace  float64
 }
 
 // RenamedEquipInfoModel describes renamed equipments DB model
 type RenamedEquipInfoModel struct {
-	ID                bson.ObjectId `bson:"_id"`
-	HddNumber        string
-	OldEquipNames      []string
+	ID            bson.ObjectId `bson:"_id"`
+	HddNumber     string
+	OldEquipNames []string
 }
 
 type DetailedEquipInfoModel struct {
 	EquipInfoModel
-	IsActive          bool
-	LastSeen      *time.Time
+	IsActive bool
+	LastSeen *time.Time
 }

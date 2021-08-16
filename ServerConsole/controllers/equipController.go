@@ -237,6 +237,15 @@ func (service *EquipController) Handle() {
 			return
 		}
 
+		queryString := r.URL.Query()
+
+		equipInfo := CheckQueryParameter(queryString, "activatedEquipInfo", w)
+		if equipInfo == "" {
+			log.Error("Url Param 'equipInfo' is missing")
+			return
+		}
+
+		go dalService.DisableAllDBInfo(equipInfo)
 		service.sendCommand(w, r, "recreateDBInfo")
 	})
 
@@ -426,7 +435,7 @@ func (service *EquipController) Handle() {
 		}
 
 		equipName := CheckQueryParameter(queryString, "equipName", w)
-		if equipType == "" {
+		if equipName == "" {
 			log.Error("Url Param 'equipName' is missing")
 			return
 		}
