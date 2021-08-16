@@ -28,6 +28,7 @@ namespace MessagesSender.BL
             GetHospitalInfo,
             UpdateDBInfo,
             ServerReady,
+            RecreateDBInfo,
         }
 
         /// <summary>
@@ -199,6 +200,23 @@ namespace MessagesSender.BL
         public void RegisterUpdateDBInfoCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.UpdateDBInfo].Add(handler);
+        }
+
+        /// <summary>
+        /// RecreateDBInfo command arrived
+        /// </summary>
+        public void RecreateDBInfoCommandArrived()
+        {
+            _eventHandlers[EventTypes.RecreateDBInfo].ForEach(h => (h as Action)());
+        }
+
+        /// <summary>
+        /// register RecreateDBInfo command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>    
+        public void RegisterRecreateDBInfoCommandArrivedEvent(Action handler)
+        {
+            _eventHandlers[EventTypes.RecreateDBInfo].Add(handler);
         }
 
         /// <summary>

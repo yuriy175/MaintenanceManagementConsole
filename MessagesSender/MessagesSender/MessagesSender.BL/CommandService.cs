@@ -36,7 +36,8 @@ namespace MessagesSender.BL
         private const string EquipInfoCommandName = "equipInfo";
         private const string ServerReadyCommandName = "serverReady";        
         private const string UpdateDBInfoCommandName = "updateDBInfo";
-        
+        private const string RecreateDBInfoCommandName = "recreateDBInfo";
+
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
 
@@ -68,6 +69,7 @@ namespace MessagesSender.BL
                 { EquipInfoCommandName, () => OnEquipInfoCommand() },
                 { ServerReadyCommandName, () => OnServerReadyCommand() },
                 { UpdateDBInfoCommandName, () => OnUpdateDBInfoCommand() },
+                { RecreateDBInfoCommandName, () => OnRecreateDBInfoCommand() },
             };
 
             _eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
@@ -142,5 +144,10 @@ namespace MessagesSender.BL
         {
             _eventPublisher.UpdateDBInfoCommandArrived();
         }
+
+        private void OnRecreateDBInfoCommand()
+        {
+            _eventPublisher.RecreateDBInfoCommandArrived();
+        }        
     }
 }

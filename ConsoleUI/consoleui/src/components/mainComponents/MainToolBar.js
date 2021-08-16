@@ -116,6 +116,9 @@ export default function MainToolBar() {
     else if(SummaryTabIndex === selectedTab && SummaryChatTabPanelIndex === selectedTabPanel){        
       getChats(equipInfo);
     }
+    else if(SummaryTabIndex === selectedTab && SummaryDBTabPanelIndex === selectedTabPanel && equipInfo){
+      getAllDBTables(equipInfo);
+    }
   }
 
   const getEvents = async (equipInfo) =>
@@ -135,6 +138,12 @@ export default function MainToolBar() {
   {
     const metrics = await ControlWorker.GetServerMetrics(token);
     controlDispatch({ type: 'SETDIAGNOSTIC', payload: metrics }); 
+  }
+
+  const getAllDBTables = async (equipInfo) =>
+  {
+    const allTables = await EquipWorker.GetAllTables(token, equipInfo);
+    currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
   }
 
   const getChats = async (equipInfo) =>
@@ -162,8 +171,7 @@ export default function MainToolBar() {
 
   const onTabIndexChange = async (event, newValue) => {
     if(SummaryTabIndex === selectedTab && SummaryDBTabPanelIndex === newValue && equipInfo){
-      const allTables = await EquipWorker.GetAllTables(token, equipInfo);
-      currEquipDispatch({ type: 'SETALLDBTABLES', payload: allTables }); 
+      getAllDBTables(equipInfo);
     }
     else if(SummaryTabIndex === selectedTab && SummaryHistoryTabPanelIndex === newValue){        
       getEvents(equipInfo);

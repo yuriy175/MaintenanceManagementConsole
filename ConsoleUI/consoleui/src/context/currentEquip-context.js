@@ -191,10 +191,34 @@ function reducer(state, action) {
     }    
 
     case 'SETFULLINFO': {
+      const systemInfo = {};
+      const payloadSystemInfo = action.payload?.SystemInfo;
+      if(payloadSystemInfo?.[0]){
+        const sysKeys = Object.keys(payloadSystemInfo[0]);        
+        sysKeys?.forEach(k =>{
+          const jointArr = payloadSystemInfo
+            .map(p => [...p[k]])
+            .filter(p => p.length > 0);
+          systemInfo[k] = [...jointArr];
+        });
+      }
+
+      const softwareInfo = {};
+      const payloadSoftwareInfo = action.payload?.SoftwareInfo;
+      if(payloadSoftwareInfo?.[0]){
+        const sysKeys = Object.keys(payloadSoftwareInfo[0]);        
+        sysKeys?.forEach(k =>{
+          const jointArr = payloadSoftwareInfo
+            .map(p => [...p[k]])
+            .filter(p => p.length > 0);
+            softwareInfo[k] = [...jointArr];
+        });
+      }
+
       return {
         ...state,
-        system: action.payload?.SystemInfo[0],
-        software: action.payload?.SoftwareInfo[0],
+        system: systemInfo,
+        software: softwareInfo,
         lastSeen: action.payload?.LastSeen,
         locationInfo: action.payload?.LocationInfo
       };

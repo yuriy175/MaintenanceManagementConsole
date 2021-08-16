@@ -70,17 +70,18 @@ namespace MessagesSender.BL
         /// <summary>
         /// Updates db info
         /// </summary>
+        /// <param name="recreate">if to update or recreate db</param>
         /// <returns>result</returns>
-        public Task<bool> UpdateDBInfoAsync()
+        public Task<bool> UpdateDBInfoAsync(bool recreate = false)
         {
-            return SendAllDBDataAsync();
+            return SendAllDBDataAsync(recreate);
         }
 
         private void OnDeactivateArrivedAsync()
         {            
         }
 
-        private async Task<bool> SendAllDBDataAsync()
+        private async Task<bool> SendAllDBDataAsync(bool recreate = false)
         {
             var newsData = await _dbInfoEntityService.GetNewsDataAsync();
             if (!newsData.Any())
@@ -146,8 +147,8 @@ namespace MessagesSender.BL
             await _dbInfoEntityService.SetNewsDataSentAsync();
 
             SendDBChangedEventAsync(
-                "Конфигурация изменена",
-                string.Join(' ', newTables.Keys)
+                recreate ? "Конфигурация пересоздана" : "Конфигурация изменена",
+                recreate ? string.Empty : string.Join(' ', newTables.Keys)
                 );
 
             return true;

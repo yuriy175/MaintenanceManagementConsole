@@ -10,6 +10,19 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow from './CardRow'
 
+const unifyArr = (arr, propName, activePropName = 'Active') => {
+  if (!arr){
+    return [];
+  }
+
+  var unifiedArr = [...new Set(arr.map(a => a[propName]))]
+    .map(p => arr.find( a => a[propName] == p))
+    .filter(p => p[activePropName])
+    .reverse();
+
+  return unifiedArr;
+}
+
 const SystemCard = React.memo((props) => {
 //export default function SystemCard() {
   console.log(`! render SystemCard`);
@@ -19,13 +32,13 @@ const SystemCard = React.memo((props) => {
 
   const system = props.system;
   const volatile = props.volatile;
-  const logicalDisks = system?.LogicalDisks; // HDD
-  const physicalDisks = system?.HardDrives;  // PhysicalDisks
-  const lans = system?.Lans; // Network
-  const vgas = system?.VideoAdapters; // VGA
-  const monitors = system?.Monitors; // Monitor
-  const printers = system?.Printers; //Printer
-  const processor = system?.Motherboards ? system?.Motherboards[0] : undefined; // Processor
+  const logicalDisks = unifyArr(system?.LogicalDisks?.flat().reverse(), 'Letter'); // HDD
+  const physicalDisks = unifyArr(system?.HardDrives?.flat().reverse(), 'FriendlyName');  // PhysicalDisks
+  const lans = unifyArr(system?.Lans?.flat().reverse(), 'Adapter'); // Network
+  const vgas = unifyArr(system?.VideoAdapters?.flat().reverse(), 'CardName'); // VGA
+  const monitors = unifyArr(system?.Monitors?.flat().reverse(), 'MonitorName'); // Monitor
+  const printers = unifyArr(system?.Printers?.flat().reverse(), 'PrinterName'); //Printer
+  const processor = system?.Motherboards?.[0]?.[0]; // Processor
   //
   return (
     <Card className={classes.root}>

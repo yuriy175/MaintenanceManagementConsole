@@ -119,6 +119,17 @@ namespace MessagesSender.Core.Interfaces
         void RegisterUpdateDBInfoCommandArrivedEvent(Action handler);
 
         /// <summary>
+        /// RecreateDBInfo command arrived
+        /// </summary>
+        void RecreateDBInfoCommandArrived();
+
+        /// <summary>
+        /// register RecreateDBInfo command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>    
+        void RegisterRecreateDBInfoCommandArrivedEvent(Action handler);
+
+        /// <summary>
         /// ServerReady command arrived
         /// </summary>
         void ServerReadyCommandArrived();

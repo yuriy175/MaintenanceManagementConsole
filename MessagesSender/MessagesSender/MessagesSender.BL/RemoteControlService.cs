@@ -37,6 +37,7 @@ namespace MessagesSender.BL
         private const string TeamViewerImagePath = @"tvImage.jpeg";
         private const string XilogsCommandLineFormat = "{0} {1} {2} \"{3}\"";
         private const string SqlInfoExePath = @".\SqlInfo\sqlinfo.exe";
+        private const string SqlInfoDbPath = @".\SqlInfo\info.db";
         private const string SqlInfoCommandLine = "";
 
         private readonly IConfigurationService _configurationService;
@@ -102,6 +103,7 @@ namespace MessagesSender.BL
             _eventPublisher.RegisterSendAtlasLogsCommandArrivedEvent(() => SendAtlasLogsAsync());
             _eventPublisher.RegisterXilibLogsOnCommandArrivedEvent(() => XilibLogsOnAsync());
             _eventPublisher.RegisterUpdateDBInfoCommandArrivedEvent(() => OnUpdateDBInfoAsync());
+            _eventPublisher.RegisterRecreateDBInfoCommandArrivedEvent(() => OnRecreateDBInfoAsync());
 
             _installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
 
@@ -290,7 +292,7 @@ namespace MessagesSender.BL
             return true;
         }
 
-        private async Task<bool> OnUpdateDBInfoAsync()
+        private async Task<bool> OnUpdateDBInfoAsync(bool recreate = false)
         {
             if (_isDBInfoUpdating)
             {
@@ -301,13 +303,23 @@ namespace MessagesSender.BL
             _isDBInfoUpdating = true;
             await SendDBInfoStateAsync();
 
+            if (recreate && File.Exists(SqlInfoDbPath))
+            {
+                File.Delete(SqlInfoDbPath);
+            }
+
             ProcessHelper.ProcessRunAndWait(SqlInfoExePath, SqlInfoCommandLine);
-            await _dbDataService.UpdateDBInfoAsync();
+            await _dbDataService.UpdateDBInfoAsync(recreate);
 
             _isDBInfoUpdating = false;
             await SendDBInfoStateAsync();
 
             return true;
+        }
+
+        private Task<bool> OnRecreateDBInfoAsync()
+        {
+            return OnUpdateDBInfoAsync(recreate: true);
         }
 
         private async Task SendXilogsStateAsync(bool? ftpSendResult = null)

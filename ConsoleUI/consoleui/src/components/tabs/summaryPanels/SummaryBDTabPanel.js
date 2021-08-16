@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
@@ -58,6 +58,12 @@ export default function SummaryBDTabPanel(props) {
   const allDBs = currEquipState.allDBs;
   const allDBTables = currEquipState.allDBTables;
 
+  useEffect(() => {
+    if(Object.keys(currEquipState.allDBTables).length === 0){
+      setTableContent('');
+    }  
+}, [currEquipState.allDBTables]);
+
   const getColumn = (key) => { 
     if(key.toLowerCase() === 'active')
     {
@@ -92,15 +98,15 @@ export default function SummaryBDTabPanel(props) {
 
   const onRecreate = async () => {
     const content = await EquipWorker.RecreateDBInfo(token, equipInfo);    
-  };
-  
+  }; 
+    
   const columns = tableContent.length === 0 ? [] : Object.keys(tableContent[0]).map(k => getColumn(k));
   const rows = tableContent.length === 0 ? [] : tableContent;
 
-  const hospTableMenu = currEquipState.allDBTables?.Hospital;
-  const systemTableMenu = currEquipState.allDBTables?.System;
-  const softwareTableMenu = currEquipState.allDBTables?.Software;
-  const atlasTableMenu = currEquipState.allDBTables?.Atlas;
+  const hospTableMenu = allDBTables?.Hospital;
+  const systemTableMenu = allDBTables?.System;
+  const softwareTableMenu = allDBTables?.Software;
+  const atlasTableMenu = allDBTables?.Atlas;
   return (
     <div className={classes.root}>
       {/* <div className={classes.listPanel}> */}

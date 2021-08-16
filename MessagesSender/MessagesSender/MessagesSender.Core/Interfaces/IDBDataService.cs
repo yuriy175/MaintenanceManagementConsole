@@ -15,7 +15,8 @@ namespace MessagesSender.Core.Interfaces
         /// <summary>
         /// Updates db info
         /// </summary>
+        /// <param name="recreate">if to update or recreate db</param>
         /// <returns>result</returns>
-        Task<bool> UpdateDBInfoAsync();
+        Task<bool> UpdateDBInfoAsync(bool recreate = false);
     }
 }
