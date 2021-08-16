@@ -10,6 +10,20 @@ import { CurrentEquipContext } from '../../context/currentEquip-context';
 import {useCardsStyles} from './CommonCard'
 import CardRow, {CardErrorRow} from './CardRow'
 
+const unifyArr = (arr, propName, activePropName = 'Active') => {
+  if (!arr){
+    return [];
+  }
+
+  var unifiedArr = [...new Set(arr.map(a => a[propName]))]
+    .map(p => arr.find( a => a[propName] == p))
+    .filter(p => p[activePropName])
+    .reverse();
+
+  return unifiedArr;
+}
+
+
 const SoftwareCard = React.memo((props) => {
 //export default function SoftwareCard() {
   console.log(`! render SoftwareCard`);
@@ -20,11 +34,15 @@ const SoftwareCard = React.memo((props) => {
   const volatile = props.volatile;
   const dbStates = volatile?.DBStates;
   const software = props.software?.Software;
-  const atlas = Array.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;
   const atlasUser = volatile?.AtlasUser || volatile?.AtlasStatus?.AtlasUser;
+  /*const atlas = Array.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;  
   const osInfo = Array.isArray(software?.OsInfos) ? software?.OsInfos[0] : null; 
   const sql = Array.isArray(software?.SqlServices) ? software?.SqlServices[0] : null; 
-  const databases = dbStates ?? software?.SqlDatabases;
+  const databases = dbStates ?? software?.SqlDatabases;*/
+  const atlas = unifyArr(software?.Atlas?.flat(), 'Id')?.[0]; // NetworkArray.isArray(software?.Atlas) ? software?.Atlas[0] : null;  // props.software?.Atlas;
+  const osInfo = unifyArr(software?.OsInfos?.flat(), 'OsCaption')?.[0]; 
+  const sql = unifyArr(software?.SqlServices?.flat(), 'SqlName')?.[0]; 
+  const databases = dbStates ?? unifyArr(software?.SqlDatabases?.flat(), 'Name');  //SqlDatabases;
   const atlasRunning = volatile?.AtlasStatus?.AtlasRunning;
 
   return (

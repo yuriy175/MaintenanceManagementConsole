@@ -104,12 +104,13 @@ namespace MessagesSender.BL
             _eventPublisher.RegisterXilibLogsOnCommandArrivedEvent(() => XilibLogsOnAsync());
             _eventPublisher.RegisterUpdateDBInfoCommandArrivedEvent(() => OnUpdateDBInfoAsync());
             _eventPublisher.RegisterRecreateDBInfoCommandArrivedEvent(() => OnRecreateDBInfoAsync());
+            _eventPublisher.RegisterServerReadyCommandArrivedEvent(() => OnServerReadyArrivedAsync());
 
             _installPath = _configurationService.Get<string>(InstallPathName, @"C:\Program Files\Atlas\bin");
 
             new Action[]
                 {
-                    async () => _ = await OnUpdateDBInfoAsync(),
+                    // async () => _ = await OnUpdateDBInfoAsync(),
                     async () =>
                     {
                         var configParam = await _dbConfigEntityService.GetConfigParamAsync(EtlXilibLogsEnabledName);
@@ -292,6 +293,8 @@ namespace MessagesSender.BL
             return true;
         }
 
+        private Task OnServerReadyArrivedAsync() => OnUpdateDBInfoAsync();
+
         private async Task<bool> OnUpdateDBInfoAsync(bool recreate = false)
         {
             if (_isDBInfoUpdating)
@@ -308,7 +311,7 @@ namespace MessagesSender.BL
                 File.Delete(SqlInfoDbPath);
             }
 
-            ProcessHelper.ProcessRunAndWait(SqlInfoExePath, SqlInfoCommandLine);
+            // ProcessHelper.ProcessRunAndWait(SqlInfoExePath, SqlInfoCommandLine);
             await _dbDataService.UpdateDBInfoAsync(recreate);
 
             _isDBInfoUpdating = false;

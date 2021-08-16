@@ -2,6 +2,19 @@ import React, { useReducer, createContext } from 'react';
 
 export const CurrentEquipContext = createContext();
 
+const reduceInfo = (payloadInfo, info) =>{
+  if(payloadInfo?.[0]){
+    const sysKeys = Object.keys(payloadInfo[0]);        
+    sysKeys?.forEach(k =>{
+      const jointArr = payloadInfo
+        .map(p => [...p[k]])
+        .filter(p => p.length > 0);
+      info[k] = [...jointArr];
+    });
+  }
+}
+
+
 const initialState = {
   equipInfo: '',
   detectors: [],
@@ -203,17 +216,33 @@ function reducer(state, action) {
         });
       }
 
-      const softwareInfo = {};
-      const payloadSoftwareInfo = action.payload?.SoftwareInfo;
-      if(payloadSoftwareInfo?.[0]){
-        const sysKeys = Object.keys(payloadSoftwareInfo[0]);        
+      const softwareInfoAtlas = [];
+      const softwareInfoSoftware = [];
+      const payloadSoftwareInfoAtlas = action.payload?.SoftwareInfo?.Atlas;
+      const payloadSoftwareInfoSw = action.payload?.SoftwareInfo?.Software;
+      /*if(payloadSoftwareInfoAtlas?.[0]){
+        const sysKeys = Object.keys(payloadSoftwareInfoAtlas[0]);        
         sysKeys?.forEach(k =>{
-          const jointArr = payloadSoftwareInfo
+          const jointArr = payloadSoftwareInfoAtlas
             .map(p => [...p[k]])
             .filter(p => p.length > 0);
-            softwareInfo[k] = [...jointArr];
+            softwareInfoAtlas[k] = [...jointArr];
         });
       }
+
+      if(payloadSoftwareInfoSw?.[0]){
+        const sysKeys = Object.keys(payloadSoftwareInfoSw[0]);        
+        sysKeys?.forEach(k =>{
+          const jointArr = payloadSoftwareInfoSw
+            .map(p => [...p[k]])
+            .filter(p => p.length > 0);
+            softwareInfoSoftware[k] = [...jointArr];
+        });
+      }*/
+      reduceInfo(payloadSoftwareInfoAtlas, softwareInfoAtlas);
+      reduceInfo(payloadSoftwareInfoSw, softwareInfoSoftware);
+
+      const softwareInfo = {Atlas:softwareInfoAtlas, Software: softwareInfoSoftware};
 
       return {
         ...state,
