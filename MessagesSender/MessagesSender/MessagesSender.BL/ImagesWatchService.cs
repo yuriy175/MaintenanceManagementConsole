@@ -73,12 +73,12 @@ namespace MessagesSender.BL
         {
             return Task.Run(() =>
             {
-                _mqService.Subscribe<MQCommands, int>(
-                        (MQCommands.NewImageCreated, async imageId => OnNewImageCreatedAsync(imageId)));
+                _mqService.Subscribe<MQCommands, (int Id, ImageTypes ImageType)>(
+                        (MQCommands.NewImageCreated, async image => OnNewImageCreatedAsync(image)));
             });
         }
         
-        private async Task<bool> OnNewImageCreatedAsync(int imageId)
+        private async Task<bool> OnNewImageCreatedAsync((int Id, ImageTypes ImageType) image)
         {
             if (!_isActivated)
             {

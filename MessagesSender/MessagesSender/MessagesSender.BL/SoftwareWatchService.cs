@@ -48,7 +48,7 @@ namespace MessagesSender.BL
         private EventLogWatcher _appWatcher = null;
         private EventLogWatcher _sysWatcher = null;
         private bool _isActivated = false;
-        private (string UserName, IEnumerable<string> UserRoles)? _currentUserProps = null;
+        private (string UserName, string PersonInfo, IEnumerable<string> UserRoles)? _currentUserProps = null;
 
         /// <summary>
         /// public constructor
@@ -211,7 +211,7 @@ namespace MessagesSender.BL
         {
             return Task.Run(() =>
             {
-                _mqService.Subscribe<MQCommands, (string, IEnumerable<string>)>(
+                _mqService.Subscribe<MQCommands, (string, string, IEnumerable<string>)>(
                         (MQCommands.UserLoggedIn, userProps => OnUserLogInAsync(userProps)));
 
                 _mqService.Subscribe<MQCommands, int>(
@@ -242,7 +242,7 @@ namespace MessagesSender.BL
             _currentUserProps = null;
         }
 
-        private async Task OnUserLogInAsync((string UserName, IEnumerable<string> UserRoles) userProps)
+        private async Task OnUserLogInAsync((string UserName, string PersonInfo, IEnumerable<string> UserRoles) userProps)
         {
             _currentUserProps = userProps;
             await SendUserLogInAsync();
