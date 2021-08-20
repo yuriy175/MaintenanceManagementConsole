@@ -36,6 +36,7 @@ const StandCard = React.memo((props) => {
         <CardRow descr="Угол наклона детектора" value={stand?.State?.Camera_Incline}></CardRow>
         <CardRow descr="Фокусное расстояние" value={stand?.State?.Ffd_Current}></CardRow>
         <CardRow descr="Высота стола" value={stand?.State?.Deck_Height}></CardRow>
+        <CardRow descr="Высота излучателя" value={stand?.State?.Uarm_Height}></CardRow>
         <CardRow descr="Ошибки" value={stand?.State?.ErrorDescriptions?.length}></CardRow>
         {stand?.State?.ErrorDescriptions?.length ? 
           stand.State.ErrorDescriptions.map((i, ind) => (

@@ -26,6 +26,13 @@ namespace MessagesSender
             if (!mutex.WaitOne(0, false))
             {
                 Console.WriteLine("Instance already running");
+
+                Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    Environment.Exit(0);
+                });
+
                 Console.ReadKey();
 
                 return;

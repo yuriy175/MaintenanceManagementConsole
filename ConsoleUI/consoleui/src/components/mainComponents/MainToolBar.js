@@ -236,21 +236,21 @@ export default function MainToolBar() {
               </Select>
             </FormControl>
             <Tabs value={selectedTabPanel} onChange={onTabIndexChange} aria-label="simple tabs example" className={classes.tabControl}>
-              <Tab label="Главная" id= "mainTabPanel" />
+              <Tab label="Главная" id= "mainTabPanel" key="mainTabPanel"/>
               {isValidSummaryTab?
-                  <Tab label="БД" id= "dbTabPanel" /> : <></>
+                  <Tab label="БД" id= "dbTabPanel" key="dbTabPanel"/> : <div key="dbTabPanel"></div>
               }
               {isValidSummaryTab?
-                  <Tab label="История" id= "histTabPanel" /> : <></>
+                  <Tab label="История" id= "histTabPanel" key="histTabPanel"/> : <div></div>
               }
               {isValidSummaryTab?
-                  <Tab label="Коммуникации" id= "chatTabPanel" /> : <></>
+                  <Tab label="Коммуникации" id= "chatTabPanel" key="chatTabPanel"/> : <div></div>
               }
               {selectedTab === AdminTabIndex?
-                  <Tab label="Логи" id= "logsTabPanel" /> : <></>              
+                  <Tab label="Логи" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>              
               }            
               {selectedTab === ControlTabIndex?
-                  <Tab label="Диагностика" id= "diagnosticTabPanel" /> : <></>              
+                  <Tab label="Диагностика" id= "diagnosticTabPanel" key="diagnosticTabPanel"/> : <div></div>              
               }           
             </Tabs>
             {selectedTab === SummaryTabIndex?

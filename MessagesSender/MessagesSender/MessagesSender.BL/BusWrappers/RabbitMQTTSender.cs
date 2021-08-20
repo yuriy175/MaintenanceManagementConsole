@@ -46,7 +46,7 @@ namespace MessagesSender.BL.Remoting
             { MQCommands.ProcessDoseArrived.ToString(), "/dosimeter/state" },
             { MQMessages.DicomInfo.ToString(), "/dicom" },
             { MQMessages.SoftwareInfo.ToString(), "/ARM/Software" },
-            { MQMessages.SoftwareMsgInfo.ToString(), "/ARM/Software/msg" },            
+            { MQMessages.SoftwareMsgInfo.ToString(), "/ARM/Software/msg" },
             { MQMessages.RemoteAccess.ToString(), "/remoteaccess" },
             { MQMessages.ImagesInfo.ToString(), "/images" },
             { MQMessages.Events.ToString(), "/events" },

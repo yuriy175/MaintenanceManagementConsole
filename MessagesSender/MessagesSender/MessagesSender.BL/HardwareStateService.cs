@@ -32,6 +32,7 @@ namespace MessagesSender.BL
         private const int GeneratorConnectedValue = 4;
         private const int CollimatorConnectedValue = 2;
         private const int DosimeterConnectedValue = 2;
+        private const int StandBlockedValue = 7;        
 
         private readonly ILogger _logger;
         private readonly IMQCommunicationService _mqService;
@@ -40,6 +41,7 @@ namespace MessagesSender.BL
         private readonly ISendingService _sendingService;
 
         private bool _isActivated = false;
+        private DetectorStates _detectorState = DetectorStates.Invalid;
 
         /// <summary>
         /// public constructor
@@ -112,6 +114,23 @@ namespace MessagesSender.BL
             {
                 state.State.State = (int)(state.State.State.Value < StandConnectedValue ?
                     ConnectionStates.Disconnected : ConnectionStates.Connected);
+
+                if (state.State.State == StandBlockedValue)
+                {
+                    SendHardwareErrorAsync("Сообщение от штатива", new[]
+                    {
+                        new DeviceError
+                        {
+                            Code = "Активирован аварийный выключатель",
+                            Description = string.Empty,
+                        },
+                    });
+                }
+            }
+
+            if (state.State.ErrorDescriptions != null)
+            {
+                SendHardwareErrorAsync("Ошибка штатива", state.State.ErrorDescriptions);
             }
 
             _sendingService.SendInfoToMqttAsync(
@@ -131,6 +150,11 @@ namespace MessagesSender.BL
             {
                 state.State.State = (int)(state.State.State.Value < GeneratorConnectedValue ?
                     ConnectionStates.Disconnected : ConnectionStates.Connected);
+            }
+
+            if (state.State.ErrorDescriptions != null)
+            {
+                SendHardwareErrorAsync("Ошибка генератора", state.State.ErrorDescriptions);
             }
 
             _sendingService.SendInfoToMqttAsync(
@@ -186,12 +210,26 @@ namespace MessagesSender.BL
 
         private void OnDetectorStateChanged((int DetectorId, string DetectorName, DetectorState State) state)
         {
-            if (_isActivated)
+            if (state.State.State != _detectorState) // _isActivated)
             {
                 _sendingService.SendInfoToMqttAsync(
                     MQCommands.DetectorStateArrived,
                     new { state.DetectorId, state.DetectorName, state.State.State });
             }
+
+            if (_detectorState == DetectorStates.Created && state.State.State == DetectorStates.CreationFailed)
+            {
+                SendHardwareErrorAsync("Ошибка детектора", new[] 
+                { 
+                    new DeviceError 
+                    { 
+                        Code = "Ошибка инициализации детектора",
+                        Description = string.Empty,
+                    }, 
+                });
+            }
+
+            _detectorState = state.State.State;
         }
 
         private void OnDetectorFieldChanged((int DetectorId, int? DetectorField) state)
@@ -271,6 +309,22 @@ namespace MessagesSender.BL
             return true;
         }
 
+        private void SendHardwareErrorAsync(string level, DeviceError[] errors)
+        {
+            _ = _sendingService.SendInfoToMqttAsync(
+                    MQMessages.SoftwareMsgInfo,
+                    new
+                    {
+                        HardwareErrorDescriptions = errors.Select(e =>
+                            new
+                            {
+                                Level = level,
+                                Code = e.Code,
+                                Description = e.Message,
+                            }).ToArray(),
+                    });
+        }
+
         private bool CanSendGeneratorState(GeneratorState state) =>
             state != null && (
                 state.State.HasValue ||
@@ -312,7 +366,8 @@ namespace MessagesSender.BL
                 state.Deck_Incline.HasValue ||
                 state.Camera_Incline.HasValue ||
                 state.Ffd_Current.HasValue ||
-                state.Deck_Height.HasValue
+                state.Deck_Height.HasValue ||
+                state.Uarm_Height.HasValue
             );
 
         private bool CanSendCollimatorStandState(CollimatorState state) =>

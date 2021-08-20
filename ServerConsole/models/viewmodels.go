@@ -155,6 +155,7 @@ type OfflineMsgViewModel struct {
 type SoftwareMessageViewModel struct {
 	ErrorDescriptions      []MessageViewModel
 	AtlasErrorDescriptions []MessageViewModel
+	HardwareErrorDescriptions []MessageViewModel
 	AtlasUser AtlasUserViewModel
 	OfflineMsg *OfflineMsgViewModel
 	SimpleMsgType string

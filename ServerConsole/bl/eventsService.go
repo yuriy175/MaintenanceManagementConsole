@@ -77,7 +77,7 @@ func (service *eventsService) Start() {
 
 				equipName := utils.GetEquipFromTopic(d.Topic)
 				service.insertEvents(equipName, &viewmodel, false, nil)
-			}
+			} 
 		}
 	}()
 
@@ -140,6 +140,11 @@ func (service *eventsService) insertEvents(
 	if viewmodel.AtlasErrorDescriptions != nil {
 		events = append(events,
 			service._dalService.InsertEvents(equipName, "AtlasErrorDescriptions"+typePostfix, viewmodel.AtlasErrorDescriptions, msgDate)...)
+	}
+
+	if viewmodel.HardwareErrorDescriptions != nil {
+		events = append(events,
+			service._dalService.InsertEvents(equipName, "HardwareErrorDescriptions"+typePostfix, viewmodel.HardwareErrorDescriptions, msgDate)...)
 	}
 
 	if viewmodel.OfflineMsg != nil && viewmodel.OfflineMsg.Message != nil {
