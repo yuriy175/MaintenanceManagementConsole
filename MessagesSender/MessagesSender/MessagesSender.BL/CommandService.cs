@@ -32,6 +32,7 @@ namespace MessagesSender.BL
         private const string RunTaskManCommandName = "runTaskMan";
         private const string SendAtlasLogsCommandName = "sendAtlasLogs";
         private const string XilibLogsOnCommandName = "xilibLogsOn";
+        private const string EquipLogsOnCommandName = "equipLogsOn";
         private const string ReconnectCommandName = "reconnect";
         private const string EquipInfoCommandName = "equipInfo";
         private const string ServerReadyCommandName = "serverReady";        
@@ -41,7 +42,8 @@ namespace MessagesSender.BL
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
 
-        private readonly Dictionary<string, Action> _commandMap = new Dictionary<string, Action>
+        private readonly Dictionary<string, Action<MqttCommand>> _commandMap = 
+            new Dictionary<string, Action<MqttCommand>>
         {
         };
 
@@ -57,19 +59,20 @@ namespace MessagesSender.BL
             _logger = logger;
             _eventPublisher = eventPublisher;
 
-            _commandMap = new Dictionary<string, Action>
+            _commandMap = new Dictionary<string, Action<MqttCommand>>
             {
-                { ActivateCommandName, () => OnActivateCommand() },
-                { DeactivateCommandName, () => OnDeactivateCommand() },
-                { RunTeamViewerCommandName, () => OnRunTVCommandAsync() },
-                { RunTaskManCommandName, () => OnRunTaskManCommandAsync() },
-                { SendAtlasLogsCommandName, () => OnSendAtlasLogsCommandAsync() },
-                { XilibLogsOnCommandName, () => OnXilibLogsOnCommandAsync() },
-                { ReconnectCommandName, () => OnReconnectCommand() },
-                { EquipInfoCommandName, () => OnEquipInfoCommand() },
-                { ServerReadyCommandName, () => OnServerReadyCommand() },
-                { UpdateDBInfoCommandName, () => OnUpdateDBInfoCommand() },
-                { RecreateDBInfoCommandName, () => OnRecreateDBInfoCommand() },
+                { ActivateCommandName, (command) => OnActivateCommand() },
+                { DeactivateCommandName, (command) => OnDeactivateCommand() },
+                { RunTeamViewerCommandName, (command) => OnRunTVCommandAsync() },
+                { RunTaskManCommandName, (command) => OnRunTaskManCommandAsync() },
+                { SendAtlasLogsCommandName, (command) => OnSendAtlasLogsCommandAsync() },
+                { XilibLogsOnCommandName, (command) => OnXilibLogsOnCommandAsync() },
+                { ReconnectCommandName, (command) => OnReconnectCommand() },
+                { EquipInfoCommandName, (command) => OnEquipInfoCommand() },
+                { ServerReadyCommandName, (command) => OnServerReadyCommand() },
+                { UpdateDBInfoCommandName, (command) => OnUpdateDBInfoCommand() },
+                { RecreateDBInfoCommandName, (command) => OnRecreateDBInfoCommand() },
+                { EquipLogsOnCommandName, (command) => OnEquipLogsOnCommandAsync(command.Parameters) },                
             };
 
             _eventPublisher.RegisterMqttCommandArrivedEvent(command => OnCommandArrivedAsync(command));
@@ -77,16 +80,16 @@ namespace MessagesSender.BL
             _logger.Information("CommandService started");
         }
 
-        private Task<bool> OnCommandArrivedAsync(string command)
+        private Task<bool> OnCommandArrivedAsync(MqttCommand command)
         {
             try
             {
-                _commandMap[command]();
+                _commandMap[command.Type](command);
                 return Task.FromResult(true);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"command error {command}");
+                _logger.Error(ex, $"command error {command.Type}");
             }
 
             return Task.FromResult(false);
@@ -128,6 +131,11 @@ namespace MessagesSender.BL
         private void OnXilibLogsOnCommandAsync()
         {
             _eventPublisher.XilibLogsOnCommandArrived();
+        }
+
+        private void OnEquipLogsOnCommandAsync(Dictionary<string, string> parameters)
+        {
+            _eventPublisher.EquipLogsOnCommandArrived(parameters);
         }
 
         private void OnEquipInfoCommand()

@@ -271,6 +271,38 @@ func (service *EquipController) Handle() {
 		service.sendCommand(w, r, "xilibLogsOn")
 	})
 
+	http.HandleFunc("/equips/SetEquipLogsOn", func(w http.ResponseWriter, r *http.Request) {
+		log := service._log
+		claims := CheckUserAuthorization(service._authService, w, r)
+
+		if claims == nil {
+			return
+		}
+
+		queryString := r.URL.Query()
+		equipName := CheckQueryParameter(queryString, "activatedEquipInfo", w)
+		if equipName == "" {
+			log.Error("Url Param 'activatedEquipInfo' is missing")
+			return
+		}
+
+		hardwareType := CheckQueryParameter(queryString, "hardwareType", w)
+		if hardwareType == "" {
+			log.Error("Url Param 'hardwareType' is missing")
+			return
+		}
+
+		value := CheckQueryParameter(queryString, "value", w)
+		if value == "" {
+			log.Error("Url Param 'value' is missing")
+			return
+		}
+
+		service._mqttReceiverService.SendCommand(equipName,
+			"equipLogsOn"+"?hardwareType="+hardwareType+
+				"&value="+value)
+	})
+
 	//(currType, equipName, startDate, endDate);
 	http.HandleFunc("/equips/SearchEquip", func(w http.ResponseWriter, r *http.Request) {
 		claims := CheckUserAuthorization(authService, w, r)

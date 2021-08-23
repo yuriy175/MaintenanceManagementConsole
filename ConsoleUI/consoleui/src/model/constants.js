@@ -25,11 +25,11 @@ export const MainTabPanelIndex = 0;
 export const SummaryDBTabPanelIndex = 1;
 export const SummaryHistoryTabPanelIndex = 2;
 export const SummaryChatTabPanelIndex = 3;
-export const SummaryLogsTabPanelIndex = 6;
+export const SummaryLogsTabPanelIndex = 4;
 
-export const AdminLogTabPanelIndex = 4;
+export const AdminLogTabPanelIndex = 5;
 
-export const ControlDiagnosticTabPanelIndex = 5;
+export const ControlDiagnosticTabPanelIndex = 6;
 
 export const CommonChat = 'CommonChat';
 export const ChatMessageType = 'Chat';

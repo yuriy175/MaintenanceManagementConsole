@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MessagesSender.Core.Interfaces;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.BL
 {
@@ -24,7 +25,8 @@ namespace MessagesSender.BL
             RunTV, 
             RunTaskManager, 
             SendAtlasLogs, 
-            XilibLogsOn, 
+            XilibLogsOn,
+            EquipLogsOn,
             Reconnect,
             GetHospitalInfo,
             UpdateDBInfo,
@@ -36,7 +38,7 @@ namespace MessagesSender.BL
         /// register any command handler
         /// </summary>
         /// <param name="handler">command handler</param>        
-        public void RegisterMqttCommandArrivedEvent(Action<string> handler)
+        public void RegisterMqttCommandArrivedEvent(Action<MqttCommand> handler)
         {
             _eventHandlers[EventTypes.CommandArrived].Add(handler);
         }
@@ -45,9 +47,9 @@ namespace MessagesSender.BL
         /// new command arrived
         /// </summary>
         /// <param name="command">mqtt command</param>
-        public void MqttCommandArrived(string command)
+        public void MqttCommandArrived(MqttCommand command)
         {
-            _eventHandlers[EventTypes.CommandArrived].ForEach(h => (h as Action<string>)(command));
+            _eventHandlers[EventTypes.CommandArrived].ForEach(h => (h as Action<MqttCommand>)(command));
         }
 
         /// <summary>
@@ -167,6 +169,24 @@ namespace MessagesSender.BL
         public void RegisterXilibLogsOnCommandArrivedEvent(Action handler)
         {
             _eventHandlers[EventTypes.XilibLogsOn].Add(handler);
+        }
+
+        /// <summary>
+        /// EquipLogsOn command arrived
+        /// </summary>
+        /// <param name="parameters">command parameters</param>
+        public void EquipLogsOnCommandArrived(Dictionary<string, string> parameters)
+        {
+            _eventHandlers[EventTypes.EquipLogsOn].ForEach(h => (h as Action<Dictionary<string, string>>)(parameters));
+        }
+
+        /// <summary>
+        /// register EquipLogsOn command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>
+        public void RegisterEquipLogsOnCommandArrivedEvent(Action<Dictionary<string, string>> handler)
+        {
+            _eventHandlers[EventTypes.EquipLogsOn].Add(handler);
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using MessagesSender.Core.Model;
 
 namespace MessagesSender.Core.Interfaces
 {
@@ -11,13 +13,13 @@ namespace MessagesSender.Core.Interfaces
         /// new command arrived
         /// </summary>
         /// <param name="command">mqtt command</param>
-        void MqttCommandArrived(string command);
+        void MqttCommandArrived(MqttCommand command);
 
         /// <summary>
         /// register any command handler
         /// </summary>
         /// <param name="handler">command handler</param>
-        void RegisterMqttCommandArrivedEvent(Action<string> handler);
+        void RegisterMqttCommandArrivedEvent(Action<MqttCommand> handler);
 
         /// <summary>
         /// Activate command arrived
@@ -84,6 +86,18 @@ namespace MessagesSender.Core.Interfaces
         /// </summary>
         /// <param name="handler">command handler</param>
         void RegisterXilibLogsOnCommandArrivedEvent(Action handler);
+
+        /// <summary>
+        /// EquipLogsOn command arrived
+        /// </summary>
+        /// <param name="parameters">command parameters</param>
+        void EquipLogsOnCommandArrived(Dictionary<string, string> parameters);
+
+        /// <summary>
+        /// register EquipLogsOn command handler
+        /// </summary>
+        /// <param name="handler">command handler</param>
+        void RegisterEquipLogsOnCommandArrivedEvent(Action<Dictionary<string, string>> handler);
 
         /// <summary>
         /// Reconnect command arrived

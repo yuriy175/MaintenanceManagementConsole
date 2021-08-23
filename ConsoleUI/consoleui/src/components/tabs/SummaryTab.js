@@ -1,12 +1,13 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex } from '../../model/constants';
+import { SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex, SummaryLogsTabPanelIndex } from '../../model/constants';
 
 import SummaryMainTabPanel from './summaryPanels/SummaryMainTabPanel'
 import SummaryBDTabPanel from './summaryPanels/SummaryBDTabPanel'
 import SummaryHistoryTabPanel from './summaryPanels/SummaryHistoryTabPanel'
-import SummaryChatPanel from './summaryPanels/SummaryChatPanel'
+import SummaryChatTabPanel from './summaryPanels/SummaryChatTabPanel'
+import SummaryLogsTabPanel from './summaryPanels/SummaryLogsTabPanel'
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
 
@@ -29,7 +30,8 @@ export default function SummaryTab(props) {
       {tabPanelIndex === MainTabPanelIndex ? <SummaryMainTabPanel/> : <></>}
       {tabPanelIndex === SummaryDBTabPanelIndex ? <SummaryBDTabPanel equipName={equipName}/> : <></>}
       {tabPanelIndex === SummaryHistoryTabPanelIndex ? <SummaryHistoryTabPanel equipName={equipName}/> : <></>}      
-      {tabPanelIndex === SummaryChatTabPanelIndex ? <SummaryChatPanel equipName={equipName}/> : <></>}      
+      {tabPanelIndex === SummaryChatTabPanelIndex ? <SummaryChatTabPanel equipName={equipName}/> : <></>}    
+      {tabPanelIndex === SummaryLogsTabPanelIndex ? <SummaryLogsTabPanel equipName={equipName}/> : <></>}            
     </div>
   );
 }

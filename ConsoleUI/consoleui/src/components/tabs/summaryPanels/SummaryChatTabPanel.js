@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SummaryChatPanel(props) {
-  console.log("render SummaryChatPanel");
+export default function SummaryChatTabPanel(props) {
+  console.log("render SummaryChatTabPanel");
 
   const classes = useStyles();
   const [communicationState, communicationDispatch] = useContext(CommunicationContext);

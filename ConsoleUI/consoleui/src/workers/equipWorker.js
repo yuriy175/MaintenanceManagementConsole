@@ -86,6 +86,17 @@ export async function XilibLogsOn(token, activatedEquipInfo, detailedXilib, verb
     });
 };
 
+export async function SetEquipLogsOn(token, activatedEquipInfo, hardwareType, value) {
+    return await HandlerWrapper('SetEquipLogsOn', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController +
+            '/SetEquipLogsOn?activatedEquipInfo=' + activatedEquipInfo+
+            '&hardwareType=' + hardwareType +
+            '&value=' + value,
+            null, GetTokenHeader(token));
+        return response.data;
+    });
+};
+
 export async function GetAllEquips(token, withDisabled = false) {
     return await HandlerWrapper('GetAllEquips', async () => {
         const response = await axios.get(

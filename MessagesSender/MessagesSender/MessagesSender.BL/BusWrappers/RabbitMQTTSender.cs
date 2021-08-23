@@ -164,20 +164,23 @@ namespace MessagesSender.BL.Remoting
 
                 Client.UseApplicationMessageReceivedHandler(e =>
                 {
+                    string topic = string.Empty;
+                    string command = string.Empty;
                     try
                     {
-                        string topic = e.ApplicationMessage.Topic;
+                        topic = e.ApplicationMessage.Topic;
 
                         if (string.IsNullOrWhiteSpace(topic) == false)
                         {
-                            string command = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                            _eventPublisher.MqttCommandArrived(command);
+                            command = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                            _eventPublisher.MqttCommandArrived(command.Parse());
                             Console.WriteLine($"Topic: {topic}. Message Received: {command}");
                         }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message, ex);
+                        _logger.Error(ex, $"command error {topic} {command}");
                     }
                 });
 
