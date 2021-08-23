@@ -52,9 +52,6 @@ type mqttClient struct {
 
 	// is topic equipment
 	_isEquipment bool
-
-	// last alive message time
-	_lastAliveMessage time.Time
 }
 
 // MqttClientNew creates an instance of mqttClient
@@ -81,8 +78,6 @@ func MqttClientNew(
 	client._equipsCh = equipsCh
 	client._eventsCh = eventsCh
 	client._chatCh = chatCh
-
-	client._lastAliveMessage = time.Now()
 
 	return client
 }
@@ -150,6 +145,11 @@ func (client *mqttClient) Create(
 
 			go client._mqttReceiverService.UpdateMqttConnections(state)
 			go client._webSocketService.UpdateWebClients(state)
+		} else if topic == models.CommonKeepAlive {
+			fmt.Printf("Received keepalive %s message: %s from topic: %s\n", time.Now().String(), payload, topic)
+			// go client._mqttReceiverService.ReconnectMqttConnectionIfAbsent(string(payload))
+			// client._lastAliveMessage = time.Now()
+			go client._mqttReceiverService.SetKeepAliveReceived(string(payload))
 		} else if strings.HasPrefix(topic, models.CommonChatsPath) { // strings.HasPrefix(topic, models.CommonChatsPath) {
 			fmt.Printf("Received chat message: %s from topic: %s\n", payload, topic)
 			charTopic := topic[len(models.CommonChatsPath)+1 : len(topic)]
@@ -161,13 +161,8 @@ func (client *mqttClient) Create(
 		} else {
 			rawMsg := models.RawMqttMessage{topic, string(payload), time.Now()}
 
-			if strings.Contains(topic, "/keepalive") {
+			/*if strings.Contains(topic, "/keepalive") {
 				client._lastAliveMessage = time.Now()
-				return
-			}
-
-			/*if strings.Contains(topic, "/chat") {
-				client._chatCh <- &rawMsg
 				return
 			}*/
 
@@ -204,7 +199,8 @@ func (client *mqttClient) Create(
 	client._topic = rootTopic
 	client._isEquipment = rootTopic != models.CommonTopicPath &&
 		rootTopic != models.BroadcastCommandsTopic &&
-		rootTopic != models.CommonChatsPath
+		rootTopic != models.CommonChatsPath &&
+		rootTopic != models.CommonKeepAlive
 
 	return client
 }
@@ -216,9 +212,15 @@ func (client *mqttClient) Disconnect() {
 
 // SendCommand send command to a command topic
 func (client *mqttClient) SendCommand(command string) {
-	commandTopic := client._topic + "/command"
+	/*commandTopic := client._topic + "/command"
 	client._client.Publish(commandTopic, 0, false, command)
-	fmt.Println("Sent command " + commandTopic + " " + command)
+	fmt.Println("Sent command " + commandTopic + " " + command)*/
+	client.sendCommand(client._topic, command)
+}
+
+// SendEquipCommand send command to another equip command topic
+func (client *mqttClient) SendEquipCommand(equipment string, command string) {
+	client.sendCommand(equipment, command)
 }
 
 // IsEquipTopic checks if root topic isn't common or broadcast
@@ -240,7 +242,13 @@ func (client *mqttClient) SendChatMessage(equipment string, user string, message
 	fmt.Println("Sent chat " + chatTopic)
 }
 
-// GetLastAliveMessage returns the client is last alive message time
+/*// GetLastAliveMessage returns the client is last alive message time
 func (client *mqttClient) GetLastAliveMessage() time.Time {
 	return client._lastAliveMessage
+}*/
+
+func (client *mqttClient) sendCommand(topic string, command string) {
+	commandTopic := topic + "/command"
+	client._client.Publish(commandTopic, 0, false, command)
+	fmt.Println("Sent command " + commandTopic + " " + command)
 }

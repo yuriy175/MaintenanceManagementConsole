@@ -61,13 +61,13 @@ namespace MessagesSender.BL
 
                 while (true)
                 {
-                    await _sendingService.SendInfoToMqttAsync(
+                    /*await _sendingService.SendInfoToMqttAsync(
                         MQMessages.KeepAlive,
                         new
                         {
                             Alive = true,
-                        });
-
+                        });*/
+                    await _sendingService.SendInfoToCommonMqttAsync(MQMessages.KeepAlive, new { });
                     await Task.Delay(KeepAlivePeriod);
                 }
             }

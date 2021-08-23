@@ -366,8 +366,9 @@ namespace MessagesSender.BL
                 state.Deck_Incline.HasValue ||
                 state.Camera_Incline.HasValue ||
                 state.Ffd_Current.HasValue ||
-                state.Deck_Height.HasValue ||
-                state.Uarm_Height.HasValue
+                state.Deck_Height.HasValue 
+
+                // || state.Uarm_Height.HasValue
             );
 
         private bool CanSendCollimatorStandState(CollimatorState state) =>

@@ -26,4 +26,10 @@ type IMqttReceiverService interface {
 
 	// Activate activates a specified connection to equipment and deactivates the other
 	Activate(activatedEquipInfo string, deactivatedEquipInfo string)
+
+	//ReconnectMqttConnectionIfAbsent sends reconnect command  if connection is absent in connections map
+	// ReconnectMqttConnectionIfAbsent(equipment string)
+
+	// SetKeepAliveReceived sets keepalive message from equipment
+	SetKeepAliveReceived(equipment string)
 }

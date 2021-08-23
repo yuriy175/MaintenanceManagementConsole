@@ -20,7 +20,15 @@ namespace MessagesSender.BL.Remoting
     /// </summary>
     public class RabbitMQTTSender : RabbitMQTTBase, IMqttSender
     {
-        private const string CommonTopic = "Subscribe";
+        /// <summary>
+        /// common subscribe messages mqtt topic
+        /// </summary>
+        private const string CommonSubscribeTopic = "Subscribe";
+
+        /// <summary>
+        /// common keepAlive messages mqtt topic
+        /// </summary>
+        private const string CommonKeepAliveTopic = "CommonKeepAlive";
         private const string CommandSubTopic = "/command";
         private const string BroadcastCommandsTopic = "Broadcast/command";
 
@@ -51,7 +59,8 @@ namespace MessagesSender.BL.Remoting
             { MQMessages.ImagesInfo.ToString(), "/images" },
             { MQMessages.Events.ToString(), "/events" },
             { MQMessages.HospitalInfo.ToString(), "/hospital" },
-            { MQMessages.KeepAlive.ToString(), "/keepalive" },
+
+            // { MQMessages.KeepAlive.ToString(), "/keepalive" },
         };
 
         /// <summary>
@@ -117,9 +126,16 @@ namespace MessagesSender.BL.Remoting
             }
 
             var content = string.Empty;
+            var topic = string.Empty;
             if (msgType.IsStateMQMessage())
             {
+                topic = CommonSubscribeTopic;
                 content = "{\"" + Topic + "\" : " + (msgType == MQMessages.InstanceOff ? "\"off\"" : "\"on\"") + "}";
+            }
+            else if (msgType == MQMessages.KeepAlive)
+            {
+                topic = CommonKeepAliveTopic;
+                content = Topic; // "{\"" + Topic + "\" : true" + "}";
             }
             else
             {
@@ -128,7 +144,7 @@ namespace MessagesSender.BL.Remoting
                     new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             }
 
-            return await SendAsync(msgType, payload, CommonTopic, content);
+            return await SendAsync(msgType, payload, topic, content);
         }
 
         /// <inheritdoc/>
@@ -215,7 +231,7 @@ namespace MessagesSender.BL.Remoting
                         .WithRetainFlag(false) // retainFlag)
                         .Build());
 
-                    Console.WriteLine($"Sent from SendAsync. {topic} {res.ReasonCode} {content}");
+                    Console.WriteLine($"Sent from SendAsync. {DateTime.Now.TimeOfDay} {topic} {res.ReasonCode} {content}");
                     var tt = res;
                 });
             }

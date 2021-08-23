@@ -53,6 +53,11 @@ type mqttReceiverService struct {
 
 	// topics : server may communicate with a client
 	_supportedTopics []string
+
+	// keepalive map
+	// key - topic
+	// value - last time
+	_keepAlives map[string]time.Time
 }
 
 // MqttReceiverServiceNew creates an instance of mqttReceiverService
@@ -82,6 +87,7 @@ func MqttReceiverServiceNew(
 	service._webSockCh = webSockCh
 	service._eventsCh = eventsCh
 	service._mqttConnections = map[string]interfaces.IMqttClient{}
+	service._keepAlives = map[string]time.Time{}
 
 	service._supportedTopics = topicStorage.GetTopics()
 
@@ -105,8 +111,6 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
-
-	fmt.Printf("UpdateMqttConnections unlocked")
 
 	equipsService.SetActivate(rootTopic, !isOff)
 
@@ -136,6 +140,24 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	fmt.Println(rootTopic + " created")
 }
 
+//ReconnectMqttConnectionIfAbsent sends reconnect command  if connection is absent in connections map
+func (service *mqttReceiverService) ReconnectMqttConnectionIfAbsent(equipment string) {
+	mqttConnections := service._mqttConnections
+	rootTopic := equipment
+
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	if _, ok := mqttConnections[rootTopic]; !ok {
+		service._log.Infof("reconnect mqtt connection from keep alive: %s", equipment)
+		// go service.SendCommand(rootTopic, "reconnect")
+		// we use
+		if client, ok := service._mqttConnections[models.BroadcastCommandsTopic]; ok {
+			go client.SendEquipCommand(rootTopic, "reconnect")
+		}
+	}
+}
+
 // CreateCommonConnections reates common mqtt connections
 func (service *mqttReceiverService) CreateCommonConnections() {
 	mqttConnections := service._mqttConnections
@@ -146,6 +168,7 @@ func (service *mqttReceiverService) CreateCommonConnections() {
 	mqttConnections[Models.CommonTopicPath] = ioCProvider.GetMqttClient().Create(models.CommonTopicPath, []string{})
 	mqttConnections[Models.BroadcastCommandsTopic] = ioCProvider.GetMqttClient().Create(models.BroadcastCommandsTopic, []string{})
 	mqttConnections[Models.CommonChatsPath] = ioCProvider.GetMqttClient().Create(models.CommonChatsPath, []string{})
+	mqttConnections[Models.CommonKeepAlive] = ioCProvider.GetMqttClient().Create(models.CommonKeepAlive, []string{})
 
 	return
 }
@@ -235,6 +258,12 @@ func (service *mqttReceiverService) Activate(activatedEquipInfo string, deactiva
 	return
 }
 
+// SetKeepAliveReceived sets keepalive message from equipment
+func (service *mqttReceiverService) SetKeepAliveReceived(equipment string) {
+	service._keepAlives[equipment] = time.Now()
+	service.ReconnectMqttConnectionIfAbsent(equipment)
+}
+
 func (service *mqttReceiverService) startActiveConnectionsCheck() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
@@ -246,13 +275,19 @@ func (service *mqttReceiverService) startActiveConnectionsCheck() {
 			mqttConnections := service._mqttConnections
 			checkTime := time.Now().Add(time.Duration(-models.KeepAliveCheckPeriod) * time.Second)
 
-			for t, c := range mqttConnections {
-				if !c.IsEquipTopic() {
+			for t, c := range service._keepAlives { // mqttConnections {
+				/*if !c.IsEquipTopic() {
+					continue
+				}*/
+
+				if _, ok := mqttConnections[t]; !ok {
 					continue
 				}
 
-				lastTime := c.GetLastAliveMessage()
+				lastTime := c
+				// lastTime := c.GetLastAliveMessage()
 				if lastTime.Before(checkTime) {
+					fmt.Printf("!!!Before: lastTime %v checkTime %v\n", lastTime.String(), checkTime.String())
 					state := &models.EquipConnectionState{t, false}
 					go service.UpdateMqttConnections(state)
 					go service._webSocketService.UpdateWebClients(state)

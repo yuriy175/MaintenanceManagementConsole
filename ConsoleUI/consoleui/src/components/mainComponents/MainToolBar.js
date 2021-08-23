@@ -17,7 +17,7 @@ import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
-import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex,
+import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex, SummaryLogsTabPanelIndex,
   CommonChat,
   AdminTabIndex, AdminLogTabPanelIndex,
   ControlTabIndex, ControlDiagnosticTabPanelIndex } from '../../model/constants';
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabControl: {
     margin: theme.spacing(1),
-    minWidth: 640,    
+    minWidth: 800,    
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
@@ -245,6 +245,9 @@ export default function MainToolBar() {
               }
               {isValidSummaryTab?
                   <Tab label="Коммуникации" id= "chatTabPanel" key="chatTabPanel"/> : <div></div>
+              }
+              {isValidSummaryTab?
+                  <Tab label="Диагностика" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>
               }
               {selectedTab === AdminTabIndex?
                   <Tab label="Логи" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>              
