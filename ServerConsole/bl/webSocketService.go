@@ -189,8 +189,6 @@ func (service *webSocketService) removeFromTopicMap(equipInfo string, uid string
 		if len(service._topicConnections[equipInfo]) == 0 {
 			delete(service._topicConnections, equipInfo)
 		}
-
-		log.Println("removed absent connection for  %s", uid)
 	}
 }
 
@@ -212,7 +210,6 @@ func (service *webSocketService) writeMessageToSocket(activatedEquipInfo string,
 		for _, uid := range sessionUids {
 			v := service._webSocketConnections[uid]
 			if v == nil || !v.IsValid() {
-				log.Println(" no connection for  %s", uid)
 				service.removeFromTopicMap(activatedEquipInfo, uid)
 			} else if err := v.WriteMessage(data); err != nil {
 				//log.Println("send message error for  %s", uid)

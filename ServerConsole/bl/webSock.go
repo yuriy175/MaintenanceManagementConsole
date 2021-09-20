@@ -64,7 +64,6 @@ func (sock *webSock) Create(w http.ResponseWriter, r *http.Request, uid string) 
 
 	sock._uid = uid
 	sock._conn = conn
-	log.Println("web sock created Url %s", uid)
 
 	sock._conn.SetPongHandler(func(str string) error {
 		// log.Println("pong received", str)
