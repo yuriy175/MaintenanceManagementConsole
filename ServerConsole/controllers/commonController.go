@@ -26,6 +26,17 @@ func CheckOptionalQueryParameter(queryString url.Values, paramName string, w htt
 	return params[0]
 }
 
+func HandleIfUserAuthorized(authService interfaces.IAuthService, w http.ResponseWriter, r *http.Request,
+	handler func(http.ResponseWriter, *http.Request)) {
+	claims := CheckUserAuthorization(authService, w, r)
+
+	if claims == nil {
+		return
+	}
+
+	handler(w, r)
+}
+
 func CheckUserAuthorization(authService interfaces.IAuthService, w http.ResponseWriter, r *http.Request) *models.UserClaims {
 	claims := checkAuthorization(authService, w, r)
 	return claims

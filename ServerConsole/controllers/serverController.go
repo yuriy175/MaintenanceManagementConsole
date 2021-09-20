@@ -44,7 +44,7 @@ func ServerControllerNew(
 }
 
 // Handle handles incomming requests
-func (service *ServerController) Handle() {
+/*func (service *ServerController) Handle() {
 	serverStateService := service._serverStateService
 	authService := service._authService
 	http.HandleFunc("/equips/GetServerState", func(w http.ResponseWriter, r *http.Request) {
@@ -57,4 +57,15 @@ func (service *ServerController) Handle() {
 		state := serverStateService.GetState()
 		json.NewEncoder(w).Encode(state)
 	})
+}*/
+
+// GetServerState returns server state
+func (service *ServerController) GetServerState(w http.ResponseWriter, r *http.Request) {
+	serverStateService := service._serverStateService
+	authService := service._authService
+
+	if CheckUserAuthorization(authService, w, r) != nil {
+		state := serverStateService.GetState()
+		json.NewEncoder(w).Encode(state)
+	}
 }

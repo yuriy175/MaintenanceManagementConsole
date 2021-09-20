@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -67,7 +66,7 @@ func EquipControllerNew(
 }
 
 // Handle handles incomming requests
-func (service *EquipController) Handle() {
+/*func (service *EquipController) Handle() {
 	mqttReceiverService := service._mqttReceiverService
 	webSocketService := service._webSocketService
 	equipsService := service._equipsService
@@ -78,9 +77,6 @@ func (service *EquipController) Handle() {
 
 	// httpService := service._httpService
 	http.HandleFunc("/equips/Activate", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		// w.Header().Set("Access-Control-Allow-Origin", "*")
-		// w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		claims := CheckUserAuthorization(authService, w, r)
 
 		if claims == nil {
@@ -123,20 +119,9 @@ func (service *EquipController) Handle() {
 			webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
 			mqttReceiverService.Activate(activatedEquipInfo, deactivatedEquipInfo)
 		}()
-		/*log.Errorf("Url is: %s %s %s", sessionUID, activatedEquipInfo, deactivatedEquipInfo)
-		if deactivatedEquipInfo != "" && deactivatedEquipInfo != activatedEquipInfo {
-			mqttReceiverService.SendCommand(deactivatedEquipInfo, "deactivate")
-		}
-		webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
-		mqttReceiverService.SendCommand(activatedEquipInfo, "activate")*/
 	})
 
 	http.HandleFunc("/equips/GetConnectedEquips", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		/*w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")*/
 		claims := CheckUserAuthorization(authService, w, r)
 
 		if claims == nil {
@@ -174,12 +159,6 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/DisableEquipInfo", func(w http.ResponseWriter, r *http.Request) {
-		/*//Allow CORS here By * or specific origin
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")
-		*/
 		claims := CheckAdminAuthorization(authService, w, r)
 
 		if claims == nil {
@@ -363,11 +342,6 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/GetAllDBTableNames", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		/*w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")*/
 		claims := CheckUserAuthorization(authService, w, r)
 
 		if claims == nil {
@@ -389,11 +363,6 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/GetTableContent", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		/*w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")*/
 		claims := CheckUserAuthorization(authService, w, r)
 
 		if claims == nil {
@@ -432,11 +401,6 @@ func (service *EquipController) Handle() {
 	})
 
 	http.HandleFunc("/equips/GetPermanentData", func(w http.ResponseWriter, r *http.Request) {
-		//Allow CORS here By * or specific origin
-		/*w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		w.Header().Set("Content-Type", "application/json")*/
 		claims := CheckUserAuthorization(authService, w, r)
 
 		if claims == nil {
@@ -445,21 +409,6 @@ func (service *EquipController) Handle() {
 
 		queryString := r.URL.Query()
 
-		/*equipTypes, ok := queryString["currType"]
-		if !ok || len(equipTypes[0]) < 1 {
-			log.Error("Url Param 'currType' is missing")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		equipType := equipTypes[0]
-
-		equipNames, ok := queryString["equipName"]
-		if !ok {
-			log.Error("Url Param 'equipName' is missing")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		equipName := equipNames[0]*/
 		equipType := CheckQueryParameter(queryString, "currType", w)
 		if equipType == "" {
 			log.Error("Url Param 'equipType' is missing")
@@ -474,7 +423,7 @@ func (service *EquipController) Handle() {
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
 	})
-}
+}*/
 
 func (service *EquipController) sendSearchResults(
 	w http.ResponseWriter,
@@ -540,11 +489,6 @@ func (service *EquipController) sendPermanentSearchResults(
 }
 
 func (service *EquipController) sendCommand(w http.ResponseWriter, r *http.Request, command string) {
-	//Allow CORS here By * or specific origin
-	/*w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	w.Header().Set("Content-Type", "application/json")*/
 	log := service._log
 	claims := CheckUserAuthorization(service._authService, w, r)
 
@@ -564,4 +508,200 @@ func (service *EquipController) sendCommand(w http.ResponseWriter, r *http.Reque
 	service._mqttReceiverService.SendCommand(activatedEquipInfo, command)
 
 	log.Infof("User %s sent command %s", claims.Login, command)
+}
+
+// ActivateEquip activates an equipment
+func (service *EquipController) ActivateEquip(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	mqttReceiverService := service._mqttReceiverService
+	webSocketService := service._webSocketService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		sessionUID := CheckQueryParameter(queryString, "sessionUid", w)
+		if sessionUID == "" {
+			log.Error("Url Param 'sessionUid' is missing")
+			return
+		}
+
+		activatedEquipInfo := CheckQueryParameter(queryString, "activatedEquipInfo", w)
+		if activatedEquipInfo == "" {
+			log.Error("Url Param 'activatedEquipInfo' is missing")
+			return
+		}
+
+		deactivatedEquipInfos, ok := queryString["deactivatedEquipInfo"]
+
+		if !ok {
+			log.Error("Url Param 'deactivatedEquipInfo' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		deactivatedEquipInfo := ""
+		if len(deactivatedEquipInfos[0]) > 0 {
+			deactivatedEquipInfo = deactivatedEquipInfos[0]
+		}
+
+		go func() {
+			webSocketService.Activate(sessionUID, activatedEquipInfo, deactivatedEquipInfo)
+			mqttReceiverService.Activate(activatedEquipInfo, deactivatedEquipInfo)
+		}()
+	}
+}
+
+// GetConnectedEquips returns connected equipments
+func (service *EquipController) GetConnectedEquips(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	mqttReceiverService := service._mqttReceiverService
+	if CheckUserAuthorization(authService, w, r) != nil {
+		equips := mqttReceiverService.GetConnectionNames()
+		json.NewEncoder(w).Encode(equips)
+	}
+}
+
+// GetConnectedEquips returns connected equipments
+func (service *EquipController) GetAllEquips(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	diagnosticService := service._diagnosticService
+	equipsService := service._equipsService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		methodName := "/equips/GetAllEquips"
+		diagnosticService.IncCount(methodName)
+		start := time.Now()
+
+		queryString := r.URL.Query()
+
+		withDisabledParam := CheckQueryParameter(queryString, "withDisabled", w)
+		if withDisabledParam == "" {
+			log.Error("Url Param 'withDisabled' is missing")
+			return
+		}
+
+		withDisabled, _ := strconv.ParseBool(withDisabledParam)
+		equipInfos := equipsService.GetEquipInfos(withDisabled)
+		json.NewEncoder(w).Encode(equipInfos)
+
+		diagnosticService.SetDuration(methodName, time.Since(start))
+	}
+}
+
+// DisableEquipInfo disables equipment
+func (service *EquipController) DisableEquipInfo(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	equipsService := service._equipsService
+	log := service._log
+	if CheckAdminAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+
+		disableds, ok := queryString["disabled"]
+
+		if !ok || len(disableds[0]) < 1 {
+			log.Error("Url Param 'disabled' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		disabled, _ := strconv.ParseBool(disableds[0])
+
+		equipsService.DisableEquipInfo(equipName, disabled)
+	}
+}
+
+// RunTeamViewer sends RunTeamViewer command
+func (service *EquipController) RunTeamViewer(w http.ResponseWriter, r *http.Request) {
+	service.sendCommand(w, r, "runTV")
+}
+
+// RunTaskManager sends RunTaskManager command
+func (service *EquipController) RunTaskManager(w http.ResponseWriter, r *http.Request) {
+	service.sendCommand(w, r, "runTaskMan")
+}
+
+// SendAtlasLogs sends SendAtlasLogs command
+func (service *EquipController) SendAtlasLogs(w http.ResponseWriter, r *http.Request) {
+	service.sendCommand(w, r, "sendAtlasLogs")
+}
+
+// UpdateDBInfo sends UpdateDBInfo command
+func (service *EquipController) UpdateDBInfo(w http.ResponseWriter, r *http.Request) {
+	service.sendCommand(w, r, "updateDBInfo")
+}
+
+// RecreateDBInfo sends RecreateDBInfo command
+func (service *EquipController) RecreateDBInfo(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	dalService := service._dalService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		equipInfo := CheckQueryParameter(queryString, "activatedEquipInfo", w)
+		if equipInfo == "" {
+			log.Error("Url Param 'equipInfo' is missing")
+			return
+		}
+
+		go dalService.DisableAllDBInfo(equipInfo)
+		service.sendCommand(w, r, "recreateDBInfo")
+	}
+}
+
+// XilibLogsOn sends XilibLogsOn command
+func (service *EquipController) XilibLogsOn(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		detailedXilib := CheckQueryParameter(queryString, "detailedXilib", w)
+		if detailedXilib == "" {
+			log.Error("Url Param 'detailedXilib' is missing")
+			return
+		}
+
+		verboseXilib := CheckQueryParameter(queryString, "verboseXilib", w)
+		if verboseXilib == "" {
+			log.Error("Url Param 'verboseXilib' is missing")
+			return
+		}
+
+		service.sendCommand(w, r, "xilibLogsOn")
+	}
+}
+
+// SetEquipLogsOn sends equipLogsOn command
+func (service *EquipController) SetEquipLogsOn(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+		equipName := CheckQueryParameter(queryString, "activatedEquipInfo", w)
+		if equipName == "" {
+			log.Error("Url Param 'activatedEquipInfo' is missing")
+			return
+		}
+
+		hardwareType := CheckQueryParameter(queryString, "hardwareType", w)
+		if hardwareType == "" {
+			log.Error("Url Param 'hardwareType' is missing")
+			return
+		}
+
+		value := CheckQueryParameter(queryString, "value", w)
+		if value == "" {
+			log.Error("Url Param 'value' is missing")
+			return
+		}
+
+		service._mqttReceiverService.SendCommand(equipName,
+			"equipLogsOn"+"?hardwareType="+hardwareType+
+				"&value="+value)
+	}
 }

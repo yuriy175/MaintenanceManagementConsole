@@ -102,11 +102,47 @@ func HTTPServiceNew(
 // Starts the service
 func (service *httpService) Start() {
 
-	service._equipController.Handle()
-	service._adminController.Handle()
-	service._chatController.Handle()
-	service._serverController.Handle()
-	service._diagnosticController.Handle()
+	// authService := service._authService
+	serverController := service._serverController
+	diagnosticController := service._diagnosticController
+	chatController := service._chatController
+	adminController := service._adminController
+	equipController := service._equipController
+
+	// service._equipController.Handle()
+	// service._adminController.Handle()
+	// service._chatController.Handle()
+	// service._serverController.Handle()
+	// service._diagnosticController.Handle()
+
+	http.HandleFunc("/equips/Activate", equipController.ActivateEquip)
+	http.HandleFunc("/equips/GetConnectedEquips", equipController.GetConnectedEquips)
+	http.HandleFunc("/equips/GetAllEquips", equipController.GetAllEquips)
+	http.HandleFunc("/equips/DisableEquipInfo", equipController.DisableEquipInfo)
+	http.HandleFunc("/equips/RunTeamViewer", equipController.RunTeamViewer)
+	http.HandleFunc("/equips/RunTaskManager", equipController.RunTaskManager)
+	http.HandleFunc("/equips/SendAtlasLogs", equipController.SendAtlasLogs)
+	http.HandleFunc("/equips/UpdateDBInfo", equipController.UpdateDBInfo)
+	http.HandleFunc("/equips/RecreateDBInfo", equipController.RecreateDBInfo)
+	http.HandleFunc("/equips/XilibLogsOn", equipController.XilibLogsOn)
+	http.HandleFunc("/equips/SetEquipLogsOn", equipController.SetEquipLogsOn)
+	http.HandleFunc("/equips/SearchEquip", equipController.SearchEquip)
+	http.HandleFunc("/equips/GetAllDBTableNames", equipController.GetAllDBTableNames)
+	http.HandleFunc("/equips/GetTableContent", equipController.GetTableContent)
+	http.HandleFunc("/equips/GetPermanentData", equipController.GetPermanentData)
+
+	http.HandleFunc("/equips/GetAllUsers", adminController.GetAllUsers)
+	http.HandleFunc("/equips/UpdateUser", adminController.UpdateUser)
+	http.HandleFunc("/equips/Login", adminController.Login)
+	http.HandleFunc("/equips/GetServerLogs", adminController.GetServerLogs)
+
+	http.HandleFunc("/equips/GetCommunicationsData", chatController.GetCommunicationsData)
+	http.HandleFunc("/equips/SendNewNote", chatController.UpsertNote)
+	http.HandleFunc("/equips/DeleteNote", chatController.DeleteNote)
+
+	http.HandleFunc("/equips/GetServerState", serverController.GetServerState)
+
+	http.HandleFunc("/equips/metrics", diagnosticController.GetServerMetrics)
 
 	address := service._connectionString // models.HTTPServerAddress
 	fmt.Println("http server is listening... " + address)

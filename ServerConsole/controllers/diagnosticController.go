@@ -15,6 +15,9 @@ type DiagnosticController struct {
 
 	// authorization service
 	_authService interfaces.IAuthService
+
+	// metrics handler
+	_handler http.Handler
 }
 
 // DiagnosticController creates an instance of DiagnosticController
@@ -25,12 +28,13 @@ func DiagnosticControllerNew(
 
 	service._log = log
 	service._authService = authService
+	service._handler = promhttp.Handler()
 
 	return service
 }
 
 // Handle handles incomming requests
-func (service *DiagnosticController) Handle() {
+/*func (service *DiagnosticController) Handle() {
 	authService := service._authService
 
 	handler := promhttp.Handler()
@@ -39,4 +43,12 @@ func (service *DiagnosticController) Handle() {
 			handler.ServeHTTP(w, r)
 		}
 	})
+}*/
+
+// GetServerMetrics returns server performance metrics
+func (service *DiagnosticController) GetServerMetrics(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	if CheckAdminAuthorization(authService, w, r) != nil {
+		service._handler.ServeHTTP(w, r)
+	}
 }

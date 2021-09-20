@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
+
 	"ServerConsole/bl"
 )
 
 func main() {
+
+	fmt.Println("App Go started")
 
 	intCh := make(chan int)
 
