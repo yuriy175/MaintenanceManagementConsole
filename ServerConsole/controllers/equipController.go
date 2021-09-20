@@ -705,3 +705,137 @@ func (service *EquipController) SetEquipLogsOn(w http.ResponseWriter, r *http.Re
 				"&value="+value)
 	}
 }
+
+// SearchEquip returns search results for equipment
+func (service *EquipController) SearchEquip(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	diagnosticService := service._diagnosticService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		start := time.Now()
+		queryString := r.URL.Query()
+
+		equipType := CheckQueryParameter(queryString, "currType", w)
+		if equipType == "" {
+			log.Error("Url Param 'currType' is missing")
+			return
+		}
+
+		methodName := "/equips/SearchEquip_" + equipType
+		diagnosticService.IncCount(methodName)
+
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+
+		startDates, ok := queryString["startDate"]
+		if !ok || len(startDates[0]) < 1 {
+			log.Error("Url Param 'startDate' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		endDates, ok := queryString["endDate"]
+		if !ok {
+			log.Error("Url Param 'endDate' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		startDate, err := time.Parse("2006-01-02", startDates[0])
+		if err != nil {
+			log.Errorf("Url Param 'startDate' time.Parse %v", err)
+		}
+
+		endDate, err := time.Parse("2006-01-02", endDates[0])
+		if err != nil {
+			log.Errorf("Url Param 'endDate' time.Parse %v", err)
+		}
+
+		service.sendSearchResults(w, equipType, equipName, startDate, endDate)
+
+		diagnosticService.SetDuration(methodName, time.Since(start))
+	}
+}
+
+// GetAllDBTableNames returns all db table names
+func (service *EquipController) GetAllDBTableNames(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	dalService := service._dalService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+		tables := dalService.GetAllTableNamesInfo(equipName)
+
+		json.NewEncoder(w).Encode(tables)
+	}
+}
+
+// GetTableContent returns a db table content
+func (service *EquipController) GetTableContent(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	dalService := service._dalService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		equipNames, ok := queryString["equipName"]
+		if !ok {
+			log.Error("Url Param 'equipName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		equipName := equipNames[0]
+
+		tableTypes, ok := queryString["tableType"]
+		if !ok {
+			log.Error("Url Param 'tableType' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		tableType := tableTypes[0]
+
+		tableNames, ok := queryString["tableName"]
+		if !ok {
+			log.Error("Url Param 'tableName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		tableName := tableNames[0]
+
+		tables := dalService.GetTableContent(equipName, tableType, tableName)
+
+		json.NewEncoder(w).Encode(tables)
+	}
+}
+
+// GetPermanentData returns equipment permanent data
+func (service *EquipController) GetPermanentData(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		equipType := CheckQueryParameter(queryString, "currType", w)
+		if equipType == "" {
+			log.Error("Url Param 'equipType' is missing")
+			return
+		}
+
+		equipName := CheckQueryParameter(queryString, "equipName", w)
+		if equipName == "" {
+			log.Error("Url Param 'equipName' is missing")
+			return
+		}
+
+		service.sendPermanentSearchResults(w, equipType, equipName)
+	}
+}
