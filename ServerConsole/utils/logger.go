@@ -27,8 +27,8 @@ func LoggerNew() interfaces.ILogger {
 		log.Fatalf("error opening file: %v", err)
 	}
 	// defer f.Close()
-	wrt := io.MultiWriter(os.Stdout, f)
-	log.SetOutput(wrt)
+	// wrt := io.MultiWriter(os.Stdout, f)
+	log.SetOutput(f) // wrt)
 
 	return logImp
 }
