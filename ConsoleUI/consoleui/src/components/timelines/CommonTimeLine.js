@@ -23,7 +23,7 @@ export default function CommonTimeLine(props) {
   const  rows = props.rows;
   const todayRows = rows?.filter(i => isToday(i.DateTime)) ?? [];
   const todayCount = todayRows.length;
-  const othersCount = rows.length - todayCount;
+  const othersCount = rows ? rows.length - todayCount : 0;
 
   return (
     <List className={classes.root}>

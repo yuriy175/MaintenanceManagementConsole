@@ -724,11 +724,12 @@ func (service *EquipController) SearchEquip(w http.ResponseWriter, r *http.Reque
 		methodName := "/equips/SearchEquip_" + equipType
 		diagnosticService.IncCount(methodName)
 
-		equipName := CheckQueryParameter(queryString, "equipName", w)
-		if equipName == "" {
+		equipNames, ok := queryString["equipName"]
+		if !ok {
 			log.Error("Url Param 'equipName' is missing")
 			return
 		}
+		equipName := equipNames[0]
 
 		startDates, ok := queryString["startDate"]
 		if !ok || len(startDates[0]) < 1 {

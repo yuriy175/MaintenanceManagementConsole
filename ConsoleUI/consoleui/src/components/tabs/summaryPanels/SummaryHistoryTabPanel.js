@@ -93,7 +93,7 @@ export default function SummaryHistoryTabPanel(props) {
 
   
   if(filters.byTitle){
-    events = events?.filter(p => p.Description.includes(filters.byTitle));
+    events = events?.filter(p => p.Title.includes(filters.byTitle) || p.Description.includes(filters.byTitle));
   }
 
   if(filters.byDescr){
