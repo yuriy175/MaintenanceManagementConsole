@@ -85,9 +85,9 @@ func InitMockIoc() interfaces.IIoCProvider {
 		_mockTypes._chatCh = make(chan *models.RawMqttMessage)
 
 		_mockTypes._log = utils.LoggerNew()
-		// _mockTypes._diagnosticService := bl.DiagnosticServiceNew(log)
+		_mockTypes._diagnosticService = DiagnosticMockServiceNew()
 		// _mockTypes._authService := bl.AuthServiceNew(log)
-		// _mockTypes._topicStorage = utils.TopicStorageNew(_types._log)
+		_mockTypes._topicStorage = utils.TopicStorageNew(_mockTypes._log, "../topics.json")
 		// _mockTypes._settingsService := bl.SettingsServiceNew(log)
 
 		_mockTypes._dalService = DataLayerMockServiceNew()
@@ -97,11 +97,15 @@ func InitMockIoc() interfaces.IIoCProvider {
 			eventsCh, internalEventsCh)
 		_mockTypes._serverStateService := bl.ServerStateServiceNew(log, dalService)
 		_mockTypes._chatService := bl.ChatServiceNew(log, webSocketService, dalService, equipsService, webSockCh, chatCh)
-		_mockTypes._mqttReceiverService := bl.MqttReceiverServiceNew(log, _types, diagnosticService, webSocketService, dalService, equipsService, eventsService,
-			topicStorage, dalCh, webSockCh, eventsCh)
-		_mockTypes._httpService := bl.HTTPServiceNew(log, diagnosticService, settingsService, mqttReceiverService, webSocketService, dalService,
-			equipsService, eventsService, chatService, authService, serverStateService)
-*/
+		*/
+		_mockTypes._mqttReceiverService = MqttReceiverMockServiceNew(_mockTypes._log, _mockTypes, _mockTypes._diagnosticService, 
+			nil, // webSocketService, 
+			_mockTypes._dalService, _mockTypes._equipsService, 
+			nil, _mockTypes._topicStorage, // eventsService, 
+			_mockTypes._dalCh, _mockTypes._webSockCh, _mockTypes._eventsCh)
+		// _mockTypes._httpService := bl.HTTPServiceNew(log, diagnosticService, settingsService, mqttReceiverService, webSocketService, dalService,
+		//	equipsService, eventsService, chatService, authService, serverStateService)
+
 
 		_mockTypes._inited = true
 	}
@@ -151,7 +155,7 @@ func (t *mockTypes) GetHTTPService() interfaces.IHttpService {
 
 // GetWebSocket returns a new IWebSock instance
 func (t *mockTypes) GetWebSocket() interfaces.IWebSock {
-	return nil // bl.WebSockNew(t._log, t._diagnosticService, t._webSocketService)
+	return WebSockMockNew()
 }
 
 // GetMqttClient returns a new IMqttClient instance

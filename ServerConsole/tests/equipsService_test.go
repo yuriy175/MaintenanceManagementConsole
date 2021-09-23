@@ -10,7 +10,7 @@ import (
 
 var equipsServiceTest interfaces.IEquipsService
 
-func setUp() interfaces.IEquipsService {
+func setUpEquipsService() interfaces.IEquipsService {
 
 	if equipsServiceTest == nil {
 		equipsServiceTest = mocks.InitMockIoc().GetEquipsService() // EquipsServiceNew(nil, mocks.DataLayerMockServiceNew(), nil, nil)
@@ -21,7 +21,7 @@ func setUp() interfaces.IEquipsService {
 }
 
 func TestInsertEquipInfo(t *testing.T) {
-	service := setUp()
+	service := setUpEquipsService()
 	equipName := "ABC/WKS_123"
 	hospitalName := "HospitalName"
 	model := service.InsertEquipInfo(equipName,
@@ -40,7 +40,7 @@ func TestInsertEquipInfo(t *testing.T) {
 }*/
 
 func TestCheckEquipment(t *testing.T) {
-	service := setUp()
+	service := setUpEquipsService()
 	equipName := "ABC/WKS_123"
 
 	if ok := service.CheckEquipment(equipName); !ok {

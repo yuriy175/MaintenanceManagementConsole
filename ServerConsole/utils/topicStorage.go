@@ -17,8 +17,8 @@ type topicStorage struct {
 }
 
 // TopicStorageNew creates an instance of topicStorage
-func TopicStorageNew(log interfaces.ILogger) interfaces.ITopicStorage {
-	data, err := ioutil.ReadFile("topics.json")
+func TopicStorageNew(log interfaces.ILogger, filePath string) interfaces.ITopicStorage {
+	data, err := ioutil.ReadFile(filePath) // "topics.json")
 	var storage topicStorage
 	json.Unmarshal(data, &storage)
 
