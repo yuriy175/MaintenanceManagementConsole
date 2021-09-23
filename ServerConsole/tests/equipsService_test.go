@@ -1,4 +1,4 @@
-package bl
+package tests
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ var equipsServiceTest interfaces.IEquipsService
 func setUp() interfaces.IEquipsService {
 
 	if equipsServiceTest == nil {
-		equipsServiceTest = EquipsServiceNew(nil, mocks.DataLayerMockServiceNew(), nil, nil)
+		equipsServiceTest = mocks.InitMockIoc().GetEquipsService() // EquipsServiceNew(nil, mocks.DataLayerMockServiceNew(), nil, nil)
 		equipsServiceTest.Start()
 	}
 
