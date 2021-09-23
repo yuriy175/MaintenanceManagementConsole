@@ -27,8 +27,8 @@ type settingsService struct {
 }
 
 // SettingsServiceNew creates an instance of settingsService
-func SettingsServiceNew(log interfaces.ILogger) interfaces.ISettingsService {
-	data, err := ioutil.ReadFile("settings.json")
+func SettingsServiceNew(log interfaces.ILogger, filePath string) interfaces.ISettingsService {
+	data, err := ioutil.ReadFile(filePath) // "settings.json")
 	var service settingsService // Models.RabbitMQSettingsModel //
 	json.Unmarshal(data, &service)
 

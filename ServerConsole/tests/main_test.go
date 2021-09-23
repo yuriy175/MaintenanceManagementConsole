@@ -14,6 +14,7 @@ func init() {
     mockIoCProvider = mocks.InitMockIoc()
 
 	mockIoCProvider.GetEquipsService().Start()
+	mockIoCProvider.GetEventsService().Start()
 
 	fmt.Println("Test Go inited")
 }

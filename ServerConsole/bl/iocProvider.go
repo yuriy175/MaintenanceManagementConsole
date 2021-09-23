@@ -84,7 +84,7 @@ func InitIoc() interfaces.IIoCProvider {
 	diagnosticService := DiagnosticServiceNew(log)
 	authService := AuthServiceNew(log)
 	topicStorage := utils.TopicStorageNew(log, "topics.json")
-	settingsService := SettingsServiceNew(log)
+	settingsService := SettingsServiceNew(log, "settings.json")
 
 	dalService := dal.DataLayerServiceNew(log, authService, settingsService, dalCh)
 	equipsService := EquipsServiceNew(log, dalService, equipsCh, internalEventsCh)
