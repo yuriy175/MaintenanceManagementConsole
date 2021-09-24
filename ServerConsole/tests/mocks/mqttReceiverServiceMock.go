@@ -1,14 +1,15 @@
 package mocks
 
 import (
+	"ServerConsole/bl"
 	"ServerConsole/interfaces"
 	"ServerConsole/models"
-	"ServerConsole/bl"
 )
 
 // MqttReceiverMockServiceNew creates an instance of mqttReceiverService
 func MqttReceiverMockServiceNew(
 	log interfaces.ILogger,
+	outWriter interfaces.IOutputWriter,
 	ioCProvider interfaces.IIoCProvider,
 	diagnosticService interfaces.IDiagnosticService,
 	webSocketService interfaces.IWebSocketService,
@@ -19,15 +20,16 @@ func MqttReceiverMockServiceNew(
 	dalCh chan *models.RawMqttMessage,
 	webSockCh chan *models.RawMqttMessage,
 	eventsCh chan *models.RawMqttMessage) interfaces.IMqttReceiverService {
-		return bl.MqttReceiverServiceNew(log,
-			ioCProvider,
-			diagnosticService,
-			webSocketService,
-			dalService,
-			equipsService,
-			eventsService,
-			topicStorage,
-			dalCh,
-			webSockCh,
-			eventsCh)
+	return bl.MqttReceiverServiceNew(log,
+		outWriter,
+		ioCProvider,
+		diagnosticService,
+		webSocketService,
+		dalService,
+		equipsService,
+		eventsService,
+		topicStorage,
+		dalCh,
+		webSockCh,
+		eventsCh)
 }

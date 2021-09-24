@@ -1,7 +1,6 @@
 package bl
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -14,6 +13,9 @@ import (
 type mqttReceiverService struct {
 	//logger
 	_log interfaces.ILogger
+
+	// output writer
+	_outWriter interfaces.IOutputWriter
 
 	// synchronization mutex
 	_mtx sync.RWMutex
@@ -63,6 +65,7 @@ type mqttReceiverService struct {
 // MqttReceiverServiceNew creates an instance of mqttReceiverService
 func MqttReceiverServiceNew(
 	log interfaces.ILogger,
+	outWriter interfaces.IOutputWriter,
 	ioCProvider interfaces.IIoCProvider,
 	diagnosticService interfaces.IDiagnosticService,
 	webSocketService interfaces.IWebSocketService,
@@ -76,6 +79,7 @@ func MqttReceiverServiceNew(
 	service := &mqttReceiverService{}
 
 	service._log = log
+	service._outWriter = outWriter
 	service._ioCProvider = ioCProvider
 	service._diagnosticService = diagnosticService
 	service._webSocketService = webSocketService
@@ -106,8 +110,9 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	// dalService := service._dalService
 	equipsService := service._equipsService
 	eventsService := service._eventsService
+	outWriter := service._outWriter
 
-	fmt.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
+	outWriter.Printf("UpdateMqttConnections from topic: %s\n", rootTopic)
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
@@ -115,11 +120,11 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 	equipsService.SetActivate(rootTopic, !isOff)
 
 	if client, ok := mqttConnections[rootTopic]; ok {
-		fmt.Println(rootTopic + " already exists")
+		outWriter.Println(rootTopic + " already exists")
 		if isOff {
 			go client.Disconnect()
 			delete(mqttConnections, rootTopic)
-			fmt.Println(rootTopic + " deleted")
+			outWriter.Println(rootTopic + " deleted")
 		}
 
 		// if the topic is observed by any client -> send activate command
@@ -137,7 +142,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 		go eventsService.InsertConnectEvent(rootTopic)
 	}
 
-	fmt.Println(rootTopic + " created")
+	outWriter.Println(rootTopic + " created")
 }
 
 //ReconnectMqttConnectionIfAbsent sends reconnect command  if connection is absent in connections map
@@ -175,7 +180,7 @@ func (service *mqttReceiverService) CreateCommonConnections() {
 
 // SendCommand sends a command to equipment via mqtt
 func (service *mqttReceiverService) SendCommand(equipment string, command string) {
-	fmt.Printf("SendCommand from topic: %s %s\n", equipment, command)
+	service._outWriter.Printf("SendCommand from topic: %s %s\n", equipment, command)
 
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
@@ -266,6 +271,7 @@ func (service *mqttReceiverService) SetKeepAliveReceived(equipment string) {
 
 func (service *mqttReceiverService) startActiveConnectionsCheck() {
 	ticker := time.NewTicker(10 * time.Second)
+	outWriter := service._outWriter
 	defer ticker.Stop()
 	for {
 		select {
@@ -287,7 +293,7 @@ func (service *mqttReceiverService) startActiveConnectionsCheck() {
 				lastTime := c
 				// lastTime := c.GetLastAliveMessage()
 				if lastTime.Before(checkTime) {
-					fmt.Printf("!!!Before: lastTime %v checkTime %v\n", lastTime.String(), checkTime.String())
+					outWriter.Printf("!!!Before: lastTime %v checkTime %v\n", lastTime.String(), checkTime.String())
 					state := &models.EquipConnectionState{t, false}
 					go service.UpdateMqttConnections(state)
 					go service._webSocketService.UpdateWebClients(state)
@@ -296,7 +302,7 @@ func (service *mqttReceiverService) startActiveConnectionsCheck() {
 
 			service._mtx.Unlock()
 
-			fmt.Printf("Active connectins: %v\n", len(mqttConnections))
+			outWriter.Printf("Active connectins: %v\n", len(mqttConnections))
 		}
 	}
 }

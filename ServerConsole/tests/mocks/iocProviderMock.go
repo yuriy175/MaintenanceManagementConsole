@@ -4,15 +4,19 @@ import (
 	"ServerConsole/interfaces"
 	"ServerConsole/models"
 	Models "ServerConsole/models"
+
 	// "ServerConsole/tests/mocks"
-	"ServerConsole/utils"
 	"ServerConsole/bl"
+	"ServerConsole/utils"
 )
 
 // IoC mock provider implementation type
 type mockTypes struct {
 	//logger
 	_log interfaces.ILogger
+
+	// output writer
+	_outWriter interfaces.IOutputWriter
 
 	// diagnostic service
 	_diagnosticService interfaces.IDiagnosticService
@@ -86,6 +90,7 @@ func InitMockIoc() interfaces.IIoCProvider {
 		_mockTypes._chatCh = make(chan *models.RawMqttMessage)
 
 		_mockTypes._log = utils.LoggerNew()
+		_mockTypes._outWriter = OutputMockWriterNew()
 		_mockTypes._diagnosticService = DiagnosticMockServiceNew()
 		// _mockTypes._authService := bl.AuthServiceNew(log)
 		_mockTypes._topicStorage = utils.TopicStorageNew(_mockTypes._log, "../topics.json")
@@ -93,21 +98,22 @@ func InitMockIoc() interfaces.IIoCProvider {
 
 		_mockTypes._dalService = DataLayerMockServiceNew()
 		_mockTypes._equipsService = EquipsMockServiceNew(_mockTypes._log, _mockTypes._dalService, _mockTypes._equipsCh, _mockTypes._internalEventsCh)
-		_mockTypes._webSocketService = WebSocketMockServiceNew(_mockTypes._log, _mockTypes, _mockTypes._diagnosticService, 
+		_mockTypes._webSocketService = WebSocketMockServiceNew(_mockTypes._log, _mockTypes, _mockTypes._diagnosticService,
 			_mockTypes._settingsService, _mockTypes._webSockCh)
-		_mockTypes._eventsService = EventsMockServiceNew(_mockTypes._log, _mockTypes._webSocketService, 
+		_mockTypes._eventsService = EventsMockServiceNew(_mockTypes._log, _mockTypes._webSocketService,
 			_mockTypes._dalService, _mockTypes._equipsService, _mockTypes._webSockCh, _mockTypes._eventsCh, _mockTypes._internalEventsCh)
 		//_mockTypes._serverStateService := bl.ServerStateServiceNew(log, dalService)
 		//_mockTypes._chatService := bl.ChatServiceNew(log, webSocketService, dalService, equipsService, webSockCh, chatCh)
-		
-		_mockTypes._mqttReceiverService = MqttReceiverMockServiceNew(_mockTypes._log, _mockTypes, _mockTypes._diagnosticService, 
-			_mockTypes._webSocketService, 
-			_mockTypes._dalService, _mockTypes._equipsService, 
-			_mockTypes._eventsService, _mockTypes._topicStorage, 
+
+		_mockTypes._mqttReceiverService = MqttReceiverMockServiceNew(
+			_mockTypes._log, _mockTypes._outWriter,
+			_mockTypes, _mockTypes._diagnosticService,
+			_mockTypes._webSocketService,
+			_mockTypes._dalService, _mockTypes._equipsService,
+			_mockTypes._eventsService, _mockTypes._topicStorage,
 			_mockTypes._dalCh, _mockTypes._webSockCh, _mockTypes._eventsCh)
 		// _mockTypes._httpService := bl.HTTPServiceNew(log, diagnosticService, settingsService, mqttReceiverService, webSocketService, dalService,
 		//	equipsService, eventsService, chatService, authService, serverStateService)
-
 
 		_mockTypes._inited = true
 	}

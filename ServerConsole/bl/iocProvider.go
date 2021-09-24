@@ -13,6 +13,9 @@ type types struct {
 	//logger
 	_log interfaces.ILogger
 
+	// output writer
+	_outWriter interfaces.IOutputWriter
+
 	// diagnostic service
 	_diagnosticService interfaces.IDiagnosticService
 
@@ -81,6 +84,7 @@ func InitIoc() interfaces.IIoCProvider {
 	chatCh := make(chan *models.RawMqttMessage)
 
 	log := utils.LoggerNew()
+	outWriter := utils.OutputWriterNew()
 	diagnosticService := DiagnosticServiceNew(log)
 	authService := AuthServiceNew(log)
 	topicStorage := utils.TopicStorageNew(log, "topics.json")
@@ -93,12 +97,13 @@ func InitIoc() interfaces.IIoCProvider {
 		eventsCh, internalEventsCh)
 	serverStateService := ServerStateServiceNew(log, dalService)
 	chatService := ChatServiceNew(log, webSocketService, dalService, equipsService, webSockCh, chatCh)
-	mqttReceiverService := MqttReceiverServiceNew(log, _types, diagnosticService, webSocketService, dalService, equipsService, eventsService,
+	mqttReceiverService := MqttReceiverServiceNew(log, outWriter, _types, diagnosticService, webSocketService, dalService, equipsService, eventsService,
 		topicStorage, dalCh, webSockCh, eventsCh)
 	httpService := HTTPServiceNew(log, diagnosticService, settingsService, mqttReceiverService, webSocketService, dalService,
 		equipsService, eventsService, chatService, authService, serverStateService)
 
 	_types._log = log
+	_types._outWriter = outWriter
 	_types._diagnosticService = diagnosticService
 	_types._authService = authService
 	_types._mqttReceiverService = mqttReceiverService
