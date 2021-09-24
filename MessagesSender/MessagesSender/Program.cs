@@ -16,12 +16,20 @@ namespace MessagesSender
     /// </summary>
     public class Program
     {
+        private const string MessageModeCommandArgName = "-m";
+
         /// <summary>
         /// Main function
         /// </summary>
         /// <param name="args">command line argumentes</param>
         public static void Main(string[] args)
         {
+            if (args.Length > 1)
+            {
+                StartForSpecialService(args);
+                return;
+            }
+
             using var mutex = new Mutex(false, "MessagesSender");
             if (!mutex.WaitOne(0, false))
             {
@@ -61,7 +69,62 @@ namespace MessagesSender
             IServiceProvider provider = serviceScope.ServiceProvider;
 
             var topicService = provider.GetRequiredService<ITopicService>(); 
-            IService service = provider.GetRequiredService<IService>();
+            var service = provider.GetRequiredService<IMainService>();
+        }
+
+        private static void StartForSpecialService(string[] args)
+        {
+            if (args.Length < 1)
+            {
+                return;
+            }
+
+            var argNumber = 0;
+
+            while (argNumber < args.Length)
+            {
+                switch (args[argNumber])
+                {
+                    case MessageModeCommandArgName:
+                        {
+                            if (args.Length < argNumber + 2)
+                            {
+                                Console.WriteLine("-m option requires at least 2 args");
+                                return;
+                            }
+
+                            ++argNumber;
+
+                            using IHost host = CreateMessageModeHostBuilder(args).Build();
+
+                            var service = ConfigureMessageMode(host.Services);
+                            _ = service.SendChatMessageAsync(args[argNumber]).Result;
+
+                            break;
+                        }
+                }
+
+                ++argNumber;
+            }
+        }
+
+        private static IHostBuilder CreateMessageModeHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices((_, services) =>
+                    services.AddConfigurationService()
+                        .AddLoggerService("MsgSender")
+                        .AddMQRemotingServices<MQCommunicationService>()
+                        .AddEntityServices()
+                        .AddMQTTRemotingServices()
+                        .AddChatMessageAppServices());
+
+        private static IMainChatMessageService ConfigureMessageMode(IServiceProvider services)
+        {
+            using IServiceScope serviceScope = services.CreateScope();
+            IServiceProvider provider = serviceScope.ServiceProvider;
+
+            var topicService = provider.GetRequiredService<ITopicService>();
+            return provider.GetRequiredService<IMainChatMessageService>();
         }
     }
 }

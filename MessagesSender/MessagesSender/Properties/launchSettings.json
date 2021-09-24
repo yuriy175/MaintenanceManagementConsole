@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MessagesSender": {
+      "commandName": "Project",
+      "commandLineArgs": "-m \"Вася мыла раму\""
+    }
+  }
+}

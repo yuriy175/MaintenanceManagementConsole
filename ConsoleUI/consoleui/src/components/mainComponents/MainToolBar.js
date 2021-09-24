@@ -19,8 +19,8 @@ import Button from '@material-ui/core/Button';
 import "../../styles/styles.css";
 import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex, SummaryLogsTabPanelIndex,
   CommonChat,
-  AdminTabIndex, AdminLogTabPanelIndex,
-  ControlTabIndex, ControlDiagnosticTabPanelIndex } from '../../model/constants';
+  AdminTabIndex,
+  ControlLogTabPanelIndex,  ControlTabIndex, ControlDiagnosticTabPanelIndex } from '../../model/constants';
 
 import { AppContext } from '../../context/app-context';
 import { AllEquipsContext } from '../../context/allEquips-context';
@@ -39,7 +39,6 @@ import {sessionUid} from '../../utilities/utils'
 import { useWebSocket } from '../../hooks/useWebSocket'
 import { SettingsBackupRestore } from '@material-ui/icons';
 import {getUSFullDate} from '../../utilities/utils'
-import AdminLogTabPanel from '../tabs/adminPanels/AdminLogTabPanel';
   
 const drawerWidth = 240;
 
@@ -179,7 +178,7 @@ export default function MainToolBar() {
     else if(SummaryTabIndex === selectedTab && SummaryChatTabPanelIndex === newValue){        
       getChats(equipInfo);
     }
-    else if(AdminTabIndex === selectedTab && AdminLogTabPanelIndex === newValue){        
+    else if(ControlTabIndex === selectedTab && ControlLogTabPanelIndex === newValue){        
       getLogs();
     }
     else if(ControlTabIndex === selectedTab && ControlDiagnosticTabPanelIndex === newValue){        
@@ -248,13 +247,13 @@ export default function MainToolBar() {
               }
               {isValidSummaryTab?
                   <Tab label="Диагностика" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>
-              }
-              {selectedTab === AdminTabIndex?
-                  <Tab label="Логи" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>              
-              }            
+              }       
               {selectedTab === ControlTabIndex?
                   <Tab label="Диагностика" id= "diagnosticTabPanel" key="diagnosticTabPanel"/> : <div></div>              
-              }           
+              }                  
+              {selectedTab === ControlTabIndex?
+                  <Tab label="Логи" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>              
+              }            
             </Tabs>
             {selectedTab === SummaryTabIndex?
                 <Button variant="contained" 

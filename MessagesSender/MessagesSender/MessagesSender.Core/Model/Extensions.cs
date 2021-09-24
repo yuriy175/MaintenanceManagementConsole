@@ -18,6 +18,13 @@ namespace MessagesSender.Core.Model
         public static bool IsStateMQMessage(this MQMessages msg) => msg == MQMessages.InstanceOn || msg == MQMessages.InstanceOff;
 
         /// <summary>
+        /// Checks if chat message
+        /// </summary>
+        /// <param name="msg">messgae</param>
+        /// <returns>result</returns>
+        public static bool IsChatMQMessage(this MQMessages msg) => msg == MQMessages.Chat;
+
+        /// <summary>
         /// parses string command to object command
         /// </summary>
         /// <param name="command">string command</param>

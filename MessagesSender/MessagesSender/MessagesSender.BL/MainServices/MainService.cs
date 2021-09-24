@@ -22,7 +22,7 @@ namespace MessagesSender.BL
     /// <summary>
     /// main service interface implementation
     /// </summary>
-    public class Service : IService, IDisposable
+    public class MainService : IMainService, IDisposable
     {
         private readonly IObservationsEntityService _dbObservationsEntityService;
         private readonly ILogger _logger;
@@ -65,7 +65,7 @@ namespace MessagesSender.BL
         /// <param name="dbDataService">db raw data service</param>
         /// <param name="offlineService">offline service</param>
         /// <param name="keepAliveService">keep alive info service </param>
-        public Service(
+        public MainService(
             IObservationsEntityService dbObservationsEntityService,
             ILogger logger,
             IEventPublisher eventPublisher,
@@ -115,7 +115,7 @@ namespace MessagesSender.BL
 
             _logger.Information("Main service started");
         }
-        
+
         private enum MessageType
         {
             StudyInWork = 1,

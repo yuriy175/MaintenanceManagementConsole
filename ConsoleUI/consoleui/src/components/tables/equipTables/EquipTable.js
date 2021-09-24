@@ -60,7 +60,7 @@ const EquipTable = React.memo((props) => {
     { id: 'HospitalAddress', label: 'Адрес', minWidth: 100, sortable: true },
     { id: 'HospitalLatitude', label: 'Широта', minWidth: 100 },
     { id: 'HospitalLongitude', label: 'Долгота', minWidth: 100 },
-    { id: 'LastSeen', label: 'Посл. сообщение', minWidth: 100, sortable: true,
+    { id: 'LastSeenPresentation', label: 'Посл. сообщение', minWidth: 100, sortable: true,
       //format: (value) => value ? parseLocalString(value) : ""
     },
     
@@ -99,7 +99,7 @@ const EquipTable = React.memo((props) => {
 
   rows.forEach((row) => 
   {
-    row.LastSeen = row.LastSeen ? parseLocalString(row.LastSeen) : "";
+    row.LastSeenPresentation = row.LastSeen ? parseLocalString(row.LastSeen) : "";
   });
   const handleRowClick = async (event, row) => {
 

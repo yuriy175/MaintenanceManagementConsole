@@ -12,8 +12,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AdminLogTabPanel(props) {
-  console.log("render AdminLogTabPanel");
+export default function ControlLogTabPanel(props) {
+  console.log("render ControlLogTabPanel");
 
   const classes = useStyles();
   const [communicationState, communicationDispatch] = useContext(CommunicationContext);

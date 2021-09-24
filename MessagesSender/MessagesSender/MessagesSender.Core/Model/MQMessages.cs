@@ -88,5 +88,10 @@ namespace MessagesSender.Core.Model
         /// KeepAlive message type
         /// </summary>
         KeepAlive,
+
+        /// <summary>
+        /// Chat message type
+        /// </summary>
+        Chat,
     }
 }

@@ -25,15 +25,25 @@ namespace MessagesSender
         /// </summary>
         /// <param name="services">service collection.</param>
         /// <returns>updated service collection.</returns>
+        public static IServiceCollection AddTopicService(this IServiceCollection services)
+        {
+            return services.AddSingleton(
+               typeof(ITopicService),
+               typeof(TopicService));
+        }
+
+        /// <summary>
+        /// Add application services.
+        /// </summary>
+        /// <param name="services">service collection.</param>
+        /// <returns>updated service collection.</returns>
         public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
             services.AddSingleton(
                typeof(IEventPublisher),
                typeof(EventPublisher));
             
-            services.AddSingleton(
-               typeof(ITopicService),
-               typeof(TopicService));
+            services.AddTopicService();
 
             services.AddSingleton(
                typeof(IZipService),
@@ -96,8 +106,8 @@ namespace MessagesSender
                typeof(KeepAliveService));
 
             return services.AddSingleton(
-               typeof(IService),
-               typeof(Service));
+               typeof(IMainService),
+               typeof(MainService));
         }
 
         /// <summary>
@@ -195,13 +205,45 @@ namespace MessagesSender
                typeof(IWebClientService),
                typeof(WebClientService));
             
-            services.AddSingleton(
-               typeof(IMqttSender),
-               typeof(RabbitMQTTSender));    
+            services.AddMQTTRemotingServices();    
 
             return services.AddSingleton(
                typeof(IWorkqueueSender),
                typeof(RabbitMQWorkqueueSender)); 
+        }
+
+        /// <summary>
+        /// Add remoting services.
+        /// </summary>
+        /// <param name="services">service collection.</param>
+        /// <returns>updated service collection.</returns>
+        public static IServiceCollection AddMQTTRemotingServices(this IServiceCollection services)
+        {
+            return services.AddSingleton(
+               typeof(IMqttSender),
+               typeof(RabbitMQTTSender));
+        }
+
+        /// <summary>
+        /// Add chat message application services.
+        /// </summary>
+        /// <param name="services">service collection.</param>
+        /// <returns>updated service collection.</returns>
+        public static IServiceCollection AddChatMessageAppServices(this IServiceCollection services)
+        {
+            services.AddTopicService();
+
+            /*services.AddSingleton(
+               typeof(ISendingService),
+               typeof(SendingService));*/
+
+            services.AddSingleton(
+                typeof(IEventPublisher),
+                typeof(EventPublisher));
+
+            return services.AddSingleton(
+               typeof(IMainChatMessageService),
+               typeof(MainChatMessageService));
         }
     }
 }

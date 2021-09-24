@@ -31,6 +31,7 @@ namespace MessagesSender.BL.Remoting
         private const string CommonKeepAliveTopic = "CommonKeepAlive";
         private const string CommandSubTopic = "/command";
         private const string BroadcastCommandsTopic = "Broadcast/command";
+        private const string ChatsTopic = "Chats";
 
         private const int ConnectWaitingAttempts = 5;
 
@@ -97,18 +98,28 @@ namespace MessagesSender.BL.Remoting
                 return false;
             }
 
-            var msgTypeKey = msgType.ToString();
-            var subtopic = _topicMap.ContainsKey(msgTypeKey) ? _topicMap[msgTypeKey] : string.Empty;
-            if (string.IsNullOrEmpty(subtopic))
+            var topic = string.Empty;
+            if (msgType is MQMessages mqMessage && mqMessage.IsChatMQMessage())
             {
-                return false;
+                topic = $"{ChatsTopic}/{Topic}";
+            }
+            else
+            {
+                var msgTypeKey = msgType.ToString();
+                var subtopic = _topicMap.ContainsKey(msgTypeKey) ? _topicMap[msgTypeKey] : string.Empty;
+                if (string.IsNullOrEmpty(subtopic))
+                {
+                    return false;
+                }
+
+                topic = $"{Topic}{subtopic}";
             }
 
             var content = JsonConvert.SerializeObject(
                 payload,
                 new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            return await SendAsync(msgType, payload, $"{Topic}{subtopic}", content);
+            return await SendAsync(msgType, payload, topic, content);
         }
 
         /// <summary>
@@ -225,7 +236,7 @@ namespace MessagesSender.BL.Remoting
 
             if (connected)
             {
-                _ = Task.Run(async () =>
+                await Task.Run(async () =>
                 {
                     var res = await Client.PublishAsync(new MqttApplicationMessageBuilder()
                         .WithTopic(topic)

@@ -8,7 +8,7 @@ namespace MessagesSender.Core.Interfaces
     /// <summary>
     /// main service interface
     /// </summary>
-    public interface IService
+    public interface IMainService
     {
     }
 }
