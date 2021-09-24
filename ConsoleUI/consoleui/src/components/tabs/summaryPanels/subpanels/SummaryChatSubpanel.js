@@ -54,6 +54,8 @@ const useStyles = makeStyles((theme) => ({
 export default function SummaryChatSubpanel(props) {
   console.log("render SummaryChatSubpanel");
 
+  const techUserName = 'tech'
+
   const classes = useStyles();
   const [newNote, setNewNote] = useState({id: '', note:''});
 
@@ -153,7 +155,9 @@ export default function SummaryChatSubpanel(props) {
                     }
                 </div>
                  <div className={classes.notesArea}>
-                    <Typography variant="body1" align='left' color={currentUser === i.User? 'secondary' : 'primary'} className={classes.noteTitle}>
+                    <Typography variant="body1" align='left' color={
+                          currentUser === i.User? 'secondary' : 'primary'
+                        } className={classes.noteTitle} style={i.User === techUserName ? {color:'khaki'} : {}}>
                         {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
                      </Typography>
                      {
