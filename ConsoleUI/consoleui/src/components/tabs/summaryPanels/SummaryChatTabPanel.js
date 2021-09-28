@@ -84,6 +84,7 @@ export default function SummaryChatTabPanel(props) {
         onSendNote={onSendNote}
         onDeleteNote = {onDeleteNote}
         currentUser={usersState.currentUser?.Login}
+        hasTechOnly = {true}
       >
       </SummaryChatSubpanel>
     </div>

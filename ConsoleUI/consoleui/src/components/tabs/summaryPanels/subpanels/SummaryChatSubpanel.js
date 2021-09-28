@@ -5,6 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -60,8 +62,10 @@ export default function SummaryChatSubpanel(props) {
   const [newNote, setNewNote] = useState({id: '', note:''});
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [techOnly, setTechOnly] = React.useState(false);
   const openEditMenu = Boolean(anchorEl);
 
+  const hasTechOnly = props.hasTechOnly;
   const handleMenuClick = (event, row) => {
     setAnchorEl(event.currentTarget);
   };
@@ -91,7 +95,7 @@ export default function SummaryChatSubpanel(props) {
   };
 
   const title = props.title;
-  const notes = props.notes;
+  const notes = hasTechOnly && techOnly ? props.notes?.filter(p => p.User === techUserName) : props.notes;
   const currentUser = props.currentUser;
   const canSubmit = !!newNote?.note;
   const handleEditNote = async (ev) => {
@@ -103,9 +107,23 @@ export default function SummaryChatSubpanel(props) {
     handleMenuClose();
   };
 
+  const onTechOnly = async (event) => {
+    setTechOnly(!techOnly);
+  };
+
   return (
       <div className={classes.column}>
         <Typography variant="h5">{title}</Typography>
+        {hasTechOnly ? <FormControlLabel
+              control={
+                <Checkbox
+                    checked={techOnly}
+                    onChange={onTechOnly}
+                />
+              }
+              label="tech только"
+            /> : <></>
+        }
         <TextField
           id="outlined-multiline-static"
           className={classes.textField}

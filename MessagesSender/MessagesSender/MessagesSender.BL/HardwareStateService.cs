@@ -17,6 +17,7 @@ using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Serilog;
+using CommonConstants = Atlas.Common.Core.Constants;
 
 namespace MessagesSender.BL
 {
@@ -66,6 +67,8 @@ namespace MessagesSender.BL
 
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
+
+            _eventPublisher.RegisterEquipLogsOnCommandArrivedEvent(parameters => OnEquipLogsOnCommandAsync(parameters));
 
             SubscribeMQRecevers();
 
@@ -117,11 +120,11 @@ namespace MessagesSender.BL
 
                 if (state.State.State == StandBlockedValue)
                 {
-                    SendHardwareErrorAsync("Сообщение от штатива", new[]
+                    SendHardwareErrorAsync("РЎРѕРѕР±С‰РµРЅРёРµ РѕС‚ С€С‚Р°С‚РёРІР°", new[]
                     {
                         new DeviceError
                         {
-                            Code = "Активирован аварийный выключатель",
+                            Code = "РђРєС‚РёРІРёСЂРѕРІР°РЅ Р°РІР°СЂРёР№РЅС‹Р№ РІС‹РєР»СЋС‡Р°С‚РµР»СЊ",
                             Description = string.Empty,
                         },
                     });
@@ -130,7 +133,7 @@ namespace MessagesSender.BL
 
             if (state.State.ErrorDescriptions != null)
             {
-                SendHardwareErrorAsync("Ошибка штатива", state.State.ErrorDescriptions);
+                SendHardwareErrorAsync("РћС€РёР±РєР° С€С‚Р°С‚РёРІР°", state.State.ErrorDescriptions);
             }
 
             _sendingService.SendInfoToMqttAsync(
@@ -154,7 +157,7 @@ namespace MessagesSender.BL
 
             if (state.State.ErrorDescriptions != null)
             {
-                SendHardwareErrorAsync("Ошибка генератора", state.State.ErrorDescriptions);
+                SendHardwareErrorAsync("РћС€РёР±РєР° РіРµРЅРµСЂР°С‚РѕСЂР°", state.State.ErrorDescriptions);
             }
 
             _sendingService.SendInfoToMqttAsync(
@@ -219,11 +222,11 @@ namespace MessagesSender.BL
 
             if (_detectorState == DetectorStates.Created && state.State.State == DetectorStates.CreationFailed)
             {
-                SendHardwareErrorAsync("Ошибка детектора", new[] 
+                SendHardwareErrorAsync("РћС€РёР±РєР° РґРµС‚РµРєС‚РѕСЂР°", new[] 
                 { 
                     new DeviceError 
                     { 
-                        Code = "Ошибка инициализации детектора",
+                        Code = "РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґРµС‚РµРєС‚РѕСЂР°",
                         Description = string.Empty,
                     }, 
                 });
@@ -265,6 +268,33 @@ namespace MessagesSender.BL
         {
             _isActivated = false;
         }
+
+        private void OnEquipLogsOnCommandAsync(Dictionary<string, string> parameters)
+        {
+            try
+            {
+                var activeHwTypes = parameters["hardwareTypes"].Split(new[] { ',' });
+                
+                var hwTypes = new List<string>
+                {
+                    CommonConstants.GeneratorType,
+                    CommonConstants.StandType,
+                    CommonConstants.DetectorType,
+                }.Select(h => (h, activeHwTypes.Any(a => a == h.ToLower())))
+                 .ToList();
+
+                _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, int.Parse(parameters["duration"])));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "OnEquipLogsOnCommandAsync error");
+            }
+        }
+
+        /*
+         _mqService.Subscribe<MQCommands, (IEnumerable<(string HardwareType, bool IsOn)> HardwareTypes, int Duration)>(
+                    (MQCommands.HardwareFullLogEnable, async data => await OnHardwareFullLogEnableAsync(data)));
+         */
 
         private async Task<bool> OnActivateArrivedAsync()
         {

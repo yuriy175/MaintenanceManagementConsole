@@ -1,8 +1,7 @@
 {
   "profiles": {
     "MessagesSender": {
-      "commandName": "Project",
-      "commandLineArgs": "-m \"Вася мыла раму\""
+      "commandName": "Project"
     }
   }
 }

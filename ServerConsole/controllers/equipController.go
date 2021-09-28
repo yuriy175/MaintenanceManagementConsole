@@ -688,21 +688,22 @@ func (service *EquipController) SetEquipLogsOn(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		hardwareType := CheckQueryParameter(queryString, "hardwareType", w)
-		if hardwareType == "" {
-			log.Error("Url Param 'hardwareType' is missing")
+		hwTypes, ok := queryString["hardwareTypes"]
+		if !ok {
+			log.Error("Url Param 'hardwareTypes' is missing")
 			return
 		}
+		hardwareTypes := hwTypes[0]
 
-		value := CheckQueryParameter(queryString, "value", w)
-		if value == "" {
-			log.Error("Url Param 'value' is missing")
+		duration := CheckQueryParameter(queryString, "duration", w)
+		if duration == "" {
+			log.Error("Url Param 'duration' is missing")
 			return
 		}
 
 		service._mqttReceiverService.SendCommand(equipName,
-			"equipLogsOn"+"?hardwareType="+hardwareType+
-				"&value="+value)
+			"equipLogsOn"+"?hardwareTypes="+hardwareTypes+
+				"&duration="+duration)
 	}
 }
 

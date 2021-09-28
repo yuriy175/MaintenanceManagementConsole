@@ -86,12 +86,12 @@ export async function XilibLogsOn(token, activatedEquipInfo, detailedXilib, verb
     });
 };
 
-export async function SetEquipLogsOn(token, activatedEquipInfo, hardwareType, value) {
+export async function SetEquipLogsOn(token, activatedEquipInfo, hardwareTypes, duration) {
     return await HandlerWrapper('SetEquipLogsOn', async () => {
         const response = await axios.post(EquipsServiceAddress + EquipsController +
             '/SetEquipLogsOn?activatedEquipInfo=' + activatedEquipInfo+
-            '&hardwareType=' + hardwareType +
-            '&value=' + value,
+            '&hardwareTypes=' + hardwareTypes +
+            '&duration=' + duration,
             null, GetTokenHeader(token));
         return response.data;
     });
