@@ -1,4 +1,7 @@
 package interfaces
+import (
+	"ServerConsole/models"
+)
 
 // IIoCProvider describes IoC provider interface
 type IIoCProvider interface {
@@ -31,5 +34,8 @@ type IIoCProvider interface {
 
 	// GetMqttClient returns a new IMqttClient instance
 	GetMqttClient() IMqttClient
+
+	// GetEquipsChan returns equips channel
+	GetEquipsChan() chan *models.RawMqttMessage 
 }
 

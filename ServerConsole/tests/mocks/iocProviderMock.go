@@ -175,3 +175,8 @@ func (t *mockTypes) GetMqttClient() interfaces.IMqttClient {
 func (t *mockTypes) GetChatService() interfaces.IChatService {
 	return t._chatService
 }
+
+// GetEquipsChan returns equips channel
+func (t *mockTypes) GetEquipsChan() chan *Models.RawMqttMessage {
+	return t._equipsCh
+}

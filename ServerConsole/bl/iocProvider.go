@@ -181,3 +181,8 @@ func (t *types) GetMqttClient() interfaces.IMqttClient {
 func (t *types) GetChatService() interfaces.IChatService {
 	return t._chatService
 }
+
+// GetEquipsChan returns equips channel
+func (t *types) GetEquipsChan() chan *Models.RawMqttMessage {
+	return t._equipsCh
+}
