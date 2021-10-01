@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -409,7 +409,7 @@ namespace MessagesSender.BL
 
         private bool AlwaysSendGeneratorState(GeneratorState state) =>
             state != null && (
-                state.Error != null 
+                state.Error != null   
             );
 
         private bool AlwaysSendStandState(StandState state) =>
