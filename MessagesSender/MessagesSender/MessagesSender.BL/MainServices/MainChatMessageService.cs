@@ -71,7 +71,7 @@ namespace MessagesSender.BL
                 {
                     Message = message,
                     User = TechUserName,
-                    IsInternal = false,
+                    IsInternal = true,
                 });
         }
     }

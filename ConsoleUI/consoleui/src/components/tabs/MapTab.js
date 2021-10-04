@@ -1,14 +1,18 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-// import { Map as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet';
-// import { Map as LeafletMap, TileLayer, Marker, Popup } from 'react-leaflet';
+import Button from '@material-ui/core/Button';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
+import { SummaryTabIndex, MainTabPanelIndex } from '../../model/constants';
+import { AppContext } from '../../context/app-context';
+import { AllEquipsContext } from '../../context/allEquips-context';
+import {useSetCurrEquip} from '../../hooks/useSetCurrEquip'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     // display:"flex",
-    width: '1500px',
-    height: '850px',
+    // width: '1500px',
+    height: '1000px',
   },
 }));
 
@@ -16,21 +20,44 @@ export default function MapTab(props) {
   console.log("render MapTab");
 
   const classes = useStyles();
+  const [allEquipsState, allEquipsDispatch] = useContext(AllEquipsContext);
+  const [appState, appDispatch] = useContext(AppContext);
+  const setCurrEquip = useSetCurrEquip();
+
+  const allEquips = allEquipsState.allEquips;
+  const onSelect = async (ev, equip) => {
+    const equipInfo = equip.EquipName;
+    setCurrEquip(equipInfo, 'SETEQUIPINFO');
+    allEquipsDispatch({ type: 'ADDSELECTEDEQUIPS', payload: equipInfo }); 
+    appDispatch({ type: 'SETTAB', payload: {tab: SummaryTabIndex, panel: MainTabPanelIndex} }); 
+  };
 
   return (
     <div className={classes.root}>
       <MapContainer
         // className="markercluster-map"
         className={classes.root}
-        center={[55.75222, 37.61556]}
+        center={[ 59.8795351,30.3908424 ]}//55.75222, 37.61556]}
         zoom={10}
         maxZoom={18}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <Marker position={[55.61980, 37.65602]}>
+        /> 
+        {allEquips?.map((equip) => (
+          <Marker position={[equip.HospitalLatitude, equip.HospitalLongitude]}>
+            <Popup>
+              {equip.HospitalName} ({equip.EquipName})
+              <div>
+                <Button variant="contained" color="primary" onClick={(ev) => onSelect(ev, equip)}>
+                      Выбрать
+                </Button>
+              </div>
+            </Popup>
+          </Marker>
+          ))} 
+        {/* <Marker position={[55.61980, 37.65602]}>
           <Popup>
             ГБУЗ "ГКБ им. В.М. Буянова ДМЗ"
           </Popup>
@@ -39,29 +66,8 @@ export default function MapTab(props) {
           <Popup>
             ГБУЗ МКНЦ им. А.С.Логинова ДЗМ
           </Popup>
-        </Marker>
+        </Marker> */}
       </MapContainer>
-      {/* <LeafletMap
-        center={[50, 10]}
-        zoom={6}
-        maxZoom={10}
-        attributionControl={true}
-        zoomControl={true}
-        doubleClickZoom={true}
-        scrollWheelZoom={true}
-        dragging={true}
-        animate={true}
-        easeLinearity={0.35}
-      >
-        <TileLayer
-          url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-        />
-        <Marker position={[50, 10]}>
-          <Popup>
-            Popup for any custom information.
-          </Popup>
-        </Marker>
-      </LeafletMap> */}
     </div>
   );
 }

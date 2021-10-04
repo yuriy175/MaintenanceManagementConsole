@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -283,7 +283,7 @@ namespace MessagesSender.BL
                 }.Select(h => (h, activeHwTypes.Any(a => a == h.ToLower())))
                  .ToList();
 
-                _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, int.Parse(parameters["duration"])));
+                // _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, int.Parse(parameters["duration"])));
             }
             catch (Exception ex)
             {

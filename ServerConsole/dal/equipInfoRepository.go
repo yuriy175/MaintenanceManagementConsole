@@ -73,6 +73,16 @@ func (repository *EquipInfoRepository) GetEquipInfos() []models.EquipInfoModel {
 	equipInfos := []models.EquipInfoModel{}
 	equipInfoCollection.Find(query).Sort("-equipname").All(&equipInfos)
 
+	/*equipInfoCollection.Update(
+	bson.M{"equipname": "KRT/MYWORK5"},
+	bson.D{
+		{"$set", bson.D{
+			{"hospitalhame", "House where I have to work"},
+			{"hospitaladdress", "Гагарина 32"},
+			{"hospitallongitude", "30.3378224"},
+			{"hospitallatitude", "59.8523184"},
+		}}}) */
+
 	return equipInfos
 }
 
