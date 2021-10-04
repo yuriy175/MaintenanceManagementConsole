@@ -9,10 +9,15 @@ import (
 	"ServerConsole/tests/mocks"
 )
 
-func setUpMqttReceiverServiceAndEquipsService() (interfaces.IMqttReceiverService, interfaces.IEquipsService) {
+func setUpMqttReceiverServiceAndEquipsService() (
+	interfaces.IMqttReceiverService,
+	interfaces.IEquipsService,
+	chan *models.RawMqttMessage) {
 
 	ioc := mocks.InitMockIoc().(*mocks.MockTypes)
-	return ioc.CreateMqttReceiverServiceAndEquipsService()
+	service, equipService, equipsChan := ioc.CreateMqttReceiverServiceAndEquipsService()
+	equipService.Start()
+	return service, equipService, equipsChan
 	/*if mqttReceiverServiceTest == nil {
 		mqttReceiverServiceTest = mocks.InitMockIoc().GetMqttReceiverService() // EquipsServiceNew(nil, mocks.DataLayerMockServiceNew(), nil, nil)
 	}
@@ -21,8 +26,7 @@ func setUpMqttReceiverServiceAndEquipsService() (interfaces.IMqttReceiverService
 }
 
 func TestUpdateMqttConnections_2Connected_1Rename(t *testing.T) {
-	service, equipService := setUpMqttReceiverServiceAndEquipsService()
-	equipsChan := mocks.InitMockIoc().GetEquipsChan()
+	service, equipService, equipsChan := setUpMqttReceiverServiceAndEquipsService()
 
 	equipName1 := "ABC/WKS_ABC1"
 	state := &models.EquipConnectionState{
@@ -93,8 +97,7 @@ func TestUpdateMqttConnections_2Connected_1Rename(t *testing.T) {
 }
 
 func TestUpdateMqttConnections_1Connected_TimedOut_Reconnected_Active(t *testing.T) {
-	service, equipService := setUpMqttReceiverServiceAndEquipsService()
-	equipsChan := mocks.InitMockIoc().GetEquipsChan()
+	service, equipService, equipsChan := setUpMqttReceiverServiceAndEquipsService()
 
 	initEquipsNumber := len(equipService.GetEquipInfos(false))
 

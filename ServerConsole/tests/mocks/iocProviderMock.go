@@ -152,8 +152,12 @@ func (t *MockTypes) CreateMqttReceiverService() interfaces.IMqttReceiverService 
 }
 
 // CreateMqttReceiverServiceAndEquipsService returns IMqttReceiverService and IEquipsService services
-func (t *MockTypes) CreateMqttReceiverServiceAndEquipsService() (interfaces.IMqttReceiverService, interfaces.IEquipsService) {
-	equipsService := EquipsMockServiceNew(_mockTypes._log, _mockTypes._dalService, _mockTypes._equipsCh, _mockTypes._internalEventsCh)
+func (t *MockTypes) CreateMqttReceiverServiceAndEquipsService() (
+	interfaces.IMqttReceiverService,
+	interfaces.IEquipsService,
+	chan *models.RawMqttMessage) {
+	equipsCh := make(chan *models.RawMqttMessage)
+	equipsService := EquipsMockServiceNew(_mockTypes._log, _mockTypes._dalService, equipsCh, _mockTypes._internalEventsCh)
 	mqttReceiverService := MqttReceiverMockServiceNew(
 		_mockTypes._log, _mockTypes._outWriter,
 		_mockTypes, _mockTypes._diagnosticService,
@@ -163,7 +167,7 @@ func (t *MockTypes) CreateMqttReceiverServiceAndEquipsService() (interfaces.IMqt
 		_mockTypes._eventsService, _mockTypes._topicStorage,
 		_mockTypes._dalCh, _mockTypes._webSockCh, _mockTypes._eventsCh)
 
-	return mqttReceiverService, equipsService
+	return mqttReceiverService, equipsService, equipsCh
 }
 
 // GetWebSocketService returns IWebSocketService service
