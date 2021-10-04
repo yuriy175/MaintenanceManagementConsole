@@ -14,7 +14,7 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { Redirect } from 'react-router-dom';
 
-import { SummaryTabIndex, EquipsTabIndex, EventsTabIndex, MainTabPanelIndex,
+import { SummaryTabIndex, EquipsTabIndex, MapTabIndex, EventsTabIndex, MainTabPanelIndex,
   ControlTabIndex, CommonChat } from '../../model/constants';
 
 import MainToolBar from './MainToolBar';
@@ -93,7 +93,7 @@ export default function MainComponent() {
   }
 
   const handleListItemClick = async (event, index) => {
-    if(index === EquipsTabIndex)
+    if(index === EquipsTabIndex || index === MapTabIndex)
     {
       const allEquips = await EquipWorker.GetAllEquips(token);
       allEquipsDispatch({ type: 'SETALLEQUIPS', payload: allEquips });  
