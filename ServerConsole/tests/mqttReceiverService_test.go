@@ -18,11 +18,13 @@ var mqttReceiverServiceTest interfaces.IMqttReceiverService
 
 func setUpMqttReceiverService() interfaces.IMqttReceiverService {
 
-	if mqttReceiverServiceTest == nil {
+	ioc := mocks.InitMockIoc().(*mocks.MockTypes)
+	return ioc.CreateMqttReceiverService()
+	/*if mqttReceiverServiceTest == nil {
 		mqttReceiverServiceTest = mocks.InitMockIoc().GetMqttReceiverService() // EquipsServiceNew(nil, mocks.DataLayerMockServiceNew(), nil, nil)
 	}
 
-	return mqttReceiverServiceTest
+	return mqttReceiverServiceTest*/
 }
 
 func TestUpdateMqttConnections_100ConnectionCreated(t *testing.T) {

@@ -12,12 +12,14 @@ var equipsServiceTest interfaces.IEquipsService
 
 func setUpEquipsService() interfaces.IEquipsService {
 
-	if equipsServiceTest == nil {
+	ioc := mocks.InitMockIoc().(*mocks.MockTypes)
+	return ioc.CreateEquipsService()
+	/*if equipsServiceTest == nil {
 		equipsServiceTest = mocks.InitMockIoc().GetEquipsService() // EquipsServiceNew(nil, mocks.DataLayerMockServiceNew(), nil, nil)
 		equipsServiceTest.Start()
 	}
 
-	return equipsServiceTest
+	return equipsServiceTest*/
 }
 
 func TestInsertEquipInfo(t *testing.T) {

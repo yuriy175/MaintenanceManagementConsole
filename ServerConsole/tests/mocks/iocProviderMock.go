@@ -11,7 +11,7 @@ import (
 )
 
 // IoC mock provider implementation type
-type mockTypes struct {
+type MockTypes struct {
 	//logger
 	_log interfaces.ILogger
 
@@ -77,7 +77,7 @@ type mockTypes struct {
 }
 
 // mocks instance
-var _mockTypes = &mockTypes{}
+var _mockTypes = &MockTypes{}
 
 // InitIoc initializes all services
 func InitMockIoc() interfaces.IIoCProvider {
@@ -122,61 +122,97 @@ func InitMockIoc() interfaces.IIoCProvider {
 }
 
 // GetLogger returns ILogger service
-func (t *mockTypes) GetLogger() interfaces.ILogger {
+func (t *MockTypes) GetLogger() interfaces.ILogger {
 	return t._log
 }
 
 // GetDiagnosticService returns IDiagnosticService service
-func (t *mockTypes) GetDiagnosticService() interfaces.IDiagnosticService {
+func (t *MockTypes) GetDiagnosticService() interfaces.IDiagnosticService {
 	return t._diagnosticService
 }
 
 // GetMqttReceiverService returns IMqttReceiverService service
-func (t *mockTypes) GetMqttReceiverService() interfaces.IMqttReceiverService {
+func (t *MockTypes) GetMqttReceiverService() interfaces.IMqttReceiverService {
 	return t._mqttReceiverService
 }
 
+// CreateMqttReceiverService returns IMqttReceiverService service
+func (t *MockTypes) CreateMqttReceiverService() interfaces.IMqttReceiverService {
+	mqttReceiverService := MqttReceiverMockServiceNew(
+		_mockTypes._log, _mockTypes._outWriter,
+		_mockTypes, _mockTypes._diagnosticService,
+		_mockTypes._webSocketService,
+		_mockTypes._dalService,
+		// _mockTypes._equipsService,
+		t.CreateEquipsService(),
+		_mockTypes._eventsService, _mockTypes._topicStorage,
+		_mockTypes._dalCh, _mockTypes._webSockCh, _mockTypes._eventsCh)
+
+	return mqttReceiverService
+}
+
+// CreateMqttReceiverServiceAndEquipsService returns IMqttReceiverService and IEquipsService services
+func (t *MockTypes) CreateMqttReceiverServiceAndEquipsService() (interfaces.IMqttReceiverService, interfaces.IEquipsService) {
+	equipsService := EquipsMockServiceNew(_mockTypes._log, _mockTypes._dalService, _mockTypes._equipsCh, _mockTypes._internalEventsCh)
+	mqttReceiverService := MqttReceiverMockServiceNew(
+		_mockTypes._log, _mockTypes._outWriter,
+		_mockTypes, _mockTypes._diagnosticService,
+		_mockTypes._webSocketService,
+		_mockTypes._dalService,
+		equipsService,
+		_mockTypes._eventsService, _mockTypes._topicStorage,
+		_mockTypes._dalCh, _mockTypes._webSockCh, _mockTypes._eventsCh)
+
+	return mqttReceiverService, equipsService
+}
+
 // GetWebSocketService returns IWebSocketService service
-func (t *mockTypes) GetWebSocketService() interfaces.IWebSocketService {
+func (t *MockTypes) GetWebSocketService() interfaces.IWebSocketService {
 	return t._webSocketService
 }
 
 // GetDalService returns IDalService service
-func (t *mockTypes) GetDalService() interfaces.IDalService {
+func (t *MockTypes) GetDalService() interfaces.IDalService {
 	return t._dalService
 }
 
 // GetEquipsService returns IEquipsService service
-func (t *mockTypes) GetEquipsService() interfaces.IEquipsService {
+func (t *MockTypes) GetEquipsService() interfaces.IEquipsService {
 	return t._equipsService
 }
 
+// CreateEquipsService returns IEquipsService service
+func (t *MockTypes) CreateEquipsService() interfaces.IEquipsService {
+	equipsService := EquipsMockServiceNew(_mockTypes._log, _mockTypes._dalService, _mockTypes._equipsCh, _mockTypes._internalEventsCh)
+	return equipsService
+}
+
 // GetEventsService returns IEventsService service
-func (t *mockTypes) GetEventsService() interfaces.IEventsService {
+func (t *MockTypes) GetEventsService() interfaces.IEventsService {
 	return t._eventsService
 }
 
 // GetHTTPService returns IHttpService service
-func (t *mockTypes) GetHTTPService() interfaces.IHttpService {
+func (t *MockTypes) GetHTTPService() interfaces.IHttpService {
 	return t._httpService
 }
 
 // GetWebSocket returns a new IWebSock instance
-func (t *mockTypes) GetWebSocket() interfaces.IWebSock {
+func (t *MockTypes) GetWebSocket() interfaces.IWebSock {
 	return WebSockMockNew()
 }
 
 // GetMqttClient returns a new IMqttClient instance
-func (t *mockTypes) GetMqttClient() interfaces.IMqttClient {
+func (t *MockTypes) GetMqttClient() interfaces.IMqttClient {
 	return MqttClientMockNew()
 }
 
 // GetChatService returns IHttpService service
-func (t *mockTypes) GetChatService() interfaces.IChatService {
+func (t *MockTypes) GetChatService() interfaces.IChatService {
 	return t._chatService
 }
 
 // GetEquipsChan returns equips channel
-func (t *mockTypes) GetEquipsChan() chan *Models.RawMqttMessage {
+func (t *MockTypes) GetEquipsChan() chan *Models.RawMqttMessage {
 	return t._equipsCh
 }

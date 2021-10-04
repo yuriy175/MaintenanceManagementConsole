@@ -254,7 +254,14 @@ func (service *equipsService) checkIfEquipmentRenamed(equipName string) {
 		msg := models.MessageViewModel{equipName, "переименован из " + anyRenamed, ""}
 
 		service._internalEventsCh <- &msg
-		service.initEquipInfos()
+		// service.initEquipInfos()
+		if equip, ok := equips[anyRenamed]; ok {
+			equip.EquipName = equipName
+			delete(equips, anyRenamed)
+			equips[equipName] = equip
+		}
+
+		service.initRenamedEquipInfos()
 	}
 }
 
@@ -267,6 +274,10 @@ func (service *equipsService) initEquipInfos() {
 		service._equips[equip.EquipName] = detailedEquip
 	}
 
+	service.initRenamedEquipInfos()
+}
+
+func (service *equipsService) initRenamedEquipInfos() {
 	renamedInfos := service._dalService.GetOldEquipInfos()
 	service._renamedEquips = make(map[string][]string, len(renamedInfos))
 
