@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import * as L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 import { SummaryTabIndex, MainTabPanelIndex } from '../../model/constants';
@@ -15,6 +16,17 @@ const useStyles = makeStyles((theme) => ({
     height: '1000px',
   },
 }));
+
+const LeafIcon = L.Icon.extend({
+  options: {}
+});
+
+const activeIcon = new LeafIcon({
+  iconUrl:"./marker-icon.png"
+}),
+grayIcon = new LeafIcon({
+  iconUrl:"./marker-icon-dark.png"
+});
 
 export default function MapTab(props) {
   console.log("render MapTab");
@@ -46,7 +58,7 @@ export default function MapTab(props) {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         /> 
         {allEquips?.map((equip) => (
-          <Marker position={[equip.HospitalLatitude, equip.HospitalLongitude]}>
+          <Marker position={[equip.HospitalLatitude, equip.HospitalLongitude]} icon={!equip.IsActive? activeIcon : grayIcon}>
             <Popup>
               {equip.HospitalName} ({equip.EquipName})
               <div>
@@ -62,7 +74,7 @@ export default function MapTab(props) {
             ГБУЗ "ГКБ им. В.М. Буянова ДМЗ"
           </Popup>
         </Marker>
-        <Marker position={[55.76273, 37.79743]}>
+        <Marker position={[55.76273, 37.79743]} icon={greenIcon}>
           <Popup>
             ГБУЗ МКНЦ им. А.С.Логинова ДЗМ
           </Popup>
