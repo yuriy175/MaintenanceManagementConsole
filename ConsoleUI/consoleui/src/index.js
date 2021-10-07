@@ -9,6 +9,7 @@ import { CurrentEquipContextProvider } from './context/currentEquip-context';
 import { UsersContextProvider} from './context/users-context';
 import { AppContextProvider} from './context/app-context';
 import { EventsContextProvider} from './context/events-context';
+import { EquipLogContextProvider} from './context/equipLog-context';
 import { SystemVolatileContextProvider} from './context/systemVolatile-context';
 import { CommunicationContextProvider} from './context/communication-context';
 import { ControlStateContextProvider} from './context/controlState-context';
@@ -23,9 +24,11 @@ ReactDOM.render(
                 <EventsContextProvider>
                   <CommunicationContextProvider>
                     <ControlStateContextProvider>
-                      <BrowserRouter>
-                        <App />
-                      </BrowserRouter>
+                      <EquipLogContextProvider>
+                        <BrowserRouter>
+                          <App />
+                        </BrowserRouter>
+                      </EquipLogContextProvider>
                     </ControlStateContextProvider>
                   </CommunicationContextProvider>
                 </EventsContextProvider>

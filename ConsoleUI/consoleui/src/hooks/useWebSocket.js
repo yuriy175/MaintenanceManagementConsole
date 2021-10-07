@@ -5,6 +5,7 @@ import { SystemVolatileContext } from '../context/systemVolatile-context';
 import { AllEquipsContext } from '../context/allEquips-context';
 import { UsersContext } from '../context/users-context';
 import { EventsContext } from '../context/events-context';
+import { EquipLogContext } from '../context/equipLog-context';
 import { CommunicationContext } from '../context/communication-context';
 import * as EquipWorker from '../workers/equipWorker'
 
@@ -18,6 +19,7 @@ export function useWebSocket(props) {
     const [eventsState, eventsDispatch] = useContext(EventsContext);
     const [systemVolatileState, systemVolatileDispatch] = useContext(SystemVolatileContext);
     const [usersState, usersDispatch] = useContext(UsersContext);
+    const [equipLogs, equipLogsDispatch] = useContext(EquipLogContext);
     const [communicationState, communicationDispatch] = useContext(CommunicationContext);
     const [connection, setConnection] = useState(null);
     const equipInfo = useRef(currEquipState.equipInfo);
@@ -190,6 +192,11 @@ export function useWebSocket(props) {
                 {
                     const note = data? JSON.parse(data.Data) : null;
                     communicationDispatch({ type: 'ADDNOTE', payload: note}); 
+                }
+                else if(path.startsWith('/logs'))
+                {
+                    const log = data? JSON.parse(data.Data) : null;
+                    equipLogsDispatch({ type: 'ADDLOG', payload: log}); 
                 }
                
             };

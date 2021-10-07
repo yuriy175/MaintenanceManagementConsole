@@ -10,6 +10,8 @@ import Button from '@material-ui/core/Button';
 import { UsersContext } from '../../../context/users-context';
 
 import * as EquipWorker from '../../../workers/equipWorker'
+import { EquipLogContext } from '../../../context/equipLog-context';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,10 +24,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SummaryLogsTabPanel(props) {
+const SummaryLogsTabPanel = React.memo((props) => {
+// export default function StandCard() {
+// export default function SummaryLogsTabPanel(props) {
   console.log("render SummaryLogsTabPanel");
 
-  const classes = useStyles();const [usersState, usersDispatch] = useContext(UsersContext);
+  const classes = useStyles();
+  const [usersState, usersDispatch] = useContext(UsersContext);
+  const [equipLogs, equipLogsDispatch] = useContext(EquipLogContext);
 
   const equipName = props.equipName;
   const token = usersState.token;
@@ -76,6 +82,7 @@ export default function SummaryLogsTabPanel(props) {
     setDuration(!isNaN(val) || val === '' ? val : defaultDuration);
   }
 
+  const newLog = equipLogs.currentLog?.Type + ' ' + equipLogs.currentLog?.State?.Timestamp + ' ' + equipLogs.currentLog?.State?.Data;
   return (
     <div>      
       <FormControlLabel
@@ -113,8 +120,11 @@ export default function SummaryLogsTabPanel(props) {
       <TextareaAutosize className={classes.root}
         rowsMax={40}
         aria-label="maximum height"
+        defaultValue={equipLogs.currentLog?.State?.Data}
       />
     </div>
   );
-}
+});
+
+export default SummaryLogsTabPanel;
   

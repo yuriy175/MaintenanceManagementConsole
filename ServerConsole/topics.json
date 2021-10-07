@@ -6,6 +6,7 @@
 	"/detector/state",
 	"/collimator/state",
 	"/dosimeter/state",
+	"/logs/state",
 	"/dicom",
 	"/ARM/Hardware/Complex",
 	"/organauto",
