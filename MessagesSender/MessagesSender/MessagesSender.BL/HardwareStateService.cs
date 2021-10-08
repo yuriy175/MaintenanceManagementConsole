@@ -88,6 +88,9 @@ namespace MessagesSender.BL
                 _mqService.Subscribe<MQCommands, (int Id, CollimatorState State)>(
                     (MQCommands.CollimatorStateArrived, state => OnCollimatorState(state)));
 
+                _mqService.Subscribe<MQCommands, (int Id, string Type, LogState State)>(
+                    (MQCommands.FullLogArrived, state => OnFullLogState(state)));
+
                 _mqService.Subscribe<MQCommands, (int detectorId, string detectorName, DetectorState state)>(
                     (MQCommands.DetectorStateArrived, state => OnDetectorStateChanged(state)));
 
@@ -105,6 +108,18 @@ namespace MessagesSender.BL
             });
         }
 
+        private void OnFullLogState((int Id, string Type, LogState State) state)
+        {
+            if (!_isActivated)
+            {
+                return;
+            }
+
+            _sendingService.SendInfoToMqttAsync(
+                MQCommands.FullLogArrived,
+                new { state.Id, state.Type, state.State });
+        }
+
         private void OnStandState((int Id, StandState State) state)
         {
             if (!AlwaysSendStandState(state.State) && 
@@ -120,11 +135,11 @@ namespace MessagesSender.BL
 
                 if (state.State.State == StandBlockedValue)
                 {
-                    SendHardwareErrorAsync("РЎРѕРѕР±С‰РµРЅРёРµ РѕС‚ С€С‚Р°С‚РёРІР°", new[]
+                    SendHardwareErrorAsync("Сообщение от штатива", new[]
                     {
                         new DeviceError
                         {
-                            Code = "РђРєС‚РёРІРёСЂРѕРІР°РЅ Р°РІР°СЂРёР№РЅС‹Р№ РІС‹РєР»СЋС‡Р°С‚РµР»СЊ",
+                            Code = "Активирован аварийный выключатель",
                             Description = string.Empty,
                         },
                     });
@@ -133,7 +148,7 @@ namespace MessagesSender.BL
 
             if (state.State.ErrorDescriptions != null)
             {
-                SendHardwareErrorAsync("РћС€РёР±РєР° С€С‚Р°С‚РёРІР°", state.State.ErrorDescriptions);
+                SendHardwareErrorAsync("Ошибка штатива", state.State.ErrorDescriptions);
             }
 
             _sendingService.SendInfoToMqttAsync(
@@ -157,7 +172,7 @@ namespace MessagesSender.BL
 
             if (state.State.ErrorDescriptions != null)
             {
-                SendHardwareErrorAsync("РћС€РёР±РєР° РіРµРЅРµСЂР°С‚РѕСЂР°", state.State.ErrorDescriptions);
+                SendHardwareErrorAsync("Ошибка генератора", state.State.ErrorDescriptions);
             }
 
             _sendingService.SendInfoToMqttAsync(
@@ -213,20 +228,25 @@ namespace MessagesSender.BL
 
         private void OnDetectorStateChanged((int DetectorId, string DetectorName, DetectorState State) state)
         {
-            if (state.State.State != _detectorState) // _isActivated)
+            // if (state.State.State != _detectorState) // _isActivated)
+            if (_isActivated && (state.State.State != DetectorStates.CreationFailed || state.State.State != _detectorState))
             {
                 _sendingService.SendInfoToMqttAsync(
                     MQCommands.DetectorStateArrived,
                     new { state.DetectorId, state.DetectorName, state.State.State });
             }
 
-            if (_detectorState == DetectorStates.Created && state.State.State == DetectorStates.CreationFailed)
+            if (_detectorState == DetectorStates.Created && 
+                (state.State.State == DetectorStates.CreationFailed ||
+                state.State.State == DetectorStates.Lost))
             {
-                SendHardwareErrorAsync("РћС€РёР±РєР° РґРµС‚РµРєС‚РѕСЂР°", new[] 
+                SendHardwareErrorAsync("Ошибка детектора", new[] 
                 { 
                     new DeviceError 
                     { 
-                        Code = "РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґРµС‚РµРєС‚РѕСЂР°",
+                        Code = state.State.State == DetectorStates.Lost ? 
+                            "Ошибка инициализации детектора" :
+                            "Детектор потерян",
                         Description = string.Empty,
                     }, 
                 });
@@ -283,7 +303,7 @@ namespace MessagesSender.BL
                 }.Select(h => (h, activeHwTypes.Any(a => a == h.ToLower())))
                  .ToList();
 
-                // _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, int.Parse(parameters["duration"])));
+                _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, int.Parse(parameters["duration"])));
             }
             catch (Exception ex)
             {
