@@ -275,8 +275,8 @@ type EquipInfoModel struct {
 	EquipName         string
 	HospitalName      string
 	HospitalAddress   string
-	HospitalLongitude string
-	HospitalLatitude  string
+	HospitalLongitude float32
+	HospitalLatitude  float32
 	Disabled          bool
 	Renamed           bool
 }

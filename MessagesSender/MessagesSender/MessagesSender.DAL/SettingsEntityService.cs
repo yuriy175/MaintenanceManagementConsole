@@ -76,14 +76,14 @@ namespace MessagesSender.DAL
         /// Get hospital info info.
         /// </summary>
         /// <returns>equipment info</returns>
-        public async Task<(string Name, string Address, double Latitude, double Longitude)?> GetHospitalInfoAsync()
+        public async Task<(string Name, string Address, double? Latitude, double? Longitude)?> GetHospitalInfoAsync()
         {
             var sysInfo = await GetAction<SysInfo>(
                             context => context.SysInfo.FirstOrDefault());
 
             return sysInfo == null ? 
-                null as (string, string, double, double)? : 
-                (sysInfo.HospitalName, sysInfo.Address, 10, 20);
+                null as (string, string, double?, double?)? : 
+                (sysInfo.HospitalName, sysInfo.Address, null, null);
         }
 
         /// <summary>

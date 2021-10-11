@@ -58,8 +58,10 @@ const EquipTable = React.memo((props) => {
     },
     { id: 'HospitalName', label: 'ЛПУ', minWidth: 100, sortable: true },
     { id: 'HospitalAddress', label: 'Адрес', minWidth: 100, sortable: true },
-    { id: 'HospitalLatitude', label: 'Широта', minWidth: 100 },
-    { id: 'HospitalLongitude', label: 'Долгота', minWidth: 100 },
+    { id: 'HospitalLatitude', label: 'Широта', minWidth: 100,
+      format: (value) => value ? value : ""},
+    { id: 'HospitalLongitude', label: 'Долгота', minWidth: 100,
+      format: (value) => value ? value : ""},
     { id: 'LastSeenPresentation', label: 'Посл. сообщение', minWidth: 100, sortable: true,
       //format: (value) => value ? parseLocalString(value) : ""
     },

@@ -1,9 +1,8 @@
 package models
 
-import 
-(
-	"time"
+import (
 	"encoding/json"
+	"time"
 )
 
 // GeneratorInfoViewModel describes generator info view model from equipment
@@ -134,7 +133,7 @@ type SoftwareInfoViewModel struct {
 
 // MessageViewModel describes a message view model from equipment
 type MessageViewModel struct {
-	Level string
+	Level       string
 	Code        string
 	Description string
 }
@@ -142,23 +141,23 @@ type MessageViewModel struct {
 // AtlasUserViewModel describes a atlas user view model from equipment
 type AtlasUserViewModel struct {
 	User string
-	Role        string
+	Role string
 }
 
 // OfflineMsgViewModel describes a event offline view model from equipment
 type OfflineMsgViewModel struct {
-	Message *SoftwareMessageViewModel
+	Message  *SoftwareMessageViewModel
 	DateTime string
 }
 
 // SoftwareMessageViewModel describes a software message view model from equipment
 type SoftwareMessageViewModel struct {
-	ErrorDescriptions      []MessageViewModel
-	AtlasErrorDescriptions []MessageViewModel
+	ErrorDescriptions         []MessageViewModel
+	AtlasErrorDescriptions    []MessageViewModel
 	HardwareErrorDescriptions []MessageViewModel
-	AtlasUser AtlasUserViewModel
-	OfflineMsg *OfflineMsgViewModel
-	SimpleMsgType string
+	AtlasUser                 AtlasUserViewModel
+	OfflineMsg                *OfflineMsgViewModel
+	SimpleMsgType             string
 }
 
 // UserViewModel describes user info view model to UI
@@ -176,8 +175,8 @@ type UserViewModel struct {
 type EquipInfoViewModel struct {
 	HospitalName      string
 	HospitalAddress   string
-	HospitalLongitude string
-	HospitalLatitude  string
+	HospitalLongitude float32
+	HospitalLatitude  float32
 }
 
 // DetailedEquipInfoViewModel describes hospital info view model to UI
@@ -189,34 +188,32 @@ type DetailedEquipInfoViewModel struct {
 	HospitalLongitude string
 	HospitalLatitude  string
 	IsActive          bool
-	LastSeen      time.Time
+	LastSeen          time.Time
 }
 
 // AllDBInfoViewModel describes all db info view model from equipment
 type AllDBInfoViewModel struct {
-	Hospital      map[string]json.RawMessage//[]byte
-	Software   map[string]json.RawMessage//string
-	System map[string]json.RawMessage//string
-	Atlas  map[string]json.RawMessage//string
+	Hospital map[string]json.RawMessage //[]byte
+	Software map[string]json.RawMessage //string
+	System   map[string]json.RawMessage //string
+	Atlas    map[string]json.RawMessage //string
 }
 
 // EventViewModel describes event view model to websocket
 type EventsViewModel struct {
-	Topic string
+	Topic  string
 	Events []EventModel
 }
 
 // ChatViewModel describes chat note view model
 type ChatViewModel struct {
-	Message        string
-	User string
-	IsInternal bool 
+	Message    string
+	User       string
+	IsInternal bool
 }
-
 
 // TokenWithUserViewModel describes token and user info view model to UI
 type TokenWithUserViewModel struct {
-	Token       string
-	Surname  string
+	Token   string
+	Surname string
 }
-

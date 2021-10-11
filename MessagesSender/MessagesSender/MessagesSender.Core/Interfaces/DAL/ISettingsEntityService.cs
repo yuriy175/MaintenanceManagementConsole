@@ -43,6 +43,6 @@ namespace MessagesSender.Core.Interfaces
         /// Get hospital info info.
         /// </summary>
         /// <returns>equipment info</returns>
-        Task<(string Name, string Address, double Latitude, double Longitude)?> GetHospitalInfoAsync();
+        Task<(string Name, string Address, double? Latitude, double? Longitude)?> GetHospitalInfoAsync();
     }
 }

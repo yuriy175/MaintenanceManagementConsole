@@ -36,7 +36,7 @@ export default function MapTab(props) {
   const [appState, appDispatch] = useContext(AppContext);
   const setCurrEquip = useSetCurrEquip();
 
-  const allEquips = allEquipsState.allEquips;
+  const allEquips = allEquipsState.allEquips?.filter(e => e.HospitalLatitude && e.HospitalLongitude);
   const onSelect = async (ev, equip) => {
     const equipInfo = equip.EquipName;
     setCurrEquip(equipInfo, 'SETEQUIPINFO');
@@ -58,7 +58,7 @@ export default function MapTab(props) {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         /> 
         {allEquips?.map((equip) => (
-          <Marker position={[equip.HospitalLatitude, equip.HospitalLongitude]} icon={!equip.IsActive? activeIcon : grayIcon}>
+          <Marker position={[equip.HospitalLatitude, equip.HospitalLongitude]} icon={equip.IsActive? activeIcon : grayIcon}>
             <Popup>
               {equip.HospitalName} ({equip.EquipName})
               <div>

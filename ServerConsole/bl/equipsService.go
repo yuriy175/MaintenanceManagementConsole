@@ -82,8 +82,8 @@ func (service *equipsService) Start() {
 				} else {
 					if existingEquip.HospitalName != viewmodel.HospitalName ||
 						existingEquip.HospitalAddress != viewmodel.HospitalAddress ||
-						existingEquip.HospitalLongitude != viewmodel.HospitalLongitude ||
-						existingEquip.HospitalLatitude != viewmodel.HospitalLatitude {
+						(viewmodel.HospitalLongitude != 0 && existingEquip.HospitalLongitude != viewmodel.HospitalLongitude) ||
+						(viewmodel.HospitalLatitude != 0 && existingEquip.HospitalLatitude != viewmodel.HospitalLatitude) {
 						go service.updateEquipmentInfo(equipName, viewmodel)
 					}
 				}
@@ -294,8 +294,12 @@ func (service *equipsService) updateEquipmentInfo(equipName string, viewmodel mo
 	if equip, ok := equips[equipName]; ok {
 		equip.HospitalName = viewmodel.HospitalName
 		equip.HospitalAddress = viewmodel.HospitalAddress
-		equip.HospitalLongitude = viewmodel.HospitalLongitude
-		equip.HospitalLatitude = viewmodel.HospitalLatitude
+		if viewmodel.HospitalLongitude != 0 {
+			equip.HospitalLongitude = viewmodel.HospitalLongitude
+		}
+		if viewmodel.HospitalLatitude != 0 {
+			equip.HospitalLatitude = viewmodel.HospitalLatitude
+		}
 		equips[equipName] = equip
 
 		go service._dalService.UpdateEquipmentInfo(&equip)

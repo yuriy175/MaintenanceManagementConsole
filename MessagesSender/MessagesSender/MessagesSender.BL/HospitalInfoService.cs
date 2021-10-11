@@ -30,7 +30,7 @@ namespace MessagesSender.BL
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
 
-        private (string Name, string Address, double Latitude, double Longitude)? _hospitalInfo = null;
+        private (string Name, string Address, double? Latitude, double? Longitude)? _hospitalInfo = null;
 
         /// <summary>
         /// public constructor
