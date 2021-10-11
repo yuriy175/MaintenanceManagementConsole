@@ -31,6 +31,7 @@ const GeneratorCard = React.memo((props) => {
   const scopyMa = generatorState?.Scopy_post_ma || generatorState?.Scopy_ma;
   const scopyMs = generatorState?.Scopy_post_ms || generatorState?.Scopy_ms;
 
+  const isPoints3 = generatorState?.Points_mode === 3;
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -62,11 +63,14 @@ const GeneratorCard = React.memo((props) => {
         }></CardRow>
         <Typography variant="h6" component="h2">
           {bull}Графия
-        </Typography>        
-        <CardRow descr="Количество электричества" value={mas ? mas + ' мАс' : ''}></CardRow>
-        <CardRow descr="Напряжение" value={kv ? kv + ' кВ' : ''}></CardRow>
-        <CardRow descr="Сила тока" value={ma ? ma + ' мА' : ''}></CardRow>
-        <CardRow descr="Время" value={ms ? ms + ' мс' : ''}></CardRow>
+        </Typography>  
+        <CardRow descr="Напряжение" value={kv ? kv + ' кВ' : ''}></CardRow>      
+        {!isPoints3 ? 
+          <CardRow descr="Количество электричества" value={mas ? mas + ' мАс' : ''}></CardRow> :
+          <div>       
+            <CardRow descr="Сила тока" value={ma ? ma + ' мА' : ''}></CardRow>
+            <CardRow descr="Время" value={ms ? ms + ' мс' : ''}></CardRow>
+          </div>}
         <Typography variant="h6" component="h2">
           {bull}Скопия
         </Typography>
