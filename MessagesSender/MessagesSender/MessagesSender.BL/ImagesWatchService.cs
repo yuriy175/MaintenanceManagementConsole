@@ -121,6 +121,7 @@ namespace MessagesSender.BL
                     {
                         SingleGraphy = todayImages.Count(i => i.Type == ImageTypes.Graphy),
                         Scopy = todayImages.Count(i => i.Type == ImageTypes.Scopy),
+                        Stitch = todayImages.Count(i => i.Type == ImageTypes.Stitch),
                     }
                     : null,
                 });

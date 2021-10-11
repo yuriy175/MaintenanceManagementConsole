@@ -93,7 +93,8 @@ func (repository *EventsRepository) InsertConnectEvent(equipName string) *models
 
 	eventsCollection := session.DB(repository._dbName).C(models.EventsTableName)
 
-	msg := models.MessageViewModel{equipName, "подключен", ""}
+	msgCode := "подключен"
+	msg := models.MessageViewModel{equipName, msgCode, ""}
 	model := repository.insertEvent(eventsCollection, equipName, "EquipConnected", &msg, nil)
 
 	return model

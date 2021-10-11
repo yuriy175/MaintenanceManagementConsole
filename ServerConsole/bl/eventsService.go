@@ -77,7 +77,7 @@ func (service *eventsService) Start() {
 
 				equipName := utils.GetEquipFromTopic(d.Topic)
 				service.insertEvents(equipName, &viewmodel, false, nil)
-			} 
+			}
 		}
 	}()
 
@@ -92,7 +92,7 @@ func (service *eventsService) Start() {
 }
 
 // InsertEvent inserts equipment connection state info into db
-func (service *eventsService) InsertConnectEvent(equipName string) {
+func (service *eventsService) InsertConnectEvent(equipName string, connected bool) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
@@ -100,7 +100,11 @@ func (service *eventsService) InsertConnectEvent(equipName string) {
 	webSocketService := service._webSocketService
 
 	go func() {
-		msg := models.MessageViewModel{equipName, "подключен", ""}
+		msgCode := "подключен"
+		if !connected {
+			msgCode = "отключен"
+		}
+		msg := models.MessageViewModel{equipName, msgCode, ""}
 		events := dalService.InsertEvents(equipName, "EquipConnected", []models.MessageViewModel{msg}, nil)
 		service._equipsService.SetLastSeen(equipName)
 		go webSocketService.SendEvents(events)

@@ -125,6 +125,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 			go client.Disconnect()
 			delete(mqttConnections, rootTopic)
 			outWriter.Println(rootTopic + " deleted")
+			go eventsService.InsertConnectEvent(rootTopic, !isOff)
 		}
 
 		// if the topic is observed by any client -> send activate command
@@ -139,7 +140,7 @@ func (service *mqttReceiverService) UpdateMqttConnections(state *models.EquipCon
 		mqttConnections[rootTopic] = ioCProvider.GetMqttClient().Create(rootTopic, topics)
 		// go equipsService.CheckEquipment(rootTopic)
 		go service.SendCommand(rootTopic, "serverReady")
-		go eventsService.InsertConnectEvent(rootTopic)
+		go eventsService.InsertConnectEvent(rootTopic, !isOff)
 	}
 
 	outWriter.Println(rootTopic + " created")

@@ -12,7 +12,7 @@ type IEventsService interface {
 	Start()
 
 	// InsertEvent inserts equipment connection state info into db
-	InsertConnectEvent(equipName string)
+	InsertConnectEvent(equipName string, connected bool)
 
 	// GetEvents returns all events from db
 	GetEvents(equipName string, startDate time.Time, endDate time.Time) []models.EventModel
