@@ -149,7 +149,7 @@ func (service *webSocketService) SendEvents(events []models.EventModel) {
 	return*/
 
 	for _, event := range events {
-		topic := event.Title
+		topic := event.EquipName // event.Title
 		if sessions, ok := service._topicConnections[topic]; ok {
 			for _, session := range sessions {
 				ws, ok := service._webSocketConnections[session]

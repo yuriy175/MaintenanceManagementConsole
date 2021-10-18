@@ -242,6 +242,8 @@ namespace MessagesSender.BL
                 return true;
             }
 
+            _isStartupSent = true;
+
             var ticks = Environment.TickCount;
             var startupTime = DateTime.Now - TimeSpan.FromMilliseconds(ticks);
             var eventLog = new EventLog("System");
@@ -259,8 +261,6 @@ namespace MessagesSender.BL
                             KernelPower41 = mostRecentWake == null ? 
                                 null as DateTime? : mostRecentWake.TimeGenerated,
                         });
-
-            _isStartupSent = true;
 
             return true;
         }
