@@ -33,8 +33,8 @@ func TestInsertEquipInfo(t *testing.T) {
 	model := service.InsertEquipInfo(equipName,
 		&models.EquipInfoViewModel{HospitalName: "HospitalName",
 			HospitalAddress:   "HospitalAddress",
-			HospitalLongitude: "12",
-			HospitalLatitude:  "34"})
+			HospitalLongitude: 12,
+			HospitalLatitude:  34})
 
 	if !model.IsActive || model.EquipName != equipName || model.HospitalName != hospitalName {
 		t.Errorf(`InsertEquipInfo= %v %v %v`, model.IsActive, model.EquipName, model.HospitalName)

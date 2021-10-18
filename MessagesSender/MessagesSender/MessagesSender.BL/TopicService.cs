@@ -71,6 +71,8 @@ namespace MessagesSender.BL
 
         private async Task GetMainTopicAsync()
         {
+            // _mainTopic = "KRT/HOMEPC01_ABCX";
+            // return;
             string Strip(string text) => _notAllowedSymbolsRegex.Replace(text, string.Empty);
 
             var atlasMainTopic = string.Empty;
