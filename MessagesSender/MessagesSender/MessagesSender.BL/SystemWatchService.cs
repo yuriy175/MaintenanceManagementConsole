@@ -31,6 +31,8 @@ namespace MessagesSender.BL
     /// </summary>
     public class SystemWatchService : ISystemWatchService
     {
+        private const string LastStartupTimeName = "LastStartupTime";
+
         private const string MQTTsysinfoFolder = @".\MQTTsysinfo\MQTTsysinfo.exe";
         private const string MQTTsysinfoCommandLine = "{0} {1} {2} {3}";
         private const long Megabyte = 1024 * 1024;
@@ -42,6 +44,7 @@ namespace MessagesSender.BL
         private readonly IEventPublisher _eventPublisher;
         private readonly ISendingService _sendingService;
         private readonly ITopicService _topicService;
+        private readonly IConfigEntityService _dbConfigEntityService;
 
         private readonly PerformanceCounter _totalCpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
         private readonly PerformanceCounter _idleCpu = new PerformanceCounter("Process", "% Processor Time", "Idle");
@@ -55,18 +58,21 @@ namespace MessagesSender.BL
         /// </summary>
         /// <param name="configurationService">configuration service</param>
         /// <param name="logger">logger</param>
+        /// <param name="dbConfigEntityService">config database connector</param>
         /// <param name="eventPublisher">event publisher service</param>
         /// <param name="sendingService">sending service</param>
         /// <param name="topicService">topic service</param>
         public SystemWatchService(
             IConfigurationService configurationService,
             ILogger logger,
+            IConfigEntityService dbConfigEntityService,
             IEventPublisher eventPublisher,
             ISendingService sendingService,
             ITopicService topicService)
         {
             _configurationService = configurationService;
             _logger = logger;
+            _dbConfigEntityService = dbConfigEntityService;
             _eventPublisher = eventPublisher;
             _sendingService = sendingService;
             _topicService = topicService;
@@ -244,23 +250,44 @@ namespace MessagesSender.BL
 
             _isStartupSent = true;
 
-            var ticks = Environment.TickCount;
-            var startupTime = DateTime.Now - TimeSpan.FromMilliseconds(ticks);
-            var eventLog = new EventLog("System");
+            try
+            {
+                var lastStartupTimeParam = await _dbConfigEntityService.GetConfigParamAsync(LastStartupTimeName);
 
-            var mostRecentWake =
-                EnumerateLog(eventLog, "Microsoft-Windows-Kernel-Power", 41)
-                .OrderByDescending(item => item.TimeGenerated)
-                .LastOrDefault();
+                var lastStartupTimeSent = lastStartupTimeParam == null ?
+                    DateTime.MinValue : DateTime.Parse(lastStartupTimeParam.ParamValue);
 
-            _ = _sendingService.SendInfoToMqttAsync(
-                        MQMessages.StartupInfo,
-                        new
-                        {
-                            StartupTime = startupTime,
-                            KernelPower41 = mostRecentWake == null ? 
-                                null as DateTime? : mostRecentWake.TimeGenerated,
-                        });
+                var ticks = Environment.TickCount;
+                var startupTime = DateTime.Now - TimeSpan.FromMilliseconds(ticks);
+
+                if (startupTime <= lastStartupTimeSent)
+                {
+                    return true;
+                }
+
+                var eventLog = new EventLog("System");
+
+                var mostRecentWake =
+                    EnumerateLog(eventLog, "Microsoft-Windows-Kernel-Power", 41)
+                    .OrderByDescending(item => item.TimeGenerated)
+                    .LastOrDefault();
+
+                _ = _sendingService.SendInfoToMqttAsync(
+                            MQMessages.StartupInfo,
+                            new
+                            {
+                                StartupTime = startupTime,
+                                KernelPower41 = mostRecentWake == null ?
+                                    null as DateTime? : mostRecentWake.TimeGenerated,
+                            });
+
+                await _dbConfigEntityService.UpsertConfigParamAsync(LastStartupTimeName, DateTime.Now.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "SendSystemStartupEventAsync error");
+                return false;
+            }
 
             return true;
         }
