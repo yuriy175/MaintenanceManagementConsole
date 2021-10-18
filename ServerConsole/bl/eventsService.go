@@ -65,9 +65,9 @@ func (service *eventsService) Start() {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	dalService := service._dalService
+	/*dalService := service._dalService
 	equipsService := service._equipsService
-	webSocketService := service._webSocketService
+	webSocketService := service._webSocketService*/
 
 	go func() {
 		for d := range service._eventsCh {
@@ -77,16 +77,31 @@ func (service *eventsService) Start() {
 
 				equipName := utils.GetEquipFromTopic(d.Topic)
 				service.insertEvents(equipName, &viewmodel, false, nil)
+			} else if strings.Contains(d.Topic, "/ARM/Hardware/Startup") {
+				viewmodel := models.StartupInfoViewModel{}
+				json.Unmarshal([]byte(d.Data), &viewmodel)
+
+				equipName := utils.GetEquipFromTopic(d.Topic)
+				if viewmodel.StartupTime != nil {
+					msg := &models.MessageViewModel{"Система запущена", viewmodel.StartupTime.Format("2006-01-02 15:04:05"), ""}
+					service.insertInternalEvent(equipName, "StartupEvent", msg)
+				}
+
+				if viewmodel.KernelPower41 != nil {
+					msg := &models.MessageViewModel{"KernelPower 41", viewmodel.KernelPower41.Format("2006-01-02 15:04:05"), ""}
+					service.insertInternalEvent(equipName, "StartupEvent", msg)
+				}
 			}
 		}
 	}()
 
 	go func() {
 		for msg := range service._internalEventsCh {
-			equipName := msg.Level
+			service.insertInternalEvent(msg.Level, "InternalEvent", msg)
+			/*equipName := msg.Level
 			events := dalService.InsertEvents(equipName, "InternalEvent", []models.MessageViewModel{*msg}, nil)
 			equipsService.SetLastSeen(equipName)
-			go webSocketService.SendEvents(events)
+			go webSocketService.SendEvents(events) */
 		}
 	}()
 }
@@ -185,4 +200,14 @@ func (service *eventsService) insertEvents(
 		equipsService.SetLastSeen(equipName)
 		go webSocketService.SendEvents(events)
 	}
+}
+
+func (service *eventsService) insertInternalEvent(equipName string, msgType string, msg *models.MessageViewModel) {
+	dalService := service._dalService
+	equipsService := service._equipsService
+	webSocketService := service._webSocketService
+
+	events := dalService.InsertEvents(equipName, msgType, []models.MessageViewModel{*msg}, nil)
+	equipsService.SetLastSeen(equipName)
+	go webSocketService.SendEvents(events)
 }

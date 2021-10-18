@@ -139,7 +139,15 @@ func (service *webSocketService) SendEvents(events []models.EventModel) {
 	service._mtx.Lock()
 	defer service._mtx.Unlock()
 
-	// eventsVm := &models.EventsViewModel{models.EventsTopicPath, events}
+	/*eventsVm := &models.EventsViewModel{models.EventsTopicPath, events}
+	for _, ws := range service._webSocketConnections {
+		if ws.IsValid() {
+			b, _ := json.Marshal(eventsVm)
+			ws.WriteMessage(b)
+		}
+	}
+	return*/
+
 	for _, event := range events {
 		topic := event.Title
 		if sessions, ok := service._topicConnections[topic]; ok {

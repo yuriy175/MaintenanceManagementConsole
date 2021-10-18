@@ -48,6 +48,7 @@ namespace MessagesSender.BL
 
         private (string HostName, string UserName, string Password)? _connectionProps;
         private bool _isActivated = false;
+        private bool _isStartupSent = false;
 
         /// <summary>
         /// public constructor
@@ -73,6 +74,7 @@ namespace MessagesSender.BL
             _eventPublisher.RegisterActivateCommandArrivedEvent(() => OnActivateArrivedAsync());
             _eventPublisher.RegisterDeactivateCommandArrivedEvent(() => OnDeactivateArrivedAsync());
 
+            _eventPublisher.RegisterServerReadyCommandArrivedEvent(() => SendSystemStartupEventAsync());
             _logger.Information("HddWatchService started");
         }
 
@@ -232,5 +234,42 @@ namespace MessagesSender.BL
             }
         }
         #endregion
+
+        private async Task<bool> SendSystemStartupEventAsync()
+        {
+            if (_isStartupSent)
+            {
+                return true;
+            }
+
+            var ticks = Environment.TickCount;
+            var startupTime = DateTime.Now - TimeSpan.FromMilliseconds(ticks);
+            var eventLog = new EventLog("System");
+
+            var mostRecentWake =
+                EnumerateLog(eventLog, "Microsoft-Windows-Kernel-Power", 41)
+                .OrderByDescending(item => item.TimeGenerated)
+                .LastOrDefault();
+
+            _ = _sendingService.SendInfoToMqttAsync(
+                        MQMessages.StartupInfo,
+                        new
+                        {
+                            StartupTime = startupTime,
+                            KernelPower41 = mostRecentWake == null ? 
+                                null as DateTime? : mostRecentWake.TimeGenerated,
+                        });
+
+            _isStartupSent = true;
+
+            return true;
+        }
+
+        private IEnumerable<EventLogEntry> EnumerateLog(EventLog log, string source, int? code = null)
+        {
+            foreach (EventLogEntry entry in log.Entries)
+                if (entry.Source == source && (code.HasValue ? entry.EventID == code : true ))
+                    yield return entry;
+        }
     }
 }

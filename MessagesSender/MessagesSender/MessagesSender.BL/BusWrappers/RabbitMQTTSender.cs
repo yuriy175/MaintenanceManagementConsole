@@ -51,6 +51,7 @@ namespace MessagesSender.BL.Remoting
             { MQMessages.HddDrivesInfo.ToString(), "/ARM/Hardware/HDD" },
             { MQMessages.CPUInfo.ToString(), "/ARM/Hardware/Processor" },
             { MQMessages.MemoryInfo.ToString(), "/ARM/Hardware/Memory" },
+            { MQMessages.StartupInfo.ToString(), "/ARM/Hardware/Startup" },            
             { MQMessages.AllDBInfo.ToString(), "/ARM/AllDBInfo" },
             { MQCommands.SetOrganAuto.ToString(), "/organauto" },
             { MQCommands.ProcessDoseArrived.ToString(), "/dosimeter/state" },

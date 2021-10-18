@@ -35,6 +35,11 @@ namespace MessagesSender.Core.Model
         MemoryInfo,
 
         /// <summary>
+        /// StartupInfo message type
+        /// </summary>
+        StartupInfo,
+
+        /// <summary>
         /// DicomInfo message type
         /// </summary>
         DicomInfo,

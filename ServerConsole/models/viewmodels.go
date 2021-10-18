@@ -217,3 +217,9 @@ type TokenWithUserViewModel struct {
 	Token   string
 	Surname string
 }
+
+// StarpupInfoViewModel describes equipment start up info view model
+type StartupInfoViewModel struct {
+	StartupTime   *time.Time
+	KernelPower41 *time.Time
+}
