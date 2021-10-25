@@ -4,7 +4,7 @@ import { SummaryTabIndex, MainTabPanelIndex } from '../model/constants';
 export const EquipLogContext = createContext();
 
 const initialState = {
-  currentLog: {},
+  currentLogs: [],
 };
 
 function reducer(state, action) {
@@ -15,7 +15,13 @@ function reducer(state, action) {
     case 'ADDLOG': {
       return {
         ...state,
-        currentLog: action.payload
+        currentLogs: [action.payload, ...state.currentLogs]
+      };
+    }
+    case 'RESETLOG': {
+      return {
+        ...state,
+        currentLogs: []
       };
     }
 

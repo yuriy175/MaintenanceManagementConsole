@@ -37,6 +37,11 @@ export default function MapTab(props) {
   const setCurrEquip = useSetCurrEquip();
 
   const allEquips = allEquipsState.allEquips?.filter(e => e.HospitalLatitude && e.HospitalLongitude);
+  allEquips?.forEach(e =>
+    {
+      e.IsActive = allEquipsState.connectedEquips?.includes(e.EquipName);
+    });
+
   const onSelect = async (ev, equip) => {
     const equipInfo = equip.EquipName;
     setCurrEquip(equipInfo, 'SETEQUIPINFO');

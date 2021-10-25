@@ -14,6 +14,7 @@ import { UsersContext } from '../../../context/users-context';
 
 import * as EquipWorker from '../../../workers/equipWorker'
 import { EquipLogContext } from '../../../context/equipLog-context';
+import {parseLocalString} from '../../../utilities/utils'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +26,15 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  logsArea: {
+    width:'100%',
+    borderColor: 'darkgray',
+    height: '70em',
+    overflowY: 'auto',
+  },
+  logClass: {
+    textAlign: 'left',
+  }
 }));
 
 const SummaryLogsTabPanel = React.memo((props) => {
@@ -80,12 +90,17 @@ const SummaryLogsTabPanel = React.memo((props) => {
     const result = await EquipWorker.SetEquipLogsOn(token, equipName, equipTypes, duration ?? defaultDuration);
   };
 
+  const onReset = async () => { 
+    equipLogsDispatch({ type: 'RESETLOG', payload: true}); 
+  }
+
   const onDurationChange = async (event) =>{
     const val = event.target.value;
     setDuration(!isNaN(val) || val === '' ? val : defaultDuration);
   }
 
-  const newLog = equipLogs.currentLog?.Type + ' ' + equipLogs.currentLog?.State?.Timestamp + ' ' + equipLogs.currentLog?.State?.Data;
+  // const newLog = equipLogs.currentLog?.Type + ' ' + equipLogs.currentLog?.State?.Timestamp + ' ' + equipLogs.currentLog?.State?.Data;
+  const logs = equipLogs?.currentLogs;
   return (
     <div>      
       <FormControlLabel
@@ -115,16 +130,28 @@ const SummaryLogsTabPanel = React.memo((props) => {
               }
               label="Логи детектора"
             />
+      
+      <TextField id="outlined-basic" className={classes.commonSpacing} value={duration} onChange={onDurationChange} label="Длительность, сек" variant="outlined" />
+
       <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onStart}>
           Запустить
       </Button>
 
-      <TextField id="outlined-basic" className={classes.commonSpacing} value={duration} onChange={onDurationChange} label="Длительность, сек" variant="outlined" />
-      <TextareaAutosize className={classes.root}
-        rowsMax={40}
-        aria-label="maximum height"
-        defaultValue={equipLogs.currentLog?.State?.Data}
-      />
+      <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={onReset}>
+          Очистить
+      </Button>
+      
+      <List className={classes.logsArea}>
+        {logs?.map((log, ind) => (
+          <ListItemText 
+              key={log?.State?.Timestamp.toString()} 
+              className={classes.logClass}
+              primary={parseLocalString(log?.State?.Timestamp) + ' ' + log?.Type  + ' ' + log?.State?.Data} />
+            ))}          
+      </List>
+      {/* {logs?.map((log, ind) => (
+              <Typography>{log?.Type + ' ' + log?.State?.Timestamp + ' ' + log?.State?.Data}</Typography>
+            ))} */}
     </div>
   );
 });

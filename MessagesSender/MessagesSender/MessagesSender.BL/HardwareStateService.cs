@@ -303,7 +303,46 @@ namespace MessagesSender.BL
                 }.Select(h => (h, activeHwTypes.Any(a => a == h.ToLower())))
                  .ToList();
 
-                _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, int.Parse(parameters["duration"])));
+                var duration = int.Parse(parameters["duration"]);
+                _mqService.SendAsync(MQCommands.HardwareFullLogEnable, (hwTypes, duration));
+
+                // [YUR] fakes
+                Task FakeLogRunnner(string hwType, int delay)
+                {
+                    return Task.Run(async () =>
+                    {
+                        var curTime = 0;
+                        while (duration * 1000 >= curTime)
+                        {
+                            OnFullLogState((1, hwType, new LogState
+                            {
+                                Data = "qweqwe" + hwType + "asdasd12",
+                                Source = hwType,
+                                Timestamp = DateTime.Now,
+                            }));
+
+                            await Task.Delay(delay);
+                            curTime += delay;
+                        }
+                    });
+                }
+
+                if (hwTypes.Any(h => h.Item1.Contains(CommonConstants.GeneratorType) && h.Item2))
+                {
+                    FakeLogRunnner(CommonConstants.GeneratorType, 200);                    
+                }
+
+                if (hwTypes.Any(h => h.Item1.Contains(CommonConstants.StandType) && h.Item2))
+                {
+                    FakeLogRunnner(CommonConstants.StandType, 100);
+                }
+
+                if (hwTypes.Any(h => h.Item1.Contains(CommonConstants.DetectorType) && h.Item2))
+                {
+                    FakeLogRunnner(CommonConstants.DetectorType, 300);
+                }
+
+                // OnFullLogState
             }
             catch (Exception ex)
             {
