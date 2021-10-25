@@ -518,6 +518,11 @@ func (service *dalService) UpdateEquipmentInfo(equip *models.DetailedEquipInfoMo
 	service._equipInfoRepository.UpdateEquipmentInfo(equip)
 }
 
+// UpdateEquipmentDetails updates equipment details in db
+func (service *dalService) UpdateEquipmentDetails(equipVM *models.EquipDetailsViewModel) {
+	service._equipInfoRepository.UpdateEquipmentDetails(equipVM)
+}
+
 func (service *dalService) InsertEquipInfo(equipName string, equipVM *models.EquipInfoViewModel) *models.EquipInfoModel {
 	return service._equipInfoRepository.InsertEquipInfo(equipName, equipVM)
 }

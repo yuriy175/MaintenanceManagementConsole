@@ -279,6 +279,7 @@ type EquipInfoModel struct {
 	HospitalLatitude  float32
 	Disabled          bool
 	Renamed           bool
+	EquipAlias        string
 }
 
 // RawDeviceInfoModel describes raw device data from equipment info DB model

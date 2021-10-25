@@ -121,6 +121,23 @@ func (repository *EquipInfoRepository) UpdateEquipmentInfo(equip *models.Detaile
 			}}})
 }
 
+// UpdateEquipmentDetails updates equipment details in db
+func (repository *EquipInfoRepository) UpdateEquipmentDetails(equipVM *models.EquipDetailsViewModel) {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
+
+	equipCollection.Update(
+		bson.M{"equipname": equipVM.EquipName},
+		bson.D{
+			{"$set", bson.D{
+				{"hospitallongitude", equipVM.HospitalLongitude},
+				{"hospitallatitude", equipVM.HospitalLatitude},
+				{"equipalias", equipVM.EquipAlias},
+			}}})
+}
+
 // RenameEquip appends equipment to renamedequipment
 func (repository *EquipInfoRepository) RenameEquip(oldEquipName string) bool {
 	session := repository._dalService.CreateSession()

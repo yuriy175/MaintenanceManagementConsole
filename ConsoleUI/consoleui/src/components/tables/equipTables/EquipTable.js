@@ -16,7 +16,7 @@ import * as EquipWorker from '../../../workers/equipWorker'
 import {useSetCurrEquip} from '../../../hooks/useSetCurrEquip'
 import {parseLocalString} from '../../../utilities/utils'
 import ConfirmDlg from '../../dialogs/ConfirmDlg'
-
+import EquipDetailsDlg from '../../dialogs/EquipDetailsDlg'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,13 +46,21 @@ const EquipTable = React.memo((props) => {
     byAddress:''
   });
   const [openConfirm, setOpenConfirm] = React.useState({Result: false});
+  const [openEquipDetails, setOpenEquipDetails] = React.useState({Open:false, CurrentEquip: ''});  
 
   const isAdmin = usersState.currentUser?.Role === AdminRole;
+  
+  const onEdit = async (equip, evnt) => {
+    evnt.stopPropagation();
+    setOpenEquipDetails({Open: true, CurrentEquip: equip});
+  };
+  
   const columns = [
     { id: 'IsActive', label: 'Активен', checked: true, minWidth: 50, sortable: true,
       // format: (row) => allEquipsState.connectedEquips?.includes(row.EquipName)
     },
     { id: 'EquipName', label: 'Комплекс', minWidth: 170, sortable: true },
+    { id: 'EquipAlias', label: 'Алиас', minWidth: 170, sortable: true },
     { id: 'RegisterDate', label: 'Дата регистрации', minWidth: 170,
       format: (value) => parseLocalString(value)
     },
@@ -65,6 +73,7 @@ const EquipTable = React.memo((props) => {
     { id: 'LastSeenPresentation', label: 'Посл. сообщение', minWidth: 100, sortable: true,
       //format: (value) => value ? parseLocalString(value) : ""
     },
+    { id: 'ShowCard', label: 'Редактировать', button: true, onEdit:onEdit, minWidth: 100 },
     
     // { id: 'Disabled', label: 'Удален', checked: true, minWidth: 100 },
   ];
@@ -158,6 +167,17 @@ const EquipTable = React.memo((props) => {
     setOpenConfirm({Result: false});
   };
 
+  const onEquipDetailsClose = async (result, context) => {
+    if(result){
+      // const row = context;
+      // const equipInfo = row.EquipName;
+      // row.Disabled = !row.Disabled
+      // await EquipWorker.DisableEquipInfo(usersState.token, equipInfo, row.Disabled);
+      // allEquipsDispatch({ type: 'UPDATEALLEQUIPS', payload: row });
+    }
+    setOpenEquipDetails({Open:false, CurrentEquip: ''});
+  };
+
   const equipInfo = props.equipInfo;
 
   return (
@@ -199,6 +219,12 @@ const EquipTable = React.memo((props) => {
         context={openConfirm.Context}
         >          
       </ConfirmDlg>
+      <EquipDetailsDlg 
+        open={openEquipDetails.Open} 
+        onClose={onEquipDetailsClose}
+        equip={openEquipDetails.CurrentEquip}
+        >          
+      </EquipDetailsDlg>      
     </>
   );
 });

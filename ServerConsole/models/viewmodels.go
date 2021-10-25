@@ -223,3 +223,11 @@ type StartupInfoViewModel struct {
 	StartupTime   *time.Time
 	KernelPower41 *time.Time
 }
+
+// EquipDetailsViewModel describes equipment detailed info view model
+type EquipDetailsViewModel struct {
+	EquipName         string
+	HospitalLongitude float32
+	HospitalLatitude  float32
+	EquipAlias        string
+}

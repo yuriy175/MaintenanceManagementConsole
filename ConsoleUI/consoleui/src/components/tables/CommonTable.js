@@ -171,7 +171,13 @@ export default function CommonTable(props) {
                             column.formatArray ? column.formatArray(value).map(v => <pre>{v}</pre>) : 
 
                             column.button ? 
-                              <Button variant="contained" color="primary" className={classes.commonSpacing} onClick={() => column.onEdit(row)}>
+                              <Button 
+                                  variant="contained" 
+                                  color="primary"   
+                                  className={classes.commonSpacing} 
+                                  onClick={(ev) => column.onEdit(row, ev)}
+                                  data-column = {column.id }>
+                                  {/* dataColumn = {column.id }> */}
                                     {column.label}
                               </Button> :
                               value}
