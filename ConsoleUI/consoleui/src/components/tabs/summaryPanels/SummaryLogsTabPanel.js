@@ -146,7 +146,7 @@ const SummaryLogsTabPanel = React.memo((props) => {
           <ListItemText 
               key={log?.State?.Timestamp.toString()} 
               className={classes.logClass}
-              primary={parseLocalString(log?.State?.Timestamp) + ' ' + log?.Type  + ' ' + log?.State?.Data} />
+              primary={parseLocalString(log?.State?.Timestamp) + ' ' + log?.Type  + ' ' + log?.State?.Source + ' ' + log?.State?.Data} />
             ))}          
       </List>
       {/* {logs?.map((log, ind) => (

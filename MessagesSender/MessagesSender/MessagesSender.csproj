@@ -43,16 +43,17 @@
 
   <ItemGroup>
     <Reference Include="Atlas.Acquisitions.Common">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Acquisitions.Common.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST2\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Acquisitions.Common.dll</HintPath>
     </Reference>
     <Reference Include="Atlas.Crosscuttings">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Crosscuttings.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST2\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Crosscuttings.dll</HintPath>
     </Reference>
     <Reference Include="Atlas.Remoting">
-      <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST2\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.dll</HintPath>
     </Reference>
     <Reference Include="Atlas.Remoting.ST">
       <HintPath>..\..\..\..\EPRST\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.ST.dll</HintPath>
+      <HintPath>..\..\..\..\EPRST2\AtlasMS\AtlasMS\Atlas.Acquisition\bin\Debug\netcoreapp3.1\Atlas.Remoting.ST.dll</HintPath>
     </Reference>
     <Reference Include="MQTTnet.Extensions.ManagedClient">
       <HintPath>libs\MQTTnet.Extensions.ManagedClient.dll</HintPath>

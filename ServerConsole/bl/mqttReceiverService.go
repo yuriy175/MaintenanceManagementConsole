@@ -266,7 +266,9 @@ func (service *mqttReceiverService) Activate(activatedEquipInfo string, deactiva
 
 // SetKeepAliveReceived sets keepalive message from equipment
 func (service *mqttReceiverService) SetKeepAliveReceived(equipment string) {
-	service._keepAlives[equipment] = time.Now()
+	service._mtx.Lock()
+		service._keepAlives[equipment] = time.Now()
+	service._mtx.Unlock()
 	service.ReconnectMqttConnectionIfAbsent(equipment)
 }
 
