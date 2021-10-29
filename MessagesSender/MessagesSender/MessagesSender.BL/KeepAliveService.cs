@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -59,18 +59,22 @@ namespace MessagesSender.BL
             {
                 _isRunning = true;
 
-                while (true)
-                {
-                    /*await _sendingService.SendInfoToMqttAsync(
-                        MQMessages.KeepAlive,
-                        new
-                        {
-                            Alive = true,
-                        });*/
-                    await _sendingService.SendInfoToCommonMqttAsync(MQMessages.KeepAlive, new { });
-                    await Task.Delay(KeepAlivePeriod);
-                }
-            }
+				try
+				{
+					while (true)
+					{
+						await _sendingService.SendInfoToCommonMqttAsync(MQMessages.KeepAlive, new { });
+						await Task.Delay(KeepAlivePeriod);
+					}
+				}
+				catch (Exception ex)
+				{
+					_logger.Error(ex, "KeepAlive error");
+				}
+
+				_isRunning = false;
+				return false;
+			}
 
             return true;
         }
