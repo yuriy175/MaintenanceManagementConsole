@@ -63,7 +63,12 @@ namespace MessagesSender.BL
 				{
 					while (true)
 					{
-						await _sendingService.SendInfoToCommonMqttAsync(MQMessages.KeepAlive, new { });
+						var result = await _sendingService.SendInfoToCommonMqttAsync(MQMessages.KeepAlive, new { });
+						if (!result)
+						{
+							_logger.Error("Couldn't send keep alive");
+						}
+
 						await Task.Delay(KeepAlivePeriod);
 					}
 				}
