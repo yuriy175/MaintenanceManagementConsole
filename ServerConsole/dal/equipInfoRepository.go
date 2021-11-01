@@ -128,6 +128,7 @@ func (repository *EquipInfoRepository) UpdateEquipmentDetails(equipVM *models.Eq
 
 	equipCollection := session.DB(repository._dbName).C(models.EquipmentTableName)
 
+	// IsManuallySet
 	equipCollection.Update(
 		bson.M{"equipname": equipVM.EquipName},
 		bson.D{
@@ -135,6 +136,10 @@ func (repository *EquipInfoRepository) UpdateEquipmentDetails(equipVM *models.Eq
 				{"hospitallongitude", equipVM.HospitalLongitude},
 				{"hospitallatitude", equipVM.HospitalLatitude},
 				{"equipalias", equipVM.EquipAlias},
+				{"hospitalhame", equipVM.HospitalName},
+				{"hospitaladdress", equipVM.HospitalAddress},
+				{"ismanuallyset", true},
+				{"hospitalzones", equipVM.HospitalZones},
 			}}})
 }
 

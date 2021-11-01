@@ -230,4 +230,7 @@ type EquipDetailsViewModel struct {
 	HospitalLongitude float32
 	HospitalLatitude  float32
 	EquipAlias        string
+	HospitalName      string
+	HospitalAddress   string
+	HospitalZones     string
 }

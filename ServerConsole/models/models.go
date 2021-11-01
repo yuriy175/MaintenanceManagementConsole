@@ -280,6 +280,8 @@ type EquipInfoModel struct {
 	Disabled          bool
 	Renamed           bool
 	EquipAlias        string
+	IsManuallySet     bool
+	HospitalZones     string
 }
 
 // RawDeviceInfoModel describes raw device data from equipment info DB model

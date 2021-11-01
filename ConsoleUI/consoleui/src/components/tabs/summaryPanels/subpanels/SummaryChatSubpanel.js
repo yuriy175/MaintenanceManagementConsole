@@ -63,6 +63,8 @@ export default function SummaryChatSubpanel(props) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [techOnly, setTechOnly] = React.useState(false);
+  const [withoutTech, setWithoutTech] = React.useState(true);  
+  
   const openEditMenu = Boolean(anchorEl);
 
   const hasTechOnly = props.hasTechOnly;
@@ -95,7 +97,17 @@ export default function SummaryChatSubpanel(props) {
   };
 
   const title = props.title;
-  const notes = hasTechOnly && techOnly ? props.notes?.filter(p => p.User === techUserName) : props.notes;
+  let notes = props.notes;
+  if(hasTechOnly && techOnly)
+  {
+    notes = notes?.filter(p => p.User === techUserName);
+  }
+
+  if(hasTechOnly && withoutTech)
+  {
+    notes = notes?.filter(p => p.User !== techUserName);
+  }
+    
   const currentUser = props.currentUser;
   const canSubmit = !!newNote?.note;
   const handleEditNote = async (ev) => {
@@ -111,19 +123,34 @@ export default function SummaryChatSubpanel(props) {
     setTechOnly(!techOnly);
   };
 
+  const onWithoutTech = async (event) => {
+    setWithoutTech(!withoutTech);
+  };
+
   return (
       <div className={classes.column}>
         <Typography variant="h5">{title}</Typography>
-        {hasTechOnly ? <FormControlLabel
-              control={
-                <Checkbox
-                    checked={techOnly}
-                    onChange={onTechOnly}
-                />
-              }
-              label="tech только"
-            /> : <></>
-        }
+        {hasTechOnly ? <>
+            <FormControlLabel
+                control={
+                  <Checkbox
+                      checked={techOnly}
+                      onChange={onTechOnly}
+                  />
+                }
+                label="tech только"
+              /> 
+            <FormControlLabel
+                control={
+                  <Checkbox
+                      checked={withoutTech}
+                      onChange={onWithoutTech}
+                  />
+                }
+                label="без tech"
+              /> 
+          </>: <></>
+            }
         <TextField
           id="outlined-multiline-static"
           className={classes.textField}
@@ -191,36 +218,6 @@ export default function SummaryChatSubpanel(props) {
               <></>
           }
         </div>
-        {/* <div className={classes.notesArea}>
-          {notes?.length ?
-            notes.map((i, ind) => (
-              <div key={ind.toString()} className={classes.fullRow}>
-                {currentUser === i.User?
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      onClick={handleMenuClick}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  : <></>
-                }
-                <Typography variant="body1" align='left' color={currentUser === i.User? 'secondary' : 'primary'} className={classes.noteTitle}>
-                    {i.User +" ("} {parseLocalString(i.DateTime) + ") - "}
-                </Typography>
-                {
-                  i.Message?.split("\n")?.map((s, ind) =>
-                  {
-                    return ind === 0? s : <Typography>{s}</Typography>
-                  })
-                }
-              </div>
-              ))
-              :
-              <></>
-          }
-        </div>  */}
       </div>
       );
 }
