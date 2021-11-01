@@ -130,6 +130,7 @@ func (service *httpService) Start() {
 	http.HandleFunc("/equips/GetAllDBTableNames", equipController.GetAllDBTableNames)
 	http.HandleFunc("/equips/GetTableContent", equipController.GetTableContent)
 	http.HandleFunc("/equips/GetPermanentData", equipController.GetPermanentData)
+	http.HandleFunc("/equips/UpdateEquipDetails", equipController.UpdateEquipDetails)
 
 	http.HandleFunc("/equips/GetAllUsers", adminController.GetAllUsers)
 	http.HandleFunc("/equips/UpdateUser", adminController.UpdateUser)

@@ -186,3 +186,19 @@ export async function DeleteNote(token, equipName, msgType, id) {
         return response.data;
     });
 };
+
+export async function UpdateEquipDetails(token, equipName, equip) {
+    return await HandlerWrapper('UpdateEquipDetails', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController + '/UpdateEquipDetails',
+            equip,  
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+        return response.data;
+    });
+};

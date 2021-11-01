@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 
 	interfaces "ServerConsole/interfaces"
+	"ServerConsole/models"
 )
 
 // EquipController describes equipment controller implementation type
@@ -839,5 +841,21 @@ func (service *EquipController) GetPermanentData(w http.ResponseWriter, r *http.
 		}
 
 		service.sendPermanentSearchResults(w, equipType, equipName)
+	}
+}
+
+// UpdateEquipDetails updates a equipment details
+func (service *EquipController) UpdateEquipDetails(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	equipsService := service._equipsService
+
+	if CheckUserAuthorization(authService, w, r) != nil {
+		defer r.Body.Close()
+		bodyBytes, _ := ioutil.ReadAll(r.Body)
+
+		equipVM := &models.EquipDetailsViewModel{}
+		json.Unmarshal(bodyBytes, &equipVM)
+
+		equipsService.UpdateEquipmentDetails(equipVM.EquipName, equipVM)
 	}
 }

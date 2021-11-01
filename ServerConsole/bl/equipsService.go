@@ -144,6 +144,27 @@ func (service *equipsService) DisableEquipInfo(equipName string, disabled bool) 
 	go service._dalService.DisableEquipInfo(equipName, disabled)
 }
 
+// UpdateEquipmentDetails updates an equipment details
+func (service *equipsService) UpdateEquipmentDetails(equipName string, equipVM *models.EquipDetailsViewModel) {
+	service._mtx.Lock()
+	defer service._mtx.Unlock()
+
+	equips := service._equips
+
+	if equip, ok := equips[equipName]; ok {
+		equip.IsManuallySet = true
+		equip.EquipAlias = equipVM.EquipAlias
+		equip.HospitalLatitude = equipVM.HospitalLatitude
+		equip.HospitalLongitude = equipVM.HospitalLongitude
+		equip.HospitalName = equipVM.HospitalName
+		equip.HospitalAddress = equipVM.HospitalAddress
+		equip.HospitalZones = equipVM.HospitalZones
+		equips[equipName] = equip
+	}
+
+	go service._dalService.UpdateEquipmentDetails(equipVM)
+}
+
 // GetEquipInfos returns all equipments
 func (service *equipsService) GetEquipInfos(withDisabled bool) []models.DetailedEquipInfoModel {
 	service._mtx.Lock()
@@ -291,7 +312,7 @@ func (service *equipsService) updateEquipmentInfo(equipName string, viewmodel mo
 	defer service._mtx.Unlock()
 
 	equips := service._equips
-	if equip, ok := equips[equipName]; ok {
+	if equip, ok := equips[equipName]; ok && !equip.IsManuallySet {
 		equip.HospitalName = viewmodel.HospitalName
 		equip.HospitalAddress = viewmodel.HospitalAddress
 		if viewmodel.HospitalLongitude != 0 {

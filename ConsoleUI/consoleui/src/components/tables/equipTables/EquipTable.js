@@ -169,10 +169,8 @@ const EquipTable = React.memo((props) => {
 
   const onEquipDetailsClose = async (result, row) => {
     if(result){
-      // const row = context;
-      // const equipInfo = row.EquipName;
-      // row.Disabled = !row.Disabled
-      // await EquipWorker.DisableEquipInfo(usersState.token, equipInfo, row.Disabled);
+      const equipInfo = row.EquipName;
+      await EquipWorker.UpdateEquipDetails(usersState.token, equipInfo, row);
       allEquipsDispatch({ type: 'UPDATEALLEQUIPSDETAILS', payload: row });
     }
     setOpenEquipDetails({Open:false, CurrentEquip: ''});

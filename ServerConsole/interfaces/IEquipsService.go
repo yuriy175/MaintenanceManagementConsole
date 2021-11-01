@@ -32,4 +32,7 @@ type IEquipsService interface {
 
 	// SetActivate sets whether equipment is active
 	SetActivate(equipName string, isOn bool)
+
+	// UpdateEquipmentDetails updates an equipment details
+	UpdateEquipmentDetails(equipName string, equipVM *models.EquipDetailsViewModel)
 }

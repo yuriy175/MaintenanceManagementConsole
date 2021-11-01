@@ -63,8 +63,8 @@ export default function EquipDetailsDlg(props){
     //nominatim.openstreetmap.org/search.php?street=проспект+Юрия+Гагарина+32+к6&city=Санкт-Петербург&format=jsonv2
 
     const coords = await ExternWorker.GetEquipCoords(city, street, house);
-    setHospitalLatitude(coords?.[0]?.lat);
-    setHospitalLongitude(coords?.[0]?.lon);
+    setHospitalLatitude(parseFloat(coords?.[0]?.lat));
+    setHospitalLongitude(parseFloat(coords?.[0]?.lon));
   };  
 
   const onEquipAliasChange = async (val) =>{
@@ -72,11 +72,11 @@ export default function EquipDetailsDlg(props){
   }
   
   const onHospitalLongitudeChange = async (val) =>{
-    setHospitalLongitude(val.target?.value);
+    setHospitalLongitude(parseFloat(val.target?.value));
   }
 
   const onHospitalLatitudeChange = async (val) =>{
-    setHospitalLatitude(val.target?.value);
+    setHospitalLatitude(parseFloat(val.target?.value));
   }
 
   const onHospitalZonesChange = async (val) =>{
