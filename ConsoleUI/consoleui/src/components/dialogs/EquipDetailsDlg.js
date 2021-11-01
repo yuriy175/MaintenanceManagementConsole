@@ -6,6 +6,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import Divider from '@material-ui/core/Divider';
+
 
 import * as ExternWorker from '../../workers/externWorker'
 
@@ -25,6 +27,11 @@ export default function EquipDetailsDlg(props){
   const [hospAddress, setHospAddress] = React.useState('');
   const [hospitalZones, setHospitalZones] = React.useState('');
 
+  const [city, setCity] = React.useState('Санкт-Петербург');
+  const [street, setStreet] = React.useState('проспект Юрия Гагарина');
+  const [house, setHouse] = React.useState('32');
+
+
   useEffect(() => {
     const equip = props.equip;
     setHospName(equip?.HospitalName);
@@ -40,16 +47,61 @@ export default function EquipDetailsDlg(props){
   };
 
   const handleCloseOK = () => {
-    props?.onClose(true, props.context);
+    props?.onClose(true, 
+      {
+        EquipName: equipName,
+        EquipAlias: equipAlias,
+        HospitalLatitude: hospitalLatitude,
+        HospitalLongitude: hospitalLongitude,
+        HospitalName: hospName,
+        HospitalAddress: hospAddress,
+        HospitalZones: hospitalZones,
+      });
   };
 
   const handleCoordsQuery = async () => {
     //nominatim.openstreetmap.org/search.php?street=проспект+Юрия+Гагарина+32+к6&city=Санкт-Петербург&format=jsonv2
 
-    const coords = await ExternWorker.GetEquipCoords('Санкт-Петербург', 'проспект Юрия Гагарина', '32');
+    const coords = await ExternWorker.GetEquipCoords(city, street, house);
     setHospitalLatitude(coords?.[0]?.lat);
     setHospitalLongitude(coords?.[0]?.lon);
   };  
+
+  const onEquipAliasChange = async (val) =>{
+    setEquipAlias(val.target?.value);
+  }
+  
+  const onHospitalLongitudeChange = async (val) =>{
+    setHospitalLongitude(val.target?.value);
+  }
+
+  const onHospitalLatitudeChange = async (val) =>{
+    setHospitalLatitude(val.target?.value);
+  }
+
+  const onHospitalZonesChange = async (val) =>{
+    setHospitalZones(val.target?.value);
+  }
+
+  const onHospNameChange = async (val) =>{
+    setHospName(val.target?.value);
+  }
+
+  const onHospAddressChange = async (val) =>{
+    setHospAddress(val.target?.value);
+  }  
+
+  const onCityChange = async (val) =>{
+    setCity(val.target?.value);
+  }  
+
+  const onStreetChange = async (val) =>{
+    setStreet(val.target?.value);
+  }  
+
+  const onHouseChange = async (val) =>{
+    setHouse(val.target?.value);
+  }  
 
   return (
     <Dialog
@@ -68,6 +120,7 @@ export default function EquipDetailsDlg(props){
             fullWidth
             variant="standard"
             value={equipAlias}
+            onChange={onEquipAliasChange}
           />
 
         <TextField
@@ -78,6 +131,7 @@ export default function EquipDetailsDlg(props){
             fullWidth
             variant="standard"
             value={hospName}
+            onChange={onHospNameChange}
           />
 
         <TextField
@@ -88,8 +142,8 @@ export default function EquipDetailsDlg(props){
             fullWidth
             variant="standard"
             value={hospAddress}
+            onChange={onHospAddressChange}
           />
-
         <TextField
             autoFocus
             margin="dense"
@@ -98,6 +152,7 @@ export default function EquipDetailsDlg(props){
             fullWidth
             variant="standard"
             value={hospitalZones}
+            onChange={onHospitalZonesChange}
           />
 
         <TextField
@@ -108,6 +163,7 @@ export default function EquipDetailsDlg(props){
             fullWidth
             variant="standard"
             value={hospitalLatitude}
+            onChange={onHospitalLatitudeChange}
           />
 
           <TextField
@@ -118,16 +174,34 @@ export default function EquipDetailsDlg(props){
             fullWidth
             variant="standard"
             value={hospitalLongitude}
+            onChange={onHospitalLongitudeChange}
           />
-          
           <TextField
             autoFocus
             margin="dense"
-            id="longitude"
-            label="Запрос координат"
-            fullWidth
+            id="city"
+            label="Город"
             variant="standard"
-            value={hospitalLongitude}
+            value={city}
+            fullWidth onChange={onCityChange}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="street"
+            label="Улица"
+            variant="standard"
+            value={street}
+            fullWidth onChange={onStreetChange}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="house"
+            label="Дом"
+            variant="standard"
+            value={house}
+            fullWidth onChange={onHouseChange}
           />
           <Button onClick={handleCoordsQuery}>
             Запросить

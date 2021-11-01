@@ -167,13 +167,13 @@ const EquipTable = React.memo((props) => {
     setOpenConfirm({Result: false});
   };
 
-  const onEquipDetailsClose = async (result, context) => {
+  const onEquipDetailsClose = async (result, row) => {
     if(result){
       // const row = context;
       // const equipInfo = row.EquipName;
       // row.Disabled = !row.Disabled
       // await EquipWorker.DisableEquipInfo(usersState.token, equipInfo, row.Disabled);
-      // allEquipsDispatch({ type: 'UPDATEALLEQUIPS', payload: row });
+      allEquipsDispatch({ type: 'UPDATEALLEQUIPSDETAILS', payload: row });
     }
     setOpenEquipDetails({Open:false, CurrentEquip: ''});
   };

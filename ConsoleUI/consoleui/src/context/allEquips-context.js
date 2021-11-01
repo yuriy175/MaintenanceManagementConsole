@@ -26,8 +26,25 @@ function reducer(state, action) {
         ...state,
         allEquips: [...state.allEquips]
       };
-    }    
-    
+    }   
+
+    case 'UPDATEALLEQUIPSDETAILS': {
+      const oldRow = state.allEquips.filter(p => p.EquipName === action.payload.EquipName)?.[0];
+      if(oldRow){
+        // oldRow.Disabled = action.payload.Disabled
+        oldRow.EquipAlias = action.payload.EquipAlias;
+        oldRow.HospitalLatitude = action.payload.HospitalLatitude;
+        oldRow.HospitalLongitude = action.payload.HospitalLongitude;
+        oldRow.HospitalName = action.payload.HospitalName;
+        oldRow.HospitalAddress = action.payload.HospitalAddress;
+        oldRow.HospitalZones = action.payload.HospitalZones;
+      }
+
+      return {
+        ...state,
+        allEquips: [...state.allEquips]
+      };
+    }  
     case 'SETCONNECTEDEQUIPS': {
       return {
         ...state,
