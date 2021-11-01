@@ -52,6 +52,7 @@ const SummaryLogsTabPanel = React.memo((props) => {
   const [generatorLogs, setGeneratorLogs] = useState(false);  
   const [standLogs, setStandLogs] = useState(false);  
   const [detectorLogs, setDetectorLogs] = useState(false);  
+  const [atlasLogs, setAtlasLogs] = useState(false);  
   const [duration, setDuration] = useState(defaultDuration);
 
   const onGeneratorLogs = async (event) => {
@@ -69,6 +70,11 @@ const SummaryLogsTabPanel = React.memo((props) => {
     setDetectorLogs(value);
   };
 
+  const onAtlasLogs = async (event) => {
+    const value = !atlasLogs;
+    setAtlasLogs(value);
+  };
+
   const onStart = async () => { 
     const equipTypes = [];   
     if(generatorLogs){
@@ -81,6 +87,10 @@ const SummaryLogsTabPanel = React.memo((props) => {
 
     if(detectorLogs){
       equipTypes.push("detector");
+    }
+
+    if(atlasLogs){
+      equipTypes.push("atlas");
     }
 
     if(!duration){
@@ -129,6 +139,15 @@ const SummaryLogsTabPanel = React.memo((props) => {
                 />
               }
               label="Логи детектора"
+            />
+      <FormControlLabel
+              control={
+                <Checkbox
+                    checked={atlasLogs}
+                    onChange={onAtlasLogs}
+                />
+              }
+              label="Логи Атлас"
             />
       
       <TextField id="outlined-basic" className={classes.commonSpacing} value={duration} onChange={onDurationChange} label="Длительность, сек" variant="outlined" />

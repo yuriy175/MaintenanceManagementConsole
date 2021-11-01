@@ -300,6 +300,7 @@ namespace MessagesSender.BL
                     CommonConstants.GeneratorType,
                     CommonConstants.StandType,
                     CommonConstants.DetectorType,
+                    "Atlas",
                 }.Select(h => (h, activeHwTypes.Any(a => a == h.ToLower())))
                  .ToList();
 
@@ -340,6 +341,11 @@ namespace MessagesSender.BL
                 if (hwTypes.Any(h => h.Item1.Contains(CommonConstants.DetectorType) && h.Item2))
                 {
                     FakeLogRunnner(CommonConstants.DetectorType, 300);
+                }
+
+                if (hwTypes.Any(h => h.Item1.Contains("Atlas") && h.Item2))
+                {
+                    FakeLogRunnner("Atlas", 300);
                 }
 
                 // OnFullLogState
