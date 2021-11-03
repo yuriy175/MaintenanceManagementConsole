@@ -148,7 +148,7 @@ export default function EquipDetailsDlg(props){
             autoFocus
             margin="dense"
             id="longitude"
-            label="Зоны"
+            label="Регион"
             fullWidth
             variant="standard"
             value={hospitalZones}
@@ -210,10 +210,10 @@ export default function EquipDetailsDlg(props){
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseOK} autoFocus>
-          Да
+          Применить
         </Button>
         <Button onClick={handleClose} >
-          Нет
+          Отмена
         </Button>
       </DialogActions>
     </Dialog>
