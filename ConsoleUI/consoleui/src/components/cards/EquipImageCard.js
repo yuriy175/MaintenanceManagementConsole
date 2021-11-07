@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -35,6 +35,20 @@ const EquipImageCard = React.memo((props) => {
 
   const classes = useCardsStyles();
   const equipClasses = useStyles();
+  const [date, setDate] = React.useState(new Date());
+
+  useEffect(() => {    
+    const timer = setInterval(()=>
+    {
+      const currDate = new Date();
+      const timezone = props.region?.Timezone ?? 0;
+      currDate.setHours( currDate.getHours() + timezone );
+      setDate(currDate);
+    }, 2000 )
+    return function cleanup() {
+        clearInterval(timer)
+    }
+  }, [props.region]);
 
   const bull = <span className={classes.bullet}>•</span>;
 
@@ -48,6 +62,7 @@ const EquipImageCard = React.memo((props) => {
   const lastSeen = props.lastSeen;
   const hospital = props.hospital;
   const address = props.address;
+  const region = props.region;
 
   return (
     <Card className={classes.root}>
@@ -63,6 +78,7 @@ const EquipImageCard = React.memo((props) => {
           {hospital? <div>ЛПУ: {hospital} </div>: <></>}
           {address? <div>Адрес: {address} </div>: <></>}
           {lastSeen? <div>Посл. сообщение: {parseLocalString(lastSeen)} </div>: <></>}
+          {region? <div>Регион: {region.Region ?? 'не указан'}, Время: {date.toLocaleTimeString()}</div>: <></>}
         </Typography>
       </CardContent>
     </Card>

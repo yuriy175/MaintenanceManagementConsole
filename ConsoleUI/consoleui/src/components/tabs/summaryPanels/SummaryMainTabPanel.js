@@ -40,19 +40,25 @@ export default function SummaryMainTabPanel(props) {
 
   const notifyText = currEquipState.remoteaccess?.FtpSendResult;
   const equipInfo = currEquipState.equipInfo;
+  const equipAlias = currEquipState.locationInfo?.EquipAlias;
   const isEquipConnected = allEquipsState.connectedEquips?.includes(equipInfo);
   const lastSeen = currEquipState.lastSeen;
   const hospital = currEquipState.locationInfo?.HospitalName;
   const address = currEquipState.locationInfo?.HospitalAddress;
+  const region = {
+    Region: currEquipState.locationInfo?.HospitalZones,
+    Timezone: currEquipState.locationInfo?.Timezone,
+  };
   return (
     <div className={classes.root}>
       <div className={classes.column}>
         <EquipImageCard 
-          equipInfo={equipInfo} 
+          equipInfo={equipAlias ? `${equipAlias} (${equipInfo})` : equipInfo} 
           isConnected={isEquipConnected} 
           lastSeen={lastSeen}
           hospital={hospital}
           address={address}
+          region={region}
         ></EquipImageCard>
         <SystemCard 
           system={currEquipState.system} 
