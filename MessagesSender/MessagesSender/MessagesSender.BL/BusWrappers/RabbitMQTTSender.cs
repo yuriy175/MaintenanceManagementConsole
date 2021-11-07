@@ -223,13 +223,28 @@ namespace MessagesSender.BL.Remoting
         private async Task<bool> CheckConnectedAsync()
         {
             int attempts = 0;
-            while (!Client.IsConnected && attempts++ < ConnectWaitingAttempts)
+            while (!IsConnected && attempts++ < ConnectWaitingAttempts)
             {
                 Console.WriteLine($"Sent to not connected {Topic}");
                 await Task.Delay(Client.Options.ConnectionCheckInterval);
             }
 
-            return Client.IsConnected;
+            if (IsConnected != Client.IsConnected ||
+               IsConnected != Client.InternalClient.IsConnected ||
+               Client.IsConnected != Client.InternalClient.IsConnected)
+            {
+                var msg = $"Inconsistent connection state IsConnected: {IsConnected},  Client.IsConnected: {Client.IsConnected}, Client.InternalClient.IsConnected: {Client.InternalClient.IsConnected}. Force disconnecting";
+                _logger.Error(msg);
+                Console.WriteLine(msg);
+                await Client.InternalClient.DisconnectAsync();
+            }
+
+            if (!IsConnected)
+            {
+                _logger.Information($"Sent to not connected {Topic}");
+            }
+
+            return IsConnected;
         }
 
         private async Task<bool> SendAsync<TMsg, T>(TMsg msgType, T payload, string topic, string content)

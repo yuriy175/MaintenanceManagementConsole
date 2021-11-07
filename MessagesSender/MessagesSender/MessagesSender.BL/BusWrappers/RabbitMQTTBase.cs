@@ -61,6 +61,11 @@ namespace MessagesSender.BL.Remoting
         protected bool Created { get; set; }
 
         /// <summary>
+        /// if client is connected to a broker
+        /// </summary>
+        protected bool IsConnected { get; private set; }
+
+        /// <summary>
         /// if channel created
         /// </summary>
         protected IManagedMqttClient Client => _mqttClient;
@@ -145,12 +150,18 @@ namespace MessagesSender.BL.Remoting
 
                 _mqttClient.UseConnectedHandler(e =>
                 {
-                    Console.WriteLine("Connected successfully with MQTT Brokers. " + connectionFactory.HostName);
+                    IsConnected = true;
+                    var msg = "Connected successfully with MQTT Brokers. " + connectionFactory.HostName;
+                    Console.WriteLine(msg);
+                    _logger.Information(msg);
                 });
 
                 _mqttClient.UseDisconnectedHandler(e =>
                 {
-                    Console.WriteLine("Disconnected from MQTT Brokers." + connectionFactory.HostName);
+                    IsConnected = false;
+                    var msg = "Disconnected from MQTT Brokers." + connectionFactory.HostName;
+                    Console.WriteLine(msg);
+                    _logger.Information(msg);
                 });    
 
                 await _mqttClient.StartAsync(managedOptions);                
