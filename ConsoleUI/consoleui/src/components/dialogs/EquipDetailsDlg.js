@@ -6,20 +6,20 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Divider from '@material-ui/core/Divider';
-
+// import Autocomplete from '@mui/material/Autocomplete';
+//import Autocomplete from '@material-ui/core/Autocomplete';
+// import AutoComplete from '@material-ui/AutoComplete';
+// import { AutoComplete } from '@material-ui/AutoComplete';
+// import { Autocomplete } from '@autocomplete/material-ui';
+import {getRussianRegions} from '../../utilities/rusRegions'
 
 import * as ExternWorker from '../../workers/externWorker'
 
 export default function EquipDetailsDlg(props){
   const equipName = props.equip?.EquipName;
-  //const equipAlias = props.equip?.EquipAlias;
-  //const hospitalLatitude = props.equip?.HospitalLatitude;
-  //const hospitalLongitude = props.equip?.HospitalLongitude;
-  //const hospName = props.equip?.HospitalName;
-  //const hospAddress = props.equip?.HospitalAddress;
-  //const hospitalZones = props.equip?.HospitalZones;  
-
+  
   const [hospName, setHospName] = React.useState('');
   const [equipAlias, setEquipAlias] = React.useState('');
   const [hospitalLatitude, setHospitalLatitude] = React.useState('');
@@ -31,6 +31,9 @@ export default function EquipDetailsDlg(props){
   const [street, setStreet] = React.useState('проспект Юрия Гагарина');
   const [house, setHouse] = React.useState('32');
 
+  const [regionsList] = React.useState(getRussianRegions());
+
+  const regions = regionsList?.map(r => r[1]);
 
   useEffect(() => {
     const equip = props.equip;
@@ -144,7 +147,19 @@ export default function EquipDetailsDlg(props){
             value={hospAddress}
             onChange={onHospAddressChange}
           />
-        <TextField
+          {/* <div style={{ width: 300 }}> */}
+            <Autocomplete
+              // {...defaultProps}
+              options={regions}
+              fullWidth
+              id="debug"
+              debug
+              defaultValue={hospitalZones}
+              onChange={onHospitalZonesChange}
+              renderInput={(params) => <TextField {...params} fullWidth label="Регионы" margin="normal" />}
+            />
+          {/* </div> */}
+        {/* <TextField
             autoFocus
             margin="dense"
             id="longitude"
@@ -153,7 +168,38 @@ export default function EquipDetailsDlg(props){
             variant="standard"
             value={hospitalZones}
             onChange={onHospitalZonesChange}
+          /> */}
+          {/*<Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={regions}
+            fullWidth
+            // sx={{ width: 300 }}
+            renderInput={(params) => <TextField {...params} label="Регионы" />}
+          />  */}
+        
+        {/* <div style={{ width: 500 }}>
+          <Autocomplete
+            multiple
+            options={top100Films}
+          getOptionLabel={option => option.title}
+          defaultValue={[top100Films[13]]}
+            // options={regions}
+            // getOptionLabel={'Регионы'}
+            // defaultValue={regions?.[0]}
+            // onChange={this.onTagsChange}
+            renderInput={params => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Регионыs"
+                placeholder="Регионыv"
+                margin="normal"
+                fullWidth
+              />
+            )}
           />
+        </div> */}
 
         <TextField
             autoFocus

@@ -14,6 +14,7 @@ import CardRow from './CardRow'
 import { ComplexTypeImages } from '../../model/constants'
 
 import {useCardsStyles} from './CommonCard'
+import {getRussianRegions} from '../../utilities/rusRegions'
 
 const useStyles = makeStyles((theme) => ({
   media: {
@@ -36,12 +37,18 @@ const EquipImageCard = React.memo((props) => {
   const classes = useCardsStyles();
   const equipClasses = useStyles();
   const [date, setDate] = React.useState(new Date());
+  const [regionsList] = React.useState(getRussianRegions());
+
+  const region = props.region;
 
   useEffect(() => {    
     const timer = setInterval(()=>
     {
       const currDate = new Date();
-      const timezone = props.region?.Timezone ?? 0;
+      const timezone = region?.Region ? regionsList?.filter(r => 
+        {
+          return r[1] === region?.Region;
+        })?.[0]?.[2] ?? 0 : 0;
       currDate.setHours( currDate.getHours() + timezone );
       setDate(currDate);
     }, 2000 )
@@ -62,7 +69,6 @@ const EquipImageCard = React.memo((props) => {
   const lastSeen = props.lastSeen;
   const hospital = props.hospital;
   const address = props.address;
-  const region = props.region;
 
   return (
     <Card className={classes.root}>
