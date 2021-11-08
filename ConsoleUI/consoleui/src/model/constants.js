@@ -33,3 +33,5 @@ export const ControlDiagnosticTabPanelIndex = 6;
 
 export const CommonChat = 'CommonChat';
 export const ChatMessageType = 'Chat';
+
+export const MoscowTimeZone = 3;

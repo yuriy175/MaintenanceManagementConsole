@@ -83,7 +83,7 @@ export default function EquipDetailsDlg(props){
   }
 
   const onHospitalZonesChange = async (val) =>{
-    setHospitalZones(val.target?.value);
+    setHospitalZones(val.target?.innerText);
   }
 
   const onHospNameChange = async (val) =>{

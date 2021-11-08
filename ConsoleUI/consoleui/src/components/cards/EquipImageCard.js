@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 
+import {MoscowTimeZone} from '../../model/constants'
 import {parseLocalString} from '../../utilities/utils'
 
 import { CurrentEquipContext } from '../../context/currentEquip-context';
@@ -48,8 +49,8 @@ const EquipImageCard = React.memo((props) => {
       const timezone = region?.Region ? regionsList?.filter(r => 
         {
           return r[1] === region?.Region;
-        })?.[0]?.[2] ?? 0 : 0;
-      currDate.setHours( currDate.getHours() + timezone );
+        })?.[0]?.[2] ?? MoscowTimeZone : MoscowTimeZone;
+      currDate.setHours( currDate.getHours() + timezone - MoscowTimeZone);
       setDate(currDate);
     }, 2000 )
     return function cleanup() {
