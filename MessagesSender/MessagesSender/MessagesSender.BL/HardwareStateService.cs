@@ -328,7 +328,7 @@ namespace MessagesSender.BL
                     });
                 }
 
-                if (hwTypes.Any(h => h.Item1.Contains(CommonConstants.GeneratorType) && h.Item2))
+                /*if (hwTypes.Any(h => h.Item1.Contains(CommonConstants.GeneratorType) && h.Item2))
                 {
                     FakeLogRunnner(CommonConstants.GeneratorType, 200);                    
                 }
@@ -347,6 +347,7 @@ namespace MessagesSender.BL
                 {
                     FakeLogRunnner("Atlas", 300);
                 }
+                */
 
                 // OnFullLogState
             }
