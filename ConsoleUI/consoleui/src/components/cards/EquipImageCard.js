@@ -70,7 +70,8 @@ const EquipImageCard = React.memo((props) => {
   const lastSeen = props.lastSeen;
   const hospital = props.hospital;
   const address = props.address;
-
+  const alias = props.alias;
+  
   return (
     <Card className={classes.root}>
       <CardMedia
@@ -81,7 +82,7 @@ const EquipImageCard = React.memo((props) => {
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          Аппарат : {equipInfo}
+          Аппарат : { alias ? `${alias} (${equipInfo})`: equipInfo}
           {hospital? <div>ЛПУ: {hospital} </div>: <></>}
           {address? <div>Адрес: {address} </div>: <></>}
           {lastSeen? <div>Посл. сообщение: {parseLocalString(lastSeen)} </div>: <></>}

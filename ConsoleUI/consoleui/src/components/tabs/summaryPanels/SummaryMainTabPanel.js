@@ -53,12 +53,13 @@ export default function SummaryMainTabPanel(props) {
     <div className={classes.root}>
       <div className={classes.column}>
         <EquipImageCard 
-          equipInfo={equipAlias ? `${equipAlias} (${equipInfo})` : equipInfo} 
+          equipInfo={equipInfo} 
           isConnected={isEquipConnected} 
           lastSeen={lastSeen}
           hospital={hospital}
           address={address}
           region={region}
+          alias={equipAlias} 
         ></EquipImageCard>
         <SystemCard 
           system={currEquipState.system} 
