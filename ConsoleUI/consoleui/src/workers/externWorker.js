@@ -10,3 +10,13 @@ export async function GetEquipCoords(city, street, house) {
         return response.data;
     });
 };
+
+export async function GetRegionById(osm_id) {
+    return await HandlerWrapper('GetRegionById', async () => {
+        //  https://nominatim.openstreetmap.org/lookup?osm_ids=W88795833&format=json
+        const path = `https://nominatim.openstreetmap.org/lookup?osm_ids=W${osm_id}&format=jsonv2`;
+        const response = await axios.get(path);
+
+        return response.data;
+    });
+};

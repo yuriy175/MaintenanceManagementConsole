@@ -66,6 +66,13 @@ export default function EquipDetailsDlg(props){
     //nominatim.openstreetmap.org/search.php?street=проспект+Юрия+Гагарина+32+к6&city=Санкт-Петербург&format=jsonv2
 
     const coords = await ExternWorker.GetEquipCoords(city, street, house);
+    const osm_id = coords?.[0]?.osm_id; // 88795833
+    if(!hospitalZones && osm_id)
+    {
+      const responce = await ExternWorker.GetRegionById(osm_id);
+      setHospitalZones(responce?.[0]?.address?.state);
+    }
+
     setHospitalLatitude(parseFloat(coords?.[0]?.lat));
     setHospitalLongitude(parseFloat(coords?.[0]?.lon));
   };  
@@ -83,7 +90,7 @@ export default function EquipDetailsDlg(props){
   }
 
   const onHospitalZonesChange = async (val) =>{
-    setHospitalZones(val.target?.innerText);
+    setHospitalZones(val.target?.innerText ?? '');
   }
 
   const onHospNameChange = async (val) =>{
@@ -154,7 +161,8 @@ export default function EquipDetailsDlg(props){
               fullWidth
               id="debug"
               debug
-              defaultValue={hospitalZones}
+              // defaultValue={hospitalZones}
+              value={hospitalZones}
               onChange={onHospitalZonesChange}
               renderInput={(params) => <TextField {...params} fullWidth label="Регионы" margin="normal" />}
             />
