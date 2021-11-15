@@ -369,3 +369,17 @@ type DetailedEquipInfoModel struct {
 	IsActive bool
 	LastSeen *time.Time
 }
+
+// EquipCardInfoModel describes equipment info DB model
+type EquipCardInfoModel struct {
+	ID                bson.ObjectId `bson:"_id"`
+	DateTime          time.Time
+	EquipName         string
+	SerialNum         string
+	Model             string
+	Agreement         string
+	ContactInfo       string
+	ReparInfo         string
+	ManufacturingDate time.Time
+	MontageDate       time.Time
+}

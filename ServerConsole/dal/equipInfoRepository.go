@@ -207,3 +207,43 @@ func (repository *EquipInfoRepository) DisableEquipInfo(equipName string, disabl
 		bson.D{
 			{"$set", bson.D{{"disabled", disabled}}}})
 }
+
+///
+
+// GetOldEquipInfos returns all renamed equipment infos from db
+func (repository *EquipInfoRepository) GetEquipCardInfo(equipName string) models.EquipCardInfoModel {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	equipCollection := session.DB(repository._dbName).C(models.EquipInfoTableName)
+
+	// // критерий выборки
+	query := bson.M{"equipname": equipName}
+
+	// // объект для сохранения результата
+	equipInfo := models.EquipCardInfoModel{}
+	equipCollection.Find(query).One(&equipInfo)
+
+	return equipInfo
+}
+
+// UpdateEquipCardInfo updates equipment info in db
+func (repository *EquipInfoRepository) UpdateEquipCardInfo(equip *models.EquipCardInfoModel) {
+	session := repository._dalService.CreateSession()
+	defer session.Close()
+
+	equipCollection := session.DB(repository._dbName).C(models.EquipInfoTableName)
+
+	equipCollection.Update(
+		bson.M{"equipname": equip.EquipName},
+		bson.D{
+			{"$set", bson.D{
+				{"serialnum", equip.SerialNum},
+				{"model", equip.Model},
+				{"agreement", equip.Agreement},
+				{"contactinfo", equip.ContactInfo},
+				{"reparinfo", equip.ReparInfo},
+				{"manufacturingdate", equip.ManufacturingDate},
+				{"montagedate", equip.MontageDate},
+			}}})
+}

@@ -859,3 +859,39 @@ func (service *EquipController) UpdateEquipDetails(w http.ResponseWriter, r *htt
 		equipsService.UpdateEquipmentDetails(equipVM.EquipName, equipVM)
 	}
 }
+
+func (service *EquipController) GetEquipCardInfo(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	dalService := service._dalService
+	log := service._log
+	if CheckUserAuthorization(authService, w, r) != nil {
+		queryString := r.URL.Query()
+
+		equipNames, ok := queryString["equipName"]
+		if !ok {
+			log.Error("Url Param 'equipName' is missing")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		equipName := equipNames[0]
+
+		info := dalService.GetEquipCardInfo(equipName)
+
+		json.NewEncoder(w).Encode(info)
+	}
+}
+
+func (service *EquipController) UpdateEquipCardInfo(w http.ResponseWriter, r *http.Request) {
+	authService := service._authService
+	dalService := service._dalService
+
+	if CheckUserAuthorization(authService, w, r) != nil {
+		defer r.Body.Close()
+		bodyBytes, _ := ioutil.ReadAll(r.Body)
+
+		equip := &models.EquipCardInfoModel{}
+		json.Unmarshal(bodyBytes, &equip)
+
+		dalService.UpdateEquipCardInfo(equip)
+	}
+}

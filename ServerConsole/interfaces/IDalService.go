@@ -50,6 +50,12 @@ type IDalService interface {
 	// UpdateEquipmentDetails updates equipment details in db
 	UpdateEquipmentDetails(equipVM *models.EquipDetailsViewModel)
 
+	// GetEquipCardInfo returns equipment info from db
+	GetEquipCardInfo(equipName string) models.EquipCardInfoModel
+
+	// UpdateEquipCardInfo updates equipment info in db
+	UpdateEquipCardInfo(equip *models.EquipCardInfoModel)
+
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel
 	GetTableContent(equipName string, tableType string, tableName string) []string

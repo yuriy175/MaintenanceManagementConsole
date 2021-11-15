@@ -527,6 +527,16 @@ func (service *dalService) InsertEquipInfo(equipName string, equipVM *models.Equ
 	return service._equipInfoRepository.InsertEquipInfo(equipName, equipVM)
 }
 
+// GetEquipCardInfo returns equipment info from db
+func (service *dalService) GetEquipCardInfo(equipName string) models.EquipCardInfoModel {
+	return service._equipInfoRepository.GetEquipCardInfo(equipName)
+}
+
+// UpdateEquipCardInfo updates equipment info in db
+func (service *dalService) UpdateEquipCardInfo(equip *models.EquipCardInfoModel) {
+	service._equipInfoRepository.UpdateEquipCardInfo(equip)
+}
+
 func (service *dalService) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {
 	return service._dbInfoRepository.GetAllTableNamesInfo(equipName)
 }
