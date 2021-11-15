@@ -202,3 +202,28 @@ export async function UpdateEquipDetails(token, equipName, equip) {
         return response.data;
     });
 };
+
+export async function GetEquipInfo(token, equipName) {
+    return await HandlerWrapper('GetEquipInfo', async () => {
+        const response = await axios.get(EquipsServiceAddress + EquipsController +
+            '/GetEquipInfo?equipName=' + equipName,
+            GetTokenHeader(token));
+        return response.data;
+    });
+};
+
+export async function UpdateEquipInfo(token, equipName, info) {
+    return await HandlerWrapper('UpdateEquipInfo', async () => {
+        const response = await axios.post(EquipsServiceAddress + EquipsController + '/UpdateEquipInfo',
+            info,  
+            {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            });
+
+        return response.data;
+    });
+};

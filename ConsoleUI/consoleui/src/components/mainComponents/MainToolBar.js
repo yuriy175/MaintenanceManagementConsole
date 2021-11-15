@@ -17,7 +17,8 @@ import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
 
 import "../../styles/styles.css";
-import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, SummaryChatTabPanelIndex, SummaryLogsTabPanelIndex,
+import { SummaryTabIndex, SummaryDBTabPanelIndex, MainTabPanelIndex, SummaryHistoryTabPanelIndex, 
+  SummaryChatTabPanelIndex, SummaryLogsTabPanelIndex, SummaryInfoTabPanelIndex,
   CommonChat,
   AdminTabIndex,
   ControlLogTabPanelIndex,  ControlTabIndex, ControlDiagnosticTabPanelIndex } from '../../model/constants';
@@ -53,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabControl: {
     margin: theme.spacing(1),
-    minWidth: 800,    
+    minWidth: 960,    
   },
   selectEmpty: {
     // marginTop: theme.spacing(2),
@@ -118,6 +119,9 @@ export default function MainToolBar() {
     else if(SummaryTabIndex === selectedTab && SummaryDBTabPanelIndex === selectedTabPanel && equipInfo){
       getAllDBTables(equipInfo);
     }
+    else if(SummaryTabIndex === selectedTab && SummaryInfoTabPanelIndex === selectedTabPanel){        
+      getInfo(equipInfo);
+    }
   }
 
   const getEvents = async (equipInfo) =>
@@ -131,6 +135,12 @@ export default function MainToolBar() {
   {
     const logs = await AdminWorker.GetServerLogs(token);
     communicationDispatch({ type: 'SETLOGS', payload: logs }); 
+  }
+
+  const getInfo = async (equipInfo) =>
+  {
+    const info = await EquipWorker.GetEquipInfo(token, equipInfo);
+    currEquipDispatch({ type: 'SETINFO', payload: info }); 
   }
 
   const getDiagnostics = async () =>
@@ -248,6 +258,9 @@ export default function MainToolBar() {
               {isValidSummaryTab?
                   <Tab label="Диагностика" id= "logsTabPanel" key="logsTabPanel"/> : <div></div>
               }       
+              {isValidSummaryTab?
+                  <Tab label="Инфо" id= "infoTabPanel" key="infoTabPanel"/> : <div></div>
+              }   
               {selectedTab === ControlTabIndex?
                   <Tab label="Диагностика" id= "diagnosticTabPanel" key="diagnosticTabPanel"/> : <div></div>              
               }                  

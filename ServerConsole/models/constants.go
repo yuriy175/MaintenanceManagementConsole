@@ -61,6 +61,9 @@ const (
 	// ChatsTableName is Chats table name
 	ChatsTableName = "Chats"
 
+	// EquipInfoTableName is Equipment info table name
+	EquipInfoTableName = "EquipInfo"
+
 	// MQInfoQueueName is rabbit mq queue name
 	MQInfoQueueName = "SystemInfoQueue"
 

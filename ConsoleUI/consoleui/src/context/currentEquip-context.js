@@ -33,6 +33,7 @@ const initialState = {
   allDBTables:{},
   lastSeen:undefined,
   locationInfo: '',
+  info: {},
 };
 
 function reducer(state, action) {
@@ -165,6 +166,12 @@ function reducer(state, action) {
       return {
         ...state,
         images: action.payload
+      };
+    }
+    case 'SETINFO': {
+      return {
+        ...state,
+        info: action.payload
       };
     }
     // case 'ADDIMAGE': {
