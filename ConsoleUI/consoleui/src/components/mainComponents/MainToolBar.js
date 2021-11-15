@@ -194,6 +194,9 @@ export default function MainToolBar() {
     else if(ControlTabIndex === selectedTab && ControlDiagnosticTabPanelIndex === newValue){        
       getDiagnostics();
     }
+    else if(SummaryTabIndex === selectedTab && SummaryInfoTabPanelIndex === newValue){        
+      getInfo(equipInfo);
+    }
 
     appDispatch({ type: 'SETTAB', payload: {tab: selectedTab, panel: newValue} }); 
   };

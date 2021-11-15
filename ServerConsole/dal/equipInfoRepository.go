@@ -228,22 +228,53 @@ func (repository *EquipInfoRepository) GetEquipCardInfo(equipName string) models
 }
 
 // UpdateEquipCardInfo updates equipment info in db
-func (repository *EquipInfoRepository) UpdateEquipCardInfo(equip *models.EquipCardInfoModel) {
+func (repository *EquipInfoRepository) UpsertEquipCardInfo(equip *models.EquipCardInfoModel) {
 	session := repository._dalService.CreateSession()
 	defer session.Close()
 
 	equipCollection := session.DB(repository._dbName).C(models.EquipInfoTableName)
 
-	equipCollection.Update(
-		bson.M{"equipname": equip.EquipName},
-		bson.D{
-			{"$set", bson.D{
-				{"serialnum", equip.SerialNum},
-				{"model", equip.Model},
-				{"agreement", equip.Agreement},
-				{"contactinfo", equip.ContactInfo},
-				{"reparinfo", equip.ReparInfo},
-				{"manufacturingdate", equip.ManufacturingDate},
-				{"montagedate", equip.MontageDate},
-			}}})
+	query := bson.M{"equipname": equip.EquipName}
+
+	// // объект для сохранения результата
+	model := models.EquipCardInfoModel{}
+	equipCollection.Find(query).One(&model)
+
+	if model.ID == "" {
+		model.ID = bson.NewObjectId()
+		model.DateTime = time.Now()
+
+		model.EquipName = equip.EquipName
+		model.SerialNum = equip.SerialNum
+		model.Model = equip.Model
+		model.Agreement = equip.Agreement
+		model.ContactInfo = equip.ContactInfo
+		model.ManufacturingDate = equip.ManufacturingDate
+		model.MontageDate = equip.MontageDate
+		model.WarrantyStartDate = equip.WarrantyStartDate
+		model.WarrantyEndDate = equip.WarrantyEndDate
+
+		error := equipCollection.Insert(model)
+		if error != nil {
+			repository._log.Errorf("error InsertEquipCardInfo")
+		}
+	} else {
+		err := equipCollection.Update(
+			bson.M{"equipname": equip.EquipName},
+			bson.D{
+				{"$set", bson.D{
+					{"serialnum", equip.SerialNum},
+					{"model", equip.Model},
+					{"agreement", equip.Agreement},
+					{"contactinfo", equip.ContactInfo},
+					{"reparinfo", equip.ReparInfo},
+					{"manufacturingdate", equip.ManufacturingDate},
+					{"montagedate", equip.MontageDate},
+					{"warrantystartdate", equip.WarrantyStartDate},
+					{"warrantyenddate", equip.WarrantyEndDate},
+				}}})
+		if err != nil {
+			repository._log.Errorf("UpdateEquipCardInfo error %v", err)
+		}
+	}
 }

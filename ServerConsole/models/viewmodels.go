@@ -234,3 +234,17 @@ type EquipDetailsViewModel struct {
 	HospitalAddress   string
 	HospitalZones     string
 }
+
+// EquipCardInfoViewModel describes equipment info view model
+type EquipCardInfoViewModel struct {
+	EquipName         string
+	SerialNum         string
+	Model             string
+	Agreement         string
+	ContactInfo       string
+	ReparInfo         string
+	ManufacturingDate JsonTime // time.Time
+	MontageDate       JsonTime // time.Time
+	WarrantyStartDate JsonTime // time.Time
+	WarrantyEndDate   JsonTime // time.Time
+}

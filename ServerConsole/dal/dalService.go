@@ -533,8 +533,8 @@ func (service *dalService) GetEquipCardInfo(equipName string) models.EquipCardIn
 }
 
 // UpdateEquipCardInfo updates equipment info in db
-func (service *dalService) UpdateEquipCardInfo(equip *models.EquipCardInfoModel) {
-	service._equipInfoRepository.UpdateEquipCardInfo(equip)
+func (service *dalService) UpsertEquipCardInfo(equip *models.EquipCardInfoModel) {
+	service._equipInfoRepository.UpsertEquipCardInfo(equip)
 }
 
 func (service *dalService) GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel {

@@ -889,9 +889,21 @@ func (service *EquipController) UpdateEquipCardInfo(w http.ResponseWriter, r *ht
 		defer r.Body.Close()
 		bodyBytes, _ := ioutil.ReadAll(r.Body)
 
-		equip := &models.EquipCardInfoModel{}
-		json.Unmarshal(bodyBytes, &equip)
+		equipVM := &models.EquipCardInfoViewModel{}
+		json.Unmarshal(bodyBytes, &equipVM)
 
-		dalService.UpdateEquipCardInfo(equip)
+		equip := &models.EquipCardInfoModel{
+			EquipName:         equipVM.EquipName,
+			SerialNum:         equipVM.SerialNum,
+			Model:             equipVM.Model,
+			Agreement:         equipVM.Agreement,
+			ContactInfo:       equipVM.ContactInfo,
+			ReparInfo:         equipVM.ReparInfo,
+			ManufacturingDate: time.Time(equipVM.ManufacturingDate),
+			MontageDate:       time.Time(equipVM.MontageDate),
+			WarrantyStartDate: time.Time(equipVM.WarrantyStartDate),
+			WarrantyEndDate:   time.Time(equipVM.WarrantyEndDate),
+		}
+		dalService.UpsertEquipCardInfo(equip)
 	}
 }

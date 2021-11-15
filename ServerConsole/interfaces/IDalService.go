@@ -53,8 +53,8 @@ type IDalService interface {
 	// GetEquipCardInfo returns equipment info from db
 	GetEquipCardInfo(equipName string) models.EquipCardInfoModel
 
-	// UpdateEquipCardInfo updates equipment info in db
-	UpdateEquipCardInfo(equip *models.EquipCardInfoModel)
+	// UpsertEquipCardInfo inserts or updates equipment info in db
+	UpsertEquipCardInfo(equip *models.EquipCardInfoModel)
 
 	//all db repository
 	GetAllTableNamesInfo(equipName string) *models.AllDBTablesModel

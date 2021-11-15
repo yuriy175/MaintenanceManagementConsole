@@ -382,4 +382,6 @@ type EquipCardInfoModel struct {
 	ReparInfo         string
 	ManufacturingDate time.Time
 	MontageDate       time.Time
+	WarrantyStartDate time.Time
+	WarrantyEndDate   time.Time
 }

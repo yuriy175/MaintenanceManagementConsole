@@ -23,6 +23,7 @@ import CommonTimeLine from '../../timelines/CommonTimeLine'
 import * as EquipWorker from '../../../workers/equipWorker'
 import { CurrentEquipContext } from '../../../context/currentEquip-context';
 import { UsersContext } from '../../../context/users-context';
+import {parseLocalString} from '../../../utilities/utils'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +66,17 @@ export default function SummaryInfoTabPanel(props) {
   const token = usersState.token;
 
   useEffect(() => {
-    setInfo(currEquipState.info);
+    const info = currEquipState.info;
+    if(!info.EquipName){
+      info.EquipName = equipName;
+    }
+
+    info.ManufacturingDate = getUSFullDate(new Date(info.ManufacturingDate));
+    info.MontageDate = getUSFullDate(new Date(info.MontageDate));
+    info.WarrantyStartDate = getUSFullDate(new Date(info.WarrantyStartDate));
+    info.WarrantyEndDate = getUSFullDate(new Date(info.WarrantyEndDate));
+
+    setInfo(info);
   }, [currEquipState.info]);
 
   const onUpdate = async () => {    
@@ -92,6 +103,14 @@ export default function SummaryInfoTabPanel(props) {
   const onMontageDateChange = (val) => {
     setInfo({...info, MontageDate: val.target?.value});
   };
+
+  const onWarrantyStartDateChange = (val) => {
+    setInfo({...info, WarrantyStartDate: val.target?.value});
+  };
+
+  const onWarrantyEndDateChange = (val) => {
+    setInfo({...info, WarrantyEndDate: val.target?.value});
+  };  
 
   const onContactInfoChange = async (val) =>{
     setInfo({...info, ContactInfo: val.target?.value});
@@ -122,19 +141,17 @@ export default function SummaryInfoTabPanel(props) {
           <FormControlLabel className={classes.legend} fullWidth
                     control={
                       <div>
-                        <TextField className={classes.textFieldInline} id="manufDate" label="Дата начала" type="date"
-                            value={info.ManufacturingDate} onChange={onManufDateChange} 
+                        <TextField className={classes.textFieldInline} id="warrantyStartDate" label="Дата начала" type="date"
+                            value={info.WarrantyStartDate} onChange={onWarrantyStartDateChange} 
                             InputLabelProps={{ shrink: true}}/>          
-                        <TextField className={classes.textFieldInline} id="montageDate" label="Дата конца" type="date"
-                            value={info.MontageDate} onChange={onMontageDateChange} 
+                        <TextField className={classes.textFieldInline} id="warrantyEndDate" label="Дата конца" type="date"
+                            value={info.WarrantyEndDate} onChange={onWarrantyEndDateChange} 
                             InputLabelProps={{ shrink: true}}/>
                       </div>
                     }
                     label="Гарантийное обслуживание"
                     labelPlacement="start"
                   />
-          
-          
 
           <TextField
               id="outlined-multiline-static" className={classes.textField} label="Контакная информация"
